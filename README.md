@@ -15,7 +15,8 @@
 ## Quickstart
 
 - Web App: https://webdemo.agora.io/education_web/  
-- Mac and Windows App: Go to github releases for latest release
+- Mac: https://github.com/AgoraIO-Usecase/eEducation/releases/download/v4.0.2/AgoraEducation-4.0.2-mac.zip
+- Win: https://github.com/AgoraIO-Usecase/eEducation/releases/download/v4.0.2/AgoraEducation.Setup.4.0.2.exe
 
 You can traverse Readmes under each folder for detail.
 
