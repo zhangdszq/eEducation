@@ -16,7 +16,7 @@
   <p align="center">
     Complete e-Education solutions for both web and native platform.
     <br />
-    <a href="."><strong>Explore the docs »</strong></a>
+    <a href="#about-the-project"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="#using">View Demo</a>
@@ -54,7 +54,7 @@ Have a try with our built demo!
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![Product Name Screen Shot][product-screenshot]
 
 e-Education Sample App built with Agora Electron SDK.
 
