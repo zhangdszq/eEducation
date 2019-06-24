@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:paddingStart="@dimen/dp_14"
+    android:paddingTop="@dimen/dp_16"
+    android:paddingEnd="@dimen/dp_14"
+    android:paddingBottom="@dimen/dp_19"
+    tools:context=".ui.activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fl_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_btn_back"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:onClick="onClickBack"
+        android:src="@mipmap/icon_back"
+        android:visibility="gone" />
+</FrameLayout>
