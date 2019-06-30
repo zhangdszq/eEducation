@@ -14,7 +14,13 @@
 
 #endif /* AgoraSmallClass_pch */
 
+
+
 #import <AgoraRtmKit/AgoraRtmKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 #import "Configs.m"
+#import "JsonAndStringConversions.h"
+#import "EducationEnumerates.h"
+#import <YYModel.h>
+
 

@@ -22,6 +22,10 @@
 }
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
+        if (self.chatMessage) {
+            self.chatMessage(self.text);
+        }
+        self.text = nil;
         [textView resignFirstResponder];
         return NO;
     }else{

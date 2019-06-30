@@ -18,14 +18,15 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        NSArray *nomalImages  = [NSArray arrayWithObjects:@"whiteBoardPencil",@"whiteBoardMove",@"whiteBoardSquare",@"whiteBoardEraser",@"whiteBoardText",@"whiteBoardHandup", nil];
-        [self setUpViewItems:nomalImages];
+        NSArray *nomalImages  = [NSArray arrayWithObjects:@"whiteBoardPencil",@"whiteBoardMove",@"whiteBoardSquare",@"whiteBoardEraser",@"whiteBoardText",@"whiteBoardCircle", nil];
+         NSArray *selectedImages  = [NSArray arrayWithObjects:@"whiteBoardPencilOn",@"whiteBoardMoveOn",@"whiteBoardSquareOn",@"whiteBoardEraserOn",@"whiteBoardTextOn",@"whiteBoardCircleOn", nil];
+        [self setUpViewItems:nomalImages selectItems:selectedImages];
         self.backgroundColor = RCColorWithValue(0x333333, 1);
     }
     return self;
 }
 
-- (void)setUpViewItems:(NSArray *)items {
+- (void)setUpViewItems:(NSArray *)items selectItems:(NSArray *)selectItems {
     self.topConArray = [NSMutableArray array];
     for (NSInteger i = 0 ; i < items.count; i++) {
         UIButton *itemButton = [UIButton buttonWithType:(UIButtonTypeSystem)];
@@ -46,8 +47,9 @@
         if (i == 0) {
             self.selectItemButton = itemButton;
             itemButton.selected = YES;
+            itemButton.backgroundColor = RCColorWithValue(0x197CE1, 1.f);
         }
-//        [itemButton setBackgroundImage:[self createImageWithColor:RCColorWithValue(0x197CE1, 1)] forState:(UIControlStateSelected)];
+        [itemButton setBackgroundImage:[UIImage imageNamed:selectItems[i]] forState:(UIControlStateSelected)];
     }
 }
 - (void)layoutSubviews {
@@ -75,12 +77,12 @@
 }
 
 - (void)toolClick:(UIButton *)item {
-    if (item.selected == YES) {
-        
-    }else {
+    if (item.selected == NO) {
+        self.selectItemButton.backgroundColor = RCColorWithValue(0x565656, 1);
         self.selectItemButton.selected = NO;
         item.selected = YES;
         self.selectItemButton = item;
+        item.backgroundColor = RCColorWithValue(0x197CE1, 1.f);
     }
     if (self.selectAppliance) {
         self.selectAppliance(item.tag);
@@ -93,5 +95,4 @@
     // Drawing code
 }
 */
-
 @end

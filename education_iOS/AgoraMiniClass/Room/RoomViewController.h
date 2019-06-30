@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RoomUserModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RoomViewController : UIViewController
-@property (nonatomic, weak)   AgoraRtcEngineKit *agoraKit;
-@property (nonatomic, copy)   NSString          *userName;
-@property (nonatomic, copy)   NSString          *className;
+
 @end
 
 NS_ASSUME_NONNULL_END

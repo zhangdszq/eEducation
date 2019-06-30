@@ -16,9 +16,7 @@
 		1A44BE6C22BF863000766274 /* MemberListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4A22BF863000766274 /* MemberListViewCell.m */; };
 		1A44BE6D22BF863000766274 /* RoomManageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4B22BF863000766274 /* RoomManageView.m */; };
 		1A44BE6E22BF863000766274 /* MessageListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4C22BF863000766274 /* MessageListView.m */; };
-		1A44BE6F22BF863000766274 /* UserVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4E22BF863000766274 /* UserVideoView.m */; };
 		1A44BE7022BF863000766274 /* MemberListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4F22BF863000766274 /* MemberListView.m */; };
-		1A44BE7122BF863000766274 /* StudentsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5022BF863000766274 /* StudentsView.m */; };
 		1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5322BF863000766274 /* AgoraBaseRequest.m */; };
 		1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5422BF863000766274 /* AgoraHttpRequest.m */; };
 		1A44BE7422BF863000766274 /* CameraMicTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5622BF863000766274 /* CameraMicTestViewController.m */; };
@@ -30,10 +28,12 @@
 		1A44BE7A22BF863000766274 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5E22BF863000766274 /* main.m */; };
 		1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6022BF863000766274 /* AppDelegate.m */; };
 		1A44BE7D22BF863000766274 /* Configs.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6522BF863000766274 /* Configs.m */; };
-		1AE0D0A122897E9A0092AC5E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE0D0A022897E9A0092AC5E /* SystemConfiguration.framework */; };
-		1AE0D0A322897EA60092AC5E /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE0D0A222897EA60092AC5E /* CoreTelephony.framework */; };
-		1AE0D0A522897EC40092AC5E /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE0D0A422897EC40092AC5E /* libresolv.tbd */; };
-		1AE0D0A722897ECD0092AC5E /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE0D0A622897ECD0092AC5E /* libc++.tbd */; };
+		1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE8222BFA97400766274 /* RoomMessageModel.m */; };
+		1A44BE8F22C104D000766274 /* RoomUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE8E22C104D000766274 /* RoomUserModel.m */; };
+		1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */; };
+		1A44BE9622C4A7FD00766274 /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE9522C4A7FD00766274 /* UserModel.m */; };
+		1AAD07E522C757250086FF4E /* ClassRoomDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07E422C757250086FF4E /* ClassRoomDataManager.m */; };
+		1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraMiniClass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraMiniClass.framework */; };
 /* End PBXBuildFile section */
 
@@ -62,12 +62,10 @@
 		1A44BE3C22BF863000766274 /* WhiteBoardToolControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WhiteBoardToolControl.m; sourceTree = "<group>"; };
 		1A44BE3D22BF863000766274 /* MessageListViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageListViewCell.h; sourceTree = "<group>"; };
 		1A44BE3E22BF863000766274 /* ChatTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTextView.h; sourceTree = "<group>"; };
-		1A44BE3F22BF863000766274 /* RoomManageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomManageView.h; sourceTree = "<group>"; };
 		1A44BE4022BF863000766274 /* MemberListViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberListViewCell.h; sourceTree = "<group>"; };
 		1A44BE4122BF863000766274 /* StudentVideoListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StudentVideoListView.h; sourceTree = "<group>"; };
 		1A44BE4222BF863000766274 /* MemberListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberListView.h; sourceTree = "<group>"; };
 		1A44BE4322BF863000766274 /* RoomChatListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomChatListView.m; sourceTree = "<group>"; };
-		1A44BE4422BF863000766274 /* UserVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserVideoView.h; sourceTree = "<group>"; };
 		1A44BE4522BF863000766274 /* MessageListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageListView.h; sourceTree = "<group>"; };
 		1A44BE4622BF863000766274 /* WhiteBoardToolControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhiteBoardToolControl.h; sourceTree = "<group>"; };
 		1A44BE4722BF863000766274 /* MessageListViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageListViewCell.m; sourceTree = "<group>"; };
@@ -77,9 +75,7 @@
 		1A44BE4B22BF863000766274 /* RoomManageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomManageView.m; sourceTree = "<group>"; };
 		1A44BE4C22BF863000766274 /* MessageListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageListView.m; sourceTree = "<group>"; };
 		1A44BE4D22BF863000766274 /* RoomChatListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomChatListView.h; sourceTree = "<group>"; };
-		1A44BE4E22BF863000766274 /* UserVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserVideoView.m; sourceTree = "<group>"; };
 		1A44BE4F22BF863000766274 /* MemberListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberListView.m; sourceTree = "<group>"; };
-		1A44BE5022BF863000766274 /* StudentsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StudentsView.m; sourceTree = "<group>"; };
 		1A44BE5222BF863000766274 /* AgoraHttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgoraHttpRequest.h; sourceTree = "<group>"; };
 		1A44BE5322BF863000766274 /* AgoraBaseRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgoraBaseRequest.m; sourceTree = "<group>"; };
 		1A44BE5422BF863000766274 /* AgoraHttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgoraHttpRequest.m; sourceTree = "<group>"; };
@@ -91,13 +87,26 @@
 		1A44BE5C22BF863000766274 /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		1A44BE5D22BF863000766274 /* NetworkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkViewController.m; sourceTree = "<group>"; };
 		1A44BE5E22BF863000766274 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		1A44BE5F22BF863000766274 /* StudentsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StudentsView.h; sourceTree = "<group>"; };
 		1A44BE6022BF863000766274 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1A44BE6122BF863000766274 /* CameraMicTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraMicTestViewController.h; sourceTree = "<group>"; };
 		1A44BE6222BF863000766274 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		1A44BE6322BF863000766274 /* AgoraMiniClass.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgoraMiniClass.pch; sourceTree = "<group>"; };
 		1A44BE6522BF863000766274 /* Configs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Configs.m; sourceTree = "<group>"; };
 		1A44BE7E22BF874A00766274 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A44BE8122BFA97400766274 /* RoomMessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomMessageModel.h; sourceTree = "<group>"; };
+		1A44BE8222BFA97400766274 /* RoomMessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomMessageModel.m; sourceTree = "<group>"; };
+		1A44BE8D22C104D000766274 /* RoomUserModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomUserModel.h; sourceTree = "<group>"; };
+		1A44BE8E22C104D000766274 /* RoomUserModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomUserModel.m; sourceTree = "<group>"; };
+		1A44BE9022C2269300766274 /* RoomManageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomManageView.h; sourceTree = "<group>"; };
+		1A44BE9122C471BF00766274 /* JsonAndStringConversions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonAndStringConversions.h; sourceTree = "<group>"; };
+		1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JsonAndStringConversions.m; sourceTree = "<group>"; };
+		1A44BE9422C4A7FD00766274 /* UserModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
+		1A44BE9522C4A7FD00766274 /* UserModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
+		1A44BE9722C4BE6600766274 /* EducationEnumerates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EducationEnumerates.h; sourceTree = "<group>"; };
+		1AAD07E322C757250086FF4E /* ClassRoomDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClassRoomDataManager.h; sourceTree = "<group>"; };
+		1AAD07E422C757250086FF4E /* ClassRoomDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClassRoomDataManager.m; sourceTree = "<group>"; };
+		1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AgoraAlertViewController.h; sourceTree = "<group>"; };
+		1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AgoraAlertViewController.m; sourceTree = "<group>"; };
 		1AE0D0042283C5F20092AC5E /* AgoraMiniClass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraMiniClass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D01C2283C5F40092AC5E /* AgoraMiniClassTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraMiniClassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0272283C5F40092AC5E /* AgoraMiniClassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraMiniClassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,10 +124,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AE0D0A722897ECD0092AC5E /* libc++.tbd in Frameworks */,
-				1AE0D0A522897EC40092AC5E /* libresolv.tbd in Frameworks */,
-				1AE0D0A322897EA60092AC5E /* CoreTelephony.framework in Frameworks */,
-				1AE0D0A122897E9A0092AC5E /* SystemConfiguration.framework in Frameworks */,
 				933AE560CF5F0977F2647C18 /* Pods_AgoraMiniClass.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -143,24 +148,27 @@
 		1A44BE3322BF863000766274 /* AgoraMiniClass */ = {
 			isa = PBXGroup;
 			children = (
-				1A44BE3422BF863000766274 /* NetworkViewController.h */,
-				1A44BE3522BF863000766274 /* AppDelegate.h */,
 				1A44BE3622BF863000766274 /* Room */,
-				1A44BE5022BF863000766274 /* StudentsView.m */,
 				1A44BE5122BF863000766274 /* NetWork */,
-				1A44BE5622BF863000766274 /* CameraMicTestViewController.m */,
 				1A44BE5722BF863000766274 /* Assets.xcassets */,
 				1A44BE5822BF863000766274 /* LaunchScreen.storyboard */,
 				1A44BE5A22BF863000766274 /* Main.storyboard */,
+				1A44BE6222BF863000766274 /* MainViewController.h */,
 				1A44BE5C22BF863000766274 /* MainViewController.m */,
+				1A44BE3422BF863000766274 /* NetworkViewController.h */,
 				1A44BE5D22BF863000766274 /* NetworkViewController.m */,
 				1A44BE5E22BF863000766274 /* main.m */,
-				1A44BE5F22BF863000766274 /* StudentsView.h */,
+				1A44BE3522BF863000766274 /* AppDelegate.h */,
 				1A44BE6022BF863000766274 /* AppDelegate.m */,
 				1A44BE6122BF863000766274 /* CameraMicTestViewController.h */,
-				1A44BE6222BF863000766274 /* MainViewController.h */,
+				1A44BE5622BF863000766274 /* CameraMicTestViewController.m */,
 				1A44BE6322BF863000766274 /* AgoraMiniClass.pch */,
 				1A44BE6522BF863000766274 /* Configs.m */,
+				1A44BE9122C471BF00766274 /* JsonAndStringConversions.h */,
+				1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */,
+				1A44BE9722C4BE6600766274 /* EducationEnumerates.h */,
+				1AAD07E322C757250086FF4E /* ClassRoomDataManager.h */,
+				1AAD07E422C757250086FF4E /* ClassRoomDataManager.m */,
 				1A44BE7E22BF874A00766274 /* Info.plist */,
 			);
 			path = AgoraMiniClass;
@@ -170,10 +178,12 @@
 			isa = PBXGroup;
 			children = (
 				1A44BE3722BF863000766274 /* RoomViewController.h */,
-				1A44BE3822BF863000766274 /* Network */,
 				1A44BE3922BF863000766274 /* RoomViewController.m */,
+				1A44BE3822BF863000766274 /* Network */,
 				1A44BE3A22BF863000766274 /* Model */,
 				1A44BE3B22BF863000766274 /* View */,
+				1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */,
+				1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */,
 			);
 			path = Room;
 			sourceTree = "<group>";
@@ -188,6 +198,12 @@
 		1A44BE3A22BF863000766274 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				1A44BE8122BFA97400766274 /* RoomMessageModel.h */,
+				1A44BE8222BFA97400766274 /* RoomMessageModel.m */,
+				1A44BE8D22C104D000766274 /* RoomUserModel.h */,
+				1A44BE8E22C104D000766274 /* RoomUserModel.m */,
+				1A44BE9422C4A7FD00766274 /* UserModel.h */,
+				1A44BE9522C4A7FD00766274 /* UserModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -195,25 +211,23 @@
 		1A44BE3B22BF863000766274 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1A44BE3C22BF863000766274 /* WhiteBoardToolControl.m */,
-				1A44BE3D22BF863000766274 /* MessageListViewCell.h */,
-				1A44BE3E22BF863000766274 /* ChatTextView.h */,
-				1A44BE3F22BF863000766274 /* RoomManageView.h */,
-				1A44BE4022BF863000766274 /* MemberListViewCell.h */,
-				1A44BE4122BF863000766274 /* StudentVideoListView.h */,
-				1A44BE4222BF863000766274 /* MemberListView.h */,
-				1A44BE4322BF863000766274 /* RoomChatListView.m */,
-				1A44BE4422BF863000766274 /* UserVideoView.h */,
-				1A44BE4522BF863000766274 /* MessageListView.h */,
 				1A44BE4622BF863000766274 /* WhiteBoardToolControl.h */,
-				1A44BE4722BF863000766274 /* MessageListViewCell.m */,
-				1A44BE4822BF863000766274 /* ChatTextView.m */,
-				1A44BE4922BF863000766274 /* StudentVideoListView.m */,
-				1A44BE4A22BF863000766274 /* MemberListViewCell.m */,
-				1A44BE4B22BF863000766274 /* RoomManageView.m */,
-				1A44BE4C22BF863000766274 /* MessageListView.m */,
+				1A44BE3C22BF863000766274 /* WhiteBoardToolControl.m */,
 				1A44BE4D22BF863000766274 /* RoomChatListView.h */,
-				1A44BE4E22BF863000766274 /* UserVideoView.m */,
+				1A44BE4322BF863000766274 /* RoomChatListView.m */,
+				1A44BE3D22BF863000766274 /* MessageListViewCell.h */,
+				1A44BE4722BF863000766274 /* MessageListViewCell.m */,
+				1A44BE3E22BF863000766274 /* ChatTextView.h */,
+				1A44BE4822BF863000766274 /* ChatTextView.m */,
+				1A44BE4122BF863000766274 /* StudentVideoListView.h */,
+				1A44BE4922BF863000766274 /* StudentVideoListView.m */,
+				1A44BE4022BF863000766274 /* MemberListViewCell.h */,
+				1A44BE4A22BF863000766274 /* MemberListViewCell.m */,
+				1A44BE9022C2269300766274 /* RoomManageView.h */,
+				1A44BE4B22BF863000766274 /* RoomManageView.m */,
+				1A44BE4522BF863000766274 /* MessageListView.h */,
+				1A44BE4C22BF863000766274 /* MessageListView.m */,
+				1A44BE4222BF863000766274 /* MemberListView.h */,
 				1A44BE4F22BF863000766274 /* MemberListView.m */,
 			);
 			path = View;
@@ -223,9 +237,9 @@
 			isa = PBXGroup;
 			children = (
 				1A44BE5222BF863000766274 /* AgoraHttpRequest.h */,
-				1A44BE5322BF863000766274 /* AgoraBaseRequest.m */,
 				1A44BE5422BF863000766274 /* AgoraHttpRequest.m */,
 				1A44BE5522BF863000766274 /* AgoraBaseRequest.h */,
+				1A44BE5322BF863000766274 /* AgoraBaseRequest.m */,
 			);
 			path = NetWork;
 			sourceTree = "<group>";
@@ -435,22 +449,26 @@
 				1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */,
 				1A44BE6922BF863000766274 /* MessageListViewCell.m in Sources */,
 				1A44BE6822BF863000766274 /* RoomChatListView.m in Sources */,
-				1A44BE7122BF863000766274 /* StudentsView.m in Sources */,
 				1A44BE7822BF863000766274 /* MainViewController.m in Sources */,
 				1A44BE7D22BF863000766274 /* Configs.m in Sources */,
 				1A44BE6B22BF863000766274 /* StudentVideoListView.m in Sources */,
+				1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */,
 				1A44BE6722BF863000766274 /* WhiteBoardToolControl.m in Sources */,
 				1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */,
 				1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */,
 				1A44BE6D22BF863000766274 /* RoomManageView.m in Sources */,
-				1A44BE6F22BF863000766274 /* UserVideoView.m in Sources */,
 				1A44BE7022BF863000766274 /* MemberListView.m in Sources */,
+				1A44BE8F22C104D000766274 /* RoomUserModel.m in Sources */,
 				1A44BE6622BF863000766274 /* RoomViewController.m in Sources */,
 				1A44BE7422BF863000766274 /* CameraMicTestViewController.m in Sources */,
+				1A44BE9622C4A7FD00766274 /* UserModel.m in Sources */,
 				1A44BE7922BF863000766274 /* NetworkViewController.m in Sources */,
 				1A44BE6A22BF863000766274 /* ChatTextView.m in Sources */,
+				1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */,
 				1A44BE6C22BF863000766274 /* MemberListViewCell.m in Sources */,
+				1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,
+				1AAD07E522C757250086FF4E /* ClassRoomDataManager.m in Sources */,
 				1A44BE6E22BF863000766274 /* MessageListView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -622,8 +640,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SKMGESUD9S;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 48TB6ZZL5S;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -636,11 +654,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yangmoumou.AgoraMiniClass;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraMiniClass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AgoraIODev2019;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "arm64 arm64e armv7s";
+				VALID_ARCHS = "arm64 arm64e armv7s armv7";
 			};
 			name = Debug;
 		};
@@ -650,8 +669,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SKMGESUD9S;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 48TB6ZZL5S;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -664,11 +683,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yangmoumou.AgoraMiniClass;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraMiniClass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AgoraIODev2019;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "arm64 arm64e armv7s";
+				VALID_ARCHS = "arm64 arm64e armv7s armv7";
 			};
 			name = Release;
 		};

@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSUInteger, WhiteBoardAppliance) {
-    WhiteBoardAppliancePencil  = 0,
-    WhiteBoardApplianceSelector   = 1,
-    WhiteBoardApplianceRectangle   = 2,
-    WhiteBoardApplianceEraser    = 3,
-    WhiteBoardApplianceText       = 4,
+    WhiteBoardAppliancePencil       = 0,
+    WhiteBoardApplianceSelector     = 1,
+    WhiteBoardApplianceRectangle    = 2,
+    WhiteBoardApplianceEraser       = 3,
+    WhiteBoardApplianceText         = 4,
+    WhiteBoardUserControl           = 5,
 };
 
 typedef void(^SelectAppliance)(WhiteBoardAppliance applicate);

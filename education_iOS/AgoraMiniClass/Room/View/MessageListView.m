@@ -7,23 +7,43 @@
 //
 
 #import "MessageListView.h"
+#import "MessageListViewCell.h"
+#import "RoomMessageModel.h"
 
-@interface MessageListView ()
+@interface MessageListView ()<UITableViewDelegate,UITableViewDataSource>
 
 @end
 
 @implementation MessageListView
-- (instancetype)init
+- (void)setMessageArray:(NSMutableArray *)messageArray {
+    _messageArray = messageArray;
+    [self reloadData];
+}
+- (instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super init];
+    self = [super initWithCoder:coder];
     if (self) {
-
+        self.delegate = self;
+        self.dataSource = self;
     }
     return self;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%ld",indexPath.row);
+- (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    MessageListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MessageCell"];
+    if (!cell) {
+        cell = [[MessageListViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"MessageCell"];
+
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.messageModel = self.messageArray[indexPath.row];
+    
+    return cell;
+
+}
+
+- (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.messageArray.count;
 }
 
 @end

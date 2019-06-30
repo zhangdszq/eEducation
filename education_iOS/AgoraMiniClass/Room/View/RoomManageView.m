@@ -11,28 +11,49 @@
 #import "MemberListView.h"
 #import "MessageListView.h"
 #import "MemberListViewCell.h"
+#import "RoomMessageModel.h"
+#import "ChatTextView.h"
 
-@interface RoomManageView ()<UITableViewDelegate,UITableViewDataSource>
+@interface RoomManageView ()
 @property (nonatomic, weak) UIButton *selectButton;
+@property (nonatomic, strong) NSMutableArray *messageArray;
+@property (nonatomic, weak) UIButton *unmuteAllButton;
+@property (nonatomic, weak) UIButton *muteAllButton;
+@property (nonatomic, weak) ChatTextView *chatTextView;
 @end
 
 @implementation RoomManageView
+- (void)setClassRoomRole:(ClassRoomRole)classRoomRole {
+    _classRoomRole = classRoomRole;
+}
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (self) {
-        UIButton *button = [self viewWithTag:1001];
-        [self layoutButton:button selected:NO];
-        MessageListView *messageListView = [self viewWithTag:100];
-        MemberListView *memberListView = [self viewWithTag:101];
-        messageListView.tableFooterView =  [[UIView alloc]init];
-        memberListView.tableFooterView =  [[UIView alloc]init];
+        [self setViewFormat];
     }
     return self;
 }
-- (void)awakeFromNib {
-    [super awakeFromNib];
 
+- (void)setViewFormat {
+    UIButton *button = [self viewWithTag:1001];
+    [self layoutButton:button selected:NO];
+
+    self.chatTextView = [self viewWithTag:600];
+
+    MessageListView *messageListView = [self viewWithTag:100];
+    MemberListView *memberListView = [self viewWithTag:101];
+    messageListView.tableFooterView =  [[UIView alloc]init];
+    memberListView.tableFooterView =  [[UIView alloc]init];
+
+    self.unmuteAllButton = [self viewWithTag:400];
+    self.muteAllButton = [self viewWithTag:401];
+    [self.unmuteAllButton.layer setBorderColor:RCColorWithValue(0xCCCCCC, 1.0).CGColor];
+    [self.unmuteAllButton.layer setBorderWidth:1.f];
+    self.unmuteAllButton.layer.cornerRadius = 2;
+    [self.muteAllButton.layer setBorderColor:RCColorWithValue(0xCCCCCC, 1.0).CGColor];
+    [self.muteAllButton.layer setBorderWidth:1.f];
+    self.muteAllButton.layer.cornerRadius = 2;
 }
 
 - (void)clickButton:(UIButton *)button {
@@ -66,6 +87,9 @@
         MemberListView *memberListView = [self viewWithTag:101];
         messageListView.hidden = NO;
         memberListView.hidden = YES;
+        self.chatTextView.hidden = NO;
+        self.unmuteAllButton.hidden = YES;
+        self.muteAllButton.hidden = YES;
     }else {
         UIButton *button = [self viewWithTag:1000];
          button.selected = sender.selected == YES ? NO : YES;
@@ -74,49 +98,32 @@
         MemberListView *memberListView = [self viewWithTag:101];
         messageListView.hidden = YES;
         memberListView.hidden = NO;
+        self.chatTextView.hidden = YES;
+        self.unmuteAllButton.hidden = self.classRoomRole == ClassRoomRoleTeacther ? NO : YES;
+        self.muteAllButton.hidden = self.classRoomRole == ClassRoomRoleTeacther ? NO : YES;
     }
     [self layoutButton:sender selected:sender.selected];
-
 }
 
 - (void)layoutButton:(UIButton *)button selected:(BOOL)selected{
     if (selected) {
         button.layer.borderWidth = 0;
+        [button setTitleColor:RCColorWithValue(0x007AFF, 1.f) forState:(UIControlStateNormal)];
+        [button setBackgroundColor:RCColorWithValue(0xFFFFFF, 1.f)];
     }else {
         button.layer.borderWidth = 1;
         button.layer.borderColor = RCColorWithValue(0xE8E8E8, 1).CGColor;
+        [button setTitleColor:RCColorWithValue(0x999999, 1.f) forState:(UIControlStateNormal)];
+        [button setBackgroundColor:RCColorWithValue(0xFAFAFA, 1.f)];
     }
 }
 
-- (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    if ([tableView isKindOfClass:[MessageListView class]]) {
-        MessageListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MessageCell"];
-        if (!cell) {
-            cell = [[MessageListViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"MessageCell"];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        }
-        return cell;
-    }else {
-        MemberListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MemberCell"];
-        if (!cell) {
-            cell = [[MemberListViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"MemberCell"];
-        }
-
-
-        return cell;
-    }
+- (IBAction)unMuteAll:(UIButton *)sender {
 
 }
 
-- (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+- (IBAction)MuteAll:(UIButton *)sender {
+
 }
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"sdajkhasdhklasdlhkasd");
-}
-
-
-
 
 @end

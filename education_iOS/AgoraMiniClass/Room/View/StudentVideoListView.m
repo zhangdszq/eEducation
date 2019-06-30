@@ -10,10 +10,13 @@
 
 @interface StudentVideoListView ()<UICollectionViewDelegate,UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *videoListView;
-@property (nonatomic, strong)   NSMutableArray *studentList;
 @end
 
 @implementation StudentVideoListView
+- (void)setStudentArray:(NSMutableArray *)studentArray {
+    _studentArray = studentArray;
+    [self.videoListView reloadData];
+}
 #pragma mark  ----  lazy ------
 - (UICollectionView *)videoListView {
     if (!_videoListView) {
@@ -24,6 +27,7 @@
         _videoListView.delegate = self;
         listLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         listLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        _videoListView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
 
     }
     return _videoListView;
@@ -33,7 +37,7 @@
     self = [super initWithCoder:coder];
     if (self) {
         [self addSubview:self.videoListView];
-        self.studentList = [NSMutableArray array];
+        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.0];
         _videoListView.translatesAutoresizingMaskIntoConstraints = NO;
         NSLayoutConstraint *leftCon = [_videoListView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:0];
         NSLayoutConstraint *widthCon = [NSLayoutConstraint constraintWithItem:_videoListView attribute:(NSLayoutAttributeWidth) relatedBy:(NSLayoutRelationEqual) toItem:self attribute:(NSLayoutAttributeWidth) multiplier:1 constant:0];
@@ -44,20 +48,10 @@
     return self;
 }
 
-- (void)addUserId:(NSInteger)object {
-    [self.studentList addObject:@(object)];
-    [self.videoListView reloadData];
-}
-
-- (void)removeUserId:(NSInteger)object {
-    [self.studentList removeObject:@(object)];
-    [self.videoListView reloadData];
-}
-
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
     return 1;
 }
-//设置每个item的UIEdgeInsets
+
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(5, 5, 5, 5);
 }
@@ -69,20 +63,32 @@
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor grayColor];
-    NSLog(@"%ld------ %ld",indexPath.section,indexPath.row);
     if (self.studentVideoList) {
         self.studentVideoList(cell,indexPath);
     }
+    UILabel *nameLable = [self addNameLabel];
+    [cell addSubview:nameLable];
+    [cell bringSubviewToFront:nameLable];
+    RoomUserModel *userModel = self.studentArray[indexPath.row];
+    nameLable.text = userModel.name;
     return cell;
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.studentList.count;
+    return self.studentArray.count;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(100, 75);
+    return CGSizeMake(75, 75);
 }
 
-
+- (UILabel *)addNameLabel {
+    UILabel *nameLabel = [[UILabel alloc] init];
+    nameLabel.frame = CGRectMake(0, 75-17, 75, 17);
+    nameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    nameLabel.textColor = [UIColor whiteColor];
+    nameLabel.font = [UIFont systemFontOfSize:10.f];
+    nameLabel.layer.cornerRadius = 2;
+    return nameLabel;
+}
 @end

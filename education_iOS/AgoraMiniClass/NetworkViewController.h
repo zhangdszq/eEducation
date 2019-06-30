@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NetworkViewController : UIViewController
-@property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
+
 @end
 
 NS_ASSUME_NONNULL_END
