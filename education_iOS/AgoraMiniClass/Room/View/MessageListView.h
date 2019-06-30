@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MessageListView : UITableView
-
+@property (nonatomic, strong) NSMutableArray *messageArray;
 @end
 
 NS_ASSUME_NONNULL_END

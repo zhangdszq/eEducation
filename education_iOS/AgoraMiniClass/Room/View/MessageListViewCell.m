@@ -8,23 +8,48 @@
 
 #import "MessageListViewCell.h"
 
+@interface MessageListViewCell ()
+@property (weak, nonatomic) IBOutlet UILabel *leftNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *rightNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *leftContentLabel;
+@property (weak, nonatomic) IBOutlet UILabel *rightContentLabel;
+@end
+
 @implementation MessageListViewCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
 }
+
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (self) {
-        UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 20)];
-        nameLabel.backgroundColor = [UIColor yellowColor];
-        [self addSubview:nameLabel];
-        nameLabel.text = @"ddd";
+
     }
     return self;
 }
+- (void)setMessageModel:(RoomMessageModel *)messageModel {
+    _messageModel = messageModel;
+    if (messageModel.isTeacther) {
+        [self.rightNameLabel setText:messageModel.name];
+        [self.rightContentLabel setText:messageModel.content];
+        self.leftNameLabel.hidden = YES;
+        self.leftContentLabel.hidden = YES;
+        self.rightNameLabel.hidden = NO;
+        self.rightContentLabel.hidden = NO;
+    }else {
+        [self.leftNameLabel setText:messageModel.name];
+        [self.leftContentLabel setText:messageModel.content];
+        self.rightNameLabel.hidden = YES;
+        self.rightContentLabel.hidden = YES;
+        self.leftNameLabel.hidden = NO;
+        self.leftContentLabel.hidden = NO;
+    }
+
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 

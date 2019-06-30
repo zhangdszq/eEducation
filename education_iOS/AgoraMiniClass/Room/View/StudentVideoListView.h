@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RoomUserModel.h"
 
 typedef void(^ StudentVideoList)(UICollectionViewCell * _Nonnull cell, NSIndexPath * _Nullable indexPath);
 
@@ -14,8 +15,7 @@ typedef void(^ StudentVideoList)(UICollectionViewCell * _Nonnull cell, NSIndexPa
 NS_ASSUME_NONNULL_BEGIN
 
 @interface StudentVideoListView : UIView
-- (void)addUserId:(NSInteger)object;
-- (void)removeUserId:(NSInteger)object;
+@property (nonatomic, strong) NSMutableArray *studentArray;
 
 @property (nonatomic, copy) StudentVideoList studentVideoList;
 

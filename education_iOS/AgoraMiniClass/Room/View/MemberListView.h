@@ -8,10 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class RoomUserModel;
+typedef void(^MuteCamera)(BOOL isMute,RoomUserModel * _Nullable userModel);
+typedef void(^MuteMic)(BOOL isMute,RoomUserModel * _Nullable userModel);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MemberListView : UITableView
-
+@property (nonatomic, strong) NSMutableArray *memberArray;
+@property (nonatomic, assign) BOOL isTeacther;
+@property (nonatomic, copy) MuteCamera muteCamera;
+@property (nonatomic, copy) MuteMic muteMic;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -8,41 +8,92 @@
 
 #import "MainViewController.h"
 #import "CameraMicTestViewController.h"
+#import "AgoraHttpRequest.h"
+#import "RoomViewController.h"
+#import "RoomUserModel.h"
+#import "ClassRoomDataManager.h"
+#import "NetworkViewController.h"
 
-@interface MainViewController ()
+
+@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
 @property (weak, nonatomic) IBOutlet UIButton *teactherButton;
 @property (weak, nonatomic) IBOutlet UIButton *studentButton;
 @property (weak, nonatomic) IBOutlet UIButton *audienceButton;
-
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomConstraint;
-
+@property (nonatomic, strong) AgoraRtmKit *agoraRtmKit;
+@property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
+@property (nonatomic, copy)   NSString *serverRtmId;
+@property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
+@property (nonatomic, copy)   NSString  *className;
+@property (nonatomic, copy)   NSString *userName;
+@property (nonatomic, assign) ClassRoomRole classRoomRole;
+@property (nonatomic, copy)   NSString *uid;
+@property (nonatomic, strong) NSMutableArray *userArray;
+@property (nonatomic, strong) ClassRoomDataManager *roomDataManager;
 @end
 
 @implementation MainViewController
-
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.agoraRtmKit.agoraRtmDelegate = self;
+    self.agoraRtmChannel.channelDelegate = self;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    self.roomDataManager = [ClassRoomDataManager shareManager];
+    self.uid = [self getJoinChannelUid];
+    self.roomDataManager.uid = self.uid;
+    [self joinRtm];
+    [self setUpView];
     [self setAllButtonStyle];
-    UITapGestureRecognizer *touchedControl = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedBegan:)];
-    [self.baseView addGestureRecognizer:touchedControl];
-    // 键盘出现的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
-    // 键盘消失的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+    [self addTouchedRecognizer];
+    [self addKeyboardNotification];
+}
+
+- (void)setUpView {
+    self.activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:(UIActivityIndicatorViewStyleWhiteLarge)];
+    [self.view addSubview:self.activityIndicator];
+    self.activityIndicator.frame= CGRectMake((kScreenWidth -100)/2, (kScreenHeight - 100)/2, 100, 100);
+    self.activityIndicator.color = [UIColor grayColor];
+    self.activityIndicator.backgroundColor = [UIColor whiteColor];
+    self.activityIndicator.hidesWhenStopped = YES;
 }
 - (void)setAllButtonStyle {
     [self setButtonStyle:self.teactherButton];
     [self setButtonStyle:self.studentButton];
-     [self setButtonStyle:self.audienceButton];
+    [self setButtonStyle:self.audienceButton];
+}
+
+- (void)addTouchedRecognizer {
+    UITapGestureRecognizer *touchedControl = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedBegan:)];
+    [self.baseView addGestureRecognizer:touchedControl];
+}
+
+- (void)addKeyboardNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)joinRtm {
+    self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:kAgoraAppid delegate:self];
+    self.roomDataManager.agoraRtmKit = self.agoraRtmKit;
+    [self.agoraRtmKit loginByToken:nil user:self.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
+
+    }];
+}
+
+- (void)joinRtmChannel {
+    self.agoraRtmChannel  =  [self.agoraRtmKit createChannelWithId:self.className delegate:self];
+    self.roomDataManager.agoraRtmChannel = self.agoraRtmChannel;
+    [self.agoraRtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+        NSLog(@"---------------  %ld",errorCode);
+    }];
 }
 
 - (void)keyboardWasShown:(NSNotification *)notification {
-    // 获取键盘的高度
     CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     float bottom = frame.size.height - 208;
     self.textViewBottomConstraint.constant = bottom;
@@ -53,14 +104,8 @@
 }
 
 - (void)touchedBegan:(UIGestureRecognizer *)recognizer {
-    NSLog(@"");
     [self.classNameTextFiled resignFirstResponder];
     [self.userNameTextFiled resignFirstResponder];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"mainToCamera"]) {
-    }
 }
 
 - (void)setButtonStyle:(UIButton *)button {
@@ -73,9 +118,10 @@
         button.layer.borderColor = RCColorWithValue(0xCCCCCC, 1).CGColor;
         button.layer.borderWidth = 1;
         [button setTitleColor:RCColorWithValue(0xCCCCCC,1) forState:(UIControlStateNormal)];
-        }
+    }
 }
-- (IBAction)selectRole:(id)sender {
+
+- (IBAction)selectRole:(UIButton *)sender {
     if (sender == self.teactherButton) {
         self.teactherButton.selected = YES;
         self.studentButton.selected = NO;
@@ -89,21 +135,120 @@
         self.studentButton.selected = NO;
         self.audienceButton.selected = YES;
     }
+    self.classRoomRole = sender.tag;
+    self.roomDataManager.roomRole = self.classRoomRole;
     [self setAllButtonStyle];
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
+    [self.activityIndicator startAnimating];
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0) {
-
-        NSLog(@"join room error");
+        [self.activityIndicator stopAnimating];
     }else {
         if (self.teactherButton.selected || self.studentButton.selected || self.audienceButton.selected) {
-            NSLog(@"join channel");
-
+            self.className = self.classNameTextFiled.text;
+            self.userName = self.userNameTextFiled.text;
+            self.roomDataManager.className = self.className;
+            self.roomDataManager.userName = self.userName;
+            [self joinRtmChannel];
+            [self getServerRtmId];
         }else {
-            NSLog(@"join room error");
+            [self.activityIndicator stopAnimating];
         }
     }
 }
 
+- (void)presentNextViewController {
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    NetworkViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"network"];
+    self.roomDataManager.memberArray = self.userArray.mutableCopy;
+    [self presentViewController:roomVC animated:YES completion:nil];
+}
+
+#pragma MARK -----------------------  AgoraRtmDelegate -------------------------
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
+
+}
+
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId {
+
+    if ([peerId isEqualToString:self.serverRtmId]) {
+        NSString *messageStr = message.text;
+        NSDictionary *messageDict  =  [JsonAndStringConversions dictionaryWithJsonString:messageStr];
+        if ([[messageDict objectForKey:@"name"] isEqualToString:@"JoinSuccess"]) {
+            NSDictionary *argsDict = messageDict[@"args"];
+            NSArray *memberArray = argsDict[@"members"];
+            self.userArray = [NSMutableArray array];
+            for (NSDictionary *memberDict in memberArray) {
+                RoomUserModel *userModel = [RoomUserModel yy_modelWithDictionary:memberDict];
+                [self.userArray addObject:userModel];
+            }
+            NSDictionary *channelAttr = argsDict[@"channelAttr"];
+             AgoraHttpRequest *request = [[AgoraHttpRequest alloc] init];
+             WEAK(self)
+            if ([channelAttr isEqual:[NSNull null]]) {
+                NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.className,@"name",@"100",@"limit", nil];
+                [request post:kGetWhiteBoardUuid params:params success:^(id responseObj) {
+                    [weakself.activityIndicator stopAnimating];
+                    NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
+                    if ([responseObject[@"code"] integerValue] == 200) {
+                        NSDictionary *roomDict = responseObject[@"msg"][@"room"];
+                        weakself.roomDataManager.uuid = roomDict[@"uuid"];
+                        weakself.roomDataManager.roomToken = responseObject[@"msg"][@"roomToken"];
+                        [weakself presentNextViewController];
+                    }
+                } failure:^(NSError *error) {
+                    [weakself.activityIndicator stopAnimating];
+                }];
+            }else {
+                NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[channelAttr objectForKey:@"whiteboardId"],@"uuid", nil];
+                 self.roomDataManager.uuid = [channelAttr objectForKey:@"whiteboardId"];
+                [request post:kGetWhiteBoardRoomToken params:params success:^(id responseObj) {
+                    [weakself.activityIndicator stopAnimating];
+                    NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
+                    if ([responseObject[@"code"] integerValue] == 200) {
+                        weakself.roomDataManager.roomToken = responseObject[@"msg"][@"roomToken"];
+                        [weakself presentNextViewController];
+                    }
+                } failure:^(NSError *error) {
+                     [weakself.activityIndicator stopAnimating];
+                }];
+            }
+        }else {
+            NSDictionary *argsDict = messageDict[@"args"];
+        }
+    }
+}
+
+- (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
+    NSLog(@"%@----- %@",member.userId,member.channelId);
+
+}
+
+#pragma mark --------------------- GET ---------------------
+- (NSString *)getJoinChannelUid{
+    NSDate *datenow = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
+    NSString *uid =  [timeSp substringFromIndex:3];
+    return uid;
+}
+
+- (void)getServerRtmId {
+    WEAK(self)
+    [AgoraHttpRequest get:kGetServerRtmIdUrl params:nil success:^(id responseObj) {
+        NSString * str  =[[NSString alloc] initWithData:responseObj encoding:NSUTF8StringEncoding];
+        weakself.roomDataManager.serverRtmId = str;
+        weakself.serverRtmId = str;
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@(weakself.classRoomRole),@"role",weakself.userName,@"name",[weakself getJoinChannelUid],@"streamId", nil];
+        NSDictionary *argsInfo = [NSDictionary dictionaryWithObjectsAndKeys:weakself.className,@"channel",userInfo,@"userAttr", nil];
+        NSDictionary  *requestInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"Join",@"name",argsInfo,@"args", nil];
+        NSString *requestStr =  [JsonAndStringConversions dictionaryToJson:requestInfo];
+        AgoraRtmMessage *message = [[AgoraRtmMessage alloc] init];
+        message.text = requestStr;
+        [weakself.agoraRtmKit sendMessage:message toPeer:weakself.serverRtmId completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+            NSLog(@"%ld",errorCode);
+        }];
+    } failure:^(NSError *error) {
+    }];
+}
 @end

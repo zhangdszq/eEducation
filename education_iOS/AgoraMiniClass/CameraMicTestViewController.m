@@ -24,7 +24,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:@"aab8b8f5a8cd4469a63042fcfafe7063" delegate:self];
+    self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppid delegate:self];
     [self.agoraKit enableVideo];
     [self.agoraKit enableAudio];
     [self.agoraKit startPreview];
@@ -40,10 +40,6 @@
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"cameraToNetwork"]) {
-        NetworkViewController  *networkVC = segue.destinationViewController;
-        networkVC.agoraKit = self.agoraKit;
-    }
 }
 
 - (IBAction)adjustVolume:(UISlider *)sender {
