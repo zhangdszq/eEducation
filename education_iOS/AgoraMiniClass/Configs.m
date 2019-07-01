@@ -11,7 +11,7 @@
 
 
 
-#define kAgoraAppid @"aab8b8f5a8cd4469a63042fcfafe7063"
+#define kAgoraAppid getAppid www.agora.io
 
 #define RCColorWithValue(v,a)         [UIColor colorWithRed:(((v) >> 16) & 0xff)/255.0f green:(((v) >> 8) & 0xff)/255.0f blue:((v) & 0xff)/255.0f alpha:a]
 
