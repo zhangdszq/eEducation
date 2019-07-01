@@ -1,6 +1,6 @@
 {
   "name": "agora-education-web",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -21,8 +21,7 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.8",
     "typescript": "3.3.3",
-    "white-react-sdk": "^1.3.0",
-    "white-web-sdk": "^1.3.0",
+    "white-react-sdk": "^2.2.2",
     "wolfy87-eventemitter": "^5.2.5"
   },
   "scripts": {
