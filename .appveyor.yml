@@ -1,10 +1,6 @@
 platform:
   - x64
 
-cache:
-  - '%APPDATA%\npm-cache'
-  - '%USERPROFILE%\.electron'
-
 install:
   - ps: Install-Product node 8 x64
   - npm install
