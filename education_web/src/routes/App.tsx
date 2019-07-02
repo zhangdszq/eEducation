@@ -50,13 +50,16 @@ function App() {
             });
             adt.signal.on("ChannelAttrUpdated", (args: any) => {
               appLog("On Event: ChannelAttrUpdated", args);
+              let channelAttr = {...args.channelAttr}
+              if (channelAttr.shareId) {
+                channelAttr.shareId = Number(channelAttr.shareId)
+              }
+              if (channelAttr.isSharing) {
+                channelAttr.isSharing = Number(channelAttr.isSharing)
+              }
               dispatch({
                 type: "updateChannelAttr",
-                channelAttr: {
-                  ...args.channelAttr,
-                  shareId: Number(args.channelAttr.shareId),
-                  isSharing: Number(args.channelAttr.isSharing)
-                }
+                channelAttr: channelAttr
               });
             });
             adt.signal.on("ChannelMessage", (args: any) => {
