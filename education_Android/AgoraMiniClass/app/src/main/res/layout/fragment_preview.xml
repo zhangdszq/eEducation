@@ -11,7 +11,6 @@
         android:id="@+id/fl_camera_preview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/grey_FFD9D9D9"
         app:layout_constraintBottom_toTopOf="@id/space_microphone_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.VideoCallFragment">
@@ -11,11 +10,17 @@
         android:id="@+id/fl_video_teacher_layout"
         android:layout_width="@dimen/dp_82"
         android:layout_height="@dimen/dp_82"
-        android:layout_marginTop="@dimen/dp_9"
         android:background="@drawable/bg_teacher_video_view"
         android:padding="@dimen/dp_1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_bg_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_666666"
+            android:src="@mipmap/pic_empty" />
 
         <FrameLayout
             android:id="@+id/fl_video_teacher"
@@ -38,7 +43,6 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/dp_5"
                 android:maxWidth="@dimen/dp_66"
-                android:text="Ann"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_10" />
 
@@ -48,15 +52,15 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/dp_2"
                 android:layout_toRightOf="@id/tv_name_teacher"
-                android:background="@color/colorAccent" />
+                android:src="@mipmap/pic_rommaster" />
 
         </RelativeLayout>
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/fl_student_video_list"
         android:layout_width="0dp"
         android:layout_height="@dimen/dp_82"
-        android:layout_marginTop="@dimen/dp_9"
         android:layout_marginEnd="@dimen/dp_5"
         android:background="@drawable/bg_student_list_video"
         app:layout_constraintEnd_toStartOf="@id/fl_video_teacher_layout"

@@ -1,37 +1,30 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import io.agora.rtc.Constants;
 import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.constant.Constant;
+import io.agora.rtc.MiniClass.model.event.BaseEvent;
+import io.agora.rtc.RtcEngine;
+import io.agora.rtc.video.VideoCanvas;
 
 
-public class PreviewFragment extends Fragment {
+public class PreviewFragment extends BaseFragment {
 
-    private OnFragmentInteractionListener mInteractionListener;
-
-    public PreviewFragment() {
-    }
+    private FrameLayout fl_preview;
 
     public static PreviewFragment newInstance() {
-        PreviewFragment fragment = new PreviewFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//        }
+        return new PreviewFragment();
     }
 
     @Override
@@ -42,8 +35,35 @@ public class PreviewFragment extends Fragment {
         tvBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mInteractionListener != null) {
-                    mInteractionListener.onPreviewFragmentEvent(OnFragmentInteractionListener.EVENT_CLICK_NEXT);
+                if (mListener != null) {
+                    mListener.onFragmentEvent(new Event(Event.EVENT_CLICK_NEXT));
+                    workerThread().runTask(new Runnable() {
+                        @Override
+                        public void run() {
+//                            workerThread().getRtcEngine().stopPreview();
+                        }
+                    });
+                }
+            }
+        });
+
+        fl_preview = root.findViewById(R.id.fl_camera_preview);
+
+        workerThread().runTask(new Runnable() {
+            @Override
+            public void run() {
+
+//                final SurfaceView surfaceView = RtcEngine.CreateRendererView((Context) mListener);
+//                workerThread().getRtcEngine().setupLocalVideo(new VideoCanvas(surfaceView, Constants.RENDER_MODE_HIDDEN, 0));
+//                workerThread().getRtcEngine().startPreview();
+
+                if (mListener != null) {
+                    ((Activity)mListener).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            fl_preview.addView(surfaceView);
+                        }
+                    });
                 }
             }
         });
@@ -51,25 +71,16 @@ public class PreviewFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mInteractionListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onActivityEvent(BaseEvent event) {
+
+    }
+
+    public static class Event extends BaseEvent {
+        public static final int EVENT_CLICK_NEXT = 101;
+
+        public Event(int eventType) {
+            super(eventType);
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mInteractionListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        String EVENT_CLICK_NEXT = "click next";
-
-        void onPreviewFragmentEvent(String eventType);
-    }
 }

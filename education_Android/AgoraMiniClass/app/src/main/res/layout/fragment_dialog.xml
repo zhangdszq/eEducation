@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/fl_dialog_add_view"
+        android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:maxLines="3"
         android:padding="@dimen/dp_20"

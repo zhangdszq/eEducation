@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import io.agora.rtc.MiniClass.R;
 
@@ -17,9 +19,10 @@ public class MyDialogFragment extends DialogFragment {
     private String content;
     private DialogClickListener listener;
 
-    public static MyDialogFragment newInstance(MyDialogFragment listener, String content) {
+    public static MyDialogFragment newInstance(DialogClickListener listener, String content) {
         MyDialogFragment fragment = new MyDialogFragment();
         fragment.content = content;
+        fragment.listener = listener;
         return fragment;
     }
 
@@ -47,6 +50,7 @@ public class MyDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 listener.clickNo();
+                dismiss();
             }
         });
         root.findViewById(R.id.tv_dialog_yes).setOnClickListener(new View.OnClickListener() {
@@ -55,6 +59,8 @@ public class MyDialogFragment extends DialogFragment {
                 listener.clickYes();
             }
         });
+        TextView tvContent = root.findViewById(R.id.tv_content);
+        tvContent.setText(content);
         return root;
     }
 

@@ -1,6 +1,6 @@
 package io.agora.rtc.MiniClass.model.event;
 
-public class ShowToastEvent extends BaseEvent {
+public class ShowToastEvent {
     public String content;
 
     public ShowToastEvent(String content) {

@@ -15,11 +15,13 @@
     </android.support.v7.widget.RecyclerView>
 
     <EditText
+        android:id="@+id/edt_send_msg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_33"
         android:layout_marginLeft="@dimen/dp_9"
         android:layout_marginRight="@dimen/dp_9"
         android:layout_marginBottom="@dimen/dp_9"
+        android:imeOptions="actionSend"
         android:background="@drawable/bg_edt_input_msg"
         android:hint="@string/Input_message" />
 </LinearLayout>
