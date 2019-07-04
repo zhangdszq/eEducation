@@ -15,7 +15,13 @@ public abstract class RcvBaseAdapter<T, VH extends RecyclerView.ViewHolder> exte
             mList.addAll(list);
     }
 
+    public void setList(List<T> list) {
+        mList = list;
+    }
+
     public void addItem(T item) {
+        if (item == null)
+            return;
         if (mList == null)
             mList = new ArrayList<>();
 

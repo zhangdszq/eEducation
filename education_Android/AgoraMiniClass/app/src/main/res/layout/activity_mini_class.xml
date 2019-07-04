@@ -114,8 +114,6 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/dp_82"
         android:layout_marginTop="@dimen/dp_9"
-        android:background="@drawable/bg_teacher_video_view"
-        android:padding="@dimen/dp_1"
         app:layout_constraintEnd_toEndOf="@id/fl_white_board_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

@@ -36,7 +36,8 @@
             android:gravity="center"
             android:text="@string/Unmute_All"
             android:textColor="@color/grey_333333"
-            android:textSize="@dimen/dp_14" />
+            android:textSize="@dimen/dp_14"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_btn_mute_all"
@@ -48,6 +49,7 @@
             android:gravity="center"
             android:text="@string/Mute_All"
             android:textColor="@color/grey_333333"
-            android:textSize="@dimen/dp_14" />
+            android:textSize="@dimen/dp_14"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

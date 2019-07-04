@@ -3,10 +3,12 @@ package io.agora.rtc.MiniClass.model.util;
 import android.util.Log;
 
 public class LogUtil {
-    String tag;
+    private static final String tagPre = "agora_test_";
+
+    private String tag;
 
     public LogUtil(String tag) {
-        this.tag = tag;
+        this.tag = tagPre + tag;
     }
 
     public void d(String msg) {

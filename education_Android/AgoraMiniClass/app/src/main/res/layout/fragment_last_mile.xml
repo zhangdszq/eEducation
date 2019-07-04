@@ -24,11 +24,19 @@
         app:layout_constraintVertical_chainStyle="spread_inside"
         app:layout_constraintVertical_weight="11" />
 
+    <ProgressBar
+        android:id="@+id/pb_loss_rate"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="@dimen/dp_30"
+        app:layout_constraintBottom_toBottomOf="@id/tv_loss_rate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_loss_rate" />
+
     <TextView
         android:id="@+id/tv_loss_rate_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10"
         android:textSize="@dimen/sp_28"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tv_loss_rate"
@@ -43,8 +51,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_2"
-        android:text="@string/ms"
+        android:text="@string/percent"
         android:textSize="@dimen/sp_16"
+        android:visibility="gone"
         app:layout_constraintBaseline_toBaselineOf="@id/tv_loss_rate_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_loss_rate_value" />
@@ -68,11 +77,19 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_loss_rate"
         app:layout_constraintVertical_weight="11" />
 
+    <ProgressBar
+        android:id="@+id/pb_last_mile_delay"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="@dimen/dp_30"
+        app:layout_constraintBottom_toBottomOf="@id/tv_last_mile_delay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_last_mile_delay" />
+
     <TextView
         android:id="@+id/tv_last_mile_delay_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="200"
         android:textSize="@dimen/sp_28"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tv_last_mile_delay"
@@ -89,6 +106,7 @@
         android:layout_marginStart="@dimen/dp_2"
         android:text="@string/ms"
         android:textSize="@dimen/sp_16"
+        android:visibility="gone"
         app:layout_constraintBaseline_toBaselineOf="@id/tv_last_mile_delay_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_last_mile_delay_value" />
@@ -111,12 +129,20 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_last_mile_delay"
         app:layout_constraintVertical_weight="16" />
 
+    <ProgressBar
+        android:id="@+id/pb_network_status_assessment"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        app:layout_constraintBottom_toBottomOf="@id/tv_network_status_assessment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_network_status_assessment" />
+
     <ImageView
         android:id="@+id/iv_network_status_assessment_result"
         android:layout_width="@dimen/dp_77"
         android:layout_height="@dimen/dp_77"
         android:layout_marginStart="@dimen/dp_81"
-        android:src="@mipmap/pic_good"
         app:layout_constraintBottom_toBottomOf="@id/tv_network_status_assessment"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_network_status_assessment"
@@ -127,7 +153,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_9"
-        android:text="@string/Good"
         android:textSize="@dimen/sp_28"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/iv_network_status_assessment_result"

@@ -8,12 +8,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import io.agora.rtc.MiniClass.AGApplication;
 import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.bean.Mute;
+import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
 import io.agora.rtc.MiniClass.model.bean.StudentIMBean;
 import io.agora.rtc.MiniClass.model.bean.StudentVideoBean;
+import io.agora.rtc.MiniClass.model.rtm.ChatManager;
 
-public class RcvStudentListAdapter extends RcvBaseAdapter<StudentIMBean, RcvStudentListAdapter.MyViewHolder> {
+public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAttr, RcvStudentListAdapter.MyViewHolder> {
     private Context mContext;
+
+    private ChatManager chatManager() {
+        return AGApplication.the().getChatManager();
+    }
 
     @NonNull
     @Override
@@ -24,11 +32,29 @@ public class RcvStudentListAdapter extends RcvBaseAdapter<StudentIMBean, RcvStud
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        StudentIMBean student = getItem(i);
+    public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
+        final RtmRoomControl.UserAttr student = getItem(i);
         myViewHolder.tvName.setText(student.name);
         myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
         myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
+
+        myViewHolder.ivBtnMuteAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                student.isMuteAudio = !student.isMuteAudio;
+                myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
+                chatManager().mute(student.isMuteAudio, Mute.AUDIO, student.streamId);
+            }
+        });
+
+        myViewHolder.ivBtnMuteVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                student.isMuteVideo = !student.isMuteVideo;
+                myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
+                chatManager().mute(student.isMuteVideo, Mute.VIDEO, student.streamId);
+            }
+        });
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MiniClass</string>
 
-    <string name="agora_rtc_app_id">85e1a97d20dc424a9db6487ec83afdc0</string>
+    <string name="agora_app_id">aab8b8f5a8cd4469a63042fcfafe7063</string>
 
     <string name="Teacher">Teacher</string>
     <string name="Student">Student</string>
@@ -17,9 +17,11 @@
     <string name="Last_mile_delay">Last mile delay</string>
     <string name="Overall_network_status_assessment">Overall network status assessment</string>
     <string name="ms">ms</string>
+    <string name="percent">&#37;</string>
 
     <!--network status-->
     <string name="Good">Good</string>
+    <string name="Bad">Bad</string>
     <string name="Chatroom">Chatroom</string>
     <string name="Student_List">Student List</string>
 
@@ -31,7 +33,7 @@
     <string name="Yes">Yes</string>
     <string name="Dialog_warning_content_when_click_out">You will out of class after you click Yes, Are you Sure?</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="account_too_long">Class name or user name can not exceed 64 characters</string>
 
 </resources>
