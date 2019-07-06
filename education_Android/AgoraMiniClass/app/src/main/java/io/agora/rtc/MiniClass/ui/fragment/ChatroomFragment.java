@@ -1,0 +1,105 @@
+package io.agora.rtc.MiniClass.ui.fragment;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+
+import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.bean.ChannelMessage;
+import io.agora.rtc.MiniClass.model.config.UserConfig;
+import io.agora.rtc.MiniClass.model.event.BaseEvent;
+import io.agora.rtc.MiniClass.ui.adapter.RcvChatRoomMsgAdapter;
+
+public class ChatroomFragment extends BaseFragment {
+
+    private RecyclerView mRcvMsg;
+    private RcvChatRoomMsgAdapter mRcvAdapter;
+    private EditText mEdtSendMsg;
+
+    public ChatroomFragment() {
+    }
+
+    public static ChatroomFragment newInstance() {
+        ChatroomFragment fragment = new ChatroomFragment();
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_chatroom, container, false);
+
+        mRcvMsg = root.findViewById(R.id.rcv_chat_room_msg);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager((Context) mListener, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager.setStackFromEnd(true);
+        mRcvMsg.setLayoutManager(linearLayoutManager);
+        mRcvAdapter = new RcvChatRoomMsgAdapter();
+        mRcvMsg.setAdapter(mRcvAdapter);
+
+        mEdtSendMsg = root.findViewById(R.id.edt_send_msg);
+        mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                String text = mEdtSendMsg.getText().toString();
+                if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && !TextUtils.isEmpty(text)) {
+                    ChannelMessage channelMessage = new ChannelMessage();
+                    channelMessage.name = ChannelMessage.SEND_NAME;
+                    channelMessage.args = new ChannelMessage.Args();
+                    channelMessage.args.uid = UserConfig.getRtmUserId();
+                    channelMessage.args.message = text;
+                    chatManager().sendChatMsg(UserConfig.getRtmServerId(), channelMessage);
+
+                    channelMessage.args.role = UserConfig.getRole().intValue();
+                    addMsg(channelMessage.args);
+                    mEdtSendMsg.setText("");
+                    return true;
+                }
+                return false;
+            }
+        });
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRcvMsg.scrollToPosition(mRcvAdapter.getItemCount() - 1);
+    }
+
+    @Override
+    public void onActivityEvent(BaseEvent event) {
+        if (event instanceof Event) {
+            Event msgEvent = (Event) event;
+            if (msgEvent.msgArgs == null
+                    || msgEvent.msgArgs.uid == null
+                    || msgEvent.msgArgs.uid.equals(UserConfig.getRtmUserId()))
+                return;
+
+            addMsg(msgEvent.msgArgs);
+        }
+    }
+
+    private void addMsg(ChannelMessage.Args msg) {
+        mRcvAdapter.addItem(msg);
+        mRcvAdapter.notifyDataSetChanged();
+//        mRcvMsg.smoothScrollToPosition(mRcvAdapter.getItemCount() - 2);
+    }
+
+    public static class Event extends BaseEvent {
+        public static final int EVENT_TYPE_UPDATE_MESSAGE = 1;
+
+        public ChannelMessage.Args msgArgs;
+
+        public Event(int eventType) {
+            super(eventType);
+        }
+    }
+
+}
