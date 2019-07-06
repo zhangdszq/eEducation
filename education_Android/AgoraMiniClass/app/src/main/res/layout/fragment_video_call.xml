@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.VideoCallFragment">
+
+    <FrameLayout
+        android:id="@+id/fl_video_teacher_layout"
+        android:layout_width="@dimen/dp_82"
+        android:layout_height="@dimen/dp_82"
+        android:background="@drawable/bg_teacher_video_view"
+        android:padding="@dimen/dp_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_bg_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_666666"
+            android:src="@mipmap/pic_empty" />
+
+        <FrameLayout
+            android:id="@+id/fl_video_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_19"
+            android:layout_gravity="bottom"
+            android:layout_margin="@dimen/dp_1"
+            android:background="@color/black_7F000000">
+
+            <TextView
+                android:id="@+id/tv_name_teacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_5"
+                android:maxWidth="@dimen/dp_66"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dp_10" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_10"
+                android:layout_height="@dimen/dp_10"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/dp_2"
+                android:layout_toRightOf="@id/tv_name_teacher"
+                android:src="@mipmap/pic_rommaster" />
+
+        </RelativeLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_student_video_list"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_82"
+        android:layout_marginEnd="@dimen/dp_5"
+        android:background="@drawable/bg_student_list_video"
+        app:layout_constraintEnd_toStartOf="@id/fl_video_teacher_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcv_student_list_video"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_72"
+            android:layout_gravity="center_vertical">
+
+        </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

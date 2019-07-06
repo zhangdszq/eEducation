@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.ChatroomFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcv_chat_room_msg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <EditText
+        android:id="@+id/edt_send_msg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_33"
+        android:layout_marginLeft="@dimen/dp_9"
+        android:layout_marginRight="@dimen/dp_9"
+        android:layout_marginBottom="@dimen/dp_9"
+        android:imeOptions="actionSend"
+        android:background="@drawable/bg_edt_input_msg"
+        android:hint="@string/Input_message" />
+</LinearLayout>
