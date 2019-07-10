@@ -22,14 +22,6 @@
     // Initialization code
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (self) {
-
-    }
-    return self;
-}
 - (void)setMessageModel:(RoomMessageModel *)messageModel {
     _messageModel = messageModel;
     if (messageModel.isTeacther) {
@@ -47,7 +39,6 @@
         self.leftNameLabel.hidden = NO;
         self.leftContentLabel.hidden = NO;
     }
-
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

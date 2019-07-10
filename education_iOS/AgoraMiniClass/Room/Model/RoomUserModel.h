@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RoomUserModel : NSObject
 @property (nonatomic, assign) ClassRoomRole role;
-@property (nonatomic, copy)   NSString *name;
-@property (nonatomic, copy)   NSString *channel;
-@property (nonatomic, assign)   NSString *uid;
+@property (nonatomic, copy)   NSString * __nullable name;
+@property (nonatomic, copy)   NSString * __nullable channel;
+@property (nonatomic, copy)   NSString * __nullable uid;
 @property (nonatomic, assign) BOOL isMuteVideo;
 @property (nonatomic, assign) BOOL isMuteAudio;
 @end
