@@ -70,11 +70,12 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     Gson gson = new Gson();
     DemoAPI demoAPI = new DemoAPI();
 
-    private ImageView mIvBtnHandUp, mIvBtnText, mIvBtnEraser, mIvBtnOvalVertical, mIvBtnLineVertical,
-            mIvBtnSquareVertical, mIvBtnSquareCollection, mIvBtnMoveCollection, mIvBtnPencil, mIvBtnExit,
-            mIvBtnMinOrMax, mIvBtnSquareHorizontal, mIvBtnLineHorizontal,
-            mIvBtnOvalHorizontal, mIvBtnMoveHorizontal, mIvBtnDelete;
-    private LinearLayout mLlSquareHorizontal, mLlMoveHorizontal;
+    private ImageView /*mIvBtnHandUp,*/ mIvBtnText, mIvBtnEraser, mIvBtnOvalVertical, /*mIvBtnLineVertical,*/
+            mIvBtnSquareVertical, /*mIvBtnSquareCollection,*/
+            mIvBtnMoveCollection, mIvBtnPencil, mIvBtnExit,
+            mIvBtnMinOrMax, /*mIvBtnSquareHorizontal,*/ /*mIvBtnLineHorizontal,*/
+    /*mIvBtnOvalHorizontal,*/ mIvBtnMoveHorizontal, mIvBtnDelete;
+    private LinearLayout /*mLlSquareHorizontal,*/ mLlMoveHorizontal;
     private View mSpaceOvalVerticalTop, mSpaceLineVerticalTop;
 
     public static WhiteBoardFragment newInstance(String paramUUID) {
@@ -96,72 +97,72 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void initButtons(View root) {
-        mIvBtnHandUp = root.findViewById(R.id.iv_btn_hand_up);
+//        mIvBtnHandUp = root.findViewById(R.id.iv_btn_hand_up);
         mIvBtnText = root.findViewById(R.id.iv_btn_text);
         mIvBtnEraser = root.findViewById(R.id.iv_btn_eraser);
         mIvBtnOvalVertical = root.findViewById(R.id.iv_btn_oval_vertical);
-        mIvBtnLineVertical = root.findViewById(R.id.iv_btn_line_vertical);
+//        mIvBtnLineVertical = root.findViewById(R.id.iv_btn_line_vertical);
         mIvBtnSquareVertical = root.findViewById(R.id.iv_btn_square_vertical);
-        mIvBtnSquareCollection = root.findViewById(R.id.iv_btn_square_collection);
+//        mIvBtnSquareCollection = root.findViewById(R.id.iv_btn_square_collection);
         mIvBtnMoveCollection = root.findViewById(R.id.iv_btn_move_collection);
         mIvBtnPencil = root.findViewById(R.id.iv_btn_pencil);
         mIvBtnExit = root.findViewById(R.id.iv_btn_exit);
         mIvBtnMinOrMax = root.findViewById(R.id.iv_btn_min_or_max);
-        mIvBtnSquareHorizontal = root.findViewById(R.id.iv_btn_square_horizontal);
-        mIvBtnLineHorizontal = root.findViewById(R.id.iv_btn_line_horizontal);
-        mIvBtnOvalHorizontal = root.findViewById(R.id.iv_btn_oval_horizontal);
+//        mIvBtnSquareHorizontal = root.findViewById(R.id.iv_btn_square_horizontal);
+//        mIvBtnLineHorizontal = root.findViewById(R.id.iv_btn_line_horizontal);
+//        mIvBtnOvalHorizontal = root.findViewById(R.id.iv_btn_oval_horizontal);
         mIvBtnMoveHorizontal = root.findViewById(R.id.iv_btn_move_horizontal);
         mIvBtnDelete = root.findViewById(R.id.iv_btn_delete);
 
-        mLlSquareHorizontal = root.findViewById(R.id.ll_square_horizontal);
+//        mLlSquareHorizontal = root.findViewById(R.id.ll_square_horizontal);
         mLlMoveHorizontal = root.findViewById(R.id.ll_move_horizontal);
 
         mSpaceOvalVerticalTop = root.findViewById(R.id.view_space_oval_vertical_top);
         mSpaceLineVerticalTop = root.findViewById(R.id.view_space_line_vertical_top);
 
-        mIvBtnHandUp.setOnClickListener(this);
+//        mIvBtnHandUp.setOnClickListener(this);
         mIvBtnText.setOnClickListener(this);
         mIvBtnEraser.setOnClickListener(this);
         mIvBtnOvalVertical.setOnClickListener(this);
-        mIvBtnLineVertical.setOnClickListener(this);
+//        mIvBtnLineVertical.setOnClickListener(this);
         mIvBtnSquareVertical.setOnClickListener(this);
-        mIvBtnSquareCollection.setOnClickListener(this);
+//        mIvBtnSquareCollection.setOnClickListener(this);
         mIvBtnMoveCollection.setOnClickListener(this);
         mIvBtnPencil.setOnClickListener(this);
         mIvBtnExit.setOnClickListener(this);
         mIvBtnMinOrMax.setOnClickListener(this);
-        mIvBtnSquareHorizontal.setOnClickListener(this);
-        mIvBtnLineHorizontal.setOnClickListener(this);
-        mIvBtnOvalHorizontal.setOnClickListener(this);
+//        mIvBtnSquareHorizontal.setOnClickListener(this);
+//        mIvBtnLineHorizontal.setOnClickListener(this);
+//        mIvBtnOvalHorizontal.setOnClickListener(this);
         mIvBtnMoveHorizontal.setOnClickListener(this);
         mIvBtnDelete.setOnClickListener(this);
     }
 
     private void clearSelected() {
-        if (mIvBtnHandUp.isSelected())
-            mIvBtnHandUp.setSelected(false);
+//        if (mIvBtnHandUp.isSelected())
+//            mIvBtnHandUp.setSelected(false);
         if (mIvBtnText.isSelected())
             mIvBtnText.setSelected(false);
         if (mIvBtnEraser.isSelected())
             mIvBtnEraser.setSelected(false);
         if (mIvBtnOvalVertical.isSelected())
             mIvBtnOvalVertical.setSelected(false);
-        if (mIvBtnLineVertical.isSelected())
-            mIvBtnLineVertical.setSelected(false);
+//        if (mIvBtnLineVertical.isSelected())
+//            mIvBtnLineVertical.setSelected(false);
         if (mIvBtnSquareVertical.isSelected())
             mIvBtnSquareVertical.setSelected(false);
-        if (mIvBtnSquareCollection.isSelected())
-            mIvBtnSquareCollection.setSelected(false);
+//        if (mIvBtnSquareCollection.isSelected())
+//            mIvBtnSquareCollection.setSelected(false);
         if (mIvBtnMoveCollection.isSelected())
             mIvBtnMoveCollection.setSelected(false);
         if (mIvBtnPencil.isSelected())
             mIvBtnPencil.setSelected(false);
-        if (mIvBtnSquareHorizontal.isSelected())
-            mIvBtnSquareHorizontal.setSelected(false);
-        if (mIvBtnLineHorizontal.isSelected())
-            mIvBtnLineHorizontal.setSelected(false);
-        if (mIvBtnOvalHorizontal.isSelected())
-            mIvBtnOvalHorizontal.setSelected(false);
+//        if (mIvBtnSquareHorizontal.isSelected())
+//            mIvBtnSquareHorizontal.setSelected(false);
+//        if (mIvBtnLineHorizontal.isSelected())
+//            mIvBtnLineHorizontal.setSelected(false);
+//        if (mIvBtnOvalHorizontal.isSelected())
+//            mIvBtnOvalHorizontal.setSelected(false);
         if (mIvBtnMoveHorizontal.isSelected())
             mIvBtnMoveHorizontal.setSelected(false);
         if (mIvBtnDelete.isSelected())
@@ -193,10 +194,10 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 
     private void updateMembersEvent(RtmRoomControl.UserAttr teacherAttr) {
         if (teacherAttr != null && UserConfig.getRtmUserId().equals(teacherAttr.streamId)) {
-            mIvBtnHandUp.setImageResource(R.drawable.slt_teacher_hand_up);
+//            mIvBtnHandUp.setImageResource(R.drawable.slt_teacher_hand_up);
             broadcast(null);
         } else {
-            mIvBtnHandUp.setImageResource(R.mipmap.icon_connecting12);
+//            mIvBtnHandUp.setImageResource(R.mipmap.icon_connecting12);
             follow(null);
         }
     }
@@ -207,7 +208,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             case R.id.iv_btn_hand_up:
                 showToast("to do.");
                 clearSelected();
-                mIvBtnHandUp.setSelected(true);
+//                mIvBtnHandUp.setSelected(true);
                 break;
             case R.id.iv_btn_text:
                 clearSelected();
@@ -222,39 +223,39 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             case R.id.iv_btn_oval_horizontal:
             case R.id.iv_btn_oval_vertical:
                 clearSelected();
-                mIvBtnOvalHorizontal.setSelected(true);
+//                mIvBtnOvalHorizontal.setSelected(true);
                 mIvBtnOvalVertical.setSelected(true);
-                mIvBtnSquareCollection.setSelected(true);
-                if (mLlSquareHorizontal.getVisibility() != View.GONE)
-                    mLlSquareHorizontal.setVisibility(View.GONE);
+//                mIvBtnSquareCollection.setSelected(true);
+//                if (mLlSquareHorizontal.getVisibility() != View.GONE)
+//                    mLlSquareHorizontal.setVisibility(View.GONE);
                 ellipse();
                 break;
             case R.id.iv_btn_line_vertical:
             case R.id.iv_btn_line_horizontal:
                 clearSelected();
-                mIvBtnLineVertical.setSelected(true);
-                mIvBtnLineHorizontal.setSelected(true);
-                mIvBtnSquareCollection.setSelected(true);
-                if (mLlSquareHorizontal.getVisibility() != View.GONE)
-                    mLlSquareHorizontal.setVisibility(View.GONE);
+//                mIvBtnLineVertical.setSelected(true);
+//                mIvBtnLineHorizontal.setSelected(true);
+//                mIvBtnSquareCollection.setSelected(true);
+//                if (mLlSquareHorizontal.getVisibility() != View.GONE)
+//                    mLlSquareHorizontal.setVisibility(View.GONE);
                 showToast("to do.");
                 break;
             case R.id.iv_btn_square_vertical:
             case R.id.iv_btn_square_horizontal:
                 clearSelected();
-                mIvBtnSquareHorizontal.setSelected(true);
+//                mIvBtnSquareHorizontal.setSelected(true);
                 mIvBtnSquareVertical.setSelected(true);
-                mIvBtnSquareCollection.setSelected(true);
-                if (mLlSquareHorizontal.getVisibility() != View.GONE)
-                    mLlSquareHorizontal.setVisibility(View.GONE);
+//                mIvBtnSquareCollection.setSelected(true);
+//                if (mLlSquareHorizontal.getVisibility() != View.GONE)
+//                    mLlSquareHorizontal.setVisibility(View.GONE);
                 rectangle();
                 break;
             case R.id.iv_btn_square_collection:
-                if (mLlSquareHorizontal.getVisibility() == View.GONE) {
-                    mLlSquareHorizontal.setVisibility(View.VISIBLE);
-                } else {
-                    mLlSquareHorizontal.setVisibility(View.GONE);
-                }
+//                if (mLlSquareHorizontal.getVisibility() == View.GONE) {
+//                    mLlSquareHorizontal.setVisibility(View.VISIBLE);
+//                } else {
+//                    mLlSquareHorizontal.setVisibility(View.GONE);
+//                }
                 break;
             case R.id.iv_btn_move_collection:
                 if (mLlMoveHorizontal.getVisibility() == View.GONE) {
@@ -277,7 +278,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                 mIvBtnMoveCollection.setSelected(true);
                 if (mLlMoveHorizontal.getVisibility() != View.GONE)
                     mLlMoveHorizontal.setVisibility(View.GONE);
-                room.cleanScene(true);
+                if (room != null)
+                    room.cleanScene(true);
                 break;
             case R.id.iv_btn_pencil:
                 clearSelected();
@@ -294,22 +296,22 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                 if (mIvBtnMinOrMax.isSelected()) {
                     mIvBtnMinOrMax.setSelected(false);
                     mListener.onFragmentEvent(new Event(Event.EVENT_TYPE_MIN));
-                    mIvBtnOvalVertical.setVisibility(View.GONE);
-                    mSpaceOvalVerticalTop.setVisibility(View.GONE);
-                    mIvBtnLineVertical.setVisibility(View.GONE);
-                    mSpaceLineVerticalTop.setVisibility(View.GONE);
-                    mIvBtnSquareVertical.setVisibility(View.GONE);
-                    mIvBtnSquareCollection.setVisibility(View.VISIBLE);
+//                    mIvBtnOvalVertical.setVisibility(View.GONE);
+//                    mSpaceOvalVerticalTop.setVisibility(View.GONE);
+//                    mIvBtnLineVertical.setVisibility(View.GONE);
+//                    mSpaceLineVerticalTop.setVisibility(View.GONE);
+//                    mIvBtnSquareVertical.setVisibility(View.GONE);
+//                    mIvBtnSquareCollection.setVisibility(View.VISIBLE);
                 } else {
                     mIvBtnMinOrMax.setSelected(true);
                     mListener.onFragmentEvent(new Event(Event.EVENT_TYPE_MAX));
-                    mIvBtnOvalVertical.setVisibility(View.VISIBLE);
-                    mSpaceOvalVerticalTop.setVisibility(View.VISIBLE);
-                    mIvBtnLineVertical.setVisibility(View.VISIBLE);
-                    mSpaceLineVerticalTop.setVisibility(View.VISIBLE);
-                    mIvBtnSquareVertical.setVisibility(View.VISIBLE);
-                    mIvBtnSquareCollection.setVisibility(View.GONE);
-                    mLlSquareHorizontal.setVisibility(View.GONE);
+//                    mIvBtnOvalVertical.setVisibility(View.VISIBLE);
+//                    mSpaceOvalVerticalTop.setVisibility(View.VISIBLE);
+//                    mIvBtnLineVertical.setVisibility(View.VISIBLE);
+//                    mSpaceLineVerticalTop.setVisibility(View.VISIBLE);
+//                    mIvBtnSquareVertical.setVisibility(View.VISIBLE);
+//                    mIvBtnSquareCollection.setVisibility(View.GONE);
+//                    mLlSquareHorizontal.setVisibility(View.GONE);
                 }
                 break;
         }
@@ -359,6 +361,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void createRoom() {
+        if (demoAPI == null)
+            return;
         demoAPI.createRoom(UserConfig.getRtmChannelName(), 100, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -386,6 +390,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void getRoomToken(final String uuid) {
+        if (demoAPI == null)
+            return;
         demoAPI.getRoomToken(uuid, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -471,6 +477,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void addCustomEventListener() {
+        if (room == null)
+            return;
         room.addMagixEventListener(EVENT_NAME, new EventListener() {
             @Override
             public void onEvent(EventEntry eventEntry) {
@@ -481,16 +489,22 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void broadcast(View v) {
+        if (room == null)
+            return;
         logAction();
         room.setViewMode(ViewMode.Broadcaster);
     }
 
     public void follow(View v) {
+        if (room == null)
+            return;
         logAction();
         room.setViewMode(ViewMode.Follower);
     }
 
     public void getBroadcastState(View v) {
+        if (room == null)
+            return;
         logAction();
         room.getBroadcastState(new Promise<BroadcastState>() {
             @Override
@@ -507,6 +521,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void dispatchCustomEvent(View v) {
+        if (room == null)
+            return;
         logAction();
         HashMap payload = new HashMap<>();
         payload.put("device", "android");
@@ -515,17 +531,23 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void cleanScene(View v) {
+        if (room == null)
+            return;
         logAction();
         room.cleanScene(true);
     }
 
     public void insertNewScene(View v) {
+        if (room == null)
+            return;
         logAction();
         room.putScenes(SCENE_DIR, new Scene[]{new Scene("page1")}, 0);
         room.setScenePath(SCENE_DIR + "/page1");
     }
 
     public void insertPPT(View v) {
+        if (room == null)
+            return;
         logAction();
         room.putScenes(SCENE_DIR, new Scene[]{
                 new Scene("page2", new PptPage("https://white-pan.oss-cn-shanghai.aliyuncs.com/101/image/alin-rusu-1239275-unsplash_opt.jpg", 600d, 600d))
@@ -534,10 +556,14 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void insertImage(View v) {
+        if (room == null)
+            return;
         room.insertImage(new ImageInformationWithUrl(0d, 0d, 100d, 200d, "https://white-pan.oss-cn-shanghai.aliyuncs.com/40/image/mask.jpg"));
     }
 
     public void getScene(View v) {
+        if (room == null)
+            return;
         logAction();
         room.getScenes(new Promise<Scene[]>() {
             @Override
@@ -553,6 +579,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void getRoomPhase(View v) {
+        if (room == null)
+            return;
         logAction();
         room.getRoomPhase(new Promise<RoomPhase>() {
             @Override
@@ -569,6 +597,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void getRoomState(View v) {
+        if (room == null)
+            return;
         logAction();
         //获取房间状态，包含很多信息
         room.getRoomState(new Promise<RoomState>() {
@@ -613,16 +643,22 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void readonly(View v) {
+        if (room == null)
+            return;
         logAction();
         room.disableOperations(true);
     }
 
     public void disableReadonly() {
+        if (room == null)
+            return;
         logAction();
         room.disableOperations(false);
     }
 
     public void pencil() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -633,6 +669,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void text() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -643,6 +681,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void eraser() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -653,6 +693,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void ellipse() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -663,6 +705,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void rectangle() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -673,6 +717,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void selector() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{99, 99, 99});
@@ -683,6 +729,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void color() {
+        if (room == null)
+            return;
         logAction();
         MemberState memberState = new MemberState();
         memberState.setStrokeColor(new int[]{200, 200, 200});
@@ -693,6 +741,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void convertPoint() {
+        if (room == null)
+            return;
         //获取特定点，在白板内部的坐标点
         room.convertToPointInWorld(0, 0, new Promise<Point>() {
             @Override
@@ -709,6 +759,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void externalEvent(View v) {
+        if (room == null)
+            return;
         logAction();
         room.disableOperations(true);
 //        room.externalDeviceEventDown(new RoomMouseEvent(100, 300));
@@ -721,6 +773,8 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     public void zoomChange(View v) {
+        if (room == null)
+            return;
         room.getZoomScale(new Promise<Number>() {
             @Override
             public void then(Number number) {

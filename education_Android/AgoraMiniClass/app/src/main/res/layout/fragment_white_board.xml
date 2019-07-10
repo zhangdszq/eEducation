@@ -23,6 +23,7 @@
             android:background="@drawable/slt_btn_whitebord_edit"
             android:src="@mipmap/icon_connecting12"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_space_hand_up_top"
             app:layout_constraintVertical_chainStyle="spread" />
@@ -31,6 +32,7 @@
             android:id="@+id/view_space_hand_up_top"
             android:layout_width="@dimen/dp_36"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:background="@color/grey_333333"
             app:layout_constraintBottom_toTopOf="@id/iv_btn_hand_up"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +82,6 @@
             android:layout_height="@dimen/dp_36"
             android:background="@drawable/slt_btn_whitebord_edit"
             android:src="@drawable/slt_btn_circle"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/view_space_eraser_top"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_space_oval_vertical_top" />
@@ -90,7 +91,6 @@
             android:layout_width="@dimen/dp_36"
             android:layout_height="0dp"
             android:background="@color/grey_333333"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/iv_btn_oval_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_btn_line_vertical" />
@@ -122,7 +122,6 @@
             android:layout_height="@dimen/dp_36"
             android:background="@drawable/slt_btn_whitebord_edit"
             android:src="@drawable/slt_btn_square"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/view_space_line_vertical_top"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_btn_square_collection" />
@@ -133,6 +132,7 @@
             android:layout_height="@dimen/dp_36"
             android:background="@drawable/slt_btn_whitebord_edit"
             android:src="@drawable/slt_btn_square"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/iv_btn_square_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_space_square_collection_top" />

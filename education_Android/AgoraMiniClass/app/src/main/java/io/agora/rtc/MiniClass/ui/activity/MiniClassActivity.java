@@ -192,12 +192,25 @@ public class MiniClassActivity extends BaseActivity {
                         });
                     } else if (Mute.MUTE_RESPONSE.equals(name) || Mute.UN_MUTE_RESPONSE.equals(name)) {
                         Mute mute = new Gson().fromJson(s, Mute.class);
-                        Mute.Args args = mute.args;
+                        final Mute.Args args = mute.args;
 //                        if (args.ta)
-                        if (args != null && !TextUtils.isEmpty(args.uid) && !TextUtils.isEmpty(args.type)) {
-                            RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(args.uid);
+                        if (args != null && !TextUtils.isEmpty(args.type)) {
+                            RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
                             if (userAttr == null)
                                 return;
+
+
+                            boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
+                            if (args.type.equals(Mute.CHAT)) {
+                                userAttr.isMuteVideo = isMute;
+                                userAttr.isMuteAudio = isMute;
+                            } else if (args.type.equals(Mute.AUDIO)) {
+                                userAttr.isMuteAudio = isMute;
+                            } else if (args.type.equals(Mute.VIDEO)) {
+                                userAttr.isMuteVideo = isMute;
+                            }
+
+//                            UserConfig.putMember(userAttr);
 
                             final RtmRoomControl.UserAttr finalAttr = new RtmRoomControl.UserAttr();
                             finalAttr.name = userAttr.name;
@@ -206,20 +219,10 @@ public class MiniClassActivity extends BaseActivity {
                             finalAttr.streamId = userAttr.streamId;
                             finalAttr.role = userAttr.role;
 
-                            boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
-                            if (args.type.equals(Mute.CHAT)) {
-                                finalAttr.isMuteVideo = isMute;
-                                finalAttr.isMuteAudio = isMute;
-                            } else if (args.type.equals(Mute.AUDIO)) {
-                                finalAttr.isMuteAudio = isMute;
-                            } else if (args.type.equals(Mute.VIDEO)) {
-                                finalAttr.isMuteVideo = isMute;
-                            }
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    notifyMuteMember(finalAttr);
-                                    UserConfig.putMember(finalAttr);
+                                    notifyMuteMember(args.type, finalAttr);
                                 }
                             });
                         }
@@ -236,8 +239,9 @@ public class MiniClassActivity extends BaseActivity {
         }
     };
 
-    private void notifyMuteMember(RtmRoomControl.UserAttr userAttr) {
+    private void notifyMuteMember(String muteType, RtmRoomControl.UserAttr userAttr) {
         MuteEvent event = new MuteEvent(userAttr);
+        event.muteType = muteType;
         mVideoCallFragment.onActivityEvent(event);
         mStudentListFragment.onActivityEvent(event);
 //        mWhiteBoardFragment.onActivityEvent(event);

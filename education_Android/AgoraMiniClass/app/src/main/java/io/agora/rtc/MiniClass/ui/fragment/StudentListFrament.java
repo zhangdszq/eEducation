@@ -111,7 +111,8 @@ public class StudentListFrament extends BaseFragment {
         for (RtmRoomControl.UserAttr attr: attrList) {
             uidList.add(attr.streamId);
         }
-        chatManager().muteArray(isMute, Mute.CHAT, uidList);
+        chatManager().muteArray(isMute, Mute.VIDEO, uidList);
+        chatManager().muteArray(isMute, Mute.AUDIO, uidList);
     }
 
 }
