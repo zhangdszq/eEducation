@@ -48,7 +48,7 @@ public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAtt
                 if (UserConfig.getRole() == Constant.Role.TEACHER) {
                     student.isMuteAudio = !student.isMuteAudio;
                     myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
-                    chatManager().mute(!student.isMuteAudio, Mute.AUDIO, student.streamId);
+                    chatManager().mute(student.isMuteAudio, Mute.AUDIO, student.streamId);
                 } else {
                     ToastUtil.showShort("Sorry, only the teacher can mute someone.");
                 }
@@ -62,7 +62,7 @@ public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAtt
                 if (UserConfig.getRole() == Constant.Role.TEACHER) {
                     student.isMuteVideo = !student.isMuteVideo;
                     myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
-                    chatManager().mute(!student.isMuteVideo, Mute.VIDEO, student.streamId);
+                    chatManager().mute(student.isMuteVideo, Mute.VIDEO, student.streamId);
                 } else {
                     ToastUtil.showShort("Sorry, only the teacher can mute someone.");
                 }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.bean.Mute;
 import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.constant.Constant;
@@ -78,6 +79,16 @@ public class VideoCallFragment extends BaseFragment {
             public void onUserOffline(int uid, int reason) {
                 super.onUserOffline(uid, reason);
                 log.d("onUserOffline:" + (uid & 0xFFFFFFFFL));
+            }
+
+            @Override
+            public void onUserEnableLocalVideo(int uid, boolean enabled) {
+
+            }
+
+            @Override
+            public void onUserMuteAudio(int uid, boolean muted) {
+
             }
         });
 
@@ -142,7 +153,7 @@ public class VideoCallFragment extends BaseFragment {
 
             RtmRoomControl.UserAttr myAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
             if (myAttr != null) {
-                rtcEngine().muteLocalVideoStream(myAttr.isMuteVideo);
+                rtcEngine().enableLocalVideo(!myAttr.isMuteVideo);
                 rtcEngine().muteLocalAudioStream(myAttr.isMuteAudio);
             }
         } else if (event instanceof Event) {
@@ -157,10 +168,13 @@ public class VideoCallFragment extends BaseFragment {
         } else if (event instanceof MuteEvent) {
             MuteEvent muteEvent = (MuteEvent) event;
             RtmRoomControl.UserAttr attr = muteEvent.getUserAttr();
-            RtmRoomControl.UserAttr attr1 = mRcvAdapter.getList().get(0);
-            log.i("attr:" + attr.hashCode() + ", attr1:" + attr1.hashCode());
             if (attr != null) {
                 mRcvAdapter.updateItemById(attr.streamId, attr);
+                if (Mute.AUDIO.equals(muteEvent.muteType)) {
+                    rtcEngine().muteLocalAudioStream(attr.isMuteAudio);
+                } else if (Mute.VIDEO.equals(muteEvent.muteType)) {
+                    rtcEngine().enableLocalVideo(!attr.isMuteVideo);
+                }
             }
         }
     }

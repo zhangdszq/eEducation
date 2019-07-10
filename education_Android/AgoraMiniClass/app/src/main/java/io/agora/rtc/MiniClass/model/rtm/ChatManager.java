@@ -220,7 +220,17 @@ public class ChatManager {
 
     public void leaveChannel() {
         if (mRtmChannel != null) {
-            mRtmChannel.leave(null);
+            mRtmChannel.leave(new ResultCallback<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    log.d("leave success");
+                }
+
+                @Override
+                public void onFailure(ErrorInfo errorInfo) {
+
+                }
+            });
             mRtmChannel.release();
             mRtmChannel = null;
         }
@@ -230,7 +240,7 @@ public class ChatManager {
         Mute mute = new Mute();
         mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
         mute.args = new Mute.Args();
-        mute.args.uid = streamId;
+//        mute.args.uid = streamId;
         mute.args.target = new ArrayList<>();
         mute.args.target.add(streamId);
         mute.args.type = type;

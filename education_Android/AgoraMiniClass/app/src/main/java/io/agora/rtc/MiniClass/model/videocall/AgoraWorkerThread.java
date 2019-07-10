@@ -93,7 +93,7 @@ public class AgoraWorkerThread extends HandlerThread {
             @Override
             public void run() {
 
-                mRtcEngine.enableAudioVolumeIndication(200, 3); // 200 ms
+//                mRtcEngine.enableAudioVolumeIndication(200, 3); // 200 ms
                 mRtcEngine.setClientRole(role);
 
                 if (localView != null) {
@@ -106,6 +106,8 @@ public class AgoraWorkerThread extends HandlerThread {
                         VideoEncoderConfiguration.STANDARD_BITRATE,
                         VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE
                 ));
+
+                mRtcEngine.setParameters("{\"rtc.force_unified_communication_mode\":true}");
 
                 mRtcEngine.joinChannel(null, channel, "", uid);
                 log.d("joinChannel " + channel + " " + uid);
