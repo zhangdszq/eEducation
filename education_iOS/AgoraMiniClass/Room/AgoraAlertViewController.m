@@ -42,8 +42,12 @@
 {
     return NO;
 }
+
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskLandscapeRight;
+}
+- (void)dealloc {
+    NSLog(@"AgoraAlertViewController is   Dealloc");
 }
 @end
