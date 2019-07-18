@@ -1,5 +1,6 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +20,10 @@ import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
 import io.agora.rtc.MiniClass.model.event.MuteEvent;
 import io.agora.rtc.MiniClass.model.event.UpdateMembersEvent;
+import io.agora.rtc.MiniClass.model.util.ToastUtil;
 import io.agora.rtc.MiniClass.ui.adapter.RcvStudentListAdapter;
+import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.ResultCallback;
 
 
 public class StudentListFrament extends BaseFragment {
@@ -58,7 +62,7 @@ public class StudentListFrament extends BaseFragment {
     }
 
     @Override
-    public void onActivityEvent(BaseEvent event) {
+    public void onActivityMainThreadEvent(BaseEvent event) {
         if (event instanceof UpdateMembersEvent) {
             UpdateMembersEvent myEvent = (UpdateMembersEvent) event;
             if (myEvent.getTeacherAttr() != null && UserConfig.getRtmUserId().equals(myEvent.getTeacherAttr().streamId)) {
@@ -105,14 +109,26 @@ public class StudentListFrament extends BaseFragment {
         });
     }
 
+    ResultCallback<Void> resultCallback = new ResultCallback<Void>() {
+        @Override
+        public void onSuccess(Void aVoid) {
+
+        }
+
+        @Override
+        public void onFailure(ErrorInfo errorInfo) {
+            ToastUtil.showErrorShortFromSubThread((Activity) mListener, R.string.send_message_failed);
+        }
+    };
+
     private void muteAll(boolean isMute) {
         List<RtmRoomControl.UserAttr> attrList = UserConfig.getChannelStudentsAttrsList();
         List<String> uidList = new ArrayList<>();
         for (RtmRoomControl.UserAttr attr: attrList) {
             uidList.add(attr.streamId);
         }
-        chatManager().muteArray(isMute, Mute.VIDEO, uidList);
-        chatManager().muteArray(isMute, Mute.AUDIO, uidList);
+        rtmManager().muteArray(isMute, Mute.VIDEO, uidList, resultCallback);
+        rtmManager().muteArray(isMute, Mute.AUDIO, uidList, resultCallback);
     }
 
 }

@@ -5,6 +5,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +16,14 @@ import java.util.List;
 
 import io.agora.rtc.MiniClass.BuildConfig;
 import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.bean.ChannelAttrUpdatedResponse;
+import io.agora.rtc.MiniClass.model.bean.ChannelMessage;
 import io.agora.rtc.MiniClass.model.bean.JoinRequest;
+import io.agora.rtc.MiniClass.model.bean.JoinSuccessResponse;
+import io.agora.rtc.MiniClass.model.bean.MemberJoined;
 import io.agora.rtc.MiniClass.model.bean.Mute;
 import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
+import io.agora.rtc.MiniClass.model.bean.UpdateChannelAttr;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.util.LogUtil;
 import io.agora.rtm.ErrorInfo;
@@ -28,19 +37,19 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ChatManager {
-    private final LogUtil log = new LogUtil("ChatManager");
+public class RtmManager {
+    private final LogUtil log = new LogUtil("RtmManager");
 
     private Context mContext;
     private RtmClient mRtmClient;
-    private List<RtmClientListener> mListenerList = new ArrayList<>();
-    private ChatDemoAPI chatDemoAPI = new ChatDemoAPI();
+    private List<MyRtmClientListener> mListenerList = new ArrayList<>();
+    private RtmDemoAPI chatDemoAPI = new RtmDemoAPI();
 
-    public ChatDemoAPI getChatDemoAPI() {
+    public RtmDemoAPI getRtmDemoAPI() {
         return chatDemoAPI;
     }
 
-    public ChatManager(Context context) {
+    public RtmManager(Context context) {
         mContext = context;
     }
 
@@ -48,7 +57,7 @@ public class ChatManager {
         @Override
         public void onConnectionStateChanged(int state, int reason) {
             log.i("state:" + state + ",reason:" + reason);
-            for (RtmClientListener listener : mListenerList) {
+            for (MyRtmClientListener listener : mListenerList) {
                 if (listener != null)
                     listener.onConnectionStateChanged(state, reason);
             }
@@ -57,9 +66,78 @@ public class ChatManager {
         @Override
         public void onMessageReceived(RtmMessage rtmMessage, String peerId) {
             log.i("msgArgs:" + rtmMessage.getText() + ", peerId：" + peerId);
-            for (RtmClientListener listener : mListenerList) {
-                if (listener != null)
-                    listener.onMessageReceived(rtmMessage, peerId);
+
+            String s = rtmMessage.getText();
+            if (TextUtils.equals(peerId, UserConfig.getRtmServerId())) {
+                try {
+                    JSONObject object = new JSONObject(s);
+                    String name = object.getString("name");
+                    if ("JoinSuccess".equals(name)) {
+                        JoinSuccessResponse response = new Gson().fromJson(s, JoinSuccessResponse.class);
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onJoinSuccess(response);
+                        }
+                    } else if ("ChannelMessage".equals(name)) {
+                        ChannelMessage msg = new Gson().fromJson(s, ChannelMessage.class);
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onChannelMsg(msg);
+                        }
+
+                    } else if ("MemberJoined".equals(name)) {
+                        MemberJoined joined = new Gson().fromJson(s, MemberJoined.class);
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onMemberJoined(joined);
+                        }
+
+                    } else if ("MemberLeft".equals(name)) {
+                        JsonObject o = new Gson().fromJson(s, JsonObject.class);
+                        String uid = o.getAsJsonObject("args").get("uid").getAsString();
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onMemberLeft(uid);
+                        }
+
+                    } else if (Mute.MUTE_RESPONSE.equals(name) || Mute.UN_MUTE_RESPONSE.equals(name)) {
+                        Mute mute = new Gson().fromJson(s, Mute.class);
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onMute(mute);
+                        }
+
+                    } else if ("ChannelAttrUpdated".equals(name)) {
+                        ChannelAttrUpdatedResponse channelAttrUpdatedResponse = new Gson().fromJson(s, ChannelAttrUpdatedResponse.class);
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onChannelAttrUpdate(channelAttrUpdatedResponse);
+                        }
+
+                    } else if ("JoinFailure".equals(name)) {
+                        JsonObject o = new Gson().fromJson(s, JsonObject.class);
+                        String info = o.getAsJsonObject("args").get("info").getAsString();
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onJoinFailure(info);
+                        }
+                    } else {
+
+                        for (MyRtmClientListener listener : mListenerList) {
+                            if (listener != null)
+                                listener.onMessageReceived(rtmMessage, peerId);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -236,7 +314,7 @@ public class ChatManager {
         }
     }
 
-    public void mute(boolean isMute, String type, String streamId) {
+    public void mute(boolean isMute, String type, String streamId, ResultCallback<Void> callback) {
         Mute mute = new Mute();
         mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
         mute.args = new Mute.Args();
@@ -245,17 +323,33 @@ public class ChatManager {
         mute.args.target.add(streamId);
         mute.args.type = type;
 
-        sendChatMsg(UserConfig.getRtmServerId(), mute);
+        sendChatMsg(mute, callback);
     }
 
-    public void muteArray(boolean isMute, String type, List<String> target) {
+    public void muteArray(boolean isMute, String type, List<String> target, ResultCallback<Void> callback) {
         Mute mute = new Mute();
         mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
         mute.args = new Mute.Args();
         mute.args.target = target;
         mute.args.type = type;
 
-        sendChatMsg(UserConfig.getRtmServerId(), mute);
+        sendChatMsg(mute, callback);
+    }
+
+    public void updateChannelAttr(RtmRoomControl.ChannelAttr channelAttr, ResultCallback<Void> callback) {
+        RtmMessage msg = mRtmClient.createMessage();
+
+        UpdateChannelAttr attr = new UpdateChannelAttr();
+        attr.args = new UpdateChannelAttr.Args();
+        attr.args.channelAttr = channelAttr;
+
+        Gson gson = new Gson();
+        String json = gson.toJson(attr);
+        msg.setText(json);
+
+        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), msg, callback);
+
+        log.i("updateChannelAttr:" + json);
     }
 
     public interface LoginStatusListener {
@@ -266,16 +360,26 @@ public class ChatManager {
         return mRtmClient;
     }
 
-    public void registerListener(RtmClientListener listener) {
+    public void registerListener(MyRtmClientListener listener) {
         mListenerList.add(listener);
     }
 
-    public void unregisterListener(RtmClientListener listener) {
+    public interface MyRtmClientListener extends RtmClientListener {
+        void onJoinSuccess(JoinSuccessResponse joinSuccessResponse);
+        void onMute(Mute mute);
+        void onChannelAttrUpdate(ChannelAttrUpdatedResponse channelAttrUpdated);
+        void onMemberJoined(MemberJoined memberJoined);
+        void onMemberLeft(String uid);
+        void onChannelMsg(ChannelMessage msg);
+        void onJoinFailure(String failInfo);
+    }
+
+    public void unregisterListener(MyRtmClientListener listener) {
         mListenerList.remove(listener);
     }
 
 
-    public void sendJoinMsg(String rtmId, ResultCallback callback) {
+    public void sendJoinMsg(ResultCallback<Void> callback) {
         RtmMessage msg = mRtmClient.createMessage();
         JoinRequest bean = new JoinRequest();
         bean.args = new JoinRequest.Args();
@@ -291,12 +395,12 @@ public class ChatManager {
         String json = gson.toJson(bean);
         msg.setText(json);
 
-        mRtmClient.sendMessageToPeer(rtmId, msg, callback);
+        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), msg, callback);
 
-        log.i("send message:" + json + ", peerId: " + rtmId);
+        log.i("send message:" + json + ", peerId: " + UserConfig.getRtmServerId());
     }
 
-    public void sendChatMsg(String rtmId, Object msg) {
+    public void sendChatMsg(Object msg, final ResultCallback<Void> callback) {
         if (msg == null)
             return;
 
@@ -305,15 +409,18 @@ public class ChatManager {
         String json = new Gson().toJson(msg);
         log.d("send:" + json);
         rtmMessage.setText(json);
-        mRtmClient.sendMessageToPeer(rtmId, rtmMessage, new ResultCallback<Void>() {
+        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), rtmMessage, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 log.d("send channel msgArgs success.");
+                if (callback != null)
+                    callback.onSuccess(null);
             }
 
             @Override
             public void onFailure(ErrorInfo errorInfo) {
                 log.d("send channel msgArgs fail." + errorInfo.toString());
+                callback.onFailure(errorInfo);
             }
         });
     }

@@ -1,5 +1,6 @@
 package io.agora.rtc.MiniClass.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,18 +13,18 @@ import io.agora.rtc.MiniClass.AGApplication;
 import io.agora.rtc.MiniClass.R;
 import io.agora.rtc.MiniClass.model.bean.Mute;
 import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
-import io.agora.rtc.MiniClass.model.bean.StudentIMBean;
-import io.agora.rtc.MiniClass.model.bean.StudentVideoBean;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.constant.Constant;
-import io.agora.rtc.MiniClass.model.rtm.ChatManager;
+import io.agora.rtc.MiniClass.model.rtm.RtmManager;
 import io.agora.rtc.MiniClass.model.util.ToastUtil;
+import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.ResultCallback;
 
 public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAttr, RcvStudentListAdapter.MyViewHolder> {
     private Context mContext;
 
-    private ChatManager chatManager() {
-        return AGApplication.the().getChatManager();
+    private RtmManager rtmManager() {
+        return AGApplication.the().getRtmManager();
     }
 
     @NonNull
@@ -48,7 +49,18 @@ public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAtt
                 if (UserConfig.getRole() == Constant.Role.TEACHER) {
                     student.isMuteAudio = !student.isMuteAudio;
                     myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
-                    chatManager().mute(student.isMuteAudio, Mute.AUDIO, student.streamId);
+                    rtmManager().mute(student.isMuteAudio, Mute.AUDIO, student.streamId, new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                        }
+
+                        @Override
+                        public void onFailure(ErrorInfo errorInfo) {
+                            if (mContext instanceof Activity) {
+                                ToastUtil.showErrorShortFromSubThread((Activity) mContext, R.string.send_message_failed);
+                            }
+                        }
+                    });
                 } else {
                     ToastUtil.showShort("Sorry, only the teacher can mute someone.");
                 }
@@ -62,7 +74,18 @@ public class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAtt
                 if (UserConfig.getRole() == Constant.Role.TEACHER) {
                     student.isMuteVideo = !student.isMuteVideo;
                     myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
-                    chatManager().mute(student.isMuteVideo, Mute.VIDEO, student.streamId);
+                    rtmManager().mute(student.isMuteVideo, Mute.VIDEO, student.streamId, new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                        }
+
+                        @Override
+                        public void onFailure(ErrorInfo errorInfo) {
+                            if (mContext instanceof Activity) {
+                                ToastUtil.showErrorShortFromSubThread((Activity) mContext, R.string.send_message_failed);
+                            }
+                        }
+                    });
                 } else {
                     ToastUtil.showShort("Sorry, only the teacher can mute someone.");
                 }

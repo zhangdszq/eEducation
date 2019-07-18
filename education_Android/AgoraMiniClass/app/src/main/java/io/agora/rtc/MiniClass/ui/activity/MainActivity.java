@@ -1,38 +1,20 @@
 package io.agora.rtc.MiniClass.ui.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import io.agora.rtc.MiniClass.AGApplication;
 import io.agora.rtc.MiniClass.R;
-import io.agora.rtc.MiniClass.model.config.UserConfig;
-import io.agora.rtc.MiniClass.model.constant.Constant;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
-import io.agora.rtc.MiniClass.model.event.SimpleEvent;
-import io.agora.rtc.MiniClass.model.rtm.ChatManager;
-import io.agora.rtc.MiniClass.model.util.AppUtil;
 import io.agora.rtc.MiniClass.ui.fragment.BaseFragment;
 import io.agora.rtc.MiniClass.ui.fragment.PreviewFragment;
 import io.agora.rtc.MiniClass.ui.fragment.HomeFragment;
 import io.agora.rtc.MiniClass.ui.fragment.LastMileFragment;
-import io.agora.rtm.ErrorInfo;
-import io.agora.rtm.ResultCallback;
-import io.agora.rtm.RtmClient;
-import io.agora.rtm.internal.RtmManager;
 
 public class MainActivity extends BaseActivity {
 
-    private static final int PEMISSION_REQUEST_CODE = 101;
 
     private Fragment showingFragment;
     private BaseFragment homeFragment;
@@ -48,25 +30,6 @@ public class MainActivity extends BaseActivity {
         ivBtnBack = findViewById(R.id.iv_btn_back);
         showHomeFragment();
 
-        String[] needPermissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        if (AppUtil.checkAndRequestAppPermission(this, needPermissions, PEMISSION_REQUEST_CODE)) {
-            ((AGApplication) getApplication()).initWorkerThread();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != PEMISSION_REQUEST_CODE)
-            return;
-
-        for (int grantResult : grantResults) {
-            if (grantResult != PackageManager.PERMISSION_GRANTED)
-                finish();
-        }
-
-        ((AGApplication) getApplication()).initWorkerThread();
     }
 
     @Override
@@ -82,7 +45,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onFragmentEvent(BaseEvent event) {
+    public void onFragmentMainThreadEvent(BaseEvent event) {
         if (event instanceof HomeFragment.Event) {
             if (event.getEventType() == HomeFragment.Event.EVENT_TYPE_CLICK_JOIN) {
 //                showPreviewFragment();
@@ -114,7 +77,7 @@ public class MainActivity extends BaseActivity {
         ivBtnBack.setVisibility(View.GONE);
         showFragment(homeFragment);
 
-        chatManager().logout();
+        rtmManager().logout();
     }
 
     private void showPreviewFragment() {

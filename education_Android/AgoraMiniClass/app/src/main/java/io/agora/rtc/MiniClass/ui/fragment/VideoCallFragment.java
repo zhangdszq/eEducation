@@ -24,6 +24,7 @@ import io.agora.rtc.MiniClass.model.event.BaseEvent;
 import io.agora.rtc.MiniClass.model.event.MuteEvent;
 import io.agora.rtc.MiniClass.model.event.UpdateMembersEvent;
 import io.agora.rtc.MiniClass.model.util.LogUtil;
+import io.agora.rtc.MiniClass.ui.activity.MiniClassActivity;
 import io.agora.rtc.MiniClass.ui.adapter.RcvStudentVideoListAdapter;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
@@ -62,22 +63,21 @@ public class VideoCallFragment extends BaseFragment {
     }
 
     private void initAgoraRTC() {
-        workerThread().setRtcEventHandler(new IRtcEngineEventHandler() {
+        rtcWorkerThread().setRtcEventHandler(new IRtcEngineEventHandler() {
             @Override
             public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-                super.onJoinChannelSuccess(channel, uid, elapsed);
-                log.d("join rtc success");
+                log.d("join in rtc success");
+
+                notifyJoinChannelState(MiniClassActivity.JOIN_STATE_JOIN_SUCCESS);
             }
 
             @Override
             public void onUserJoined(int uid, int elapsed) {
-                super.onUserJoined(uid, elapsed);
                 log.d("onUserJoined:" + (uid & 0xFFFFFFFFL));
             }
 
             @Override
             public void onUserOffline(int uid, int reason) {
-                super.onUserOffline(uid, reason);
                 log.d("onUserOffline:" + (uid & 0xFFFFFFFFL));
             }
 
@@ -87,8 +87,23 @@ public class VideoCallFragment extends BaseFragment {
             }
 
             @Override
-            public void onUserMuteAudio(int uid, boolean muted) {
+            public void onUserMuteVideo(int uid, boolean muted) {
+                if (mListener != null) {
+                    Event muteVideoEvent = new Event(Event.EVENT_TYPE_MUTE_VIDEO_FROM_RTC);
+                    muteVideoEvent.bool1 = muted;
+                    muteVideoEvent.text1 = String.valueOf(uid & 0xFFFFFFFFL);
+                    mListener.onFragmentEvent(muteVideoEvent);
+                }
+            }
 
+            @Override
+            public void onUserMuteAudio(int uid, boolean muted) {
+                if (mListener != null) {
+                    Event muteAudioEvent = new Event(Event.EVENT_TYPE_MUTE_VIDEO_FROM_RTC);
+                    muteAudioEvent.bool1 = muted;
+                    muteAudioEvent.text1 = String.valueOf(uid & 0xFFFFFFFFL);
+                    mListener.onFragmentEvent(muteAudioEvent);
+                }
             }
         });
 
@@ -103,7 +118,7 @@ public class VideoCallFragment extends BaseFragment {
             rtcRole = Constants.CLIENT_ROLE_AUDIENCE;
         }
 
-        workerThread().joinChannel(rtcRole, UserConfig.getRtcChannelName(), UserConfig.getRtcUserId(), null);
+        rtcWorkerThread().joinChannel(rtcRole, UserConfig.getRtcChannelName(), UserConfig.getRtcUserId(), null);
     }
 
     private void initStudentsLayout(final View root) {
@@ -122,24 +137,28 @@ public class VideoCallFragment extends BaseFragment {
             return;
         }
 
-        mIvBgTeacher.setVisibility(View.GONE);
-        SurfaceView teacherView = RtcEngine.CreateRendererView((Context) mListener);
-        int teacherUid = Integer.parseInt(teacherAttr.streamId);
-
-        if (teacherUid == UserConfig.getRtcUserId()) {
-            rtcEngine().setupLocalVideo(new VideoCanvas(teacherView));
-        } else {
-            rtcEngine().setupRemoteVideo(new VideoCanvas(teacherView, Constants.RENDER_MODE_HIDDEN, teacherUid));
-        }
-
-        teacherView.setZOrderMediaOverlay(true);
         mFlTeacherVideo.removeAllViews();
-        mFlTeacherVideo.addView(teacherView);
-        mTvTeacherName.setText(teacherAttr.name);
+        if (teacherAttr.isMuteVideo) {
+            mIvBgTeacher.setVisibility(View.VISIBLE);
+        } else {
+            mIvBgTeacher.setVisibility(View.GONE);
+            SurfaceView teacherView = RtcEngine.CreateRendererView((Context) mListener);
+            int teacherUid = Integer.parseInt(teacherAttr.streamId);
+
+            if (teacherUid == UserConfig.getRtcUserId()) {
+                rtcEngine().setupLocalVideo(new VideoCanvas(teacherView));
+            } else {
+                rtcEngine().setupRemoteVideo(new VideoCanvas(teacherView, Constants.RENDER_MODE_HIDDEN, teacherUid));
+            }
+
+            teacherView.setZOrderMediaOverlay(true);
+            mFlTeacherVideo.addView(teacherView);
+            mTvTeacherName.setText(teacherAttr.name);
+        }
     }
 
     @Override
-    public void onActivityEvent(BaseEvent event) {
+    public void onActivityMainThreadEvent(BaseEvent event) {
         if (event instanceof UpdateMembersEvent) {
             UpdateMembersEvent updateMembersEvent = (UpdateMembersEvent) event;
 
@@ -153,7 +172,7 @@ public class VideoCallFragment extends BaseFragment {
 
             RtmRoomControl.UserAttr myAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
             if (myAttr != null) {
-                rtcEngine().enableLocalVideo(!myAttr.isMuteVideo);
+                rtcEngine().muteLocalVideoStream(myAttr.isMuteVideo);
                 rtcEngine().muteLocalAudioStream(myAttr.isMuteAudio);
             }
         } else if (event instanceof Event) {
@@ -169,11 +188,19 @@ public class VideoCallFragment extends BaseFragment {
             MuteEvent muteEvent = (MuteEvent) event;
             RtmRoomControl.UserAttr attr = muteEvent.getUserAttr();
             if (attr != null) {
-                mRcvAdapter.updateItemById(attr.streamId, attr);
-                if (Mute.AUDIO.equals(muteEvent.muteType)) {
-                    rtcEngine().muteLocalAudioStream(attr.isMuteAudio);
-                } else if (Mute.VIDEO.equals(muteEvent.muteType)) {
-                    rtcEngine().enableLocalVideo(!attr.isMuteVideo);
+                if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
+                    updateTeacher(attr);
+                } else {
+                    if (Mute.AUDIO.equals(muteEvent.muteType)) {
+                        if (UserConfig.getRtmUserId().equals(attr.streamId)) {
+                            rtcEngine().muteLocalAudioStream(attr.isMuteAudio);
+                        }
+                    } else if (Mute.VIDEO.equals(muteEvent.muteType)) {
+                        if (UserConfig.getRtmUserId().equals(attr.streamId)) {
+                            rtcEngine().muteLocalVideoStream(attr.isMuteVideo);
+                        }
+                        mRcvAdapter.updateItemById(attr.streamId, attr);
+                    }
                 }
             }
         }
@@ -191,10 +218,22 @@ public class VideoCallFragment extends BaseFragment {
         rtcEngine().stopPreview();
     }
 
+    private void notifyJoinChannelState(int joinStateJoinSuccess) {
+        if (mListener != null) {
+            Event event = new Event(Event.EVENT_TYPE_NOTIFY_JOIN_STATE);
+            event.value1 = joinStateJoinSuccess;
+            mListener.onFragmentEvent(event);
+        }
+    }
+
     public static class Event extends BaseEvent {
 
         public static final int EVENT_TYPE_MIN = 104;
         public static final int EVENT_TYPE_MAX = 105;
+        public static final int EVENT_TYPE_NOTIFY_JOIN_STATE = 106;
+
+        public static final int EVENT_TYPE_MUTE_AUDIO_FROM_RTC = 108;
+        public static final int EVENT_TYPE_MUTE_VIDEO_FROM_RTC = 109;
 
         public Event(int eventType) {
             super(eventType);

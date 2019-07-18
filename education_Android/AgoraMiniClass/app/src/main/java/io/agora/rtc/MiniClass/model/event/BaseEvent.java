@@ -7,6 +7,7 @@ public abstract class BaseEvent {
     public int value2;
     public String text1;
     public String text2;
+    public boolean bool1;
 
     public BaseEvent(int eventType) {
         this.eventType = eventType;
