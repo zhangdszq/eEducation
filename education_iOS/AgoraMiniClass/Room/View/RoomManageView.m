@@ -12,14 +12,12 @@
 #import "MessageListView.h"
 #import "MemberListViewCell.h"
 #import "RoomMessageModel.h"
-#import "ChatTextView.h"
 
-@interface RoomManageView ()
+@interface RoomManageView ()<UITextFieldDelegate>
 @property (nonatomic, weak) UIButton *selectButton;
 @property (nonatomic, strong) NSMutableArray *messageArray;
 @property (nonatomic, weak) UIButton *unmuteAllButton;
 @property (nonatomic, weak) UIButton *muteAllButton;
-@property (nonatomic, weak) ChatTextView *chatTextView;
 @end
 
 @implementation RoomManageView
@@ -30,16 +28,17 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        [self setViewFormat];
+        [self setUpView];
     }
     return self;
 }
 
-- (void)setViewFormat {
+- (void)setUpView {
+    self.layer.cornerRadius = 2;
+    self.clipsToBounds = YES;
     UIButton *button = [self viewWithTag:1001];
     [self layoutButton:button selected:NO];
 
-    self.chatTextView = [self viewWithTag:600];
 
     MessageListView *messageListView = [self viewWithTag:100];
     MemberListView *memberListView = [self viewWithTag:101];
@@ -87,7 +86,6 @@
         MemberListView *memberListView = [self viewWithTag:101];
         messageListView.hidden = NO;
         memberListView.hidden = YES;
-        self.chatTextView.hidden = NO;
         self.unmuteAllButton.hidden = YES;
         self.muteAllButton.hidden = YES;
     }else {
@@ -98,11 +96,13 @@
         MemberListView *memberListView = [self viewWithTag:101];
         messageListView.hidden = YES;
         memberListView.hidden = NO;
-        self.chatTextView.hidden = YES;
         self.unmuteAllButton.hidden = self.classRoomRole == ClassRoomRoleTeacther ? NO : YES;
         self.muteAllButton.hidden = self.classRoomRole == ClassRoomRoleTeacther ? NO : YES;
     }
     [self layoutButton:sender selected:sender.selected];
+    if (self.topButtonType) {
+        self.topButtonType(sender);
+    }
 }
 
 - (void)layoutButton:(UIButton *)button selected:(BOOL)selected{
@@ -110,11 +110,15 @@
         button.layer.borderWidth = 0;
         [button setTitleColor:RCColorWithValue(0x007AFF, 1.f) forState:(UIControlStateNormal)];
         [button setBackgroundColor:RCColorWithValue(0xFFFFFF, 1.f)];
+        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13]];
+        [button.titleLabel setFont:[UIFont systemFontOfSize:13 weight:(UIFontWeightMedium)]];
     }else {
         button.layer.borderWidth = 1;
         button.layer.borderColor = RCColorWithValue(0xE8E8E8, 1).CGColor;
         [button setTitleColor:RCColorWithValue(0x999999, 1.f) forState:(UIControlStateNormal)];
         [button setBackgroundColor:RCColorWithValue(0xFAFAFA, 1.f)];
+        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13]];
+        [button.titleLabel setFont:[UIFont systemFontOfSize:13 weight:(UIFontWeightRegular)]];
     }
 }
 

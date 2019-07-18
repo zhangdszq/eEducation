@@ -63,8 +63,13 @@
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor grayColor];
+    UIImageView *backImageView = [[UIImageView alloc] init];
+    backImageView.frame = cell.contentView.bounds;
+    [cell.contentView addSubview:backImageView];
+    backImageView.image = [UIImage imageNamed:@"videoBackgroundImage"];
+    backImageView.backgroundColor = RCColorWithValue(0x666666, 1.0);
     if (self.studentVideoList) {
-        self.studentVideoList(cell,indexPath);
+        self.studentVideoList(backImageView,indexPath);
     }
     UILabel *nameLable = [self addNameLabel];
     [cell addSubview:nameLable];

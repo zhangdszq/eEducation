@@ -29,10 +29,6 @@
     }];
 }
 
-
-/**
- *  返回result 数据模型
- */
 - (void)postResultWithUrl:(NSString *)url param:(id)param
               resultClass:(Class)resultClass
                   success:(void (^)(id result))success
@@ -40,7 +36,6 @@
                   failure:(void (^)(NSError *error))failure
              tokenInvalid:(void (^)(void))tokenInvalid
 {
-    
     [self postBaseWithUrl:url param:param resultClass:resultClass
                   success:^(id responseObj) {
                       if (!resultClass) {
@@ -54,10 +49,6 @@
              tokenInvalid:tokenInvalid];
 }
 
-
-/**
- *  数据模型基类方法
- */
 - (void)postBaseWithUrl:(NSString *)url param:(id)param
             resultClass:(Class)resultClass
                 success:(void (^)(id result))success
@@ -65,8 +56,6 @@
                 failure:(void (^)(NSError *error))failure
            tokenInvalid:(void (^)(void))tokenInvalid
 {
-//    url = [NSString stringWithFormat:@"%@%@",Host,url];
-    //状态栏菊花
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     AgoraHttpRequest *httpRequest = [[AgoraHttpRequest alloc]init];
     [httpRequest post:url params:param success:^(id responseObj) {
@@ -74,13 +63,11 @@
             NSDictionary *dictData = [NSJSONSerialization JSONObjectWithData:responseObj options:kNilOptions error:nil];
             success(dictData);
         }
-        //状态栏菊花
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);
         }
-        //状态栏菊花
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     }];
 }

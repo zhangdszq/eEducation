@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "RoomUserModel.h"
 
-typedef void(^ StudentVideoList)(UICollectionViewCell * _Nonnull cell, NSIndexPath * _Nullable indexPath);
+typedef void(^ StudentVideoList)(UIImageView *imageView, NSIndexPath * _Nullable indexPath);
 
 
 NS_ASSUME_NONNULL_BEGIN

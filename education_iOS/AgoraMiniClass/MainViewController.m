@@ -15,7 +15,7 @@
 #import "NetworkViewController.h"
 
 
-@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate>
+@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
@@ -38,8 +38,7 @@
 @implementation MainViewController
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.agoraRtmKit.agoraRtmDelegate = self;
-    self.agoraRtmChannel.channelDelegate = self;
+    self.roomDataManager.classRoomManagerDelegate = self;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -60,7 +59,15 @@
     self.activityIndicator.color = [UIColor grayColor];
     self.activityIndicator.backgroundColor = [UIColor whiteColor];
     self.activityIndicator.hidesWhenStopped = YES;
+
+    self.baseView.layer.cornerRadius = 12;
+
+    self.studentButton.selected = YES;
+    [self setButtonStyle:self.studentButton];
+    self.classRoomRole = ClassRoomRoleStudent;
+    self.roomDataManager.roomRole = ClassRoomRoleStudent;
 }
+
 - (void)setAllButtonStyle {
     [self setButtonStyle:self.teactherButton];
     [self setButtonStyle:self.studentButton];
@@ -79,17 +86,18 @@
 
 - (void)joinRtm {
     self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:kAgoraAppid delegate:self];
-    self.roomDataManager.agoraRtmKit = self.agoraRtmKit;
+    WEAK(self)
     [self.agoraRtmKit loginByToken:nil user:self.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
-
+        weakself.roomDataManager.agoraRtmKit = weakself.agoraRtmKit;
     }];
 }
 
 - (void)joinRtmChannel {
     self.agoraRtmChannel  =  [self.agoraRtmKit createChannelWithId:self.className delegate:self];
-    self.roomDataManager.agoraRtmChannel = self.agoraRtmChannel;
+    WEAK(self)
     [self.agoraRtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        NSLog(@"---------------  %ld",errorCode);
+        NSLog(@"---------------  %ld",(long)errorCode);
+        weakself.roomDataManager.agoraRtmChannel = weakself.agoraRtmChannel;
     }];
 }
 
@@ -112,6 +120,7 @@
     if (button.selected == YES) {
         [button setBackgroundColor:RCColorWithValue(0x006EDE, 1)];
         [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:16]];
 
     }else {
         [button setBackgroundColor:[UIColor whiteColor]];
@@ -161,7 +170,6 @@
 - (void)presentNextViewController {
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     NetworkViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"network"];
-    self.roomDataManager.memberArray = self.userArray.mutableCopy;
     [self presentViewController:roomVC animated:YES completion:nil];
 }
 
@@ -170,59 +178,18 @@
 
 }
 
-- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId {
-
-    if ([peerId isEqualToString:self.serverRtmId]) {
-        NSString *messageStr = message.text;
-        NSDictionary *messageDict  =  [JsonAndStringConversions dictionaryWithJsonString:messageStr];
-        if ([[messageDict objectForKey:@"name"] isEqualToString:@"JoinSuccess"]) {
-            NSDictionary *argsDict = messageDict[@"args"];
-            NSArray *memberArray = argsDict[@"members"];
-            self.userArray = [NSMutableArray array];
-            for (NSDictionary *memberDict in memberArray) {
-                RoomUserModel *userModel = [RoomUserModel yy_modelWithDictionary:memberDict];
-                [self.userArray addObject:userModel];
-            }
-            NSDictionary *channelAttr = argsDict[@"channelAttr"];
-             AgoraHttpRequest *request = [[AgoraHttpRequest alloc] init];
-             WEAK(self)
-            if ([channelAttr isEqual:[NSNull null]]) {
-                NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.className,@"name",@"100",@"limit", nil];
-                [request post:kGetWhiteBoardUuid params:params success:^(id responseObj) {
-                    [weakself.activityIndicator stopAnimating];
-                    NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
-                    if ([responseObject[@"code"] integerValue] == 200) {
-                        NSDictionary *roomDict = responseObject[@"msg"][@"room"];
-                        weakself.roomDataManager.uuid = roomDict[@"uuid"];
-                        weakself.roomDataManager.roomToken = responseObject[@"msg"][@"roomToken"];
-                        [weakself presentNextViewController];
-                    }
-                } failure:^(NSError *error) {
-                    [weakself.activityIndicator stopAnimating];
-                }];
-            }else {
-                NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[channelAttr objectForKey:@"whiteboardId"],@"uuid", nil];
-                 self.roomDataManager.uuid = [channelAttr objectForKey:@"whiteboardId"];
-                [request post:kGetWhiteBoardRoomToken params:params success:^(id responseObj) {
-                    [weakself.activityIndicator stopAnimating];
-                    NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
-                    if ([responseObject[@"code"] integerValue] == 200) {
-                        weakself.roomDataManager.roomToken = responseObject[@"msg"][@"roomToken"];
-                        [weakself presentNextViewController];
-                    }
-                } failure:^(NSError *error) {
-                     [weakself.activityIndicator stopAnimating];
-                }];
-            }
-        }else {
-            NSDictionary *argsDict = messageDict[@"args"];
-        }
-    }
-}
-
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
     NSLog(@"%@----- %@",member.userId,member.channelId);
+}
 
+#pragma mark -------------------- ClassRoomDelegate -----------
+- (void)joinClassRoomError {
+    [self.activityIndicator stopAnimating];
+}
+
+- (void)joinClassRoomSuccess {
+    [self.activityIndicator stopAnimating];
+    [self presentNextViewController];
 }
 
 #pragma mark --------------------- GET ---------------------
@@ -239,16 +206,26 @@
         NSString * str  =[[NSString alloc] initWithData:responseObj encoding:NSUTF8StringEncoding];
         weakself.roomDataManager.serverRtmId = str;
         weakself.serverRtmId = str;
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@(weakself.classRoomRole),@"role",weakself.userName,@"name",[weakself getJoinChannelUid],@"streamId", nil];
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@(weakself.classRoomRole),@"role",weakself.userName,@"name",weakself.uid,@"streamId", nil];
         NSDictionary *argsInfo = [NSDictionary dictionaryWithObjectsAndKeys:weakself.className,@"channel",userInfo,@"userAttr", nil];
         NSDictionary  *requestInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"Join",@"name",argsInfo,@"args", nil];
         NSString *requestStr =  [JsonAndStringConversions dictionaryToJson:requestInfo];
         AgoraRtmMessage *message = [[AgoraRtmMessage alloc] init];
         message.text = requestStr;
         [weakself.agoraRtmKit sendMessage:message toPeer:weakself.serverRtmId completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-            NSLog(@"%ld",errorCode);
+            NSLog(@"%ld",(long)errorCode);
         }];
     } failure:^(NSError *error) {
+        
     }];
 }
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return NO;
+}
+
 @end
