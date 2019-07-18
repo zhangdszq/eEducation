@@ -31,10 +31,11 @@ public class RcvStudentVideoListAdapter extends RcvBaseAdapter<RtmRoomControl.Us
         }
         for (int i = 0; i < mList.size(); i++) {
             if (id.equals(getItemStringId(i))) {
-                RtmRoomControl.UserAttr oldItem = mList.set(i, item);
-                if (oldItem.isMuteVideo != item.isMuteVideo || oldItem.name == null || !oldItem.name.equals(item.name)) {
-                    notifyItemChanged(i);
-                }
+//                RtmRoomControl.UserAttr oldItem =
+                mList.set(i, item);
+//                if (oldItem.isMuteVideo != item.isMuteVideo || oldItem.name == null || !oldItem.name.equals(item.name)) {
+                notifyItemChanged(i);
+//                }
             }
         }
     }
@@ -66,7 +67,7 @@ public class RcvStudentVideoListAdapter extends RcvBaseAdapter<RtmRoomControl.Us
 
         if (rtcEngine == null || studentVideoBean.isMuteVideo
                 || (!Constant.Role.TEACHER.strValue().equals(studentVideoBean.role)
-                        && !Constant.Role.STUDENT.strValue().equals(studentVideoBean.role))) {
+                && !Constant.Role.STUDENT.strValue().equals(studentVideoBean.role))) {
 
             if (myViewHolder.flStudentVideo.getChildCount() > 0) {
                 myViewHolder.flStudentVideo.removeAllViews();

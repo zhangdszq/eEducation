@@ -25,7 +25,12 @@
     <color name="gray_191919">#191919</color>
 
     <color name="blue_006EDE">#006EDE</color>
+    <color name="blue_029FE8">#029FE8</color>
     <color name="blue_008FEB">#008FEB</color>
+    <color name="blue_99CEF3">#99CEF3</color>
+    <color name="blue_9DD9FF">#9DD9FF</color>
     <color name="blue_007AFF">#007AFF</color>
+    <color name="blue_A1D0FF">#A1D0FF</color>
     <color name="blue_197CE1">#197CE1</color>
+    <color name="blue_FF025AB3">#FF025AB3</color>
 </resources>

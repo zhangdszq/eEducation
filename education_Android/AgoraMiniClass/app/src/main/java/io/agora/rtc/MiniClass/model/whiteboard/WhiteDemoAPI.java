@@ -17,7 +17,7 @@ import okhttp3.RequestBody;
  * Created by buhe on 2018/8/16.
  */
 
-public class DemoAPI {
+public class WhiteDemoAPI {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 //    private static final String sdkToken = "WHITEcGFydG5lcl9pZD1zTHlGOTlHNFlTbkx1Y3Fna2E0a3Z5cnlmQTJxZjdoaFNXNDYmc2lnPWM4ZmQwYWEzM2FkNjU2NmVlNzM3OTYyZWQ5ZjE0OTRiOWE1MzE1MGI6YWRtaW5JZD0xNSZyb2xlPW1pbmkmZXhwaXJlX3RpbWU9MTU2NDUwMDQ4OCZhaz1zTHlGOTlHNFlTbkx1Y3Fna2E0a3Z5cnlmQTJxZjdoaFNXNDYmY3JlYXRlX3RpbWU9MTUzMjk0MzUzNiZub25jZT0xNTMyOTQzNTM2MDY5MDA";
@@ -42,10 +42,11 @@ public class DemoAPI {
 
     public void getRoomToken(String uuid, Callback callback) {
         Map<String, Object> roomSpec = new HashMap<>();
+        roomSpec.put("uuid", uuid);
         RequestBody body = RequestBody.create(JSON, gson.toJson(roomSpec));
         Request request = new Request.Builder()
 //                .url(host + "/room/join?uuid=" + uuid + "&token=" + sdkToken)
-                .url(host + "/room/join")
+                .url(host + "/join")
                 .post(body)
                 .build();
         Call call = NetManager.getOkHttpClient().newCall(request);

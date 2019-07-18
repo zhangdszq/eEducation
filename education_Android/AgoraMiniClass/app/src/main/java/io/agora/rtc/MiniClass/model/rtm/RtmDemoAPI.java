@@ -5,11 +5,12 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 
-public class ChatDemoAPI {
+public class RtmDemoAPI {
     private static final String RTM_ID_URL = "https://webdemo.agora.io/edu_control/sentry";
     private static final String QUERY_USER_BASE_URL = "https://webdemo.agora.io/edu_control/user/";
     private static final String QUERY_CHANNEL_BASE_URL = "https://webdemo.agora.io/edu_control/channel/";
 
+    public static final String NAME_JOIN_REQUEST = "Join";
 
     public void getRTMId(Callback callback) {
         Request request = new Request.Builder()

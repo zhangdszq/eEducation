@@ -2,15 +2,15 @@ package io.agora.rtc.MiniClass;
 
 import android.app.Application;
 
-import io.agora.rtc.MiniClass.model.rtm.ChatManager;
-import io.agora.rtc.MiniClass.model.videocall.AgoraWorkerThread;
+import io.agora.rtc.MiniClass.model.rtm.RtmManager;
+import io.agora.rtc.MiniClass.model.videocall.RtcWorkerThread;
 
 
 public class AGApplication extends Application {
 
     private static AGApplication sInstance;
-    private ChatManager mChatManager;
-    private AgoraWorkerThread mWorkerThread;
+    private RtmManager mRtmManager;
+    private RtcWorkerThread mWorkerThread;
 
     public static AGApplication the() {
         return sInstance;
@@ -21,20 +21,20 @@ public class AGApplication extends Application {
         super.onCreate();
         sInstance = this;
 
-        mChatManager = new ChatManager(this);
-        mChatManager.init();
+        mRtmManager = new RtmManager(this);
+        mRtmManager.init();
     }
 
     public synchronized void initWorkerThread() {
         if (mWorkerThread == null) {
-            mWorkerThread = new AgoraWorkerThread("Agora", this);
+            mWorkerThread = new RtcWorkerThread("Agora", this);
             mWorkerThread.start();
 
             mWorkerThread.waitForReady();
         }
     }
 
-    public synchronized AgoraWorkerThread getWorkerThread() {
+    public synchronized RtcWorkerThread getWorkerThread() {
         return mWorkerThread;
     }
 
@@ -48,7 +48,7 @@ public class AGApplication extends Application {
         mWorkerThread = null;
     }
 
-    public ChatManager getChatManager() {
-        return mChatManager;
+    public RtmManager getRtmManager() {
+        return mRtmManager;
     }
 }

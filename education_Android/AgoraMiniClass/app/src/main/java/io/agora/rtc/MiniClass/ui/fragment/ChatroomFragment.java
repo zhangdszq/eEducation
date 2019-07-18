@@ -1,5 +1,6 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +16,10 @@ import io.agora.rtc.MiniClass.R;
 import io.agora.rtc.MiniClass.model.bean.ChannelMessage;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
+import io.agora.rtc.MiniClass.model.util.ToastUtil;
 import io.agora.rtc.MiniClass.ui.adapter.RcvChatRoomMsgAdapter;
+import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.ResultCallback;
 
 public class ChatroomFragment extends BaseFragment {
 
@@ -49,15 +53,25 @@ public class ChatroomFragment extends BaseFragment {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 String text = mEdtSendMsg.getText().toString();
                 if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && !TextUtils.isEmpty(text)) {
-                    ChannelMessage channelMessage = new ChannelMessage();
+                    final ChannelMessage channelMessage = new ChannelMessage();
                     channelMessage.name = ChannelMessage.SEND_NAME;
                     channelMessage.args = new ChannelMessage.Args();
                     channelMessage.args.uid = UserConfig.getRtmUserId();
                     channelMessage.args.message = text;
-                    chatManager().sendChatMsg(UserConfig.getRtmServerId(), channelMessage);
-
                     channelMessage.args.role = UserConfig.getRole().intValue();
-                    addMsg(channelMessage.args);
+                    rtmManager().sendChatMsg(channelMessage, new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            addMsg(channelMessage.args);
+                        }
+
+                        @Override
+                        public void onFailure(ErrorInfo errorInfo) {
+                            if (mListener != null)
+                                ToastUtil.showErrorShortFromSubThread((Activity) mListener, R.string.send_message_failed);
+                        }
+                    });
+
                     mEdtSendMsg.setText("");
                     return true;
                 }
@@ -74,7 +88,7 @@ public class ChatroomFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityEvent(BaseEvent event) {
+    public void onActivityMainThreadEvent(BaseEvent event) {
         if (event instanceof Event) {
             Event msgEvent = (Event) event;
             if (msgEvent.msgArgs == null
