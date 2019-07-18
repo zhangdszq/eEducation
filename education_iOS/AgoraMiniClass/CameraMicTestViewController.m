@@ -56,11 +56,11 @@
 
 #pragma mark ------ AgoraDelegate -----
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraErrorCode)errorCode {
-    NSLog(@"error---- %ld",errorCode);
+    NSLog(@"error---- %ld",(long)errorCode);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurWarning:(AgoraWarningCode)warningCode {
-    NSLog(@"warningCode---- %ld",warningCode);
+    NSLog(@"warningCode---- %ld",(long)warningCode);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine reportAudioVolumeIndicationOfSpeakers:(NSArray<AgoraRtcAudioVolumeInfo *> *)speakers

@@ -14,7 +14,7 @@ typedef NS_ENUM(NSUInteger, WhiteBoardAppliance) {
     WhiteBoardApplianceRectangle    = 2,
     WhiteBoardApplianceEraser       = 3,
     WhiteBoardApplianceText         = 4,
-    WhiteBoardUserControl           = 5,
+    WhiteBoardApplianceEllipse          = 5,
 };
 
 typedef void(^SelectAppliance)(WhiteBoardAppliance applicate);

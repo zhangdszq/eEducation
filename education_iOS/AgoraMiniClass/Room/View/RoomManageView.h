@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+
+typedef void(^RoomTopButtonType)(UIButton *button);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RoomManageView : UIView
 @property (nonatomic, assign) ClassRoomRole classRoomRole;
+@property (nonatomic, copy) RoomTopButtonType topButtonType;
 @end
 
 NS_ASSUME_NONNULL_END
