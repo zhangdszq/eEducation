@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AgoraMiniClass</string>
+    <string name="app_name">小班课</string>
 
     <string name="agora_app_id">aab8b8f5a8cd4469a63042fcfafe7063</string>
 
@@ -34,7 +34,6 @@
     <string name="No">No</string>
     <string name="Yes">Yes</string>
     <string name="Dialog_warning_content_when_click_out">You will out of class after you click Yes, Are you Sure?</string>
-
 
     <string name="account_too_long">Class name or user name can not exceed 64 characters</string>
 
