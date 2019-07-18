@@ -5,21 +5,17 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.agora.rtc.Constants;
 import io.agora.rtc.MiniClass.R;
+import io.agora.rtc.MiniClass.model.bean.ChannelAttrUpdatedResponse;
 import io.agora.rtc.MiniClass.model.bean.ChannelMessage;
 import io.agora.rtc.MiniClass.model.bean.JoinSuccessResponse;
 import io.agora.rtc.MiniClass.model.bean.MemberJoined;
@@ -30,7 +26,7 @@ import io.agora.rtc.MiniClass.model.constant.Constant;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
 import io.agora.rtc.MiniClass.model.event.MuteEvent;
 import io.agora.rtc.MiniClass.model.event.UpdateMembersEvent;
-import io.agora.rtc.MiniClass.model.rtm.ChatManager;
+import io.agora.rtc.MiniClass.model.rtm.RtmManager;
 import io.agora.rtc.MiniClass.model.util.LogUtil;
 import io.agora.rtc.MiniClass.model.util.ToastUtil;
 import io.agora.rtc.MiniClass.ui.fragment.BaseFragment;
@@ -43,18 +39,25 @@ import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelListener;
 import io.agora.rtm.RtmChannelMember;
-import io.agora.rtm.RtmClientListener;
 import io.agora.rtm.RtmMessage;
 
 public class MiniClassActivity extends BaseActivity {
 
     private TextView mTvTabChatRoom, mTvTabStudentList;
-    private View mLineTabChatRoomBottom, mLineTabStudentListBottom;
     private static final LogUtil log = new LogUtil("MiniClassActivity");
 
     private BaseFragment mChatRoomFragment, mStudentListFragment, mWhiteBoardFragment, mVideoCallFragment;
-    private FrameLayout mFlWhiteBoardLayout;
+    private FrameLayout mFlWhiteBoardLayout, mFl_loading;
     private ConstraintLayout mClRTMLayout;
+
+    public static final int JOIN_STATE_IDLE = 0;
+    public static final int JOIN_STATE_JOINING = 1;
+    public static final int JOIN_STATE_JOIN_SUCCESS = 2;
+    public static final int JOIN_STATE_JOIN_FAILED = 3;
+
+    private int mRtcJoinState = JOIN_STATE_IDLE;
+    private int mRtmJoinState = JOIN_STATE_IDLE;
+    private int mWhiteJoinState = JOIN_STATE_IDLE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,17 +65,25 @@ public class MiniClassActivity extends BaseActivity {
         setContentView(R.layout.activity_mini_class);
 
 //        mFlRTCLayout = findViewById(R.id.fl_video_call_layout);
-        mClRTMLayout = findViewById(R.id.cl_im_layout);
+        mClRTMLayout = findViewById(R.id.cl_rtm_layout);
         mFlWhiteBoardLayout = findViewById(R.id.fl_white_board_layout);
+        mFl_loading = findViewById(R.id.fl_progress_bar);
 
-        initVideoCallLayout();
+        mFl_loading.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        initRTCLayout();
 
         initWhiteBoardLayout();
 
-        initIMLayout();
+        initRTMLayout();
     }
 
-    private void initVideoCallLayout() {
+    private void initRTCLayout() {
         mVideoCallFragment = VideoCallFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_video_call_layout, mVideoCallFragment).commit();
     }
@@ -100,8 +111,8 @@ public class MiniClassActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        chatManager().leaveChannel();
-        chatManager().unregisterListener(mRtmClientListener);
+        rtmManager().leaveChannel();
+        rtmManager().unregisterListener(mRtmClientListener);
         mRtmChannelListener = null;
     }
 
@@ -111,8 +122,8 @@ public class MiniClassActivity extends BaseActivity {
 
             @Override
             public void clickYes() {
-                chatManager().logout();
-                workerThread().leaveChannel();
+                rtmManager().logout();
+                rtcWorkerThread().leaveChannel();
                 finish();
             }
 
@@ -122,148 +133,188 @@ public class MiniClassActivity extends BaseActivity {
         }, getString(R.string.Dialog_warning_content_when_click_out)).show(getSupportFragmentManager(), "dialog_exit");
     }
 
-    private RtmClientListener mRtmClientListener = new RtmClientListener() {
+    private RtmManager.MyRtmClientListener mRtmClientListener = new RtmManager.MyRtmClientListener() {
         @Override
-        public void onConnectionStateChanged(int i, int i1) {
+        public void onJoinSuccess(JoinSuccessResponse joinSuccessResponse) {
+            final JoinSuccessResponse.Args args = joinSuccessResponse.args;
+            if (args == null)
+                return;
 
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFinishing())
+                        return;
+
+                    mRtmJoinState = JOIN_STATE_JOIN_SUCCESS;
+                    checkIsAllSuccess();
+
+                    updateMembersAttr(args.members);
+
+                    UserConfig.setChannelAttr(args.channelAttr);
+                    updateChannelAttr(args.channelAttr);
+
+//                    if ((args.channelAttr == null || TextUtils.isEmpty(args.channelAttr.teacherId)) && UserConfig.getRole() != Constant.Role.TEACHER) {
+//                        ToastUtil.showErrorShort(MiniClassActivity.this, R.string.There_is_no_teacher_in_this_classroom);
+//                    }
+                }
+            });
         }
 
         @Override
-        public void onMessageReceived(RtmMessage rtmMessage, String peerId) {
-            String s = rtmMessage.getText();
-            if (TextUtils.equals(peerId, UserConfig.getRtmServerId())) {
-                try {
-                    JSONObject object = new JSONObject(s);
-                    String name = object.getString("name");
-                    if ("JoinSuccess".equals(name)) {
-                        JoinSuccessResponse response = new Gson().fromJson(s, JoinSuccessResponse.class);
-                        log.d("joinsucces");
-                        final JoinSuccessResponse.Args args = response.args;
-                        if (args == null)
-                            return;
-                        log.d("joinsucces");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtil.showShort("join rtm success");
-                                updateMembersAttr(args.members);
-                            }
-                        });
+        public void onMute(Mute mute) {
+            final Mute.Args args = mute.args;
+            if (args != null && !TextUtils.isEmpty(args.type)) {
+                final RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
+                if (userAttr == null)
+                    return;
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                UserConfig.setChannelAttr(args.channelAttr);
-
-                                updateWhiteboardUUid(args.channelAttr);
-                            }
-                        });
-                    } else if ("ChannelMessage".equals(name)) {
-                        final ChannelMessage msg = new Gson().fromJson(s, ChannelMessage.class);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onMessageUpdate(msg.args);
-                            }
-                        });
-                    } else if ("MemberJoined".equals(name)) {
-                        MemberJoined joined = new Gson().fromJson(s, MemberJoined.class);
-                        final RtmRoomControl.UserAttr attr = joined.args;
-                        if (attr != null && !TextUtils.isEmpty(attr.streamId)) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    UserConfig.putMember(attr);
-                                    notifyUpdateMembers();
-                                }
-                            });
-                        }
-                    } else if ("MemberLeft".equals(name)) {
-                        JsonObject o = new Gson().fromJson(s, JsonObject.class);
-                        final String uid = o.getAsJsonObject("args").get("uid").getAsString();
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                UserConfig.removeMember(uid);
-
-                                notifyUpdateMembers();
-                            }
-                        });
-                    } else if (Mute.MUTE_RESPONSE.equals(name) || Mute.UN_MUTE_RESPONSE.equals(name)) {
-                        Mute mute = new Gson().fromJson(s, Mute.class);
-                        final Mute.Args args = mute.args;
-//                        if (args.ta)
-                        if (args != null && !TextUtils.isEmpty(args.type)) {
-                            RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
-                            if (userAttr == null)
-                                return;
-
-
-                            boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
-                            if (args.type.equals(Mute.CHAT)) {
-                                userAttr.isMuteVideo = isMute;
-                                userAttr.isMuteAudio = isMute;
-                            } else if (args.type.equals(Mute.AUDIO)) {
-                                userAttr.isMuteAudio = isMute;
-                            } else if (args.type.equals(Mute.VIDEO)) {
-                                userAttr.isMuteVideo = isMute;
-                            }
-
-//                            UserConfig.putMember(userAttr);
-
-                            final RtmRoomControl.UserAttr finalAttr = new RtmRoomControl.UserAttr();
-                            finalAttr.name = userAttr.name;
-                            finalAttr.isMuteVideo = userAttr.isMuteVideo;
-                            finalAttr.isMuteAudio = userAttr.isMuteAudio;
-                            finalAttr.streamId = userAttr.streamId;
-                            finalAttr.role = userAttr.role;
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyMuteMember(args.type, finalAttr);
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
+                if (args.type.equals(Mute.CHAT)) {
+//                    userAttr.isMuteVideo = isMute;
+//                    userAttr.isMuteAudio = isMute;
+                } else if (args.type.equals(Mute.AUDIO)) {
+                    userAttr.isMuteAudio = isMute;
+                } else if (args.type.equals(Mute.VIDEO)) {
+                    userAttr.isMuteVideo = isMute;
                 }
+
+//                UserConfig.putMember(userAttr);
+
+//                final RtmRoomControl.UserAttr finalAttr = new RtmRoomControl.UserAttr();
+//                finalAttr.isMuteAudio = userAttr.isMuteAudio;
+//                finalAttr.isMuteVideo = userAttr.isMuteVideo;
+//                finalAttr.streamId = userAttr.streamId;
+//                finalAttr.role = userAttr.role;
+//                finalAttr.name = userAttr.name;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing())
+                            return;
+                        notifyMuteMember(args.type, userAttr);
+                    }
+                });
             }
         }
 
         @Override
-        public void onTokenExpired() {
+        public void onChannelAttrUpdate(final ChannelAttrUpdatedResponse channelAttrUpdated) {
+            if (channelAttrUpdated != null && channelAttrUpdated.args != null && channelAttrUpdated.args.channelAttr != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing())
+                            return;
+                        UserConfig.setChannelAttr(channelAttrUpdated.args.channelAttr);
 
+                        updateChannelAttr(channelAttrUpdated.args.channelAttr);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onMemberJoined(MemberJoined memberJoined) {
+            final RtmRoomControl.UserAttr attr = memberJoined.args;
+            if (attr != null && !TextUtils.isEmpty(attr.streamId)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing())
+                            return;
+                        UserConfig.putMember(attr);
+                        notifyUpdateMembers();
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onMemberLeft(final String uid) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFinishing())
+                        return;
+                    UserConfig.removeMember(uid);
+
+                    notifyUpdateMembers();
+                }
+            });
+        }
+
+        @Override
+        public void onChannelMsg(final ChannelMessage msg) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFinishing())
+                        return;
+                    onMessageUpdate(msg.args);
+                }
+            });
+        }
+
+        @Override
+        public void onJoinFailure(final String failInfo) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mFl_loading != null) {
+                        mFl_loading.setVisibility(View.GONE);
+                        ToastUtil.showErrorShort(MiniClassActivity.this, failInfo);
+                        finish();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onConnectionStateChanged(int i, int i1) {
+        }
+
+        @Override
+        public void onMessageReceived(RtmMessage rtmMessage, String peerId) {
+        }
+
+        @Override
+        public void onTokenExpired() {
         }
     };
+
+    private void checkIsAllSuccess() {
+        if (mRtcJoinState == JOIN_STATE_JOIN_SUCCESS && mRtmJoinState == JOIN_STATE_JOIN_SUCCESS && mWhiteJoinState == JOIN_STATE_JOIN_SUCCESS) {
+            mFl_loading.setVisibility(View.GONE);
+            ToastUtil.showShort("join classroom success");
+        }
+    }
 
     private void notifyMuteMember(String muteType, RtmRoomControl.UserAttr userAttr) {
         MuteEvent event = new MuteEvent(userAttr);
         event.muteType = muteType;
+
         mVideoCallFragment.onActivityEvent(event);
         mStudentListFragment.onActivityEvent(event);
-//        mWhiteBoardFragment.onActivityEvent(event);
+        mWhiteBoardFragment.onActivityEvent(event);
     }
 
-    private void updateWhiteboardUUid(RtmRoomControl.ChannelAttr channelAttr) {
-        WhiteBoardFragment.Event event = new WhiteBoardFragment.Event(WhiteBoardFragment.Event.EVENT_TYPE_UUID);
+    private void updateChannelAttr(RtmRoomControl.ChannelAttr channelAttr) {
+        WhiteBoardFragment.Event event = new WhiteBoardFragment.Event(WhiteBoardFragment.Event.EVENT_TYPE_UPDATE_UUID);
         if (channelAttr == null) {
-            event.uuid = null;
+            event.text1 = null;
         } else {
-            event.uuid = channelAttr.whiteboardId;
+            event.text1 = channelAttr.whiteboardId;
         }
 
         mWhiteBoardFragment.onActivityEvent(event);
     }
 
-    private void initIMLayout() {
+    private void initRTMLayout() {
         mTvTabChatRoom = findViewById(R.id.tv_tab_chatroom);
         mTvTabStudentList = findViewById(R.id.tv_tab_student_list);
-        mLineTabChatRoomBottom = findViewById(R.id.line_tab_chat_room_bottom);
-        mLineTabStudentListBottom = findViewById(R.id.line_tab_student_list_bottom);
-
         mChatRoomFragment = ChatroomFragment.newInstance();
         mStudentListFragment = StudentListFrament.newInstance();
 
@@ -274,16 +325,16 @@ public class MiniClassActivity extends BaseActivity {
 
         onClickTabChatRoom(mTvTabChatRoom);
 
-        chatManager().registerListener(mRtmClientListener);
+        rtmManager().registerListener(mRtmClientListener);
 
-        chatManager().setLoginStatusListener(new ChatManager.LoginStatusListener() {
+        rtmManager().setLoginStatusListener(new RtmManager.LoginStatusListener() {
             @Override
             public void onLoginStatusChanged(int loginStatus) {
                 log.d("logStatus:" + loginStatus);
-                if (loginStatus == ChatManager.LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE) {
+                if (loginStatus == RtmManager.LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE) {
                     log.d("start send msgArgs");
 
-                    chatManager().sendJoinMsg(UserConfig.getRtmServerId(), new ResultCallback<Void>() {
+                    rtmManager().sendJoinMsg(new ResultCallback<Void>() {
                         @Override
                         public void onSuccess(Void o) {
                             log.d("sendRtmJoin success");
@@ -295,10 +346,10 @@ public class MiniClassActivity extends BaseActivity {
                         }
                     });
 
-                    chatManager().createAndJoinChannel(UserConfig.getRtmChannelName(), mRtmChannelListener, new ResultCallback<Void>() {
+                    rtmManager().createAndJoinChannel(UserConfig.getRtmChannelName(), mRtmChannelListener, new ResultCallback<Void>() {
                         @Override
                         public void onSuccess(Void responseInfo) {
-                            log.d("join success");
+                            log.d("join in rtm success");
                         }
 
                         @Override
@@ -342,6 +393,9 @@ public class MiniClassActivity extends BaseActivity {
                 }
             }
         }
+        if (teacherAttr == null) {
+            ToastUtil.showErrorShort(MiniClassActivity.this, R.string.There_is_no_teacher_in_this_classroom);
+        }
         UserConfig.setTeacherAttr(teacherAttr);
         UserConfig.setChannelStudentsAttrs(students);
 
@@ -355,8 +409,8 @@ public class MiniClassActivity extends BaseActivity {
         updateMembersEvent.setTeacherAttr(UserConfig.getTeacherAttr());
         updateMembersEvent.setUserAttrList(UserConfig.getChannelStudentsAttrsList());
 
-        mStudentListFragment.onActivityEvent(updateMembersEvent);
         mVideoCallFragment.onActivityEvent(updateMembersEvent);
+        mStudentListFragment.onActivityEvent(updateMembersEvent);
         mWhiteBoardFragment.onActivityEvent(updateMembersEvent);
     }
 
@@ -368,8 +422,6 @@ public class MiniClassActivity extends BaseActivity {
     public void onClickTabStudentList(View view) {
         mTvTabChatRoom.setSelected(false);
         mTvTabStudentList.setSelected(true);
-        mLineTabChatRoomBottom.setVisibility(View.VISIBLE);
-        mLineTabStudentListBottom.setVisibility(View.INVISIBLE);
 
         getSupportFragmentManager().beginTransaction()
                 .hide(mChatRoomFragment)
@@ -379,8 +431,6 @@ public class MiniClassActivity extends BaseActivity {
     public void onClickTabChatRoom(View view) {
         mTvTabChatRoom.setSelected(true);
         mTvTabStudentList.setSelected(false);
-        mLineTabChatRoomBottom.setVisibility(View.INVISIBLE);
-        mLineTabStudentListBottom.setVisibility(View.VISIBLE);
 
         getSupportFragmentManager().beginTransaction()
                 .hide(mStudentListFragment)
@@ -388,29 +438,27 @@ public class MiniClassActivity extends BaseActivity {
     }
 
     @Override
-    public void onFragmentEvent(final BaseEvent event) {
+    public void onFragmentMainThreadEvent(final BaseEvent event) {
         if (event instanceof WhiteBoardFragment.Event) {
             switch (event.getEventType()) {
                 case WhiteBoardFragment.Event.EVENT_TYPE_ALERT:
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            AlertDialog alertDialog = new AlertDialog.Builder(MiniClassActivity.this).create();
-                            alertDialog.setTitle(event.text1);
-                            alertDialog.setMessage(event.text2);
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            finish();
-                                        }
-                                    });
-                            alertDialog.show();
-                        }
-                    });
+                    AlertDialog alertDialog = new AlertDialog.Builder(MiniClassActivity.this).create();
+                    alertDialog.setTitle(event.text1);
+                    alertDialog.setMessage(event.text2);
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            });
+                    alertDialog.show();
                     break;
-                case WhiteBoardFragment.Event.EVENT_TYPE_EXIT:
-                    onBackPressed();
-                    break;
+
+//                case WhiteBoardFragment.Event.EVENT_TYPE_EXIT:
+//                    onBackPressed();
+//                    break;
+
                 case WhiteBoardFragment.Event.EVENT_TYPE_MAX:
                     mClRTMLayout.setVisibility(View.GONE);
                     ConstraintLayout.LayoutParams layoutParamsMax = (ConstraintLayout.LayoutParams) mFlWhiteBoardLayout.getLayoutParams();
@@ -418,6 +466,7 @@ public class MiniClassActivity extends BaseActivity {
                     mFlWhiteBoardLayout.setLayoutParams(layoutParamsMax);
                     mVideoCallFragment.onActivityEvent(new VideoCallFragment.Event(VideoCallFragment.Event.EVENT_TYPE_MAX));
                     break;
+
                 case WhiteBoardFragment.Event.EVENT_TYPE_MIN:
                     mClRTMLayout.setVisibility(View.VISIBLE);
                     ConstraintLayout.LayoutParams layoutParamsMin = (ConstraintLayout.LayoutParams) mFlWhiteBoardLayout.getLayoutParams();
@@ -425,8 +474,95 @@ public class MiniClassActivity extends BaseActivity {
                     mFlWhiteBoardLayout.setLayoutParams(layoutParamsMin);
                     mVideoCallFragment.onActivityEvent(new VideoCallFragment.Event(VideoCallFragment.Event.EVENT_TYPE_MIN));
                     break;
+
+                case WhiteBoardFragment.Event.EVENT_TYPE_NOTIFY_CREATED_UUID:
+                    RtmRoomControl.ChannelAttr channelAttr = UserConfig.getChannelAttr();
+                    if (channelAttr == null)
+                        channelAttr = new RtmRoomControl.ChannelAttr();
+
+                    channelAttr.whiteboardId = event.text1;
+                    rtmManager().updateChannelAttr(channelAttr, new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                        }
+
+                        @Override
+                        public void onFailure(ErrorInfo errorInfo) {
+                            MiniClassActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ToastUtil.showErrorShort(MiniClassActivity.this, R.string.send_message_failed);
+                                }
+                            });
+                        }
+                    });
+                    break;
+
+                case WhiteBoardFragment.Event.EVENT_TYPE_NOTIFY_JOIN_STATE:
+                    mWhiteJoinState = event.value1;
+                    checkIsAllSuccess();
+                    break;
+
+                case WhiteBoardFragment.Event.EVENT_TYPE_MUTE_LOCAL_AUDIO_BY_UI:
+                    RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
+                    if (userAttr != null) {
+                        userAttr.isMuteAudio = event.bool1;
+                    }
+                    notifyMuteMember(Mute.AUDIO, userAttr);
+                    break;
+
+                case WhiteBoardFragment.Event.EVENT_TYPE_MUTE_LOCAL_VIDEO_BY_UI:
+                    RtmRoomControl.UserAttr userAttr1 = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
+                    if (userAttr1 == null)
+                        return;
+
+                    userAttr1.isMuteVideo = event.bool1;
+
+//                    RtmRoomControl.UserAttr newUserAttr = new RtmRoomControl.UserAttr();
+//                    newUserAttr.isMuteVideo = userAttr1.isMuteVideo;
+//                    newUserAttr.isMuteAudio = userAttr1.isMuteAudio;
+//                    newUserAttr.name = userAttr1.name;
+//                    newUserAttr.role = userAttr1.role;
+//                    newUserAttr.streamId = userAttr1.streamId;
+                    notifyMuteMember(Mute.VIDEO, userAttr1);
+                    break;
             }
 
+        } else if (event instanceof VideoCallFragment.Event) {
+            switch (event.getEventType()) {
+                case VideoCallFragment.Event.EVENT_TYPE_NOTIFY_JOIN_STATE:
+                    mRtcJoinState = event.value1;
+                    checkIsAllSuccess();
+                    break;
+
+                case VideoCallFragment.Event.EVENT_TYPE_MUTE_AUDIO_FROM_RTC:
+                    RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(event.text1);
+                    if (userAttr != null) {
+                        userAttr.isMuteAudio = event.bool1;
+                    }
+                    notifyMuteMember(Mute.AUDIO, userAttr);
+                    break;
+
+                case VideoCallFragment.Event.EVENT_TYPE_MUTE_VIDEO_FROM_RTC:
+                    RtmRoomControl.UserAttr userAttr1 = UserConfig.getUserAttrByUserId(event.text1);
+                    if (userAttr1 == null)
+                        return;
+
+                    userAttr1.isMuteVideo = event.bool1;
+
+//                    RtmRoomControl.UserAttr newUserAttr = new RtmRoomControl.UserAttr();
+//                    newUserAttr.isMuteVideo = userAttr1.isMuteVideo;
+//                    newUserAttr.isMuteAudio = userAttr1.isMuteAudio;
+//                    newUserAttr.name = userAttr1.name;
+//                    newUserAttr.role = userAttr1.role;
+//                    newUserAttr.streamId = userAttr1.streamId;
+                    notifyMuteMember(Mute.VIDEO, userAttr1);
+                    break;
+            }
         }
+    }
+
+    public void onClickPower(View view) {
+        onBackPressed();
     }
 }

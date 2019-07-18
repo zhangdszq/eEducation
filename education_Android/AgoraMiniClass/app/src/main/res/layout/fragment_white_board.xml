@@ -22,8 +22,8 @@
             android:layout_height="@dimen/dp_36"
             android:background="@drawable/slt_btn_whitebord_edit"
             android:src="@mipmap/icon_connecting12"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_space_hand_up_top"
             app:layout_constraintVertical_chainStyle="spread" />
@@ -32,8 +32,8 @@
             android:id="@+id/view_space_hand_up_top"
             android:layout_width="@dimen/dp_36"
             android:layout_height="0dp"
-            android:visibility="gone"
             android:background="@color/grey_333333"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/iv_btn_hand_up"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_btn_text" />
@@ -175,22 +175,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_btn_exit"
-            android:layout_width="@dimen/dp_36"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginStart="@dimen/dp_4"
-            android:src="@mipmap/icon_exit"
-            app:layout_constraintStart_toEndOf="@id/iv_btn_pencil"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_btn_min_or_max"
-            android:layout_width="@dimen/dp_36"
-            android:layout_height="@dimen/dp_36"
-            android:src="@drawable/slt_btn_min_or_max"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        <!--<ImageView-->
+        <!--android:id="@+id/iv_btn_exit"-->
+        <!--android:layout_width="@dimen/dp_36"-->
+        <!--android:layout_height="@dimen/dp_36"-->
+        <!--android:layout_marginStart="@dimen/dp_4"-->
+        <!--android:src="@mipmap/icon_exit"-->
+        <!--app:layout_constraintStart_toEndOf="@id/iv_btn_pencil"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
         <LinearLayout
             android:id="@+id/ll_square_horizontal"
@@ -257,6 +249,34 @@
                 android:src="@drawable/slt_btn_delete" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_btn_min_or_max"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:src="@drawable/slt_btn_min_or_max"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_btn_mute_local_audio"
+            android:layout_width="@dimen/dp_31"
+            android:layout_height="@dimen/dp_31"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:src="@drawable/slt_icon_mute_audio"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_min_or_max"
+            app:layout_constraintEnd_toStartOf="@id/iv_btn_min_or_max"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_min_or_max" />
+
+        <ImageView
+            android:id="@+id/iv_btn_mute_local_video"
+            android:layout_width="@dimen/dp_31"
+            android:layout_height="@dimen/dp_31"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:src="@drawable/slt_icon_mute_video"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_mute_local_audio"
+            app:layout_constraintEnd_toStartOf="@id/iv_btn_mute_local_audio"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_mute_local_audio" />
 
     </android.support.constraint.ConstraintLayout>
 

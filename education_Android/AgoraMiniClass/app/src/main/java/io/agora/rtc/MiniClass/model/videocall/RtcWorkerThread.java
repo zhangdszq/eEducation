@@ -17,13 +17,13 @@ import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
-public class AgoraWorkerThread extends HandlerThread {
-    private final static LogUtil log = new LogUtil("AgoraWorkerThread");
+public class RtcWorkerThread extends HandlerThread {
+    private final static LogUtil log = new LogUtil("RtcWorkerThread");
 
     private boolean mReady;
     private Context mContext;
 
-    public AgoraWorkerThread(String name, Context context) {
+    public RtcWorkerThread(String name, Context context) {
         super(name);
         mContext = context.getApplicationContext();
     }
@@ -35,7 +35,7 @@ public class AgoraWorkerThread extends HandlerThread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.d("wait for " + AgoraWorkerThread.class.getSimpleName());
+            log.d("wait for " + RtcWorkerThread.class.getSimpleName());
         }
     }
 
@@ -70,6 +70,18 @@ public class AgoraWorkerThread extends HandlerThread {
         public void onUserOffline(int uid, int reason) {
             if (mRtcHandler != null)
                 mRtcHandler.onUserOffline(uid, reason);
+        }
+
+        @Override
+        public void onUserMuteAudio(int uid, boolean muted) {
+            if (mRtcHandler != null)
+                mRtcHandler.onUserMuteAudio(uid, muted);
+        }
+
+        @Override
+        public void onUserMuteVideo(int uid, boolean muted) {
+            if (mRtcHandler != null)
+                mRtcHandler.onUserMuteVideo(uid, muted);
         }
     };
 
@@ -107,7 +119,7 @@ public class AgoraWorkerThread extends HandlerThread {
                         VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE
                 ));
 
-                mRtcEngine.setParameters("{\"rtc.force_unified_communication_mode\":true}");
+                mRtcEngine.setParameters("{\"rtc.force_unified_communication_mode\":true}");//uc模式
 
                 mRtcEngine.joinChannel(null, channel, "", uid);
                 log.d("joinChannel " + channel + " " + uid);

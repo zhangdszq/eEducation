@@ -1,33 +1,35 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 
 import io.agora.rtc.MiniClass.AGApplication;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
-import io.agora.rtc.MiniClass.model.rtm.ChatDemoAPI;
-import io.agora.rtc.MiniClass.model.rtm.ChatManager;
-import io.agora.rtc.MiniClass.model.videocall.AgoraWorkerThread;
+import io.agora.rtc.MiniClass.model.rtm.RtmDemoAPI;
+import io.agora.rtc.MiniClass.model.rtm.RtmManager;
+import io.agora.rtc.MiniClass.model.videocall.RtcWorkerThread;
 import io.agora.rtc.RtcEngine;
 
 public abstract class BaseFragment extends Fragment {
 
     protected OnFragmentInteractionListener mListener;
 
-    protected ChatManager chatManager() {
-        return AGApplication.the().getChatManager();
+    protected RtmManager rtmManager() {
+        return AGApplication.the().getRtmManager();
     }
 
-    protected AgoraWorkerThread workerThread() {
+    protected RtcWorkerThread rtcWorkerThread() {
         return AGApplication.the().getWorkerThread();
     }
 
-    protected ChatDemoAPI chatDemoAPI() {
-        return chatManager().getChatDemoAPI();
+    protected RtmDemoAPI rtmDemoAPI() {
+        return rtmManager().getRtmDemoAPI();
     }
 
     protected RtcEngine rtcEngine() {
-        return workerThread().getRtcEngine();
+        return rtcWorkerThread().getRtcEngine();
     }
 
     @Override
@@ -47,11 +49,28 @@ public abstract class BaseFragment extends Fragment {
         mListener = null;
     }
 
+
+    public void onActivityEvent(final BaseEvent event) {
+        if (mListener == null)
+            return;
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            onActivityMainThreadEvent(event);
+        } else {
+            ((Activity)mListener).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    onActivityMainThreadEvent(event);
+                }
+            });
+        }
+    }
+
     public interface OnFragmentInteractionListener {
 
         void onFragmentEvent(BaseEvent event);
     }
 
-    public abstract void onActivityEvent(BaseEvent event);
+    protected void onActivityMainThreadEvent(BaseEvent event){};
 
 }

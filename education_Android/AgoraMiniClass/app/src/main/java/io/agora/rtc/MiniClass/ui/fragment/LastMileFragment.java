@@ -1,9 +1,7 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,7 +111,7 @@ public class LastMileFragment extends BaseFragment {
     };
 
     private void initLasMileTest() {
-        workerThread().setRtcEventHandler(rtcEngineEventHandler);
+        rtcWorkerThread().setRtcEventHandler(rtcEngineEventHandler);
 
         LastmileProbeConfig config = new LastmileProbeConfig();
         if (UserConfig.getRole() == Constant.Role.TEACHER) {
@@ -131,12 +129,7 @@ public class LastMileFragment extends BaseFragment {
         super.onDestroyView();
 
         rtcEngine().stopLastmileProbeTest();
-        workerThread().setRtcEventHandler(null);
-    }
-
-    @Override
-    public void onActivityEvent(BaseEvent event) {
-
+        rtcWorkerThread().setRtcEventHandler(null);
     }
 
     public static class Event extends BaseEvent {

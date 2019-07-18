@@ -45,11 +45,13 @@ import io.agora.rtc.MiniClass.R;
 import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.constant.Constant;
+import io.agora.rtc.MiniClass.model.event.MuteEvent;
 import io.agora.rtc.MiniClass.model.event.UpdateMembersEvent;
 import io.agora.rtc.MiniClass.model.util.LogUtil;
 import io.agora.rtc.MiniClass.model.util.ToastUtil;
-import io.agora.rtc.MiniClass.model.whiteboard.DemoAPI;
+import io.agora.rtc.MiniClass.model.whiteboard.WhiteDemoAPI;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
+import io.agora.rtc.MiniClass.ui.activity.MiniClassActivity;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -68,15 +70,15 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     WhiteBroadView whiteBroadView;
     Room room;
     Gson gson = new Gson();
-    DemoAPI demoAPI = new DemoAPI();
+    WhiteDemoAPI whiteDemoAPI = new WhiteDemoAPI();
 
     private ImageView /*mIvBtnHandUp,*/ mIvBtnText, mIvBtnEraser, mIvBtnOvalVertical, /*mIvBtnLineVertical,*/
             mIvBtnSquareVertical, /*mIvBtnSquareCollection,*/
-            mIvBtnMoveCollection, mIvBtnPencil, mIvBtnExit,
+            mIvBtnMoveCollection, mIvBtnPencil, /*mIvBtnExit,*/
             mIvBtnMinOrMax, /*mIvBtnSquareHorizontal,*/ /*mIvBtnLineHorizontal,*/
-    /*mIvBtnOvalHorizontal,*/ mIvBtnMoveHorizontal, mIvBtnDelete;
+    /*mIvBtnOvalHorizontal,*/ mIvBtnMoveHorizontal, mIvBtnDelete, mIvBtnMuteLocalVideo, mIvBtnMuteLocalAudio;
     private LinearLayout /*mLlSquareHorizontal,*/ mLlMoveHorizontal;
-    private View mSpaceOvalVerticalTop, mSpaceLineVerticalTop;
+//    private View mSpaceOvalVerticalTop, mSpaceLineVerticalTop;
 
     public static WhiteBoardFragment newInstance(String paramUUID) {
         WhiteBoardFragment fragment = new WhiteBoardFragment();
@@ -106,19 +108,21 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 //        mIvBtnSquareCollection = root.findViewById(R.id.iv_btn_square_collection);
         mIvBtnMoveCollection = root.findViewById(R.id.iv_btn_move_collection);
         mIvBtnPencil = root.findViewById(R.id.iv_btn_pencil);
-        mIvBtnExit = root.findViewById(R.id.iv_btn_exit);
+//        mIvBtnExit = root.findViewById(R.id.iv_btn_exit);
         mIvBtnMinOrMax = root.findViewById(R.id.iv_btn_min_or_max);
 //        mIvBtnSquareHorizontal = root.findViewById(R.id.iv_btn_square_horizontal);
 //        mIvBtnLineHorizontal = root.findViewById(R.id.iv_btn_line_horizontal);
 //        mIvBtnOvalHorizontal = root.findViewById(R.id.iv_btn_oval_horizontal);
         mIvBtnMoveHorizontal = root.findViewById(R.id.iv_btn_move_horizontal);
         mIvBtnDelete = root.findViewById(R.id.iv_btn_delete);
+        mIvBtnMuteLocalVideo = root.findViewById(R.id.iv_btn_mute_local_video);
+        mIvBtnMuteLocalAudio = root.findViewById(R.id.iv_btn_mute_local_audio);
 
 //        mLlSquareHorizontal = root.findViewById(R.id.ll_square_horizontal);
         mLlMoveHorizontal = root.findViewById(R.id.ll_move_horizontal);
 
-        mSpaceOvalVerticalTop = root.findViewById(R.id.view_space_oval_vertical_top);
-        mSpaceLineVerticalTop = root.findViewById(R.id.view_space_line_vertical_top);
+//        mSpaceOvalVerticalTop = root.findViewById(R.id.view_space_oval_vertical_top);
+//        mSpaceLineVerticalTop = root.findViewById(R.id.view_space_line_vertical_top);
 
 //        mIvBtnHandUp.setOnClickListener(this);
         mIvBtnText.setOnClickListener(this);
@@ -129,13 +133,21 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 //        mIvBtnSquareCollection.setOnClickListener(this);
         mIvBtnMoveCollection.setOnClickListener(this);
         mIvBtnPencil.setOnClickListener(this);
-        mIvBtnExit.setOnClickListener(this);
+//        mIvBtnExit.setOnClickListener(this);
         mIvBtnMinOrMax.setOnClickListener(this);
 //        mIvBtnSquareHorizontal.setOnClickListener(this);
 //        mIvBtnLineHorizontal.setOnClickListener(this);
 //        mIvBtnOvalHorizontal.setOnClickListener(this);
         mIvBtnMoveHorizontal.setOnClickListener(this);
         mIvBtnDelete.setOnClickListener(this);
+
+        if (UserConfig.getRole() == Constant.Role.AUDIENCE) {
+            mIvBtnMuteLocalVideo.setVisibility(View.GONE);
+            mIvBtnMuteLocalAudio.setVisibility(View.GONE);
+        } else {
+            mIvBtnMuteLocalAudio.setOnClickListener(this);
+            mIvBtnMuteLocalVideo.setOnClickListener(this);
+        }
     }
 
     private void clearSelected() {
@@ -172,22 +184,31 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     private RtmRoomControl.UserAttr teacherAttr;
 
     @Override
-    public void onActivityEvent(BaseEvent event) {
+    public void onActivityMainThreadEvent(BaseEvent event) {
         if (event instanceof Event) {
-            String uuid = event.text1;
-            if (TextUtils.isEmpty(uuid)) {
-                createRoom();
-            } else {
-                getRoomToken(uuid);
+            if (event.getEventType() == Event.EVENT_TYPE_UPDATE_UUID) {
+                String uuid = event.text1;
+                log.d("uuid:" + uuid);
+                if (TextUtils.isEmpty(uuid)) {
+                    createRoom();
+                } else {
+                    getRoomToken(uuid);
+                }
             }
         } else if (event instanceof UpdateMembersEvent) {
             UpdateMembersEvent updateMembersEvent = (UpdateMembersEvent) event;
             RtmRoomControl.UserAttr teacherAttr = updateMembersEvent.getTeacherAttr();
             if (room == null) {
                 this.teacherAttr = teacherAttr;
-                return;
             } else {
                 updateMembersEvent(teacherAttr);
+            }
+        } else if (event instanceof MuteEvent) {
+            MuteEvent muteEvent = (MuteEvent) event;
+            RtmRoomControl.UserAttr attr = muteEvent.getUserAttr();
+            if (attr != null) {
+                mIvBtnMuteLocalVideo.setSelected(attr.isMuteVideo);
+                mIvBtnMuteLocalAudio.setSelected(attr.isMuteAudio);
             }
         }
     }
@@ -195,21 +216,25 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     private void updateMembersEvent(RtmRoomControl.UserAttr teacherAttr) {
         if (teacherAttr != null && UserConfig.getRtmUserId().equals(teacherAttr.streamId)) {
 //            mIvBtnHandUp.setImageResource(R.drawable.slt_teacher_hand_up);
-            broadcast(null);
+            teacher();
         } else {
 //            mIvBtnHandUp.setImageResource(R.mipmap.icon_connecting12);
-            follow(null);
+            follow();
         }
     }
 
     @Override
     public void onClick(View v) {
+
+        if (mListener == null)
+            return;
+
         switch (v.getId()) {
-            case R.id.iv_btn_hand_up:
-                showToast("to do.");
-                clearSelected();
+//            case R.id.iv_btn_hand_up:
+//                showToast("to do.");
+//                clearSelected();
 //                mIvBtnHandUp.setSelected(true);
-                break;
+//                break;
             case R.id.iv_btn_text:
                 clearSelected();
                 mIvBtnText.setSelected(true);
@@ -220,7 +245,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                 mIvBtnEraser.setSelected(true);
                 eraser();
                 break;
-            case R.id.iv_btn_oval_horizontal:
+//            case R.id.iv_btn_oval_horizontal:
             case R.id.iv_btn_oval_vertical:
                 clearSelected();
 //                mIvBtnOvalHorizontal.setSelected(true);
@@ -230,18 +255,18 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 //                    mLlSquareHorizontal.setVisibility(View.GONE);
                 ellipse();
                 break;
-            case R.id.iv_btn_line_vertical:
-            case R.id.iv_btn_line_horizontal:
-                clearSelected();
+//            case R.id.iv_btn_line_vertical:
+//            case R.id.iv_btn_line_horizontal:
+//                clearSelected();
 //                mIvBtnLineVertical.setSelected(true);
 //                mIvBtnLineHorizontal.setSelected(true);
 //                mIvBtnSquareCollection.setSelected(true);
 //                if (mLlSquareHorizontal.getVisibility() != View.GONE)
 //                    mLlSquareHorizontal.setVisibility(View.GONE);
-                showToast("to do.");
-                break;
+//                showToast("to do.");
+//                break;
             case R.id.iv_btn_square_vertical:
-            case R.id.iv_btn_square_horizontal:
+//            case R.id.iv_btn_square_horizontal:
                 clearSelected();
 //                mIvBtnSquareHorizontal.setSelected(true);
                 mIvBtnSquareVertical.setSelected(true);
@@ -250,13 +275,13 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 //                    mLlSquareHorizontal.setVisibility(View.GONE);
                 rectangle();
                 break;
-            case R.id.iv_btn_square_collection:
+//            case R.id.iv_btn_square_collection:
 //                if (mLlSquareHorizontal.getVisibility() == View.GONE) {
 //                    mLlSquareHorizontal.setVisibility(View.VISIBLE);
 //                } else {
 //                    mLlSquareHorizontal.setVisibility(View.GONE);
 //                }
-                break;
+//                break;
             case R.id.iv_btn_move_collection:
                 if (mLlMoveHorizontal.getVisibility() == View.GONE) {
                     mLlMoveHorizontal.setVisibility(View.VISIBLE);
@@ -286,13 +311,11 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                 mIvBtnPencil.setSelected(true);
                 pencil();
                 break;
-            case R.id.iv_btn_exit:
-                if (mListener != null)
-                    mListener.onFragmentEvent(new Event(Event.EVENT_TYPE_EXIT));
-                break;
+//            case R.id.iv_btn_exit:
+//                if (mListener != null)
+//                    mListener.onFragmentEvent(new Event(Event.EVENT_TYPE_EXIT));
+//                break;
             case R.id.iv_btn_min_or_max:
-                if (mListener == null)
-                    return;
                 if (mIvBtnMinOrMax.isSelected()) {
                     mIvBtnMinOrMax.setSelected(false);
                     mListener.onFragmentEvent(new Event(Event.EVENT_TYPE_MIN));
@@ -314,17 +337,32 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
 //                    mLlSquareHorizontal.setVisibility(View.GONE);
                 }
                 break;
+
+            case R.id.iv_btn_mute_local_audio:
+                Event muteAudioEvent = new Event(Event.EVENT_TYPE_MUTE_LOCAL_AUDIO_BY_UI);
+                muteAudioEvent.bool1 = !mIvBtnMuteLocalAudio.isSelected();
+                mListener.onFragmentEvent(muteAudioEvent);
+                break;
+
+            case R.id.iv_btn_mute_local_video:
+                Event muteVideoEvent = new Event(Event.EVENT_TYPE_MUTE_LOCAL_VIDEO_BY_UI);
+                muteVideoEvent.bool1 = !mIvBtnMuteLocalVideo.isSelected();
+                mListener.onFragmentEvent(muteVideoEvent);
+                break;
         }
     }
 
     public static class Event extends BaseEvent {
         public static final int EVENT_TYPE_ALERT = 101;
-        public static final int EVENT_TYPE_UUID = 102;
-        public static final int EVENT_TYPE_EXIT = 103;
+        public static final int EVENT_TYPE_UPDATE_UUID = 102;
+        //        public static final int EVENT_TYPE_EXIT = 103;
         public static final int EVENT_TYPE_MIN = 104;
         public static final int EVENT_TYPE_MAX = 105;
+        public static final int EVENT_TYPE_NOTIFY_JOIN_STATE = 106;
+        public static final int EVENT_TYPE_NOTIFY_CREATED_UUID = 107;
 
-        public String uuid = null;
+        public static final int EVENT_TYPE_MUTE_LOCAL_AUDIO_BY_UI = 108;
+        public static final int EVENT_TYPE_MUTE_LOCAL_VIDEO_BY_UI = 109;
 
         public Event(int eventType) {
             super(eventType);
@@ -336,12 +374,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             final Event event = new Event(Event.EVENT_TYPE_ALERT);
             event.text1 = title;
             event.text2 = detail;
-            ((Activity) mListener).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mListener.onFragmentEvent(event);
-                }
-            });
+            mListener.onFragmentEvent(event);
         }
     }
 
@@ -361,9 +394,9 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void createRoom() {
-        if (demoAPI == null)
+        if (whiteDemoAPI == null)
             return;
-        demoAPI.createRoom(UserConfig.getRtmChannelName(), 100, new Callback() {
+        whiteDemoAPI.createRoom(UserConfig.getRtmChannelName(), 100, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 alert("网络请求错误", e.toString());
@@ -377,6 +410,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                     if (response.code() == 200) {
                         JsonObject room = gson.fromJson(resStr, JsonObject.class);
                         String uuid = room.getAsJsonObject("msg").getAsJsonObject("hare").get("uuid").getAsString();
+                        notifyCreatedWhiteUUid(uuid);
                         String roomToken = room.getAsJsonObject("msg").get("roomToken").getAsString();
                         joinRoom(uuid, roomToken);
                     } else {
@@ -387,12 +421,22 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
                 }
             }
         });
+
+
+    }
+
+    private void notifyCreatedWhiteUUid(String uuid) {
+        if (mListener != null) {
+            Event event = new Event(Event.EVENT_TYPE_NOTIFY_CREATED_UUID);
+            event.text1 = uuid;
+            mListener.onFragmentEvent(event);
+        }
     }
 
     private void getRoomToken(final String uuid) {
-        if (demoAPI == null)
+        if (whiteDemoAPI == null)
             return;
-        demoAPI.getRoomToken(uuid, new Callback() {
+        whiteDemoAPI.getRoomToken(uuid, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 alert("获取房间 token 请求失败", e.toString());
@@ -401,10 +445,11 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) {
                 try {
-
+                    String str = response.body().string();
+                    log.d(str);
                     if (response.code() == 200) {
-                        JsonObject room = gson.fromJson(response.body().string(), JsonObject.class);
-                        String roomToken = room.getAsJsonObject("msgArgs").get("roomToken").getAsString();
+                        JsonObject room = gson.fromJson(str, JsonObject.class);
+                        String roomToken = room.getAsJsonObject("msg").get("roomToken").getAsString();
 //                        if (whiteBroadView.getEnv() == Environment.dev) {
 //                            joinRoom(TEST_UUID, TEST_ROOM_TOKEN);
 //                        } else {
@@ -449,7 +494,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onPhaseChanged(RoomPhase phase) {
                 log.d("onPhaseChanged" + phase.name());
-                showToast(phase.name());
+//                showToast(phase.name());
             }
 
             @Override
@@ -461,19 +506,33 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void then(Room wRoom) {
                 log.d("then");
-                logRoomInfo("join in room success");
+                logRoomInfo("join in white room success");
                 room = wRoom;
                 addCustomEventListener();
 
+                if (UserConfig.getRole() == Constant.Role.AUDIENCE)
+                    room.disableOperations(true);
                 updateMembersEvent(WhiteBoardFragment.this.teacherAttr);
+
+                notifyJoinChannelState(MiniClassActivity.JOIN_STATE_JOIN_SUCCESS);
             }
 
             @Override
             public void catchEx(SDKError t) {
                 log.d("catchEx" + t.getMessage());
                 showToast(t.getMessage());
+
+                notifyJoinChannelState(MiniClassActivity.JOIN_STATE_JOIN_SUCCESS);
             }
         });
+    }
+
+    private void notifyJoinChannelState(int joinStateJoinSuccess) {
+        if (mListener != null) {
+            Event event = new Event(Event.EVENT_TYPE_NOTIFY_JOIN_STATE);
+            event.value1 = joinStateJoinSuccess;
+            mListener.onFragmentEvent(event);
+        }
     }
 
     private void addCustomEventListener() {
@@ -483,23 +542,29 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onEvent(EventEntry eventEntry) {
                 logRoomInfo("customEvent payload: " + eventEntry.getPayload().toString());
-                showToast(gson.toJson(eventEntry.getPayload()));
+//                showToast(gson.toJson(eventEntry.getPayload()));
             }
         });
     }
 
-    public void broadcast(View v) {
+    public void teacher() {
         if (room == null)
             return;
         logAction();
         room.setViewMode(ViewMode.Broadcaster);
+        room.disableOperations(false);
     }
 
-    public void follow(View v) {
+    public void follow() {
         if (room == null)
             return;
         logAction();
         room.setViewMode(ViewMode.Follower);
+        if (UserConfig.getRole() == Constant.Role.AUDIENCE) {
+            room.disableOperations(true);
+        } else {
+            room.disableOperations(false);
+        }
     }
 
     public void getBroadcastState(View v) {
@@ -509,7 +574,7 @@ public class WhiteBoardFragment extends BaseFragment implements View.OnClickList
         room.getBroadcastState(new Promise<BroadcastState>() {
             @Override
             public void then(BroadcastState broadcastState) {
-                showToast(broadcastState.getMode().toString());
+//                showToast(broadcastState.getMode().toString());
                 logRoomInfo(gson.toJson(broadcastState));
             }
 

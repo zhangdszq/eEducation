@@ -1,22 +1,15 @@
 package io.agora.rtc.MiniClass.ui.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import io.agora.rtc.Constants;
 import io.agora.rtc.MiniClass.R;
-import io.agora.rtc.MiniClass.model.constant.Constant;
 import io.agora.rtc.MiniClass.model.event.BaseEvent;
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.video.VideoCanvas;
 
 
 public class PreviewFragment extends BaseFragment {
@@ -37,10 +30,10 @@ public class PreviewFragment extends BaseFragment {
             public void onClick(View v) {
                 if (mListener != null) {
                     mListener.onFragmentEvent(new Event(Event.EVENT_CLICK_NEXT));
-                    workerThread().runTask(new Runnable() {
+                    rtcWorkerThread().runTask(new Runnable() {
                         @Override
                         public void run() {
-//                            workerThread().getRtcEngine().stopPreview();
+//                            rtcWorkerThread().getRtcEngine().stopPreview();
                         }
                     });
                 }
@@ -49,13 +42,13 @@ public class PreviewFragment extends BaseFragment {
 
         fl_preview = root.findViewById(R.id.fl_camera_preview);
 
-        workerThread().runTask(new Runnable() {
+        rtcWorkerThread().runTask(new Runnable() {
             @Override
             public void run() {
 
 //                final SurfaceView surfaceView = RtcEngine.CreateRendererView((Context) mListener);
-//                workerThread().getRtcEngine().setupLocalVideo(new VideoCanvas(surfaceView, Constants.RENDER_MODE_HIDDEN, 0));
-//                workerThread().getRtcEngine().startPreview();
+//                rtcWorkerThread().getRtcEngine().setupLocalVideo(new VideoCanvas(surfaceView, Constants.RENDER_MODE_HIDDEN, 0));
+//                rtcWorkerThread().getRtcEngine().startPreview();
 
                 if (mListener != null) {
                     ((Activity)mListener).runOnUiThread(new Runnable() {
@@ -70,10 +63,6 @@ public class PreviewFragment extends BaseFragment {
         return root;
     }
 
-    @Override
-    public void onActivityEvent(BaseEvent event) {
-
-    }
 
     public static class Event extends BaseEvent {
         public static final int EVENT_CLICK_NEXT = 101;
