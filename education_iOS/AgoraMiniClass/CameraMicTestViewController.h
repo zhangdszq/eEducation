@@ -8,16 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-//typedef NS_ENUM(NSUInteger, ClassRoomRole) {
-//    ClassRoomRoleTeacther   = 0,
-//    ClassRoomRoleStudent  = 1,
-//    ClassRoomRoleAudience   = 2,
-//};
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CameraMicTestViewController : UIViewController
-//@property (nonatomic, assign) ClassRoomRole ClassRoomRole;
 @end
 
 NS_ASSUME_NONNULL_END

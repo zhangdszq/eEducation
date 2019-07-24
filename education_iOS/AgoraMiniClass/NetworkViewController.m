@@ -10,14 +10,15 @@
 #import "RoomViewController.h"
 #import "ClassRoomDataManager.h"
 
-@interface NetworkViewController ()<AgoraRtcEngineDelegate>
+@interface NetworkViewController ()<AgoraRtcEngineDelegate,ClassRoomDataManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *lostRateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *rttLabel;
 @property (weak, nonatomic) IBOutlet UILabel *qualityLabel;
 @property (weak, nonatomic) IBOutlet UIButton *netWorkQualityImage;
-
+@property (weak, nonatomic) IBOutlet UIButton *joinClassRoomButton;
 @property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
-@property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic, strong) UIActivityIndicatorView *joinRoomActivityIndicator;
 @property (nonatomic, strong) ClassRoomDataManager * classRoomDataManager;
 @end
 
@@ -27,13 +28,13 @@
     // Do any additional setup after loading the view.
     self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppid delegate:self];
     self.classRoomDataManager = [ClassRoomDataManager shareManager];
+    self.classRoomDataManager.classRoomManagerDelegate = self;
     AgoraLastmileProbeConfig *lastmileConfig = [[AgoraLastmileProbeConfig alloc] init];
     lastmileConfig.probeUplink = YES;
     lastmileConfig.probeDownlink = YES;
     lastmileConfig.expectedUplinkBitrate = 800;
     lastmileConfig.expectedDownlinkBitrate = 800;
     [self.agoraKit  startLastmileProbeTest:lastmileConfig];
-    [self setUpView];
 }
 
 - (void)setUpView {
@@ -41,13 +42,16 @@
     [self.view addSubview:self.activityIndicator];
     self.activityIndicator.frame= CGRectMake((kScreenWidth -100)/2, (kScreenHeight - 100)/2, 100, 100);
     self.activityIndicator.color = [UIColor grayColor];
-    self.activityIndicator.backgroundColor = [UIColor whiteColor];
+    self.activityIndicator.backgroundColor = [UIColor clearColor];
     self.activityIndicator.hidesWhenStopped = YES;
     [self.activityIndicator startAnimating];
 }
 
 - (IBAction)backButton:(UIButton *)sender {
     [self.agoraKit  stopLastmileProbeTest];
+    [self.classRoomDataManager removeClassRoomInfo];
+    [self.classRoomDataManager.agoraRtmChannel leaveWithCompletion:^(AgoraRtmLeaveChannelErrorCode errorCode) {
+    }];
     UIViewController * presentingViewController = self.presentingViewController;
     while (presentingViewController.presentingViewController) {
         presentingViewController = presentingViewController.presentingViewController;
@@ -56,22 +60,17 @@
 }
 
 - (IBAction)joinChannel:(UIButton *)sender {
-    if (self.activityIndicator.animating == NO) {
-        [self.agoraKit  stopLastmileProbeTest];
-        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-        RoomViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"room"];
-        [self presentViewController:roomVC animated:YES completion:nil];
-    }
+    [self setUpView];
+    [self.classRoomDataManager joinClassRoom];
+    self.joinClassRoomButton.enabled = NO;
 }
 
 #pragma mark ----- agoraDelegate -----
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine lastmileQuality:(AgoraNetworkQuality)quality {
     switch (quality) {
         case AgoraNetworkQualityUnknown:
-        {
             [self.netWorkQualityImage setImage:[UIImage imageNamed:@"networkNomal"] forState:(UIControlStateNormal)];
             [self.netWorkQualityImage setTitle:@"Nomal" forState:(UIControlStateNormal)];
-        }
             break;
         case AgoraNetworkQualityExcellent:
         case AgoraNetworkQualityGood:
@@ -92,19 +91,16 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine lastmileProbeTestResult:(AgoraLastmileProbeResult *_Nonnull)result {
-    [self.activityIndicator stopAnimating];
     [self.lostRateLabel setText:[NSString stringWithFormat:@"%lu",(unsigned long)result.uplinkReport.packetLossRate]];
     [self.rttLabel setAttributedText:[self changeLabelWithText:[NSString stringWithFormat:@"%lums",(unsigned long)result.rtt]]];
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     self.activityIndicator = nil;
     NSLog(@"NetworkViewController is dealloc");
 }
 
--(NSMutableAttributedString*)changeLabelWithText:(NSString*)needText
-{
+-(NSMutableAttributedString*)changeLabelWithText:(NSString*)needText {
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:needText];
     UIFont *font = [UIFont systemFontOfSize:36 weight:UIFontWeightMedium];
     [attrString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0,needText.length - 2)];
@@ -121,5 +117,28 @@
 
 - (BOOL)prefersStatusBarHidden {
     return NO;
+}
+
+#pragma mark  ------------------------  classRoomManagerDelegate ---------------------
+- (void)joinClassRoomSuccess {
+    self.joinClassRoomButton.enabled = YES;
+    [self.agoraKit  stopLastmileProbeTest];
+    [self.activityIndicator stopAnimating];
+    if (self.activityIndicator.animating == NO) {
+        [self.agoraKit  stopLastmileProbeTest];
+        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+        RoomViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"room"];
+        [self presentViewController:roomVC animated:YES completion:nil];
+    }
+}
+
+- (void)joinClassRoomError:(ClassRoomErrorcode)errorCode {
+    self.joinClassRoomButton.enabled = YES;
+    [self.activityIndicator stopAnimating];
+    UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:@"join classRoom error" message:@"no network" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *sure = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    }];
+    [alterVC addAction:sure];
+    [self presentViewController:alterVC animated:YES completion:nil];
 }
 @end

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-typedef void(^RoomTopButtonType)(UIButton *button);
+typedef void(^RoomTopButtonType)(UIButton * _Nullable button);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RoomManageView : UIView

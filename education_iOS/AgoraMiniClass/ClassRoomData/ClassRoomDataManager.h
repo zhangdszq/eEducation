@@ -10,11 +10,15 @@
 #import "RoomUserModel.h"
 #import "RoomMessageModel.h"
 
+
+
+
 @protocol ClassRoomDataManagerDelegate <NSObject>
 @optional
 - (void)joinClassRoomSuccess;
-- (void)joinClassRoomError;
+- (void)joinClassRoomError:(ClassRoomErrorcode)errorCode;
 - (void)teactherJoinSuccess;
+- (void)teactherLeaveClassRoom;
 - (void)updateStudentList;
 - (void)updateChatMessageList;
 - (void)muteLoaclVideoStream:(BOOL)stream;
@@ -33,12 +37,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *userName;
 @property (nonatomic, strong) NSMutableArray <RoomUserModel *> *studentArray;
 @property (nonatomic, strong) NSMutableArray <RoomMessageModel *> *messageArray;
+@property (nonatomic, strong) NSMutableArray <RoomUserModel *> *teactherArray;//写成数组的原因是后台没有限制进入频道的教师身份
+@property (nonatomic, strong) NSMutableDictionary <NSString *,RoomUserModel *> *memberInfo;
 @property (nonatomic, strong) AgoraRtmKit *agoraRtmKit;
 @property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
 @property (nonatomic, copy)  NSString *uuid;
 @property (nonatomic, copy)  NSString *roomToken;
-@property (nonatomic, strong) RoomUserModel *teactherModel;
-- (void)sendMessage:(NSString *)message;
+- (void)sendMessage:(NSString *)message completion:(AgoraRtmSendPeerMessageBlock _Nullable)completionBlock;
+- (void)removeClassRoomInfo;
+- (void)joinClassRoom;
 @end
 
 NS_ASSUME_NONNULL_END

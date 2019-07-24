@@ -21,9 +21,6 @@
 @end
 
 @implementation RoomManageView
-- (void)setClassRoomRole:(ClassRoomRole)classRoomRole {
-    _classRoomRole = classRoomRole;
-}
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -106,19 +103,53 @@
 }
 
 - (void)layoutButton:(UIButton *)button selected:(BOOL)selected{
+
     if (selected) {
         button.layer.borderWidth = 0;
-        [button setTitleColor:RCColorWithValue(0x007AFF, 1.f) forState:(UIControlStateNormal)];
+        [button setTitleColor:RCColorWithValue(0x006EDE, 1.f) forState:(UIControlStateNormal)];
         [button setBackgroundColor:RCColorWithValue(0xFFFFFF, 1.f)];
-        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13]];
-        [button.titleLabel setFont:[UIFont systemFontOfSize:13 weight:(UIFontWeightMedium)]];
+        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:12]];
+        [button.titleLabel setFont:[UIFont systemFontOfSize:12 weight:(UIFontWeightMedium)]];
     }else {
-        button.layer.borderWidth = 1;
-        button.layer.borderColor = RCColorWithValue(0xE8E8E8, 1).CGColor;
-        [button setTitleColor:RCColorWithValue(0x999999, 1.f) forState:(UIControlStateNormal)];
-        [button setBackgroundColor:RCColorWithValue(0xFAFAFA, 1.f)];
-        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13]];
-        [button.titleLabel setFont:[UIFont systemFontOfSize:13 weight:(UIFontWeightRegular)]];
+        if (button.tag == 1000) {
+            [self setBorderWithView:button top:YES left:YES bottom:YES right:NO borderColor:RCColorWithValue(0xA1D0FF, 1.f) borderWidth:1.f];
+        }else {
+            [self setBorderWithView:button top:YES left:NO bottom:YES right:YES borderColor:RCColorWithValue(0xA1D0FF, 1.f) borderWidth:1.f];
+        }
+        [button setTitleColor:RCColorWithValue(0xA1D0FF, 1.f) forState:(UIControlStateNormal)];
+        [button setBackgroundColor:[UIColor clearColor]];
+        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:12.f]];
+        [button.titleLabel setFont:[UIFont systemFontOfSize:12.f weight:(UIFontWeightRegular)]];
+    }
+    button.clipsToBounds = YES;
+    button.layer.cornerRadius = 2.f;
+}
+
+- (void)setBorderWithView:(UIButton *)view top:(BOOL)top left:(BOOL)left bottom:(BOOL)bottom right:(BOOL)right borderColor:(UIColor *)color borderWidth:(CGFloat)width
+{
+    if (top) {
+        CALayer *layer = [CALayer layer];
+        layer.frame = CGRectMake(0, 0, view.frame.size.width, width);
+        layer.backgroundColor = color.CGColor;
+        [view.layer addSublayer:layer];
+    }
+    if (left) {
+        CALayer *layer = [CALayer layer];
+        layer.frame = CGRectMake(0, 0, width, view.frame.size.height);
+        layer.backgroundColor = color.CGColor;
+        [view.layer addSublayer:layer];
+    }
+    if (bottom) {
+        CALayer *layer = [CALayer layer];
+        layer.frame = CGRectMake(0, view.frame.size.height - width, view.frame.size.width, width);
+        layer.backgroundColor = color.CGColor;
+        [view.layer addSublayer:layer];
+    }
+    if (right) {
+        CALayer *layer = [CALayer layer];
+        layer.frame = CGRectMake(view.frame.size.width - width, 0, width, view.frame.size.height);
+        layer.backgroundColor = color.CGColor;
+        [view.layer addSublayer:layer];
     }
 }
 
@@ -130,4 +161,7 @@
 
 }
 
+- (void)setClassRoomRole:(ClassRoomRole)classRoomRole {
+    _classRoomRole = classRoomRole;
+}
 @end

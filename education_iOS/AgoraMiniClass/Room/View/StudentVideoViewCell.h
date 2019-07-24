@@ -1,8 +1,8 @@
 //
-//  AgoraAlertViewController.h
+//  StudentVideoViewCell.h
 //  AgoraMiniClass
 //
-//  Created by yangmoumou on 2019/6/30.
+//  Created by yangmoumou on 2019/7/17.
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
@@ -10,8 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AgoraAlertViewController : UIAlertController
-- (void)autoDismiss:(float)time;
+@interface StudentVideoViewCell : UICollectionViewCell
+
 @end
 
 NS_ASSUME_NONNULL_END

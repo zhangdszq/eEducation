@@ -15,15 +15,6 @@
 @end
 
 @implementation MemberListView
-- (void)setMemberArray:(NSMutableArray *)memberArray {
-    _memberArray = memberArray;
-    [self reloadData];
-}
-- (void)setIsTeacther:(BOOL)isTeacther{
-    _isTeacther = isTeacther;
-     [self reloadData];
-}
-
 - (instancetype)initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
     if (self) {
@@ -45,14 +36,14 @@
         cell = [[MemberListViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"MemberCell"];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.roomUserModel = self.memberArray[indexPath.row];
+    cell.roomUserModel = self.studentArray[indexPath.row];
     cell.delegate = self;
     cell.isTeacther = _isTeacther;
     return cell;
 }
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.memberArray.count;
+    return self.studentArray.count;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -78,5 +69,15 @@
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
+}
+
+- (void)setStudentArray:(NSMutableArray *)studentArray {
+    _studentArray = studentArray;
+     [self reloadData];
+}
+
+- (void)setIsTeacther:(BOOL)isTeacther{
+    _isTeacther = isTeacther;
+    [self reloadData];
 }
 @end
