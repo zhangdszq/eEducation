@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="@dimen/dp_72"
+        android:layout_marginStart="@dimen/dp_5"
+        android:layout_height="@dimen/dp_72">
+
+        <ImageView
+            android:id="@+id/iv_bg_student"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_666666"
+            android:src="@mipmap/pic_empty" />
+
+        <FrameLayout
+            android:id="@+id/fl_student_video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_16"
+            android:layout_gravity="bottom"
+            android:background="@color/black_7F000000"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_4"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dp_10" />
+    </FrameLayout>
+
+    <Space
+        android:id="@+id/space_first_item_end"
+        android:layout_width="@dimen/dp_5"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</LinearLayout>

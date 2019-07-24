@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_content_main"
+    tools:context=".ui.fragment.PreviewFragment">
+
+    <FrameLayout
+        android:id="@+id/fl_camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/space_microphone_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:layout_constraintVertical_weight="331">
+
+    </FrameLayout>
+
+    <ImageView
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="@dimen/dp_36"
+        android:layout_marginEnd="@dimen/common_margin_width"
+        android:layout_marginBottom="@dimen/common_margin_width"
+        android:background="@color/grey_333333"
+        app:layout_constraintBottom_toBottomOf="@id/fl_camera_preview"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Space
+        android:id="@+id/space_microphone_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_microphone"
+        app:layout_constraintTop_toBottomOf="@id/fl_camera_preview"
+        app:layout_constraintVertical_weight="33" />
+
+    <TextView
+        android:id="@+id/tv_microphone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fl_camera_preview"
+        android:layout_marginStart="@dimen/dp_31"
+        android:text="@string/Microphone"
+        android:textColor="@color/grey_777777"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintBottom_toTopOf="@id/icon_microphone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_microphone_top" />
+
+    <ImageView
+        android:id="@+id/icon_microphone"
+        android:layout_width="@dimen/dp_27"
+        android:layout_height="@dimen/dp_27"
+        android:layout_marginStart="@dimen/dp_29"
+        android:layout_marginTop="@dimen/dp_6"
+        android:src="@mipmap/pic_microphone"
+        app:layout_constraintBottom_toTopOf="@id/space_speaker_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_microphone" />
+
+    <ProgressBar
+        android:id="@+id/pb_microphone"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_62"
+        android:layout_marginEnd="@dimen/dp_29"
+        android:maxHeight="@dimen/dp_2"
+        android:minHeight="@dimen/dp_2"
+        android:progress="0"
+        android:progressDrawable="@drawable/pb_microphone"
+        app:layout_constraintBottom_toBottomOf="@id/icon_microphone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/icon_microphone"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Space
+        android:id="@+id/space_speaker_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_speaker"
+        app:layout_constraintTop_toBottomOf="@id/icon_microphone"
+        app:layout_constraintVertical_weight="24" />
+
+    <TextView
+        android:id="@+id/tv_speaker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/icon_microphone"
+        android:layout_marginStart="@dimen/dp_31"
+        android:text="@string/Speaker"
+        android:textColor="@color/grey_777777"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintBottom_toTopOf="@id/icon_speaker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_speaker_top" />
+
+    <ImageView
+        android:id="@+id/icon_speaker"
+        android:layout_width="@dimen/dp_27"
+        android:layout_height="@dimen/dp_27"
+        android:layout_marginStart="@dimen/dp_29"
+        android:layout_marginTop="@dimen/dp_6"
+        android:src="@mipmap/pic_audio"
+        app:layout_constraintBottom_toTopOf="@id/space_next_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_speaker" />
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_56"
+        android:layout_marginEnd="@dimen/dp_22"
+        android:maxHeight="@dimen/dp_2"
+        android:minHeight="@dimen/dp_2"
+        android:progress="0"
+        android:progressDrawable="@drawable/pb_microphone"
+        android:thumb="@drawable/thumb_seekbar_speaker"
+        app:layout_constraintBottom_toBottomOf="@id/icon_speaker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon_speaker"
+        app:layout_constraintTop_toTopOf="@id/icon_speaker"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Space
+        android:id="@+id/space_next_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_btn_next"
+        app:layout_constraintTop_toBottomOf="@id/icon_speaker"
+        app:layout_constraintVertical_weight="36" />
+
+    <TextView
+        android:id="@+id/tv_btn_next"
+        android:layout_width="@dimen/dp_288"
+        android:layout_height="@dimen/dp_42"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@drawable/slt_join"
+        android:gravity="center"
+        android:text="@string/Next"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_next_top" />
+
+</android.support.constraint.ConstraintLayout>
