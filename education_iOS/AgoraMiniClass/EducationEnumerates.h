@@ -12,3 +12,10 @@ typedef NS_ENUM(NSUInteger, ClassRoomRole) {
     ClassRoomRoleStudent  = 1,
     ClassRoomRoleTeacther   = 2,
 };
+
+typedef NS_ENUM(NSUInteger, ClassRoomErrorcode) {
+    ClassRoomErrorCodeInvalidArgument  = 0,
+    ClassRoomErrorCodeInvalidServerRtmId  = 1,
+    ClassRoomErrorCodeInvalidWhiteboard  = 2,
+    ClassRoomErrorCodeNetDown  = 3,
+};

@@ -15,10 +15,6 @@
 @end
 
 @implementation MessageListView
-- (void)setMessageArray:(NSMutableArray *)messageArray {
-    _messageArray = messageArray;
-    [self reloadData];
-}
 - (instancetype)initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
     if (self) {
@@ -66,7 +62,15 @@
                                                options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
                                             attributes:attributes
                                                context:nil].size.height;
-
     return textHeight+30;
+}
+
+- (void)setMessageArray:(NSMutableArray *)messageArray {
+    _messageArray = messageArray;
+    [self reloadData];
+    if (messageArray.count > 0) {
+        [self scrollToRowAtIndexPath:
+         [NSIndexPath indexPathForRow:[self.messageArray count] - 1 inSection:0] atScrollPosition: UITableViewScrollPositionBottom animated:NO];
+    }
 }
 @end

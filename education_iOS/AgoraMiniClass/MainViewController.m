@@ -96,7 +96,9 @@
     self.agoraRtmChannel  =  [self.agoraRtmKit createChannelWithId:self.className delegate:self];
     WEAK(self)
     [self.agoraRtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        NSLog(@"---------------  %ld",(long)errorCode);
+        if (errorCode != AgoraRtmJoinChannelErrorOk) {
+            [weakself joinClassRoomError];
+        }
         weakself.roomDataManager.agoraRtmChannel = weakself.agoraRtmChannel;
     }];
 }
@@ -151,19 +153,21 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     [self.activityIndicator startAnimating];
-    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0) {
+    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self judgeClassRoomText:self.classNameTextFiled.text] || ![self judgeClassRoomText:self.userNameTextFiled.text]) {
+        UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:@"请检查房间号和用户名符合规格" message:@"11位及以内的数字或者英文字符" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *sure = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alterVC addAction:sure];
+        [self presentViewController:alterVC animated:YES completion:nil];
         [self.activityIndicator stopAnimating];
     }else {
-        if (self.teactherButton.selected || self.studentButton.selected || self.audienceButton.selected) {
-            self.className = self.classNameTextFiled.text;
-            self.userName = self.userNameTextFiled.text;
-            self.roomDataManager.className = self.className;
-            self.roomDataManager.userName = self.userName;
-            [self joinRtmChannel];
-            [self getServerRtmId];
-        }else {
-            [self.activityIndicator stopAnimating];
-        }
+
+        self.className = self.classNameTextFiled.text;
+        self.userName = self.userNameTextFiled.text;
+        self.roomDataManager.className = self.className;
+        self.roomDataManager.userName = self.userName;
+        [self getServerRtmId];
+        [self joinRtmChannel];
     }
 }
 
@@ -173,6 +177,26 @@
     [self presentViewController:roomVC animated:YES completion:nil];
 }
 
+- (BOOL)judgeClassRoomText:(NSString *)text {
+    NSString *regex = @"^[a-zA-Z0-9]*$";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    if ([predicate evaluateWithObject:text] && text.length < 11) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)joinClassRoomError {
+    [self.activityIndicator stopAnimating];
+    UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:@"join classRoom error" message:@"no network" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *sure = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    }];
+    [alterVC addAction:sure];
+    [self presentViewController:alterVC animated:YES completion:nil];
+
+}
+
 #pragma MARK -----------------------  AgoraRtmDelegate -------------------------
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
 
@@ -180,16 +204,6 @@
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
     NSLog(@"%@----- %@",member.userId,member.channelId);
-}
-
-#pragma mark -------------------- ClassRoomDelegate -----------
-- (void)joinClassRoomError {
-    [self.activityIndicator stopAnimating];
-}
-
-- (void)joinClassRoomSuccess {
-    [self.activityIndicator stopAnimating];
-    [self presentNextViewController];
 }
 
 #pragma mark --------------------- GET ---------------------
@@ -203,20 +217,14 @@
 - (void)getServerRtmId {
     WEAK(self)
     [AgoraHttpRequest get:kGetServerRtmIdUrl params:nil success:^(id responseObj) {
+        [weakself.activityIndicator stopAnimating];
         NSString * str  =[[NSString alloc] initWithData:responseObj encoding:NSUTF8StringEncoding];
         weakself.roomDataManager.serverRtmId = str;
         weakself.serverRtmId = str;
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@(weakself.classRoomRole),@"role",weakself.userName,@"name",weakself.uid,@"streamId", nil];
-        NSDictionary *argsInfo = [NSDictionary dictionaryWithObjectsAndKeys:weakself.className,@"channel",userInfo,@"userAttr", nil];
-        NSDictionary  *requestInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"Join",@"name",argsInfo,@"args", nil];
-        NSString *requestStr =  [JsonAndStringConversions dictionaryToJson:requestInfo];
-        AgoraRtmMessage *message = [[AgoraRtmMessage alloc] init];
-        message.text = requestStr;
-        [weakself.agoraRtmKit sendMessage:message toPeer:weakself.serverRtmId completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-            NSLog(@"%ld",(long)errorCode);
-        }];
+        [weakself presentNextViewController];
     } failure:^(NSError *error) {
-        
+        [weakself.activityIndicator stopAnimating];
+        [weakself joinClassRoomError];
     }];
 }
 

@@ -17,25 +17,6 @@
 @end
 
 @implementation MemberListViewCell
-- (void)setRoomUserModel:(RoomUserModel *)roomUserModel {
-    _roomUserModel = roomUserModel;
-    self.nameLabel.text = roomUserModel.name;
-    self.cameraButton.selected = self.roomUserModel.isMuteVideo ? YES : NO;
-    self.micButton.selected = self.roomUserModel.isMuteAudio ? YES : NO;
-    [self updateBackgroundImageButton:self.cameraButton];
-    [self updateBackgroundImageButton:self.micButton];
-}
-
-- (void)setIsTeacther:(BOOL)isTeacther {
-    _isTeacther = isTeacther;
-    if (isTeacther) {
-        self.cameraButton.hidden = NO;
-        self.micButton.hidden = NO;
-    }else {
-        self.cameraButton.hidden = YES;
-        self.micButton.hidden = YES;
-    }
-}
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -83,4 +64,23 @@
     // Configure the view for the selected state
 }
 
+- (void)setRoomUserModel:(RoomUserModel *)roomUserModel {
+    _roomUserModel = roomUserModel;
+    self.nameLabel.text = roomUserModel.name;
+    self.cameraButton.selected = self.roomUserModel.isMuteVideo ? YES : NO;
+    self.micButton.selected = self.roomUserModel.isMuteAudio ? YES : NO;
+    [self updateBackgroundImageButton:self.cameraButton];
+    [self updateBackgroundImageButton:self.micButton];
+}
+
+- (void)setIsTeacther:(BOOL)isTeacther {
+    _isTeacther = isTeacther;
+    if (isTeacther) {
+        self.cameraButton.hidden = NO;
+        self.micButton.hidden = NO;
+    }else {
+        self.cameraButton.hidden = YES;
+        self.micButton.hidden = YES;
+    }
+}
 @end
