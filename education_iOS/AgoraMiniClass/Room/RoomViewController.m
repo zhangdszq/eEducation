@@ -164,6 +164,8 @@
             if (success) {
                 weakself.title = NSLocalizedString(@"我的白板", nil);
                 weakself.whiteRoom = room;
+                WhiteRectangleConfig *config = [[WhiteRectangleConfig alloc] initWithInitialPosition:kScreenWidth height:kScreenHeight animation:(AnimationModeContinuous)];
+                [weakself.whiteRoom moveCameraToContainer:config];
                 if (weakself.role == ClassRoomRoleAudience) {
                     weakself.whiteBoardTool.hidden = YES;
                     [weakself.whiteRoom disableOperations:YES];
