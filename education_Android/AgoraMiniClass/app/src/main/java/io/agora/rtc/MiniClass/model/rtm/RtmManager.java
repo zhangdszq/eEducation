@@ -1,6 +1,8 @@
 package io.agora.rtc.MiniClass.model.rtm;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogRecord;
 
 import io.agora.rtc.MiniClass.BuildConfig;
 import io.agora.rtc.MiniClass.R;
@@ -24,6 +27,7 @@ import io.agora.rtc.MiniClass.model.bean.MemberJoined;
 import io.agora.rtc.MiniClass.model.bean.Mute;
 import io.agora.rtc.MiniClass.model.bean.RtmRoomControl;
 import io.agora.rtc.MiniClass.model.bean.UpdateChannelAttr;
+import io.agora.rtc.MiniClass.model.bean.UpdateUserAttr;
 import io.agora.rtc.MiniClass.model.config.UserConfig;
 import io.agora.rtc.MiniClass.model.util.LogUtil;
 import io.agora.rtm.ErrorInfo;
@@ -147,6 +151,8 @@ public class RtmManager {
         }
     };
 
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+
     public void init() {
         String appID = mContext.getString(R.string.agora_app_id);
 
@@ -164,16 +170,21 @@ public class RtmManager {
                     try {
                         if (response.code() == 200) {
 //                                    JsonObject rtmId = new Gson().fromJson(response.body().string(), JsonObject.class);
-                            String rtmId = response.body().string();
+                            final String rtmId = response.body().string();
 
                             log.i("getRtmId:" + rtmId);
 
                             if (!TextUtils.isEmpty(rtmId)) {
-                                UserConfig.setRtmServerId(rtmId);
-                                log.d("setRtmSererId" + rtmId);
-                                if (mLoginStatus == LOGIN_STATUS_ONLINE) {
-                                    changeLoginStatus(LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE);
-                                }
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        UserConfig.setRtmServerId(rtmId);
+                                        log.d("setRtmSererId" + rtmId);
+                                        if (mLoginStatus == LOGIN_STATUS_ONLINE) {
+                                            changeLoginStatus(LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE);
+                                        }
+                                    }
+                                });
                             }
 
                         } else {
@@ -221,7 +232,8 @@ public class RtmManager {
 
             @Override
             public void onFailure(ErrorInfo errorInfo) {
-                changeLoginStatus(LOGIN_STATUS_LOGIN_FAILED);
+//                changeLoginStatus(LOGIN_STATUS_LOGIN_FAILED);
+                login();
                 log.e("login failed, info:" + errorInfo.toString());
             }
         });
@@ -271,18 +283,24 @@ public class RtmManager {
         mLoginStatus = LOGIN_STATUS_IDLE;
     }
 
-    private void changeLoginStatus(int loginStatus) {
-        mLoginStatus = loginStatus;
-        log.d("loginstatus" + mLoginStatus);
+    private void changeLoginStatus(final int loginStatus) {
 
-        log.d("getRtmServerId" + UserConfig.getRtmServerId());
-        if (mLoginStatus == LOGIN_STATUS_ONLINE && !TextUtils.isEmpty(UserConfig.getRtmServerId())) {
-            changeLoginStatus(LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE);
-        } else {
-            if (loginStatusListener != null) {
-                loginStatusListener.onLoginStatusChanged(loginStatus);
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mLoginStatus = loginStatus;
+                log.d("loginstatus" + mLoginStatus);
+
+                log.d("getRtmServerId" + UserConfig.getRtmServerId());
+                if (mLoginStatus == LOGIN_STATUS_ONLINE && !TextUtils.isEmpty(UserConfig.getRtmServerId())) {
+                    changeLoginStatus(LOGIN_STATUS_ONLINE_AND_SEVER_ENABLE);
+                } else {
+                    if (loginStatusListener != null) {
+                        loginStatusListener.onLoginStatusChanged(loginStatus);
+                    }
+                }
             }
-        }
+        });
     }
 
     private LoginStatusListener loginStatusListener;
@@ -314,44 +332,6 @@ public class RtmManager {
         }
     }
 
-    public void mute(boolean isMute, String type, String streamId, ResultCallback<Void> callback) {
-        Mute mute = new Mute();
-        mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
-        mute.args = new Mute.Args();
-//        mute.args.uid = streamId;
-        mute.args.target = new ArrayList<>();
-        mute.args.target.add(streamId);
-        mute.args.type = type;
-
-        sendChatMsg(mute, callback);
-    }
-
-    public void muteArray(boolean isMute, String type, List<String> target, ResultCallback<Void> callback) {
-        Mute mute = new Mute();
-        mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
-        mute.args = new Mute.Args();
-        mute.args.target = target;
-        mute.args.type = type;
-
-        sendChatMsg(mute, callback);
-    }
-
-    public void updateChannelAttr(RtmRoomControl.ChannelAttr channelAttr, ResultCallback<Void> callback) {
-        RtmMessage msg = mRtmClient.createMessage();
-
-        UpdateChannelAttr attr = new UpdateChannelAttr();
-        attr.args = new UpdateChannelAttr.Args();
-        attr.args.channelAttr = channelAttr;
-
-        Gson gson = new Gson();
-        String json = gson.toJson(attr);
-        msg.setText(json);
-
-        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), msg, callback);
-
-        log.i("updateChannelAttr:" + json);
-    }
-
     public interface LoginStatusListener {
         void onLoginStatusChanged(int loginStatus);
     }
@@ -379,8 +359,48 @@ public class RtmManager {
     }
 
 
+    public void mute(boolean isMute, String type, String streamId, ResultCallback<Void> callback) {
+        Mute mute = new Mute();
+        mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
+        mute.args = new Mute.Args();
+        mute.args.target = new ArrayList<>();
+        mute.args.target.add(streamId);
+        mute.args.type = type;
+
+        sendChatMsg(mute, callback);
+    }
+
+    public void muteArray(boolean isMute, String type, List<String> target, ResultCallback<Void> callback) {
+        Mute mute = new Mute();
+        mute.name = isMute ? Mute.MUTE_REQUEST : Mute.UN_MUTE_REQUEST;
+        mute.args = new Mute.Args();
+        mute.args.target = target;
+        mute.args.type = type;
+
+        sendChatMsg(mute, callback);
+    }
+
+    public void updateChannelAttr(RtmRoomControl.ChannelAttr channelAttr, ResultCallback<Void> callback) {
+        UpdateChannelAttr attr = new UpdateChannelAttr();
+        attr.args = new UpdateChannelAttr.Args();
+        attr.args.channelAttr = channelAttr;
+
+        sendChatMsg(attr, callback);
+    }
+
+    public void updateUserAttr(RtmRoomControl.UserAttr attr, ResultCallback<Void> callback) {
+        if (attr == null || TextUtils.isEmpty(attr.streamId))
+            return;
+
+        UpdateUserAttr updateUserAttr = new UpdateUserAttr();
+        updateUserAttr.args = new UpdateUserAttr.Args();
+        updateUserAttr.args.uid = attr.streamId;
+        updateUserAttr.args.userAttr = attr;
+
+        sendChatMsg(updateUserAttr, callback);
+    }
+
     public void sendJoinMsg(ResultCallback<Void> callback) {
-        RtmMessage msg = mRtmClient.createMessage();
         JoinRequest bean = new JoinRequest();
         bean.args = new JoinRequest.Args();
         bean.args.channel = UserConfig.getRtmChannelName();
@@ -391,13 +411,7 @@ public class RtmManager {
         attr.streamId = UserConfig.getRtmUserId();
         bean.args.userAttr = attr;
 
-        Gson gson = new Gson();
-        String json = gson.toJson(bean);
-        msg.setText(json);
-
-        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), msg, callback);
-
-        log.i("send message:" + json + ", peerId: " + UserConfig.getRtmServerId());
+        sendChatMsg(bean, callback);
     }
 
     public void sendChatMsg(Object msg, final ResultCallback<Void> callback) {
@@ -405,24 +419,11 @@ public class RtmManager {
             return;
 
         RtmMessage rtmMessage = mRtmClient.createMessage();
-
         String json = new Gson().toJson(msg);
-        log.d("send:" + json);
         rtmMessage.setText(json);
-        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), rtmMessage, new ResultCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                log.d("send channel msgArgs success.");
-                if (callback != null)
-                    callback.onSuccess(null);
-            }
 
-            @Override
-            public void onFailure(ErrorInfo errorInfo) {
-                log.d("send channel msgArgs fail." + errorInfo.toString());
-                callback.onFailure(errorInfo);
-            }
-        });
+        mRtmClient.sendMessageToPeer(UserConfig.getRtmServerId(), rtmMessage, callback);
+        log.d("send:" + json);
     }
 
 

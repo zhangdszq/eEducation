@@ -2,6 +2,7 @@ package io.agora.rtc.MiniClass.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -36,7 +37,7 @@ public class VideoCallFragment extends BaseFragment {
 
     private RecyclerView mRcvStudentVideoList;
     private RcvStudentVideoListAdapter mRcvAdapter;
-    private FrameLayout mFlTeacherVideo, mFlStudentVideoList;
+    private FrameLayout mFlTeacherVideo, mFlStudentVideoList, mFlTeacherVideoLayout;
     private TextView mTvTeacherName;
     private ImageView mIvBgTeacher;
 
@@ -52,6 +53,7 @@ public class VideoCallFragment extends BaseFragment {
         View root = inflater.inflate(R.layout.fragment_video_call, container, false);
 
         mFlTeacherVideo = root.findViewById(R.id.fl_video_teacher);
+        mFlTeacherVideoLayout = root.findViewById(R.id.fl_video_teacher_layout);
         mFlStudentVideoList = root.findViewById(R.id.fl_student_video_list);
         mTvTeacherName = root.findViewById(R.id.tv_name_teacher);
         mIvBgTeacher = root.findViewById(R.id.iv_bg_teacher);
@@ -99,7 +101,7 @@ public class VideoCallFragment extends BaseFragment {
             @Override
             public void onUserMuteAudio(int uid, boolean muted) {
                 if (mListener != null) {
-                    Event muteAudioEvent = new Event(Event.EVENT_TYPE_MUTE_VIDEO_FROM_RTC);
+                    Event muteAudioEvent = new Event(Event.EVENT_TYPE_MUTE_AUDIO_FROM_RTC);
                     muteAudioEvent.bool1 = muted;
                     muteAudioEvent.text1 = String.valueOf(uid & 0xFFFFFFFFL);
                     mListener.onFragmentEvent(muteAudioEvent);
@@ -123,7 +125,7 @@ public class VideoCallFragment extends BaseFragment {
 
     private void initStudentsLayout(final View root) {
         mRcvStudentVideoList = root.findViewById(R.id.rcv_student_list_video);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager((Context) mListener, LinearLayoutManager.HORIZONTAL, true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager((Context) mListener, LinearLayoutManager.HORIZONTAL, false);
 //        linearLayoutManager.setStackFromEnd(true);
         mRcvStudentVideoList.setLayoutManager(linearLayoutManager);
         mRcvAdapter = new RcvStudentVideoListAdapter();
@@ -169,6 +171,9 @@ public class VideoCallFragment extends BaseFragment {
 
             mRcvAdapter.setList(updateMembersEvent.getUserAttrList());
             mRcvAdapter.notifyDataSetChanged();
+            if (mRcvAdapter.getItemCount() > 3) {
+                mRcvStudentVideoList.smoothScrollToPosition(mRcvAdapter.getItemCount() - 1);
+            }
 
             RtmRoomControl.UserAttr myAttr = UserConfig.getUserAttrByUserId(UserConfig.getRtmUserId());
             if (myAttr != null) {
@@ -179,8 +184,16 @@ public class VideoCallFragment extends BaseFragment {
             switch (event.getEventType()) {
                 case Event.EVENT_TYPE_MAX:
                     mFlStudentVideoList.setVisibility(View.GONE);
+                    ConstraintLayout.LayoutParams lpMax = (ConstraintLayout.LayoutParams) mFlTeacherVideoLayout.getLayoutParams();
+                    lpMax.topMargin = getResources().getDimensionPixelSize(R.dimen.dp_3);
+                    lpMax.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.dp_3));
+                    mFlTeacherVideoLayout.setLayoutParams(lpMax);
                     break;
                 case Event.EVENT_TYPE_MIN:
+                    ConstraintLayout.LayoutParams lpMin = (ConstraintLayout.LayoutParams) mFlTeacherVideoLayout.getLayoutParams();
+                    lpMin.topMargin = 0;
+                    lpMin.setMarginEnd(0);
+                    mFlTeacherVideoLayout.setLayoutParams(lpMin);
                     mFlStudentVideoList.setVisibility(View.VISIBLE);
                     break;
             }
@@ -188,17 +201,17 @@ public class VideoCallFragment extends BaseFragment {
             MuteEvent muteEvent = (MuteEvent) event;
             RtmRoomControl.UserAttr attr = muteEvent.getUserAttr();
             if (attr != null) {
-                if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
-                    updateTeacher(attr);
-                } else {
-                    if (Mute.AUDIO.equals(muteEvent.muteType)) {
-                        if (UserConfig.getRtmUserId().equals(attr.streamId)) {
-                            rtcEngine().muteLocalAudioStream(attr.isMuteAudio);
-                        }
-                    } else if (Mute.VIDEO.equals(muteEvent.muteType)) {
-                        if (UserConfig.getRtmUserId().equals(attr.streamId)) {
-                            rtcEngine().muteLocalVideoStream(attr.isMuteVideo);
-                        }
+                if (Mute.AUDIO.equals(muteEvent.muteType)) {
+                    if (UserConfig.getRtmUserId().equals(attr.streamId)) {
+                        rtcEngine().muteLocalAudioStream(attr.isMuteAudio);
+                    }
+                } else if (Mute.VIDEO.equals(muteEvent.muteType)) {
+                    if (UserConfig.getRtmUserId().equals(attr.streamId)) {
+                        rtcEngine().muteLocalVideoStream(attr.isMuteVideo);
+                    }
+                    if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
+                        updateTeacher(attr);
+                    } else {
                         mRcvAdapter.updateItemById(attr.streamId, attr);
                     }
                 }

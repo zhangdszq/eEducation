@@ -105,7 +105,7 @@ public class HomeFragment extends BaseFragment {
             }
         });
 
-        tvBtnRoleAudience.setSelected(true);
+        tvBtnRoleAudience.callOnClick();
     }
 
     private void clearRoleSelected() {
