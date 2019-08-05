@@ -26,19 +26,17 @@ public class MyDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        listener.clickNo();
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        Dialog dialog = new Dialog(getActivity());
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                listener.clickNo();
-            }
-        });
+        Dialog dialog = new Dialog(getActivity(), getTheme());
+        setCancelable(true);
         return dialog;
     }
 

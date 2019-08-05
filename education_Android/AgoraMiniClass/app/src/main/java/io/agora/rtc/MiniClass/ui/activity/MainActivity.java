@@ -33,14 +33,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (showingFragment == lastMileFragment) {
-            showLastMileFragment();
-//        } else if (showingFragment == previewFragment) {
-//            showPreviewFragment();
-        } else {
+    protected void onResume() {
+        super.onResume();
+        if (showingFragment == null || showingFragment == homeFragment) {
             showHomeFragment();
+        } else {
+            showLastMileFragment();
         }
     }
 
@@ -61,7 +59,8 @@ public class MainActivity extends BaseActivity {
             if (event.getEventType() == LastMileFragment.Event.EVENT_CLICK_OK) {
                 startActivity(new Intent(this, MiniClassActivity.class));
                 showingFragment = null;
-//                lastMileFragment = null;
+                previewFragment = null;
+                lastMileFragment = null;
             }
         }
     }

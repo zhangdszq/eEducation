@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AgoraMiniClass</string>
 
-    <string name="agora_app_id">aab8b8f5a8cd4469a63042fcfafe7063</string>
+    <string name="agora_app_id"><your_app_id></string>
 
     <string name="powerd_by_agora_io">Powerd by Agora.io</string>
 
@@ -41,5 +41,9 @@
     <string name="send_message_failed">Send message failed.</string>
 
     <string name="There_is_no_teacher_in_this_classroom">There is no teacher in this classroom.</string>
+
+    <string name="Teacher_left">Teacher Left.</string>
+
+    <string name="Teacher_joined">Teacher Joined.</string>
 
 </resources>

@@ -66,8 +66,8 @@ public class RcvStudentVideoListAdapter extends RcvBaseAdapter<RtmRoomControl.Us
         RtcEngine rtcEngine = AGApplication.the().getWorkerThread().getRtcEngine();
 
         if (rtcEngine == null || studentVideoBean.isMuteVideo
-                || (!Constant.Role.TEACHER.strValue().equals(studentVideoBean.role)
-                && !Constant.Role.STUDENT.strValue().equals(studentVideoBean.role))) {
+                /*|| (!Constant.Role.TEACHER.strValue().equals(studentVideoBean.role)
+                && !Constant.Role.STUDENT.strValue().equals(studentVideoBean.role))*/) {
 
             if (myViewHolder.flStudentVideo.getChildCount() > 0) {
                 myViewHolder.flStudentVideo.removeAllViews();
@@ -83,12 +83,14 @@ public class RcvStudentVideoListAdapter extends RcvBaseAdapter<RtmRoomControl.Us
                 } else {
                     rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, Constants.RENDER_MODE_HIDDEN, uid));
                 }
-
+                if (myViewHolder.flStudentVideo.getChildCount() > 0) {
+                    myViewHolder.flStudentVideo.removeAllViews();
+                }
                 myViewHolder.flStudentVideo.addView(surfaceView);
+                myViewHolder.ivBgStudent.setVisibility(View.GONE);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            myViewHolder.ivBgStudent.setVisibility(View.GONE);
         }
     }
 

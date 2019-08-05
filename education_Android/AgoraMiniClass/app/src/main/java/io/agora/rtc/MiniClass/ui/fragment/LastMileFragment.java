@@ -111,6 +111,9 @@ public class LastMileFragment extends BaseFragment {
     };
 
     private void initLasMileTest() {
+        if (rtcWorkerThread() == null || rtcEngine() == null)
+            return;
+
         rtcWorkerThread().setRtcEventHandler(rtcEngineEventHandler);
 
         LastmileProbeConfig config = new LastmileProbeConfig();
@@ -128,8 +131,10 @@ public class LastMileFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        rtcEngine().stopLastmileProbeTest();
-        rtcWorkerThread().setRtcEventHandler(null);
+        if (rtcWorkerThread() != null && rtcEngine() != null) {
+            rtcEngine().stopLastmileProbeTest();
+            rtcWorkerThread().setRtcEventHandler(null);
+        }
     }
 
     public static class Event extends BaseEvent {

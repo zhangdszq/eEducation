@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,37 +23,58 @@ public class UserConfig {
 
     private static volatile RtmRoomControl.ChannelAttr channelAttr;
 
-    private static Map<String, RtmRoomControl.UserAttr> channelStudentsAttrs = new ConcurrentHashMap<>();
-    private static volatile RtmRoomControl.UserAttr teacherAttr;
+    private static Map<String, RtmRoomControl.UserAttr> teacherAttrs = new ConcurrentHashMap<>();
+    private static Map<String, RtmRoomControl.UserAttr> studentAttrs = new ConcurrentHashMap<>();
+    private static Map<String, RtmRoomControl.UserAttr> audienceAttrs = new ConcurrentHashMap<>();
 
     public static RtmRoomControl.UserAttr getTeacherAttr() {
-        return teacherAttr;
+        Collection<RtmRoomControl.UserAttr> c = teacherAttrs.values();
+        Iterator<RtmRoomControl.UserAttr> it = c.iterator();
+        if (it.hasNext())
+            return it.next();
+        else
+            return null;
     }
 
-    public static void setTeacherAttr(RtmRoomControl.UserAttr teacherAttr) {
-        UserConfig.teacherAttr = teacherAttr;
+    public static void addTeacherAttr(RtmRoomControl.UserAttr teacherAttr) {
+        if (teacherAttr == null || TextUtils.isEmpty(teacherAttr.streamId))
+            return;
+        teacherAttrs.put(teacherAttr.streamId, teacherAttr);
     }
 
     public static void addStudentAttr(RtmRoomControl.UserAttr studentAttr) {
         if (studentAttr == null || TextUtils.isEmpty(studentAttr.streamId))
             return;
 
-        channelStudentsAttrs.put(studentAttr.streamId, studentAttr);
+        studentAttrs.put(studentAttr.streamId, studentAttr);
     }
 
-    public static List<RtmRoomControl.UserAttr> getChannelStudentsAttrsList() {
-        return new ArrayList<>(channelStudentsAttrs.values());
+    public static List<RtmRoomControl.UserAttr> getStudentAttrsList() {
+        return new ArrayList<>(studentAttrs.values());
     }
 
-    public static void removeMember(String uid) {
-        if (TextUtils.isEmpty(uid))
+    public static void addAudienceAttr(RtmRoomControl.UserAttr audienceAttr) {
+        if (audienceAttr == null || TextUtils.isEmpty(audienceAttr.streamId))
             return;
 
-        if (teacherAttr != null && uid.equals(teacherAttr.streamId)) {
-            teacherAttr = null;
-        } else {
-            channelStudentsAttrs.remove(uid);
-        }
+        audienceAttrs.put(audienceAttr.streamId, audienceAttr);
+    }
+
+    public static List<RtmRoomControl.UserAttr> getAudienceAttrsList() {
+        return new ArrayList<>(audienceAttrs.values());
+    }
+
+    public static RtmRoomControl.UserAttr removeMember(String uid) {
+        if (TextUtils.isEmpty(uid))
+            return null;
+
+        RtmRoomControl.UserAttr result = null;
+        result = teacherAttrs.remove(uid);
+        if (result == null)
+            result = studentAttrs.remove(uid);
+        if (result == null)
+            result = audienceAttrs.remove(uid);
+        return result;
     }
 
     public static void putMember(RtmRoomControl.UserAttr attr) {
@@ -61,9 +82,11 @@ public class UserConfig {
             return;
 
         if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
-            setTeacherAttr(attr);
+            addTeacherAttr(attr);
         } else if (Constant.Role.STUDENT.strValue().equals(attr.role)) {
             addStudentAttr(attr);
+        } else {
+            addAudienceAttr(attr);
         }
     }
 
@@ -71,21 +94,25 @@ public class UserConfig {
         if (TextUtils.isEmpty(userId))
             return null;
 
-        if (teacherAttr != null && teacherAttr.streamId != null && teacherAttr.streamId.equals(rtmUserId)) {
-            return teacherAttr;
-        }
+        RtmRoomControl.UserAttr attr = teacherAttrs.get(userId);
 
-        return channelStudentsAttrs.get(userId);
+        if (attr == null)
+            attr = studentAttrs.get(userId);
+
+        if (attr == null)
+            attr = audienceAttrs.get(userId);
+
+        return attr;
     }
 
-    public static void setChannelStudentsAttrs(List<RtmRoomControl.UserAttr> channelMembersAttrList) {
-        UserConfig.channelStudentsAttrs = new ConcurrentHashMap<>();
+    public static void setStudentAttrs(List<RtmRoomControl.UserAttr> channelMembersAttrList) {
+        UserConfig.studentAttrs = new ConcurrentHashMap<>();
         if (channelMembersAttrList == null)
             return;
 
         for (RtmRoomControl.UserAttr userAttr : channelMembersAttrList) {
             if (userAttr != null && userAttr.streamId != null) {
-                channelStudentsAttrs.put(userAttr.streamId, userAttr);
+                studentAttrs.put(userAttr.streamId, userAttr);
             }
         }
     }
@@ -183,5 +210,9 @@ public class UserConfig {
         rtmUserId = null;
         rtmChannelName = null;
         whiteBordUserId = null;
+
+        teacherAttrs = new ConcurrentHashMap<>();
+        studentAttrs = new ConcurrentHashMap<>();
+        audienceAttrs = new ConcurrentHashMap<>();
     }
 }
