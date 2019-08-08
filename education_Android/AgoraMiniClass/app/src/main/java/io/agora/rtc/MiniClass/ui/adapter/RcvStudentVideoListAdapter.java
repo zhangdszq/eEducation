@@ -31,11 +31,8 @@ public class RcvStudentVideoListAdapter extends RcvBaseAdapter<RtmRoomControl.Us
         }
         for (int i = 0; i < mList.size(); i++) {
             if (id.equals(getItemStringId(i))) {
-//                RtmRoomControl.UserAttr oldItem =
                 mList.set(i, item);
-//                if (oldItem.isMuteVideo != item.isMuteVideo || oldItem.name == null || !oldItem.name.equals(item.name)) {
                 notifyItemChanged(i);
-//                }
             }
         }
     }

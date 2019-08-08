@@ -62,7 +62,6 @@ public class MiniClassActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mini_class);
 
-//        mFlRTCLayout = findViewById(R.id.fl_video_call_layout);
         mClRTMLayout = findViewById(R.id.cl_rtm_layout);
         mFlWhiteBoardLayout = findViewById(R.id.fl_white_board_layout);
         mFl_loading = findViewById(R.id.fl_progress_bar);
@@ -167,23 +166,11 @@ public class MiniClassActivity extends BaseActivity {
                     return;
 
                 boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
-                if (args.type.equals(Mute.CHAT)) {
-//                    userAttr.isMuteVideo = isMute;
-//                    userAttr.isMuteAudio = isMute;
-                } else if (args.type.equals(Mute.AUDIO)) {
+                if (args.type.equals(Mute.AUDIO)) {
                     userAttr.isMuteAudio = isMute;
                 } else if (args.type.equals(Mute.VIDEO)) {
                     userAttr.isMuteVideo = isMute;
                 }
-
-//                UserConfig.putMember(userAttr);
-
-//                final RtmRoomControl.UserAttr finalAttr = new RtmRoomControl.UserAttr();
-//                finalAttr.isMuteAudio = userAttr.isMuteAudio;
-//                finalAttr.isMuteVideo = userAttr.isMuteVideo;
-//                finalAttr.streamId = userAttr.streamId;
-//                finalAttr.role = userAttr.role;
-//                finalAttr.name = userAttr.name;
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -204,9 +191,26 @@ public class MiniClassActivity extends BaseActivity {
                     public void run() {
                         if (isFinishing())
                             return;
-                        UserConfig.setChannelAttr(channelAttrUpdated.args.channelAttr);
 
-                        updateChannelAttr(channelAttrUpdated.args.channelAttr);
+                        RtmRoomControl.ChannelAttr attr = UserConfig.getChannelAttr();
+                        RtmRoomControl.ChannelAttr attrUpdate = channelAttrUpdated.args.channelAttr;
+                        if (attr == null) {
+                            attr = attrUpdate;
+                        } else {
+                            if (!TextUtils.isEmpty(attrUpdate.teacherId))
+                                attr.teacherId = attrUpdate.teacherId;
+                            if (!TextUtils.isEmpty(attrUpdate.whiteboardId))
+                                attr.whiteboardId = attrUpdate.whiteboardId;
+                            if (attrUpdate.isRecording != 0)
+                                attr.isRecording = attrUpdate.isRecording;
+                            if (attrUpdate.isSharing != 0)
+                                attr.isSharing = attrUpdate.isSharing;
+                            if (attrUpdate.shareId != 0)
+                                attr.shareId = attrUpdate.shareId;
+                        }
+                        UserConfig.setChannelAttr(attr);
+
+                        updateChannelAttr(attr);
                     }
                 });
             }
@@ -473,10 +477,6 @@ public class MiniClassActivity extends BaseActivity {
                     errorAlert(event.text1, event.text2);
                     break;
 
-//                case WhiteBoardFragment.Event.EVENT_TYPE_EXIT:
-//                    onBackPressed();
-//                    break;
-
                 case WhiteBoardFragment.Event.EVENT_TYPE_MAX:
                     mClRTMLayout.setVisibility(View.GONE);
                     ConstraintLayout.LayoutParams layoutParamsMax = (ConstraintLayout.LayoutParams) mFlWhiteBoardLayout.getLayoutParams();
@@ -529,8 +529,6 @@ public class MiniClassActivity extends BaseActivity {
                         userAttr.isMuteAudio = event.bool1;
                     }
                     notifyMuteMember(Mute.AUDIO, userAttr);
-
-//                    rtmManager().updateUserAttr(userAttr, null);
                     break;
 
                 case WhiteBoardFragment.Event.EVENT_TYPE_MUTE_LOCAL_VIDEO_BY_UI:
@@ -540,13 +538,6 @@ public class MiniClassActivity extends BaseActivity {
 
                     userAttr1.isMuteVideo = event.bool1;
 
-//                    rtmManager().updateUserAttr(userAttr1, null);
-//                    RtmRoomControl.UserAttr newUserAttr = new RtmRoomControl.UserAttr();
-//                    newUserAttr.isMuteVideo = userAttr1.isMuteVideo;
-//                    newUserAttr.isMuteAudio = userAttr1.isMuteAudio;
-//                    newUserAttr.name = userAttr1.name;
-//                    newUserAttr.role = userAttr1.role;
-//                    newUserAttr.streamId = userAttr1.streamId;
                     notifyMuteMember(Mute.VIDEO, userAttr1);
                     break;
             }

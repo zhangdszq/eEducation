@@ -126,7 +126,6 @@ public class VideoCallFragment extends BaseFragment {
     private void initStudentsLayout(final View root) {
         mRcvStudentVideoList = root.findViewById(R.id.rcv_student_list_video);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager((Context) mListener, LinearLayoutManager.HORIZONTAL, false);
-//        linearLayoutManager.setStackFromEnd(true);
         mRcvStudentVideoList.setLayoutManager(linearLayoutManager);
         mRcvAdapter = new RcvStudentVideoListAdapter();
         mRcvStudentVideoList.setAdapter(mRcvAdapter);
