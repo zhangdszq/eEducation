@@ -62,11 +62,7 @@ public class ChatroomFragment extends BaseFragment {
         mRcvMsg.setAdapter(mRcvAdapter);
 
         mEdtSendMsg = root.findViewById(R.id.edt_send_msg);
-//        if (UserConfig.getRole() == Constant.Role.AUDIENCE) {
-//            mEdtSendMsg.setEnabled(false);
-//        } else {
         mEdtSendMsg.setEnabled(true);
-//        }
         mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -78,7 +74,6 @@ public class ChatroomFragment extends BaseFragment {
                     channelMessage.args.uid = UserConfig.getRtmUserId();
                     channelMessage.args.message = text;
                     channelMessage.args.role = UserConfig.getRole().intValue();
-//                    addMsg(channelMessage.args);
                     rtmManager().sendChatMsg(channelMessage, msgCallback);
 
                     mEdtSendMsg.setText("");
