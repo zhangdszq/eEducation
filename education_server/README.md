@@ -17,5 +17,6 @@ After clone this repo and clone agora-rtm-nodejs as submodule (use git submodule
 - Run `docker-compose up` under /education_server and your service start to work  
 
 <a id="why-docker">
+
 ## Why docker
 This service depends on agora-rtm-nodejs which requires a Linux with node-gyp environment, and you have to download agora rtm linux sdk before doing build. So we use a dockerfile to simplify these steps.
