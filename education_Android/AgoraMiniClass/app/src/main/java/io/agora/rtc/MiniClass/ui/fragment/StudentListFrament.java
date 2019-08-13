@@ -122,7 +122,7 @@ public class StudentListFrament extends BaseFragment {
     };
 
     private void muteAll(boolean isMute) {
-        List<RtmRoomControl.UserAttr> attrList = UserConfig.getChannelStudentsAttrsList();
+        List<RtmRoomControl.UserAttr> attrList = UserConfig.getStudentAttrsList();
         List<String> uidList = new ArrayList<>();
         for (RtmRoomControl.UserAttr attr: attrList) {
             uidList.add(attr.streamId);

@@ -12,6 +12,7 @@
         android:layout_height="match_parent" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/dp_4">
@@ -174,15 +175,6 @@
             app:layout_constraintBottom_toTopOf="@id/view_space_move_collection_top"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!--<ImageView-->
-        <!--android:id="@+id/iv_btn_exit"-->
-        <!--android:layout_width="@dimen/dp_36"-->
-        <!--android:layout_height="@dimen/dp_36"-->
-        <!--android:layout_marginStart="@dimen/dp_4"-->
-        <!--android:src="@mipmap/icon_exit"-->
-        <!--app:layout_constraintStart_toEndOf="@id/iv_btn_pencil"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
         <LinearLayout
             android:id="@+id/ll_square_horizontal"
