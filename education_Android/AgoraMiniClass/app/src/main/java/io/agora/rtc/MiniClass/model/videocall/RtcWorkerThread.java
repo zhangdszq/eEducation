@@ -174,6 +174,7 @@ public class RtcWorkerThread extends HandlerThread {
             mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
             mRtcEngine.enableAudio();
             mRtcEngine.enableVideo();
+            mRtcEngine.enableWebSdkInteroperability(true);
         }
         return mRtcEngine;
     }
