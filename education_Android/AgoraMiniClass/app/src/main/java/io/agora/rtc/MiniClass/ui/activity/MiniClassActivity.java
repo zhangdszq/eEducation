@@ -10,10 +10,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import io.agora.rtc.Constants;
 import io.agora.rtc.MiniClass.R;
 import io.agora.rtc.MiniClass.model.bean.ChannelAttrUpdatedResponse;
 import io.agora.rtc.MiniClass.model.bean.ChannelMessage;
@@ -64,7 +62,6 @@ public class MiniClassActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mini_class);
 
-//        mFlRTCLayout = findViewById(R.id.fl_video_call_layout);
         mClRTMLayout = findViewById(R.id.cl_rtm_layout);
         mFlWhiteBoardLayout = findViewById(R.id.fl_white_board_layout);
         mFl_loading = findViewById(R.id.fl_progress_bar);
@@ -111,9 +108,11 @@ public class MiniClassActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        rtmManager().setLoginStatusListener(null);
         rtmManager().leaveChannel();
         rtmManager().unregisterListener(mRtmClientListener);
         mRtmChannelListener = null;
+        UserConfig.reset();
     }
 
     @Override
@@ -154,9 +153,6 @@ public class MiniClassActivity extends BaseActivity {
                     UserConfig.setChannelAttr(args.channelAttr);
                     updateChannelAttr(args.channelAttr);
 
-//                    if ((args.channelAttr == null || TextUtils.isEmpty(args.channelAttr.teacherId)) && UserConfig.getRole() != Constant.Role.TEACHER) {
-//                        ToastUtil.showErrorShort(MiniClassActivity.this, R.string.There_is_no_teacher_in_this_classroom);
-//                    }
                 }
             });
         }
@@ -170,23 +166,11 @@ public class MiniClassActivity extends BaseActivity {
                     return;
 
                 boolean isMute = (Mute.MUTE_RESPONSE.equals(mute.name));
-                if (args.type.equals(Mute.CHAT)) {
-//                    userAttr.isMuteVideo = isMute;
-//                    userAttr.isMuteAudio = isMute;
-                } else if (args.type.equals(Mute.AUDIO)) {
+                if (args.type.equals(Mute.AUDIO)) {
                     userAttr.isMuteAudio = isMute;
                 } else if (args.type.equals(Mute.VIDEO)) {
                     userAttr.isMuteVideo = isMute;
                 }
-
-//                UserConfig.putMember(userAttr);
-
-//                final RtmRoomControl.UserAttr finalAttr = new RtmRoomControl.UserAttr();
-//                finalAttr.isMuteAudio = userAttr.isMuteAudio;
-//                finalAttr.isMuteVideo = userAttr.isMuteVideo;
-//                finalAttr.streamId = userAttr.streamId;
-//                finalAttr.role = userAttr.role;
-//                finalAttr.name = userAttr.name;
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -207,9 +191,26 @@ public class MiniClassActivity extends BaseActivity {
                     public void run() {
                         if (isFinishing())
                             return;
-                        UserConfig.setChannelAttr(channelAttrUpdated.args.channelAttr);
 
-                        updateChannelAttr(channelAttrUpdated.args.channelAttr);
+                        RtmRoomControl.ChannelAttr attr = UserConfig.getChannelAttr();
+                        RtmRoomControl.ChannelAttr attrUpdate = channelAttrUpdated.args.channelAttr;
+                        if (attr == null) {
+                            attr = attrUpdate;
+                        } else {
+                            if (!TextUtils.isEmpty(attrUpdate.teacherId))
+                                attr.teacherId = attrUpdate.teacherId;
+                            if (!TextUtils.isEmpty(attrUpdate.whiteboardId))
+                                attr.whiteboardId = attrUpdate.whiteboardId;
+                            if (attrUpdate.isRecording != 0)
+                                attr.isRecording = attrUpdate.isRecording;
+                            if (attrUpdate.isSharing != 0)
+                                attr.isSharing = attrUpdate.isSharing;
+                            if (attrUpdate.shareId != 0)
+                                attr.shareId = attrUpdate.shareId;
+                        }
+                        UserConfig.setChannelAttr(attr);
+
+                        updateChannelAttr(attr);
                     }
                 });
             }
@@ -225,6 +226,10 @@ public class MiniClassActivity extends BaseActivity {
                         if (isFinishing())
                             return;
                         UserConfig.putMember(attr);
+                        if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
+                            ToastUtil.showErrorShort(MiniClassActivity.this, R.string.Teacher_joined);
+                        }
+
                         notifyUpdateMembers();
                     }
                 });
@@ -239,9 +244,15 @@ public class MiniClassActivity extends BaseActivity {
                 public void run() {
                     if (isFinishing())
                         return;
-                    UserConfig.removeMember(uid);
 
-                    notifyUpdateMembers();
+                    RtmRoomControl.UserAttr userAttr = UserConfig.removeMember(uid);
+                    if (userAttr != null) {
+                        if (Constant.Role.TEACHER.strValue().equals(userAttr.role)) {
+                            ToastUtil.showErrorShort(MiniClassActivity.this, R.string.Teacher_left);
+                        }
+
+                        notifyUpdateMembers();
+                    }
                 }
             });
         }
@@ -288,7 +299,17 @@ public class MiniClassActivity extends BaseActivity {
     private void checkIsAllSuccess() {
         if (mRtcJoinState == JOIN_STATE_JOIN_SUCCESS && mRtmJoinState == JOIN_STATE_JOIN_SUCCESS && mWhiteJoinState == JOIN_STATE_JOIN_SUCCESS) {
             mFl_loading.setVisibility(View.GONE);
-            ToastUtil.showShort("join classroom success");
+            ToastUtil.showShort("Join classroom success");
+        } else if (mRtcJoinState == JOIN_STATE_JOIN_FAILED || mRtmJoinState == JOIN_STATE_JOIN_FAILED || mWhiteJoinState == JOIN_STATE_JOIN_FAILED) {
+            String failedReason;
+            if (mRtcJoinState == JOIN_STATE_JOIN_FAILED) {
+                failedReason = "Rtc join failed.";
+            } else if (mRtmJoinState == JOIN_STATE_JOIN_FAILED) {
+                failedReason = "Rtm join failed.";
+            } else {
+                failedReason = "White join failed.";
+            }
+            errorAlert("Join classroom failed", failedReason);
         }
     }
 
@@ -380,34 +401,31 @@ public class MiniClassActivity extends BaseActivity {
 
     private void updateMembersAttr(List<RtmRoomControl.UserAttr> members) {
 
-        List<RtmRoomControl.UserAttr> students = new ArrayList<>();
-
-        RtmRoomControl.UserAttr teacherAttr = null;
         if (members != null) {
             for (int i = 0; i < members.size(); i++) {
                 RtmRoomControl.UserAttr attr = members.get(i);
                 if (Constant.Role.TEACHER.strValue().equals(attr.role)) {
-                    teacherAttr = members.get(i);
+                    UserConfig.addTeacherAttr(attr);
                 } else if (Constant.Role.STUDENT.strValue().equals(attr.role)) {
-                    students.add(members.get(i));
+                    UserConfig.addStudentAttr(attr);
+                } else {
+                    UserConfig.addAudienceAttr(attr);
                 }
             }
         }
-        if (teacherAttr == null) {
+
+        if (UserConfig.getTeacherAttr() == null) {
             ToastUtil.showErrorShort(MiniClassActivity.this, R.string.There_is_no_teacher_in_this_classroom);
         }
-        UserConfig.setTeacherAttr(teacherAttr);
-        UserConfig.setChannelStudentsAttrs(students);
 
         notifyUpdateMembers();
-
     }
 
     private void notifyUpdateMembers() {
 
         UpdateMembersEvent updateMembersEvent = new UpdateMembersEvent();
         updateMembersEvent.setTeacherAttr(UserConfig.getTeacherAttr());
-        updateMembersEvent.setUserAttrList(UserConfig.getChannelStudentsAttrsList());
+        updateMembersEvent.setUserAttrList(UserConfig.getStudentAttrsList());
 
         mVideoCallFragment.onActivityEvent(updateMembersEvent);
         mStudentListFragment.onActivityEvent(updateMembersEvent);
@@ -437,32 +455,33 @@ public class MiniClassActivity extends BaseActivity {
                 .show(mChatRoomFragment).commit();
     }
 
+    private void errorAlert(String title, String msg) {
+        AlertDialog alertDialog = new AlertDialog.Builder(MiniClassActivity.this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(msg);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.show();
+    }
+
     @Override
     public void onFragmentMainThreadEvent(final BaseEvent event) {
         if (event instanceof WhiteBoardFragment.Event) {
             switch (event.getEventType()) {
                 case WhiteBoardFragment.Event.EVENT_TYPE_ALERT:
-                    AlertDialog alertDialog = new AlertDialog.Builder(MiniClassActivity.this).create();
-                    alertDialog.setTitle(event.text1);
-                    alertDialog.setMessage(event.text2);
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            });
-                    alertDialog.show();
+                    errorAlert(event.text1, event.text2);
                     break;
-
-//                case WhiteBoardFragment.Event.EVENT_TYPE_EXIT:
-//                    onBackPressed();
-//                    break;
 
                 case WhiteBoardFragment.Event.EVENT_TYPE_MAX:
                     mClRTMLayout.setVisibility(View.GONE);
                     ConstraintLayout.LayoutParams layoutParamsMax = (ConstraintLayout.LayoutParams) mFlWhiteBoardLayout.getLayoutParams();
-                    layoutParamsMax.topMargin = 0;
+                    layoutParamsMax.topMargin = getResources().getDimensionPixelSize(R.dimen.dp_9);
+                    layoutParamsMax.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.dp_9));
                     mFlWhiteBoardLayout.setLayoutParams(layoutParamsMax);
                     mVideoCallFragment.onActivityEvent(new VideoCallFragment.Event(VideoCallFragment.Event.EVENT_TYPE_MAX));
                     break;
@@ -471,6 +490,7 @@ public class MiniClassActivity extends BaseActivity {
                     mClRTMLayout.setVisibility(View.VISIBLE);
                     ConstraintLayout.LayoutParams layoutParamsMin = (ConstraintLayout.LayoutParams) mFlWhiteBoardLayout.getLayoutParams();
                     layoutParamsMin.topMargin = getResources().getDimensionPixelSize(R.dimen.dp_99);
+                    layoutParamsMin.setMarginEnd(0);
                     mFlWhiteBoardLayout.setLayoutParams(layoutParamsMin);
                     mVideoCallFragment.onActivityEvent(new VideoCallFragment.Event(VideoCallFragment.Event.EVENT_TYPE_MIN));
                     break;
@@ -518,12 +538,6 @@ public class MiniClassActivity extends BaseActivity {
 
                     userAttr1.isMuteVideo = event.bool1;
 
-//                    RtmRoomControl.UserAttr newUserAttr = new RtmRoomControl.UserAttr();
-//                    newUserAttr.isMuteVideo = userAttr1.isMuteVideo;
-//                    newUserAttr.isMuteAudio = userAttr1.isMuteAudio;
-//                    newUserAttr.name = userAttr1.name;
-//                    newUserAttr.role = userAttr1.role;
-//                    newUserAttr.streamId = userAttr1.streamId;
                     notifyMuteMember(Mute.VIDEO, userAttr1);
                     break;
             }
@@ -537,9 +551,15 @@ public class MiniClassActivity extends BaseActivity {
 
                 case VideoCallFragment.Event.EVENT_TYPE_MUTE_AUDIO_FROM_RTC:
                     RtmRoomControl.UserAttr userAttr = UserConfig.getUserAttrByUserId(event.text1);
+
                     if (userAttr != null) {
                         userAttr.isMuteAudio = event.bool1;
+                        if (Constant.Role.TEACHER.strValue().equals(userAttr.role)) {
+                            String muteStr = userAttr.isMuteAudio ? "closed audio." : "opened audio.";
+                            ToastUtil.showShort("Teacher " + muteStr);
+                        }
                     }
+
                     notifyMuteMember(Mute.AUDIO, userAttr);
                     break;
 
@@ -549,13 +569,11 @@ public class MiniClassActivity extends BaseActivity {
                         return;
 
                     userAttr1.isMuteVideo = event.bool1;
+                    if (Constant.Role.TEACHER.strValue().equals(userAttr1.role)) {
+                        String muteStr = userAttr1.isMuteVideo ? "closed video." : "opened video.";
+                        ToastUtil.showShort("Teacher " + muteStr);
+                    }
 
-//                    RtmRoomControl.UserAttr newUserAttr = new RtmRoomControl.UserAttr();
-//                    newUserAttr.isMuteVideo = userAttr1.isMuteVideo;
-//                    newUserAttr.isMuteAudio = userAttr1.isMuteAudio;
-//                    newUserAttr.name = userAttr1.name;
-//                    newUserAttr.role = userAttr1.role;
-//                    newUserAttr.streamId = userAttr1.streamId;
                     notifyMuteMember(Mute.VIDEO, userAttr1);
                     break;
             }
