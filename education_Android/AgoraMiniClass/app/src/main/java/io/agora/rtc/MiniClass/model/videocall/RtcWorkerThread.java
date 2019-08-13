@@ -105,7 +105,6 @@ public class RtcWorkerThread extends HandlerThread {
             @Override
             public void run() {
 
-//                mRtcEngine.enableAudioVolumeIndication(200, 3); // 200 ms
                 mRtcEngine.setClientRole(role);
 
                 if (localView != null) {
