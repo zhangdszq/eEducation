@@ -7,6 +7,7 @@
 //
 
 #import "StudentVideoListView.h"
+#import "StudentVideoViewCell.h"
 
 @interface StudentVideoListView ()<UICollectionViewDelegate,UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *videoListView;
@@ -54,28 +55,10 @@
 }
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    cell.backgroundColor = [UIColor grayColor];
-    UIView *videoCanvasView = [[UIView alloc] init];
-    videoCanvasView.frame = cell.contentView.bounds;
-    [cell.contentView addSubview:videoCanvasView];
-
-    UIImageView *backImageView = [[UIImageView alloc] init];
-    backImageView.frame = cell.contentView.bounds;
-    [cell.contentView addSubview:backImageView];
-    backImageView.image = [UIImage imageNamed:@"videoBackgroundImage"];
-    backImageView.backgroundColor = RCColorWithValue(0x666666, 1.0);
-
-    UILabel *nameLable = [self addNameLabel];
-    [cell addSubview:nameLable];
-    [cell bringSubviewToFront:nameLable];
-    RoomUserModel *userModel = self.studentArray[indexPath.row];
-    nameLable.text = userModel.name;
-
-    backImageView.hidden = userModel.isMuteVideo ? NO : YES;
-
+    StudentVideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
+    cell.userModel = self.studentArray[indexPath.row];
     if (self.studentVideoList) {
-        self.studentVideoList(videoCanvasView,indexPath);
+        self.studentVideoList(cell.videoCanvasView,indexPath);
     }
     return cell;
 }
@@ -88,16 +71,6 @@
     return CGSizeMake(75, 75);
 }
 
-- (UILabel *)addNameLabel {
-    UILabel *nameLabel = [[UILabel alloc] init];
-    nameLabel.frame = CGRectMake(0, 75-17, 75, 17);
-    nameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    nameLabel.textColor = [UIColor whiteColor];
-    nameLabel.font = [UIFont systemFontOfSize:10.f];
-    nameLabel.layer.cornerRadius = 2;
-    return nameLabel;
-}
-
 - (void)setStudentArray:(NSMutableArray *)studentArray {
     _studentArray = studentArray;
     [self.videoListView reloadData];
@@ -107,12 +80,12 @@
     if (!_videoListView) {
         UICollectionViewFlowLayout *listLayout = [[UICollectionViewFlowLayout alloc] init];
         _videoListView = [[UICollectionView alloc] initWithFrame:self.frame collectionViewLayout:listLayout];
-        [_videoListView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
         _videoListView.dataSource = self;
         _videoListView.delegate = self;
         listLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         listLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
         _videoListView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
+        [_videoListView registerClass:[StudentVideoViewCell class] forCellWithReuseIdentifier:@"VideoCell"];
     }
     return _videoListView;
 }

@@ -11,14 +11,11 @@
 
 typedef void(^ StudentVideoList)(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath);
 
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface StudentVideoListView : UIView
 @property (nonatomic, strong) NSMutableArray *studentArray;
-
 @property (nonatomic, copy) StudentVideoList studentVideoList;
-
 @end
 
 NS_ASSUME_NONNULL_END
