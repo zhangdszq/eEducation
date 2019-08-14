@@ -1,4 +1,9 @@
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/AFNetworking" "${PODS_CONFIGURATION_BUILD_DIR}/MJExtension" "${PODS_CONFIGURATION_BUILD_DIR}/YYModel" "${PODS_CONFIGURATION_BUILD_DIR}/dsBridge" "${PODS_ROOT}/AgoraRtcEngine_iOS" "${PODS_ROOT}/AgoraRtm_iOS"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/AFNetworking/AFNetworking.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/MJExtension/MJExtension.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/YYModel/YYModel.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/dsBridge/dsBridge.framework/Headers" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/White-SDK-iOS"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/White-SDK-iOS/White-SDK-iOS"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"WhiteSDK" -l"c++" -l"resolv" -framework "AFNetworking" -framework "AVFoundation" -framework "Accelerate" -framework "AgoraRtcEngineKit" -framework "AgoraRtmKit" -framework "AudioToolbox" -framework "CoreFoundation" -framework "CoreGraphics" -framework "CoreML" -framework "CoreMedia" -framework "CoreTelephony" -framework "Foundation" -framework "MJExtension" -framework "MobileCoreServices" -framework "Security" -framework "SystemConfiguration" -framework "UIKit" -framework "VideoToolbox" -framework "WebKit" -framework "YYModel" -framework "dsBridge"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
