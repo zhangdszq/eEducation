@@ -25,8 +25,8 @@ open AgoraMiniClass.xcworkspace
 注意：
 运行工程之后需要填入appid,获取appid的方式请登录[声网](www.agora.io)获取。
 ## 参考文档
-[声网API参考](https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/oc/docs/headers/Agora-Objective-C-API-Overview.html) \n
-[白板的API参考](https://developer.netless.link/docs/ios/overview/ios-introduction) \n
+[声网API参考](https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/oc/docs/headers/Agora-Objective-C-API-Overview.html)        
+[白板的API参考](https://developer.netless.link/docs/ios/overview/ios-introduction)              
 [RT文档参考](https://docs.agora.io/cn/Real-time-Messaging/RTM_product?platform=All%20Platforms)
 
 
