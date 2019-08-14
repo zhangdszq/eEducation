@@ -54,4 +54,4 @@ fastlane/report.xml
 fastlane/screenshots
 # cocoapods
 Pods/
-!Podfile.lock
+Podfile.lock
