@@ -11,7 +11,7 @@
 
 
 
-#define kAgoraAppid  #@"请获取正确的appid后测试，正式运行去掉前后#"#
+#define kAgoraAppid  <#@"请获取正确的appid后测试"#>
 
 #define RCColorWithValue(v,a)         [UIColor colorWithRed:(((v) >> 16) & 0xff)/255.0f green:(((v) >> 8) & 0xff)/255.0f blue:((v) & 0xff)/255.0f alpha:a]
 
@@ -19,6 +19,7 @@
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define WEAK(object) __weak typeof(object) weak##object = object;
 
-#define kGetServerRtmIdUrl @"https://webdemo.agora.io/edu_control/sentry"
-#define kGetWhiteBoardUuid @"https://webdemo.agora.io/edu_whiteboard/v1/room"
-#define kGetWhiteBoardRoomToken @"https://webdemo.agora.io/edu_whiteboard/v1/room/join"
+#define kBaseUrl           <#@"请部署服务端系统，写入正确的baseUrl"#>
+#define kGetServerRtmIdUrl  [kBaseUrl stringByAppendingString:@"/edu_control/sentry"]
+#define kGetWhiteBoardUuid [kBaseUrl stringByAppendingString:@"/edu_whiteboard/v1/room"]
+#define kGetWhiteBoardRoomToken  [kBaseUrl stringByAppendingString:@"/edu_whiteboard/v1/room/join"]
