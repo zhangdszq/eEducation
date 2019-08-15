@@ -22,9 +22,11 @@ cd education_iOS
 pod install
 open AgoraMiniClass.xcworkspace
 ```
-注意：
+#### 注意：
+```
 运行工程之前需要填入appid,获取appid的方式请登录[声网](www.agora.io)获取。
 运行工程之前需要写入baseUrl地址，请部署服务端SDK后写入正确的baseUrl
+```
 ## 参考文档
 [声网API参考](https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/oc/docs/headers/Agora-Objective-C-API-Overview.html)        
 [白板的API参考](https://developer.netless.link/docs/ios/overview/ios-introduction)              
