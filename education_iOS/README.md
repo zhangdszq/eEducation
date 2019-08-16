@@ -32,7 +32,10 @@ open AgoraMiniClass.xcworkspace
 [白板的API参考](https://developer.netless.link/docs/ios/overview/ios-introduction)              
 [RT文档参考](https://docs.agora.io/cn/Real-time-Messaging/RTM_product?platform=All%20Platforms)
 
+<!-- LICENSE -->
+## License
 
+Distributed under the MIT License. See `LICENSE` for more information.
 
 	
 
