@@ -2,7 +2,7 @@ package io.agora.rtc.MiniClass.model.constant;
 
 public class Constant {
 
-    public static final String INTENT_EVENT_ROLE = "role";
+    public static final String BASE_URL = your_base_url;
 
     public static final int MAX_INPUT_NAME_LENGTH = 64;
 

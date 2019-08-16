@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.agora.rtc.MiniClass.model.constant.Constant;
 import io.agora.rtc.MiniClass.model.net.NetManager;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -18,7 +19,7 @@ import okhttp3.RequestBody;
 
 public class WhiteDemoAPI {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String HOST = "https://webdemo.agora.io/edu_whiteboard/v1/room";
+    private static final String HOST = Constant.BASE_URL + "edu_whiteboard/v1/room";
 
     private Gson gson = new Gson();
 
