@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AgoraMiniClass</string>
 
-    <string name="agora_app_id"><your_app_id></string>
+    <string name="agora_app_id"><#YOUR APP ID#></string>
 
     <string name="powerd_by_agora_io">Powerd by Agora.io</string>
 

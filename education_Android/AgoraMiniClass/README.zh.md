@@ -1,4 +1,4 @@
-# Agora Android RTM Tutorial
+# eEducation (Android)
 
 *Read this in other languages: [English](README.md)*
 
