@@ -1,3 +1,7 @@
+# Agora Education iOS Demo
+
+*Read this in other languages: [English](README.md)*
+
 ## 项目简介
 #### 小班课是基于教育场景的一个demo示例，大家可以通过工程下载到本地进行工程编译和体验，里面包含老师和学生通话，白板功能。
 ## 运行体验方法
