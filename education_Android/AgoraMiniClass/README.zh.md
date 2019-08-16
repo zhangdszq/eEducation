@@ -5,10 +5,17 @@
 ## 运行示例程序
 首先在 [Agora.io 注册](https://dashboard.agora.io/cn/signup/) 注册账号，并创建自己的测试项目，获取到 AppID。
 
-将 AppID 填写进 "app/src/main/res/values/strings_config.xml"
+将 AppID 填写进 "app/src/main/res/values/strings.xml" 和 "app/src/main/res/values-zh/strings.xml"
 
 ```
 <string name="agora_app_id"><#YOUR APP ID#></string>
+
+```
+
+其次将服务器的base url, 填写进 "app/src/main/java/io/agora/rtc/MiniClass/model/constant/Constant.java"
+
+```
+public static final String BASE_URL = your_base_url;
 
 ```
 

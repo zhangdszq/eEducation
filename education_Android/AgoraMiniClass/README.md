@@ -4,10 +4,17 @@
 
 ## Running the App
 First, create a developer account at [Agora.io](https://dashboard.agora.io/signin/), and obtain an App ID.
-Update "app/src/main/res/values/strings_config.xml" with your App ID .
+Update "app/src/main/res/values/strings.xml" and "app/src/main/res/values-zh/strings.xml" with your App ID .
 
 ```
 <string name="agora_app_id"><#YOUR APP ID#></string>
+
+```
+
+Second, update "app/src/main/java/io/agora/rtc/MiniClass/model/constant/Constant.java" with your server's base url.
+
+```
+public static final String BASE_URL = your_base_url;
 
 ```
 
