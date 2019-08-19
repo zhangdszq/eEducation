@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_content_main">
+
+    <Space
+        android:id="@+id/space_logo_agora_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/iv_logo_agora"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_weight="20" />
+
+    <ImageView
+        android:id="@+id/iv_logo_agora"
+        android:layout_width="@dimen/dp_125"
+        android:layout_height="@dimen/dp_36"
+        android:layout_marginStart="@dimen/dp_19"
+        android:src="@mipmap/pic_logo"
+        app:layout_constraintBottom_toTopOf="@id/space_pic_index_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_logo_agora_top"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
+
+    <Space
+        android:id="@+id/space_pic_index_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/iv_pic_index"
+        app:layout_constraintTop_toBottomOf="@id/iv_logo_agora"
+        app:layout_constraintVertical_weight="9" />
+
+    <ImageView
+        android:id="@+id/iv_pic_index"
+        android:layout_width="@dimen/dp_322"
+        android:layout_height="@dimen/dp_182"
+        android:src="@mipmap/pic_index"
+        app:layout_constraintBottom_toTopOf="@id/space_classroom_name_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_pic_index_top" />
+
+    <Space
+        android:id="@+id/space_classroom_name_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/icon_classroom_name"
+        app:layout_constraintTop_toBottomOf="@id/iv_pic_index"
+        app:layout_constraintVertical_weight="33" />
+
+    <ImageView
+        android:id="@+id/icon_classroom_name"
+        android:layout_width="@dimen/dp_27"
+        android:layout_height="@dimen/dp_27"
+        android:layout_marginStart="@dimen/dp_22"
+        android:src="@mipmap/pic_room"
+        app:layout_constraintBottom_toTopOf="@id/space_user_name_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_classroom_name_top" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edt_main_classroom_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_pic_index"
+        android:layout_marginStart="@dimen/dp_7"
+        android:layout_marginEnd="@dimen/dp_21"
+        android:background="@color/transparent"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        android:hint="@string/Classroom_Name"
+        android:inputType="text"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:textColor="@color/grey_333333"
+        android:textColorHint="@color/grey_FFD9D9D9"
+        app:layout_constraintBottom_toBottomOf="@id/icon_classroom_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon_classroom_name"
+        app:layout_constraintTop_toTopOf="@id/icon_classroom_name" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginStart="@dimen/dp_22"
+        android:layout_marginEnd="@dimen/dp_21"
+        android:background="@color/grey_FFD9D9D9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon_classroom_name" />
+
+    <Space
+        android:id="@+id/space_user_name_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/icon_user_name"
+        app:layout_constraintTop_toBottomOf="@id/icon_classroom_name"
+        app:layout_constraintVertical_weight="28" />
+
+    <ImageView
+        android:id="@+id/icon_user_name"
+        android:layout_width="@dimen/dp_27"
+        android:layout_height="@dimen/dp_27"
+        android:layout_marginStart="@dimen/dp_22"
+        android:src="@mipmap/pic_user"
+        app:layout_constraintBottom_toTopOf="@id/space_select_role_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_user_name_top" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edt_main_user_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_pic_index"
+        android:layout_marginStart="@dimen/dp_7"
+        android:layout_marginEnd="@dimen/dp_21"
+        android:background="@color/transparent"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        android:hint="@string/Your_Name"
+        android:inputType="text"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:textColor="@color/grey_333333"
+        android:textColorHint="@color/grey_FFD9D9D9"
+        app:layout_constraintBottom_toBottomOf="@id/icon_user_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon_user_name"
+        app:layout_constraintTop_toTopOf="@id/icon_user_name" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginStart="@dimen/dp_22"
+        android:layout_marginEnd="@dimen/dp_21"
+        android:background="@color/grey_FFD9D9D9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon_user_name" />
+
+    <Space
+        android:id="@+id/space_select_role_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_select_role_teacher"
+        app:layout_constraintTop_toBottomOf="@id/icon_user_name"
+        app:layout_constraintVertical_weight="46" />
+
+    <TextView
+        android:id="@+id/tv_select_role_teacher"
+        style="@style/tv_select_role_fragment_home"
+        android:layout_width="@dimen/dp_88"
+        android:layout_height="@dimen/dp_37"
+        android:text="@string/Teacher"
+        app:layout_constraintBottom_toTopOf="@id/space_join_top"
+        app:layout_constraintEnd_toStartOf="@id/tv_select_role_student"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_select_role_top" />
+
+    <TextView
+        android:id="@+id/tv_select_role_student"
+        style="@style/tv_select_role_fragment_home"
+        android:layout_width="@dimen/dp_88"
+        android:layout_height="@dimen/dp_37"
+        android:text="@string/Student"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toRightOf="@id/tv_select_role_teacher"
+        app:layout_constraintRight_toLeftOf="@id/tv_select_role_audience"
+        app:layout_constraintTop_toTopOf="@id/tv_select_role_teacher" />
+
+    <TextView
+        android:id="@+id/tv_select_role_audience"
+        style="@style/tv_select_role_fragment_home"
+        android:layout_width="@dimen/dp_88"
+        android:layout_height="@dimen/dp_37"
+        android:text="@string/Audience"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_select_role_student"
+        app:layout_constraintTop_toTopOf="@id/tv_select_role_teacher" />
+
+    <Space
+        android:id="@+id/space_join_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_btn_join"
+        app:layout_constraintTop_toBottomOf="@id/tv_select_role_teacher"
+        app:layout_constraintVertical_weight="83" />
+
+    <TextView
+        android:id="@+id/tv_btn_join"
+        android:layout_width="@dimen/dp_288"
+        android:layout_height="@dimen/dp_42"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@drawable/slt_join"
+        android:gravity="center"
+        android:text="@string/Join"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_join_top" />
+
+</android.support.constraint.ConstraintLayout>

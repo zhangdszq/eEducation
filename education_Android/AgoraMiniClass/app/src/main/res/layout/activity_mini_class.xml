@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".ui.activity.MiniClassActivity">
+
+    <FrameLayout
+        android:id="@+id/fl_white_board_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_99"
+        android:layout_marginBottom="@dimen/dp_9"
+        android:background="@drawable/bg_im_subclass"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cl_rtm_layout"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="140"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_rtm_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/dp_9"
+        android:layout_marginTop="@dimen/dp_9"
+        android:layout_marginBottom="@dimen/dp_9"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="73"
+        app:layout_constraintStart_toEndOf="@id/fl_white_board_layout"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/ll_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_35"
+            android:background="@drawable/bg_im_ll_tab"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_tab_chatroom"
+                android:layout_width="@dimen/dp_83"
+                android:layout_height="@dimen/dp_35"
+                android:background="@drawable/slt_bg_im_tab_left"
+                android:gravity="center"
+                android:onClick="onClickTabChatRoom"
+                android:text="@string/Chatroom"
+                android:textColor="@drawable/slt_im_tab_tv_color"
+                android:textSize="@dimen/dp_12" />
+
+            <TextView
+                android:id="@+id/tv_tab_student_list"
+                android:layout_width="@dimen/dp_83"
+                android:layout_height="@dimen/dp_35"
+                android:background="@drawable/slt_bg_im_tab_left"
+                android:gravity="center"
+                android:onClick="onClickTabStudentList"
+                android:text="@string/Student_List"
+                android:textColor="@drawable/slt_im_tab_tv_color"
+                android:textSize="@dimen/dp_12" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_35"
+            android:layout_marginLeft="@dimen/dp_4"
+            android:background="@drawable/bg_fl_power"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ll_tab"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="@dimen/dp_35"
+                android:layout_height="match_parent"
+                android:onClick="onClickPower"
+                android:src="@mipmap/power" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_im"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_9"
+            android:background="@drawable/bg_im_subclass"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_tab">
+
+        </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_video_call_layout"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_82"
+        android:layout_marginTop="@dimen/dp_9"
+        app:layout_constraintEnd_toEndOf="@id/fl_white_board_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/fl_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="@dimen/dp_80"
+            android:layout_height="@dimen/dp_80"
+            android:layout_gravity="center" />
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>

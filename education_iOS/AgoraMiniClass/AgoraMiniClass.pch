@@ -1,0 +1,26 @@
+//
+//  AgoraSmallClass.pch
+//  AgoraSmallClass
+//
+//  Created by yangmoumou on 2019/6/13.
+//  Copyright © 2019 yangmoumou. All rights reserved.
+//
+
+#ifndef AgoraSmallClass_pch
+#define AgoraSmallClass_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* AgoraSmallClass_pch */
+
+
+
+#import <AgoraRtmKit/AgoraRtmKit.h>
+#import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
+#import "Configs.m"
+#import "JsonAndStringConversions.h"
+#import "EducationEnumerates.h"
+#import <YYModel.h>
+
+

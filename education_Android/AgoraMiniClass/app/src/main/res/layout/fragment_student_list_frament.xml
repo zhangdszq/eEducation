@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.StudentListFrament">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcv_student_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="@dimen/dp_5"
+        android:background="@color/grey_EEEEEE" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_53"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_3"
+        android:paddingTop="@dimen/dp_13">
+
+        <TextView
+            android:id="@+id/tv_btn_unmute_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_btn_mute_unmute_all"
+            android:gravity="center"
+            android:text="@string/Unmute_All"
+            android:textColor="@color/grey_333333"
+            android:textSize="@dimen/dp_14"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_btn_mute_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dp_3"
+            android:layout_weight="1"
+            android:background="@drawable/bg_btn_mute_unmute_all"
+            android:gravity="center"
+            android:text="@string/Mute_All"
+            android:textColor="@color/grey_333333"
+            android:textSize="@dimen/dp_14"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

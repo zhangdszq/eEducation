@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.WhiteBoardFragment">
+
+    <com.herewhite.sdk.WhiteBroadView
+        android:id="@+id/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/dp_4">
+
+        <ImageView
+            android:id="@+id/iv_btn_hand_up"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@mipmap/icon_connecting12"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_hand_up_top"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <View
+            android:id="@+id/view_space_hand_up_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_hand_up"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_text" />
+
+        <ImageView
+            android:id="@+id/iv_btn_text"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_text"
+            app:layout_constraintBottom_toTopOf="@id/view_space_hand_up_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_text_top" />
+
+        <View
+            android:id="@+id/view_space_text_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_eraser" />
+
+        <ImageView
+            android:id="@+id/iv_btn_eraser"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_eraser"
+            app:layout_constraintBottom_toTopOf="@id/view_space_text_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_eraser_top" />
+
+        <View
+            android:id="@+id/view_space_eraser_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_eraser"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_oval_vertical" />
+
+        <ImageView
+            android:id="@+id/iv_btn_oval_vertical"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_circle"
+            app:layout_constraintBottom_toTopOf="@id/view_space_eraser_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_oval_vertical_top" />
+
+        <View
+            android:id="@+id/view_space_oval_vertical_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_oval_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_line_vertical" />
+
+        <ImageView
+            android:id="@+id/iv_btn_line_vertical"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_line"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/view_space_oval_vertical_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_line_vertical_top" />
+
+        <View
+            android:id="@+id/view_space_line_vertical_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_line_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_square_vertical" />
+
+        <ImageView
+            android:id="@+id/iv_btn_square_vertical"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_square"
+            app:layout_constraintBottom_toTopOf="@id/view_space_line_vertical_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_square_collection" />
+
+        <ImageView
+            android:id="@+id/iv_btn_square_collection"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_square"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_square_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_square_collection_top" />
+
+        <View
+            android:id="@+id/view_space_square_collection_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_square_collection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_move_collection" />
+
+        <ImageView
+            android:id="@+id/iv_btn_move_collection"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_move"
+            app:layout_constraintBottom_toTopOf="@id/view_space_square_collection_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_space_move_collection_top" />
+
+        <View
+            android:id="@+id/view_space_move_collection_top"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="0dp"
+            android:background="@color/grey_333333"
+            app:layout_constraintBottom_toTopOf="@id/iv_btn_move_collection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_btn_pencil" />
+
+        <ImageView
+            android:id="@+id/iv_btn_pencil"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:background="@drawable/slt_btn_whitebord_edit"
+            android:src="@drawable/slt_btn_pencil"
+            app:layout_constraintBottom_toTopOf="@id/view_space_move_collection_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/ll_square_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_36"
+            android:background="@color/grey_333333"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_square_collection"
+            app:layout_constraintStart_toEndOf="@id/iv_btn_square_collection"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_square_collection">
+
+            <ImageView
+                android:id="@+id/iv_btn_square_horizontal"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_4"
+                android:background="@drawable/slt_btn_whitebord_edit"
+                android:src="@drawable/slt_btn_square" />
+
+            <ImageView
+                android:id="@+id/iv_btn_line_horizontal"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_4"
+                android:background="@drawable/slt_btn_whitebord_edit"
+                android:src="@drawable/slt_btn_line" />
+
+            <ImageView
+                android:id="@+id/iv_btn_oval_horizontal"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_4"
+                android:background="@drawable/slt_btn_whitebord_edit"
+                android:src="@drawable/slt_btn_circle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_move_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_36"
+            android:background="@color/grey_333333"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_move_collection"
+            app:layout_constraintStart_toEndOf="@id/iv_btn_move_collection"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_move_collection">
+
+            <ImageView
+                android:id="@+id/iv_btn_move_horizontal"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_4"
+                android:background="@drawable/slt_btn_whitebord_edit"
+                android:src="@drawable/slt_btn_move" />
+
+            <ImageView
+                android:id="@+id/iv_btn_delete"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_4"
+                android:background="@drawable/slt_btn_whitebord_edit"
+                android:src="@drawable/slt_btn_delete" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_btn_min_or_max"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:src="@drawable/slt_btn_min_or_max"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_btn_mute_local_audio"
+            android:layout_width="@dimen/dp_31"
+            android:layout_height="@dimen/dp_31"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:src="@drawable/slt_icon_mute_audio"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_min_or_max"
+            app:layout_constraintEnd_toStartOf="@id/iv_btn_min_or_max"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_min_or_max" />
+
+        <ImageView
+            android:id="@+id/iv_btn_mute_local_video"
+            android:layout_width="@dimen/dp_31"
+            android:layout_height="@dimen/dp_31"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:src="@drawable/slt_icon_mute_video"
+            app:layout_constraintBottom_toBottomOf="@id/iv_btn_mute_local_audio"
+            app:layout_constraintEnd_toStartOf="@id/iv_btn_mute_local_audio"
+            app:layout_constraintTop_toTopOf="@id/iv_btn_mute_local_audio" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>
