@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">AgoraMiniClass</string>
+
+    <string name="agora_app_id"><#YOUR APP ID#></string>
+
+    <string name="powerd_by_agora_io">Powerd by Agora.io</string>
+
+    <string name="Teacher">Teacher</string>
+    <string name="Student">Student</string>
+    <string name="Audience">Audience</string>
+    <string name="Join">Join</string>
+    <string name="Next">Next</string>
+    <string name="OK">OK</string>
+    <string name="Microphone">Microphone</string>
+    <string name="Speaker">Speaker</string>
+    <string name="Classroom_Name">Classroom Name</string>
+    <string name="Your_Name">Your Name</string>
+    <string name="Loss_rate">Loss rate</string>
+    <string name="Last_mile_delay">Last mile delay</string>
+    <string name="Overall_network_status_assessment">Overall network status assessment</string>
+    <string name="ms">ms</string>
+    <string name="percent">&#37;</string>
+
+    <!--network status-->
+    <string name="Good">Good</string>
+    <string name="Bad">Bad</string>
+    <string name="Chatroom">Chatroom</string>
+    <string name="Student_List">Student List</string>
+
+
+    <string name="Input_message">Input message</string>
+    <string name="Unmute_All">Unmute All</string>
+    <string name="Mute_All">Mute All</string>
+    <string name="No">No</string>
+    <string name="Yes">Yes</string>
+    <string name="Dialog_warning_content_when_click_out">You will out of class after you click Yes, Are you Sure?</string>
+
+
+    <string name="account_too_long">Class name or user name can not exceed 64 characters</string>
+
+    <string name="send_message_failed">Send message failed.</string>
+
+    <string name="There_is_no_teacher_in_this_classroom">There is no teacher in this classroom.</string>
+
+    <string name="Teacher_left">Teacher Left.</string>
+
+    <string name="Teacher_joined">Teacher Joined.</string>
+
+</resources>
