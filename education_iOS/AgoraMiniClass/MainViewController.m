@@ -41,14 +41,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.roomDataManager.classRoomManagerDelegate = self;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
     if ([[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]) {
         [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
     }
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.roomDataManager = [ClassRoomDataManager shareManager];
