@@ -13,6 +13,7 @@
 #import "RoomUserModel.h"
 #import "ClassRoomDataManager.h"
 #import "NetworkViewController.h"
+#import "EyeCareModeUtil.h"
 
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate>
@@ -33,12 +34,20 @@
 @property (nonatomic, copy)   NSString *uid;
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, strong) ClassRoomDataManager *roomDataManager;
+@property (weak, nonatomic) IBOutlet UISwitch *eyeCareSwitch;
 @end
 
 @implementation MainViewController
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.roomDataManager.classRoomManagerDelegate = self;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]) {
+        [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
+    }
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -50,6 +59,7 @@
     [self setAllButtonStyle];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
+    [self.eyeCareSwitch setOn:[[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus] animated:YES];
 }
 
 - (void)setUpView {
@@ -169,6 +179,10 @@
         [self getServerRtmId];
         [self joinRtmChannel];
     }
+}
+
+- (IBAction)switchEyeCare:(UISwitch *)sender {
+//    [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
 }
 
 - (void)presentNextViewController {

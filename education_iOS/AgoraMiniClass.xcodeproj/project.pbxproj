@@ -33,6 +33,9 @@
 		1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */; };
 		1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07FE22CC677E0086FF4E /* RoomChatTextField.m */; };
 		1ACECF4F22E74F6B00800FAF /* ClassRoomDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ACECF4D22E74F6B00800FAF /* ClassRoomDataManager.m */; };
+		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
+		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
+		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraMiniClass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraMiniClass.framework */; };
 /* End PBXBuildFile section */
 
@@ -111,6 +114,12 @@
 		1AE0D0A222897EA60092AC5E /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1AE0D0A422897EC40092AC5E /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		1AE0D0A622897ECD0092AC5E /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		1AEDE5DB2338C0B40096ADEC /* EyeCareModeUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EyeCareModeUtil.h; sourceTree = "<group>"; };
+		1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EyeCareModeUtil.m; sourceTree = "<group>"; };
+		1AEDE5DE2338CB9E0096ADEC /* SkinCoverLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverLayer.h; sourceTree = "<group>"; };
+		1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverLayer.m; sourceTree = "<group>"; };
+		1AEDE5E12338CBBF0096ADEC /* SkinCoverWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverWindow.h; sourceTree = "<group>"; };
+		1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverWindow.m; sourceTree = "<group>"; };
 		40B28313D80C71B4DA8D643D /* Pods-AgoraMiniClass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraMiniClass.debug.xcconfig"; path = "Target Support Files/Pods-AgoraMiniClass/Pods-AgoraMiniClass.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAA54960A24224AEAEC570D /* Pods-AgoraMiniClass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraMiniClass.release.xcconfig"; path = "Target Support Files/Pods-AgoraMiniClass/Pods-AgoraMiniClass.release.xcconfig"; sourceTree = "<group>"; };
 		76A4F1D25B13050F999DB322 /* Pods_AgoraMiniClass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AgoraMiniClass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,6 +154,7 @@
 		1A44BE3322BF863000766274 /* AgoraMiniClass */ = {
 			isa = PBXGroup;
 			children = (
+				1AEDE5DA2338C09C0096ADEC /* EyeCare */,
 				1ACECF4C22E74F6B00800FAF /* ClassRoomData */,
 				1A44BE3622BF863000766274 /* Room */,
 				1A44BE5122BF863000766274 /* NetWork */,
@@ -265,6 +275,19 @@
 				1AE0D0272283C5F40092AC5E /* AgoraMiniClassUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1AEDE5DA2338C09C0096ADEC /* EyeCare */ = {
+			isa = PBXGroup;
+			children = (
+				1AEDE5DB2338C0B40096ADEC /* EyeCareModeUtil.h */,
+				1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */,
+				1AEDE5DE2338CB9E0096ADEC /* SkinCoverLayer.h */,
+				1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */,
+				1AEDE5E12338CBBF0096ADEC /* SkinCoverWindow.h */,
+				1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */,
+			);
+			path = EyeCare;
 			sourceTree = "<group>";
 		};
 		938D296AAD5470F95D0BD9D5 /* Pods */ = {
@@ -501,11 +524,14 @@
 				1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */,
 				1A44BE6622BF863000766274 /* RoomViewController.m in Sources */,
 				1A44BE7422BF863000766274 /* CameraMicTestViewController.m in Sources */,
+				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
 				1A44BE7922BF863000766274 /* NetworkViewController.m in Sources */,
+				1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */,
 				1ACECF4F22E74F6B00800FAF /* ClassRoomDataManager.m in Sources */,
 				1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */,
 				1A44BE6C22BF863000766274 /* MemberListViewCell.m in Sources */,
 				1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */,
+				1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,
 				1A44BE6E22BF863000766274 /* MessageListView.m in Sources */,
 			);
