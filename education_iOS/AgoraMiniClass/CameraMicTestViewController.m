@@ -28,7 +28,6 @@
     [self.agoraKit enableVideo];
     [self.agoraKit enableAudio];
     [self.agoraKit startPreview];
-    [self.agoraKit enableAudioVolumeIndication:300 smooth:1];
     [self setUpLocalVideo];
 }
 
