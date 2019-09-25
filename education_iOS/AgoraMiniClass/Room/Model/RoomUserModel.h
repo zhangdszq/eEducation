@@ -8,10 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RoomUserModel : NSObject
 @property (nonatomic, assign) ClassRoomRole role;
+@property (nonatomic, assign) NetworkSignal netWorkSignal;
 @property (nonatomic, copy)   NSString * __nullable name;
 @property (nonatomic, copy)   NSString * __nullable channel;
 @property (nonatomic, copy)   NSString * __nullable uid;

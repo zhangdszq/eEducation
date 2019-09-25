@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface StudentVideoViewCell : UICollectionViewCell
 @property (nonatomic, weak) UIView *videoCanvasView;
 @property (nonatomic, copy) RoomUserModel *userModel;
+
 @end
 
 NS_ASSUME_NONNULL_END

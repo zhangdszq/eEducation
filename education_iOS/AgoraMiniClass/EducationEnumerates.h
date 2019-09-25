@@ -19,3 +19,8 @@ typedef NS_ENUM(NSUInteger, ClassRoomErrorcode) {
     ClassRoomErrorCodeInvalidWhiteboard  = 2,
     ClassRoomErrorCodeNetDown  = 3,
 };
+
+typedef NS_ENUM(NSUInteger, NetworkSignal) {
+    NetworkSignalGood = 0,
+    NetworkSignalBad = 1,
+};
