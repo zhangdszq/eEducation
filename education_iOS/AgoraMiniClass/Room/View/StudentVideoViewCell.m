@@ -11,6 +11,7 @@
 @interface StudentVideoViewCell ()
 @property (nonatomic, weak) UIImageView *backImageView;
 @property (nonatomic, weak) UILabel *nameLable;
+@property (nonatomic, weak) UIImageView *networkSignalView;
 @end
 
 @implementation StudentVideoViewCell
@@ -19,7 +20,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self setUpView];
-        NSLog(@"---------------ddddd");
     }
     return self;
 }
@@ -28,6 +28,8 @@
     _userModel = userModel;
     self.nameLable.text = userModel.name;
     self.backImageView.hidden = userModel.isMuteVideo ? NO : YES;
+    NSString *wifiImageName = userModel.netWorkSignal == NetworkSignalGood ? @"wifi_good" : @"wifi_bad";
+    [self.networkSignalView setImage:[UIImage imageNamed:wifiImageName]];
 }
 
 - (void)setUpView {
@@ -48,6 +50,12 @@
     [self.contentView addSubview:nameLable];
     [self bringSubviewToFront:nameLable];
     self.nameLable = nameLable;
+
+    UIImageView *networkSignalView = [[UIImageView alloc] init];
+    networkSignalView.frame = CGRectMake(60, 0, 15, 15);
+    [self.contentView addSubview:networkSignalView];
+    networkSignalView.backgroundColor = [UIColor redColor];
+    self.networkSignalView = networkSignalView;
 }
 
 - (UILabel *)addNameLabel {

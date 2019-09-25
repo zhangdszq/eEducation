@@ -29,6 +29,8 @@
 
 @property (weak, nonatomic) IBOutlet UIView *teactherVideoView;
 @property (weak, nonatomic) IBOutlet UILabel *teactherNameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *teactherNetworkSingnal;
+
 @property (weak, nonatomic) IBOutlet RoomChatTextField *chatTextField;
 @property (weak, nonatomic) IBOutlet UIView *chatTextBaseView;
 
@@ -111,6 +113,7 @@
     [self.baseWhiteBoardView bringSubviewToFront:self.muteLocalVideoButton];
 
     [self.teactherVideoView bringSubviewToFront:self.teactherNameLabel];
+    [self.teactherVideoView bringSubviewToFront:self.teactherNetworkSingnal];
 
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.leaveRoomButton.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerTopLeft cornerRadii:CGSizeMake(16, 16)];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
@@ -256,6 +259,7 @@
             }
             [self.roomDataManager.studentArray replaceObjectAtIndex:i withObject:userModel];
         }
+        self.studentListView.studentArray = self.roomDataManager.studentArray;
     }
 }
 
@@ -485,6 +489,35 @@
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
 
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {
+    NSMutableArray *studentArray = self.roomDataManager.studentArray;
+    for (NSInteger i = 0; i < studentArray.count; i++) {
+        RoomUserModel *userModel = studentArray[i];
+        if ([userModel.uid isEqualToString:self.roomDataManager.uid]) {
+            if (rxQuality > 2) {
+                userModel.netWorkSignal = NetworkSignalBad;
+            }else {
+                userModel.netWorkSignal = NetworkSignalGood;
+            }
+        }else {
+            if (txQuality > 2) {
+                userModel.netWorkSignal = NetworkSignalBad;
+            }else {
+                userModel.netWorkSignal = NetworkSignalGood;
+            }
+        }
+        [self.roomDataManager.studentArray replaceObjectAtIndex:i withObject:userModel];
+    }
+    if (self.roomDataManager.roomRole == ClassRoomRoleTeacther) {
+        NSString *imageName = rxQuality > 2 ? @"wifi_bad" : @"wifi_good";
+        [self.teactherNetworkSingnal setImage:[UIImage imageNamed:imageName]];
+    }else {
+        NSString *imageName = txQuality > 2 ? @"wifi_bad" : @"wifi_good";
+        [self.teactherNetworkSingnal setImage:[UIImage imageNamed:imageName]];
+    }
+    self.studentListView.studentArray = self.roomDataManager.studentArray;
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {

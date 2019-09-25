@@ -179,7 +179,7 @@
 }
 
 - (IBAction)switchEyeCare:(UISwitch *)sender {
-//    [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
+    [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
 }
 
 - (void)presentNextViewController {
