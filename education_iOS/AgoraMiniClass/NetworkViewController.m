@@ -128,6 +128,7 @@
         [self.agoraKit  stopLastmileProbeTest];
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
         RoomViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"room"];
+        roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:roomVC animated:YES completion:nil];
     }
 }

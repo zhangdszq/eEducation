@@ -15,7 +15,6 @@
 #import "NetworkViewController.h"
 #import "EyeCareModeUtil.h"
 
-
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;

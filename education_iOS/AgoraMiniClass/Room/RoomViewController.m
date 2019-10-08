@@ -18,6 +18,7 @@
 #import "RoomMessageModel.h"
 #import "AgoraAlertViewController.h"
 #import "RoomChatTextField.h"
+#import "MCVideoView.h"
 
 @interface RoomViewController ()<WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,WhiteRoomCallbackDelegate,UITextFieldDelegate,ClassRoomDataManagerDelegate>
 @property (nonatomic, strong) AgoraRtcEngineKit *agoraEngineKit;
@@ -25,11 +26,8 @@
 @property (nonatomic, strong) WhiteRoom *whiteRoom;
 @property (nonatomic, strong) WhiteBoardView *whiteBoardView;
 @property (weak, nonatomic) IBOutlet UIView *baseWhiteBoardView;
-@property (weak, nonatomic) IBOutlet UIImageView *teactherDefaultImage;
 
-@property (weak, nonatomic) IBOutlet UIView *teactherVideoView;
-@property (weak, nonatomic) IBOutlet UILabel *teactherNameLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *teactherNetworkSingnal;
+@property (weak, nonatomic) IBOutlet MCVideoView *teactherView;
 
 @property (weak, nonatomic) IBOutlet RoomChatTextField *chatTextField;
 @property (weak, nonatomic) IBOutlet UIView *chatTextBaseView;
@@ -112,9 +110,6 @@
     [self.baseWhiteBoardView bringSubviewToFront:self.muteLocalAudioButton];
     [self.baseWhiteBoardView bringSubviewToFront:self.muteLocalVideoButton];
 
-    [self.teactherVideoView bringSubviewToFront:self.teactherNameLabel];
-    [self.teactherVideoView bringSubviewToFront:self.teactherNetworkSingnal];
-
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.leaveRoomButton.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerTopLeft cornerRadii:CGSizeMake(16, 16)];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.leaveRoomButton.bounds;
@@ -193,15 +188,15 @@
         if ([teactherModel.uid isEqualToString:self.roomDataManager.uid]) {
             AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
             canvas.uid  = 0;
-            canvas.view = self.teactherVideoView;
+            canvas.view = self.teactherView.videoView;
             [self.agoraEngineKit setupLocalVideo:canvas];
             self.memberListView.isTeacther = YES;
         }else {
             [self updateTeactherVideo:teactherModel.uid];
             self.memberListView.isTeacther = NO;
         }
-        self.teactherDefaultImage.hidden = YES;
-        self.teactherNameLabel.text = teactherModel.name;
+        self.teactherView.defaultImageView.hidden = YES;
+        self.teactherView.userName = teactherModel.name;
     }
     [self.agoraEngineKit setParameters:@"{\"rtc.force_unified_communication_mode\":true}"];
     [self.agoraEngineKit enableWebSdkInteroperability:YES];
@@ -241,7 +236,7 @@
 - (void)updateTeactherVideo:(NSString *)uid {
     AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
     canvas.uid  = [uid integerValue];
-    canvas.view = self.teactherVideoView;
+    canvas.view = self.teactherView.videoView;
     [self.agoraEngineKit setupRemoteVideo:canvas];
 }
 
@@ -265,7 +260,7 @@
 
 - (void)refreshUserModelVideoMuted:(BOOL)mute {
     if (self.role == ClassRoomRoleTeacther) {
-        self.teactherDefaultImage.hidden = mute == YES ? NO : YES;
+        self.teactherView.defaultImageView.hidden = mute == YES ? NO : YES;
         RoomUserModel *userModel = self.roomDataManager.teactherArray[0];
         userModel.isMuteVideo = mute;
         [self.roomDataManager.teactherArray replaceObjectAtIndex:0 withObject:userModel];
@@ -310,7 +305,7 @@
         self.studentListView.hidden = YES;
         self.chatTextField.hidden = YES;
         self.chatTextBaseView.hidden = YES;
-        [self.view bringSubviewToFront:self.teactherVideoView];
+        [self.view bringSubviewToFront:self.teactherView];
         [sender setImage:[UIImage imageNamed:@"whiteBoardMin"] forState:(UIControlStateNormal)];
     }else {
         self.baseWhiteBoardTopCon.constant = 105;
@@ -461,7 +456,7 @@
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didVideoMuted:(BOOL)muted byUid:(NSUInteger)uid {
     if (self.roomDataManager.teactherArray.count > 0) {
         if (uid == [self.roomDataManager.teactherArray[0].uid integerValue]) {
-            self.teactherDefaultImage.hidden = muted ? NO : YES;
+            self.teactherView.defaultImageView.hidden = muted ? NO : YES;
         }
     }
     for (NSInteger i = 0; i < self.roomDataManager.studentArray.count; i++) {
@@ -510,13 +505,13 @@
         }
         [self.roomDataManager.studentArray replaceObjectAtIndex:i withObject:userModel];
     }
+    NSString *imageName = nil;
     if (self.roomDataManager.roomRole == ClassRoomRoleTeacther) {
-        NSString *imageName = rxQuality > 2 ? @"wifi_bad" : @"wifi_good";
-        [self.teactherNetworkSingnal setImage:[UIImage imageNamed:imageName]];
+        imageName = rxQuality > 2 ? @"wifi_bad" : @"wifi_good";
     }else {
-        NSString *imageName = txQuality > 2 ? @"wifi_bad" : @"wifi_good";
-        [self.teactherNetworkSingnal setImage:[UIImage imageNamed:imageName]];
+        imageName = txQuality > 2 ? @"wifi_bad" : @"wifi_good";
     }
+      [self.teactherView updateNetworkSignalImage:imageName];
     self.studentListView.studentArray = self.roomDataManager.studentArray;
 }
 
@@ -548,18 +543,17 @@
 
 #pragma mark ---------------- ClassRoomManagerDelegate ------
 - (void)teactherJoinSuccess {
-    self.teactherDefaultImage.hidden = YES;
+    self.teactherView.defaultImageView.hidden = YES;
     if (self.roomDataManager.teactherArray.count > 0) {
         RoomUserModel *userModel = self.roomDataManager.teactherArray[0];
         [self updateTeactherVideo:userModel.uid];
-        self.teactherNameLabel.text = userModel.name;
+        self.teactherView.userName = userModel.name;
     }
 }
 
 - (void)teactherLeaveClassRoom {
-    self.teactherDefaultImage.hidden = NO;
-    self.teactherNameLabel.text = nil;
-    [self.teactherVideoView bringSubviewToFront:self.teactherDefaultImage];
+    self.teactherView.defaultImageView.hidden = NO;
+    self.teactherView.userName = @"";
     AgoraAlertViewController *alterVC = [AgoraAlertViewController alertControllerWithTitle:@"老师退出课堂" message:@"" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
     [alterVC addAction:cancel];

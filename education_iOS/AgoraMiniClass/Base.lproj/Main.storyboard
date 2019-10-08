@@ -934,61 +934,19 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fzc-16-slh">
                                 <rect key="frame" x="245" y="10" width="85" height="85"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wD5-bT-IH4">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jGG-jz-rdK" customClass="MCVideoView">
                                         <rect key="frame" x="0.0" y="0.0" width="85" height="85"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="videoBackgroundImage" translatesAutoresizingMaskIntoConstraints="NO" id="Z7c-xC-y7a">
-                                        <rect key="frame" x="0.0" y="0.0" width="85" height="85"/>
-                                        <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
-                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="85" id="eNa-fV-6Oc"/>
-                                            <constraint firstAttribute="width" constant="85" id="nrw-MR-342"/>
-                                        </constraints>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Jq-xL-3me">
-                                        <rect key="frame" x="0.0" y="65" width="85" height="20"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="Iq4-hj-YbB"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="2"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="boolean" keyPath="masksToBounds" value="YES"/>
-                                        </userDefinedRuntimeAttributes>
-                                    </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wifi" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="3EC-xa-5Zm">
-                                        <rect key="frame" x="70" y="2" width="15" height="11"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="15" id="pua-RU-RIc"/>
-                                            <constraint firstAttribute="height" constant="15" id="smz-e3-TcQ"/>
-                                        </constraints>
-                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="Z7c-xC-y7a" secondAttribute="trailing" id="1Yn-MJ-Yc0"/>
-                                    <constraint firstAttribute="trailing" secondItem="4Jq-xL-3me" secondAttribute="trailing" id="4hW-hs-znF"/>
-                                    <constraint firstItem="Z7c-xC-y7a" firstAttribute="leading" secondItem="Fzc-16-slh" secondAttribute="leading" id="50p-aV-fec"/>
-                                    <constraint firstAttribute="bottom" secondItem="wD5-bT-IH4" secondAttribute="bottom" id="Ari-Ne-sTa"/>
-                                    <constraint firstAttribute="bottom" secondItem="Z7c-xC-y7a" secondAttribute="bottom" id="Ewf-t2-wL8"/>
-                                    <constraint firstItem="4Jq-xL-3me" firstAttribute="leading" secondItem="Fzc-16-slh" secondAttribute="leading" id="GvO-J5-Bgv"/>
-                                    <constraint firstAttribute="trailing" secondItem="3EC-xa-5Zm" secondAttribute="trailing" id="LeC-eF-5mv"/>
+                                    <constraint firstAttribute="trailing" secondItem="jGG-jz-rdK" secondAttribute="trailing" id="7ri-mQ-4e6"/>
                                     <constraint firstAttribute="width" constant="85" id="QZ8-Ye-Cev"/>
-                                    <constraint firstAttribute="trailing" secondItem="wD5-bT-IH4" secondAttribute="trailing" id="bty-5M-eah"/>
+                                    <constraint firstAttribute="bottom" secondItem="jGG-jz-rdK" secondAttribute="bottom" id="Vhl-eR-ei8"/>
+                                    <constraint firstItem="jGG-jz-rdK" firstAttribute="leading" secondItem="Fzc-16-slh" secondAttribute="leading" id="Y5R-RR-bcY"/>
                                     <constraint firstAttribute="height" constant="85" id="dKl-ia-2Uv"/>
-                                    <constraint firstItem="wD5-bT-IH4" firstAttribute="leading" secondItem="Fzc-16-slh" secondAttribute="leading" id="hVy-gC-znv"/>
-                                    <constraint firstItem="wD5-bT-IH4" firstAttribute="top" secondItem="Fzc-16-slh" secondAttribute="top" id="iXS-O0-579"/>
-                                    <constraint firstAttribute="bottom" secondItem="4Jq-xL-3me" secondAttribute="bottom" id="jy4-gc-TfC"/>
-                                    <constraint firstItem="3EC-xa-5Zm" firstAttribute="top" secondItem="Fzc-16-slh" secondAttribute="top" id="nDo-lr-sga"/>
-                                    <constraint firstItem="Z7c-xC-y7a" firstAttribute="top" secondItem="Fzc-16-slh" secondAttribute="top" id="y14-fK-4qK"/>
+                                    <constraint firstItem="jGG-jz-rdK" firstAttribute="top" secondItem="Fzc-16-slh" secondAttribute="top" id="hJL-ob-yLp"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -1052,10 +1010,7 @@
                         <outlet property="roomManagerView" destination="P9N-eH-h8o" id="a9i-qp-7ms"/>
                         <outlet property="studentListView" destination="1Pn-4N-cmg" id="nXo-f2-6t7"/>
                         <outlet property="studentVideoLeftCon" destination="Nvi-CM-ZrY" id="sHz-Bj-qJ6"/>
-                        <outlet property="teactherDefaultImage" destination="Z7c-xC-y7a" id="09O-RQ-yJe"/>
-                        <outlet property="teactherNameLabel" destination="4Jq-xL-3me" id="Ss7-bi-lr0"/>
-                        <outlet property="teactherNetworkSingnal" destination="3EC-xa-5Zm" id="4Pd-F5-cyj"/>
-                        <outlet property="teactherVideoView" destination="wD5-bT-IH4" id="lEt-28-vgV"/>
+                        <outlet property="teactherView" destination="jGG-jz-rdK" id="s2Q-RL-wbb"/>
                         <outlet property="textFieldBottomCon" destination="Tad-HX-nRv" id="1I1-X2-SSC"/>
                         <outlet property="textFieldLeftCon" destination="3pf-kB-ZmD" id="6ZR-gO-8OL"/>
                         <outlet property="textFieldRightCon" destination="qo1-Vr-j7F" id="tmQ-36-KV1"/>
@@ -1084,8 +1039,6 @@
         <image name="roomMicon" width="32" height="32"/>
         <image name="testMic" width="28" height="28"/>
         <image name="testSpeaker" width="28" height="28"/>
-        <image name="videoBackgroundImage" width="75" height="75"/>
         <image name="whiteBoardMax" width="38" height="38"/>
-        <image name="wifi" catalog="system" width="64" height="46"/>
     </resources>
 </document>
