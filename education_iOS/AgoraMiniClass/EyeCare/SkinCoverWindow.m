@@ -19,8 +19,7 @@
             [self.layer.sublayers makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
             SkinCoverLayer *skinCoverLayer = [SkinCoverLayer layer];
             skinCoverLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-            skinCoverLayer.backgroundColor = [UIColor blackColor].CGColor;
-            skinCoverLayer.opacity = 0.5;
+            skinCoverLayer.backgroundColor = RCColorWithValue(0xFF9900, 0.1f).CGColor;
             [self.layer addSublayer:skinCoverLayer];
         }
     }
