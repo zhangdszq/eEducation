@@ -56,6 +56,7 @@ static ClassRoomDataManager *manager = nil;
     [weakself.agoraRtmKit sendMessage:message toPeer:weakself.serverRtmId completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
         NSLog(@"%ld",(long)errorCode);
     }];
+    
 }
 
 - (void)sendMessage:(NSString *)message completion:(AgoraRtmSendPeerMessageBlock _Nullable)completionBlock  {
@@ -132,13 +133,18 @@ static ClassRoomDataManager *manager = nil;
             NSString *uid = [argsDict objectForKey:@"uid"];
             RoomMessageModel *messageModel = [[RoomMessageModel alloc] init];
             NSString *teactherUid = self.teactherArray.count > 0 ? self.teactherArray[0].uid : nil;
-            messageModel.isTeacther = [uid isEqualToString:teactherUid] ? YES : NO;
-            if (messageModel.isTeacther) {
+            messageModel.isSelfSend = [uid isEqualToString:self.uid] ? YES : NO;
+            if ([uid isEqualToString:teactherUid]) {
                 messageModel.name = self.teactherArray[0].name;
             }else {
                 NSArray *memberArray = self.memberInfo.allValues;
                 for (RoomUserModel *userModel in memberArray) {
-                    messageModel.name = userModel.uid == uid ? userModel.name : nil;
+                    if (userModel.uid == uid) {
+                        messageModel.name = userModel.name;
+                        break;
+                    }else {
+                        messageModel.name = @"";
+                    }
                 }
             }
             messageModel.content = [argsDict objectForKey:@"message"];
@@ -168,6 +174,9 @@ static ClassRoomDataManager *manager = nil;
                     [self.classRoomManagerDelegate muteLoaclAudioStream:NO];
                 }
             }
+        }else if ([[messageDict objectForKey:@"name"] isEqualToString:@"ChannelAttrUpdated"]) {
+            NSDictionary *argsDict = messageDict[@"args"];
+            self.shareId = [[argsDict objectForKey:@"shareId"] integerValue];
         }
     }
 }
@@ -213,6 +222,7 @@ static ClassRoomDataManager *manager = nil;
     }else {
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[channelAttr objectForKey:@"whiteboardId"],@"uuid", nil];
         self.uuid = [channelAttr objectForKey:@"whiteboardId"];
+        self.shareId = [[channelAttr objectForKey:@"shareId"] integerValue];
         [request post:kGetWhiteBoardRoomToken params:params success:^(id responseObj) {
             NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
             if ([responseObject[@"code"] integerValue] == 200) {
