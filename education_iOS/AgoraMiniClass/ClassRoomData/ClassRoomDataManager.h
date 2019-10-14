@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
 @property (nonatomic, copy)  NSString *uuid;
 @property (nonatomic, copy)  NSString *roomToken;
+@property (nonatomic, assign) NSInteger shareId;
 - (void)sendMessage:(NSString *)message completion:(AgoraRtmSendPeerMessageBlock _Nullable)completionBlock;
 - (void)removeClassRoomInfo;
 - (void)joinClassRoom;

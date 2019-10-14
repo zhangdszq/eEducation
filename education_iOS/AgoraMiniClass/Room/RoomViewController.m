@@ -31,6 +31,7 @@
 
 @property (weak, nonatomic) IBOutlet RoomChatTextField *chatTextField;
 @property (weak, nonatomic) IBOutlet UIView *chatTextBaseView;
+@property (weak, nonatomic) IBOutlet UIView *ScreenSharingView;
 
 @property (weak, nonatomic) IBOutlet WhiteBoardToolControl *whiteBoardTool;
 @property (weak, nonatomic) IBOutlet UIButton *leaveRoomButton;
@@ -208,7 +209,7 @@
         [self.agoraEngineKit setClientRole:(AgoraClientRoleAudience)];
     }
 
-     WEAK(self)
+    WEAK(self)
     self.roomManagerView.classRoomRole = self.role;
     self.roomManagerView.topButtonType = ^(UIButton *button) {
         weakself.chatTextBaseView.hidden = button.tag == 1000 ? NO : YES;
@@ -447,9 +448,19 @@
     }
 }
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinChannel:(NSString *)channel withUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
-    NSLog(@"-d-----------");
+    NSLog(@"-----------");
 }
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
+    if (uid == self.roomDataManager.shareId) {
+           self.ScreenSharingView.hidden = NO;
+           AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+           canvas.uid = uid;
+           canvas.view = self.ScreenSharingView;
+           [self.agoraEngineKit setupRemoteVideo:canvas];
+       }
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoFrameOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
 
 }
 
@@ -483,7 +494,9 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-
+    if (self.roomDataManager.shareId == uid) {
+        self.ScreenSharingView.hidden = YES;
+    }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {

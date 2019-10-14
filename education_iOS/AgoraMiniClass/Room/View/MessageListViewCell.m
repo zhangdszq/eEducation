@@ -24,7 +24,7 @@
 
 - (void)setMessageModel:(RoomMessageModel *)messageModel {
     _messageModel = messageModel;
-    if (messageModel.isTeacther) {
+    if (messageModel.isSelfSend) {
         [self.rightNameLabel setText:messageModel.name];
         [self.rightContentLabel setText:messageModel.content];
         self.leftNameLabel.hidden = YES;
