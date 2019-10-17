@@ -14,6 +14,7 @@
 #import "ClassRoomDataManager.h"
 #import "NetworkViewController.h"
 #import "EyeCareModeUtil.h"
+#import "SettingViewController.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -34,6 +35,7 @@
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, strong) ClassRoomDataManager *roomDataManager;
 @property (weak, nonatomic) IBOutlet UISwitch *eyeCareSwitch;
+
 @end
 
 @implementation MainViewController
@@ -44,9 +46,13 @@
         [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
     }
 }
+- (void)viewWillAppear:(BOOL)animated {
+    self.navigationController.navigationBarHidden = YES;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     self.roomDataManager = [ClassRoomDataManager shareManager];
     self.uid = [self getJoinChannelUid];
     self.roomDataManager.uid = self.uid;
@@ -180,6 +186,12 @@
 - (IBAction)switchEyeCare:(UISwitch *)sender {
     [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
 }
+
+- (IBAction)settingAction:(UIButton *)sender {
+    SettingViewController *settingVC = [[SettingViewController alloc] init];
+    [self.navigationController pushViewController:settingVC animated:YES];
+}
+
 
 - (void)presentNextViewController {
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
