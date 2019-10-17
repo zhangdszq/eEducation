@@ -16,8 +16,8 @@ def main():
 
     f = open("./AgoraMiniClass/Configs.m", 'r+')
     content = f.read()
-    appString = "\"" + appId + "\""
-    tokenString = "\"" + baseUrl + "\""
+    appString = "@\"" + appId + "\""
+    tokenString = "@\"" + baseUrl + "\""
     contentNew = re.sub(r'<#@"请获取正确的appid后测试"#>', appString, content)
     contentNew = re.sub(r'<#@"请部署服务端系统，写入正确的baseUrl"#>', tokenString, contentNew)
     f.seek(0)
