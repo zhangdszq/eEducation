@@ -14,7 +14,6 @@ jobs:
       - script: cd ${{ parameters.workingDirectory }} && ls && python ci.env.py
         env:
           AGORA_APP_ID: $(agora.appID)
-        env:
           AGORA_BASE_URL: $(agora.baseURL)
 
       - task: InstallAppleCertificate@2
