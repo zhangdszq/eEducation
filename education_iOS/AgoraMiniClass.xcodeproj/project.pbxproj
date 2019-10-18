@@ -165,6 +165,7 @@
 				1A44BE5A22BF863000766274 /* Main.storyboard */,
 				1A44BE6222BF863000766274 /* MainViewController.h */,
 				1A44BE5C22BF863000766274 /* MainViewController.m */,
+				1A87571323581AEC009C55A8 /* Supporting Files */,
 			);
 			path = AgoraMiniClass;
 			sourceTree = "<group>";
@@ -289,7 +290,6 @@
 			isa = PBXGroup;
 			children = (
 				1A44BE3322BF863000766274 /* AgoraMiniClass */,
-				1A87571323581AEC009C55A8 /* Supporting Files */,
 				1AE0D0052283C5F20092AC5E /* Products */,
 				938D296AAD5470F95D0BD9D5 /* Pods */,
 				E01323DE5BE7ACD24D968F1E /* Frameworks */,
@@ -741,8 +741,8 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/AgoraMiniClass/AgoraMiniClass.pch";
-				INFOPLIST_FILE = AgoraMiniClass/Info.plist;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/AgoraMiniClass/Supporting Files/AgoraMiniClass.pch";
+				INFOPLIST_FILE = "AgoraMiniClass/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -770,8 +770,8 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/AgoraMiniClass/AgoraMiniClass.pch";
-				INFOPLIST_FILE = AgoraMiniClass/Info.plist;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/AgoraMiniClass/Supporting Files/AgoraMiniClass.pch";
+				INFOPLIST_FILE = "AgoraMiniClass/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

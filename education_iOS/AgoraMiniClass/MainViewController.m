@@ -7,7 +7,6 @@
 //
 
 #import "MainViewController.h"
-#import "CameraMicTestViewController.h"
 #import "AgoraHttpRequest.h"
 #import "RoomViewController.h"
 #import "RoomUserModel.h"
