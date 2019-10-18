@@ -20,7 +20,7 @@ jobs:
       - task: InstallAppleCertificate@2
         inputs:
           certSecureFile: 'certificate.p12'
-          certPwd: $(agora.pass)
+          certPwd: 'bestvoip'
 
 
       - task: InstallAppleProvisioningProfile@1
