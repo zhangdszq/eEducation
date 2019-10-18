@@ -14,7 +14,7 @@ def main():
     if "AGORA_BASE_URL" in os.environ:
         baseUrl = os.environ["AGORA_BASE_URL"]
 
-    f = open("./AgoraMiniClass/Configs.m", 'r+')
+    f = open("./Supporting Files/Configs.m", 'r+')
     content = f.read()
     appString = "@\"" + appId + "\""
     tokenString = "@\"" + baseUrl + "\""
