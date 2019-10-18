@@ -5,7 +5,7 @@
 	<key>method</key>
 	<string>development</string>
 	<key>compileBitcode</key>
-	<false/>
+	<true/>
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>io.agora.AgoraMiniClass</key>
