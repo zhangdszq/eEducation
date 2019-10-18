@@ -16,10 +16,12 @@ jobs:
           AGORA_APP_ID: $(agora.appID)
           AGORA_BASE_URL: $(agora.baseURL)
 
+      - script: echo $(agora.appID) && echo $(agora.baseURL) && $(agora.passWord)
       - task: InstallAppleCertificate@2
         inputs:
           certSecureFile: 'certificate.p12'
           certPwd: $(agora.passWord)
+
 
       - task: InstallAppleProvisioningProfile@1
         inputs:
