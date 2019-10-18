@@ -736,7 +736,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Yuhua Gong (YBKA3W5TF4)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = SW3CA7M752;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -766,7 +766,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Yuhua Gong (YBKA3W5TF4)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = SW3CA7M752;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
