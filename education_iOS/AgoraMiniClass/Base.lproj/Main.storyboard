@@ -168,12 +168,6 @@
                                             <constraint firstAttribute="width" constant="130" id="cx2-JZ-vI1"/>
                                         </constraints>
                                     </imageView>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uOx-Q5-Bb7">
-                                        <rect key="frame" x="35" y="611" width="143" height="31"/>
-                                        <connections>
-                                            <action selector="switchEyeCare:" destination="BYZ-38-t0r" eventType="valueChanged" id="uah-o4-Dxe"/>
-                                        </connections>
-                                    </switch>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ajn-gB-tSf">
                                         <rect key="frame" x="318" y="21" width="46" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -188,7 +182,6 @@
                                     <constraint firstItem="pmJ-vE-qGL" firstAttribute="leading" secondItem="2pa-qc-xSc" secondAttribute="trailing" constant="12" id="12j-i1-0fY"/>
                                     <constraint firstItem="fnb-Bm-kBR" firstAttribute="width" secondItem="2pa-qc-xSc" secondAttribute="width" id="2mN-zj-k7s"/>
                                     <constraint firstAttribute="trailing" secondItem="0vc-9d-hwl" secondAttribute="trailing" constant="10" id="4e1-Yg-7Z1"/>
-                                    <constraint firstItem="uOx-Q5-Bb7" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" constant="35" id="7rn-xI-QpS"/>
                                     <constraint firstAttribute="trailing" secondItem="bpE-MQ-ak5" secondAttribute="trailing" constant="20" id="Dcn-3a-l8e"/>
                                     <constraint firstItem="5PB-cg-hyO" firstAttribute="top" secondItem="PoL-3i-rpu" secondAttribute="bottom" id="Dor-g9-Mf8"/>
                                     <constraint firstItem="0IK-qt-cgK" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" constant="18" id="E4z-AN-CUN"/>
@@ -201,13 +194,10 @@
                                     <constraint firstItem="0vc-9d-hwl" firstAttribute="top" secondItem="0IK-qt-cgK" secondAttribute="bottom" id="Rxb-lw-VAL"/>
                                     <constraint firstItem="0vc-9d-hwl" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" id="Tex-bD-BLX"/>
                                     <constraint firstItem="PPu-WP-8qF" firstAttribute="top" secondItem="IiY-Oy-icR" secondAttribute="bottom" id="TgV-iY-HUC"/>
-                                    <constraint firstItem="UEU-w3-aae" firstAttribute="top" secondItem="uOx-Q5-Bb7" secondAttribute="bottom" constant="31" id="UNy-89-dju"/>
                                     <constraint firstItem="IiY-Oy-icR" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" constant="23" id="UsF-dc-VaV"/>
                                     <constraint firstItem="pmJ-vE-qGL" firstAttribute="height" secondItem="2pa-qc-xSc" secondAttribute="height" id="Wft-bT-znq"/>
-                                    <constraint firstItem="uOx-Q5-Bb7" firstAttribute="top" secondItem="2pa-qc-xSc" secondAttribute="bottom" constant="24" id="XG5-Xf-4QC"/>
                                     <constraint firstItem="PPu-WP-8qF" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" constant="23" id="Y0A-Sz-4iR"/>
                                     <constraint firstItem="5PB-cg-hyO" firstAttribute="leading" secondItem="ltr-0i-D4J" secondAttribute="leading" constant="23" id="YwX-4y-G0x"/>
-                                    <constraint firstAttribute="trailing" secondItem="uOx-Q5-Bb7" secondAttribute="trailing" constant="208" id="aq6-Mu-4qp"/>
                                     <constraint firstAttribute="bottom" secondItem="UEU-w3-aae" secondAttribute="bottom" constant="22" id="b28-p0-zk6"/>
                                     <constraint firstAttribute="trailing" secondItem="fnb-Bm-kBR" secondAttribute="trailing" constant="23" id="dZl-R2-36V"/>
                                     <constraint firstAttribute="trailing" secondItem="UEU-w3-aae" secondAttribute="trailing" constant="23" id="f0i-Kv-Foj"/>
@@ -252,7 +242,6 @@
                         <outlet property="audienceButton" destination="fnb-Bm-kBR" id="qI2-xG-Zny"/>
                         <outlet property="baseView" destination="ltr-0i-D4J" id="MEj-5N-l42"/>
                         <outlet property="classNameTextFiled" destination="C8r-GQ-Fxh" id="0Mu-eJ-iWO"/>
-                        <outlet property="eyeCareSwitch" destination="uOx-Q5-Bb7" id="gis-lU-MVg"/>
                         <outlet property="studentButton" destination="pmJ-vE-qGL" id="uks-4v-0kC"/>
                         <outlet property="teactherButton" destination="2pa-qc-xSc" id="mJ2-an-Uih"/>
                         <outlet property="textViewBottomConstraint" destination="uRJ-f2-bLn" id="WHj-e2-Dse"/>

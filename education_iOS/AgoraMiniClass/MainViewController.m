@@ -33,7 +33,6 @@
 @property (nonatomic, copy)   NSString *uid;
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, strong) ClassRoomDataManager *roomDataManager;
-@property (weak, nonatomic) IBOutlet UISwitch *eyeCareSwitch;
 
 @end
 
@@ -60,7 +59,7 @@
     [self setAllButtonStyle];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
-    [self.eyeCareSwitch setOn:[[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus] animated:YES];
+   
 }
 
 - (void)setUpView {
@@ -180,10 +179,6 @@
         [self getServerRtmId];
         [self joinRtmChannel];
     }
-}
-
-- (IBAction)switchEyeCare:(UISwitch *)sender {
-    [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
 }
 
 - (IBAction)settingAction:(UIButton *)sender {

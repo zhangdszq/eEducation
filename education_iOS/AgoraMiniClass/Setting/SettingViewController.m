@@ -7,8 +7,10 @@
 //
 
 #import "SettingViewController.h"
+#import "SettingViewCell.h"
+#import "EyeCareModeUtil.h"
 
-@interface SettingViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface SettingViewController ()<UITableViewDelegate,UITableViewDataSource,SettingCellDelegate>
 @property (nonatomic, weak) UITableView *settingTableView;
 @end
 
@@ -31,7 +33,6 @@
     settingTableView.tableFooterView = [[UIView alloc] init];
 }
 
-
 /*
 #pragma mark - Navigation
 
@@ -43,20 +44,24 @@
 */
 
 - (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingCell"];
+    SettingViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingCell"];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"SettingCell"];
+        cell = [[SettingViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"SettingCell"];
     }
+    cell.delegate = self;
+    [cell switchOn:[[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]];
     return cell;
 }
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
+    return 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 64.f;
+    return 56.f;
 }
 
-
+- (void)settingSwitchCallBack:(UISwitch *)sender {
+    [[EyeCareModeUtil sharedUtil] switchEyeCareMode:sender.on];
+}
 @end
