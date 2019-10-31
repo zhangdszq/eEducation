@@ -7,7 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A1749992361A7F000A65B10 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1749982361A7F000A65B10 /* MainNavigationController.m */; };
+		1A17499C236297BE00A65B10 /* EEChatTextFiled.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A17499B236297BE00A65B10 /* EEChatTextFiled.m */; };
+		1A17499E236297CF00A65B10 /* EEChatTextFiled.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A17499D236297CF00A65B10 /* EEChatTextFiled.xib */; };
+		1A1749A12362A3CE00A65B10 /* EEStudentVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1749A02362A3CE00A65B10 /* EEStudentVideoView.m */; };
+		1A1749A32362A3DA00A65B10 /* EEStudentVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A1749A22362A3DA00A65B10 /* EEStudentVideoView.xib */; };
+		1A226C412369BFF40024D984 /* EEChannelAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C402369BFF40024D984 /* EEChannelAttr.m */; };
+		1A226C44236A7C1B0024D984 /* EEBCStudentAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */; };
+		1A226C47236A7C720024D984 /* EEBCRoomDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */; };
+		1A226C4A236A7D8A0024D984 /* EEBCTeactherAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C49236A7D8A0024D984 /* EEBCTeactherAttr.m */; };
 		1A296C6222DEFCE6008AC68A /* StudentVideoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A296C6122DEFCE6008AC68A /* StudentVideoViewCell.m */; };
+		1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A399E5323697E9000F5A40F /* OneToOneViewController.m */; };
+		1A399E582369AF8F00F5A40F /* NSString+RTMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */; };
 		1A44BE6622BF863000766274 /* RoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE3922BF863000766274 /* RoomViewController.m */; };
 		1A44BE6722BF863000766274 /* WhiteBoardToolControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE3C22BF863000766274 /* WhiteBoardToolControl.m */; };
 		1A44BE6922BF863000766274 /* MessageListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4722BF863000766274 /* MessageListViewCell.m */; };
@@ -29,15 +40,35 @@
 		1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE8222BFA97400766274 /* RoomMessageModel.m */; };
 		1A44BE8F22C104D000766274 /* RoomUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE8E22C104D000766274 /* RoomUserModel.m */; };
 		1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */; };
+		1A6BC50E2360396B00FE8289 /* EEWhiteboardTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A6BC50D2360396B00FE8289 /* EEWhiteboardTool.m */; };
+		1A6BC51023603F7700FE8289 /* EEWhiteboardTool.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A6BC50F23603F7700FE8289 /* EEWhiteboardTool.xib */; };
+		1A6BC5182360447800FE8289 /* EEChatContentTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A6BC5172360447800FE8289 /* EEChatContentTableView.m */; };
+		1A6BC51D2360598700FE8289 /* EEChatContentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A6BC51C2360598700FE8289 /* EEChatContentViewCell.m */; };
+		1A6BC52223608AF600FE8289 /* EETeactherVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A6BC52123608AF600FE8289 /* EETeactherVideoView.m */; };
+		1A6BC52423608B0900FE8289 /* EETeactherVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A6BC52323608B0900FE8289 /* EETeactherVideoView.xib */; };
 		1A70AFB22359F17500942742 /* SettingViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A70AFB12359F17500942742 /* SettingViewCell.m */; };
 		1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A87571123571CFE009C55A8 /* SettingViewController.m */; };
+		1A893A002361751200C2398A /* EENavigationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A8939FF2361751200C2398A /* EENavigationView.m */; };
+		1A893A022361752400C2398A /* EENavigationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A893A012361752400C2398A /* EENavigationView.xib */; };
 		1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A93A810234C7197001F31A6 /* MCVideoView.m */; };
 		1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */; };
 		1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07FE22CC677E0086FF4E /* RoomChatTextField.m */; };
 		1ACECF4F22E74F6B00800FAF /* ClassRoomDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ACECF4D22E74F6B00800FAF /* ClassRoomDataManager.m */; };
+		1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E994235EFB2700C415BF /* BCViewController.m */; };
+		1AD4E99B235F100400C415BF /* EESegmentedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E99A235F100400C415BF /* EESegmentedView.m */; };
+		1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A3236008FF00C415BF /* EEPageControlView.m */; };
+		1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A52360092A00C415BF /* EEPageControlView.xib */; };
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
 		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
 		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
+		1AF1CD2E236700A400DA8B12 /* EEClassRoomTypeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF1CD2D236700A400DA8B12 /* EEClassRoomTypeView.m */; };
+		1AF1CD30236700B300DA8B12 /* EEClassRoomTypeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AF1CD2F236700B300DA8B12 /* EEClassRoomTypeView.xib */; };
+		1AF1CD4223673AA100DA8B12 /* EEEnterFullScreenTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF1CD4123673AA100DA8B12 /* EEEnterFullScreenTransition.m */; };
+		1AF2CFBB2367F9D000EBA8BA /* BCFullScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF2CFBA2367F9D000EBA8BA /* BCFullScreenViewController.m */; };
+		1AF2CFBE2367F9DF00EBA8BA /* BCRightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF2CFBD2367F9DF00EBA8BA /* BCRightViewController.m */; };
+		1AF2CFC12367F9E800EBA8BA /* BCLeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF2CFC02367F9E800EBA8BA /* BCLeftViewController.m */; };
+		1AF2CFC423680C7D00EBA8BA /* EEBCBaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF2CFC323680C7D00EBA8BA /* EEBCBaseView.m */; };
+		1AF2CFC7236823F800EBA8BA /* EEExitFullScreenTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF2CFC6236823F800EBA8BA /* EEExitFullScreenTransitioning.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraMiniClass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraMiniClass.framework */; };
 /* End PBXBuildFile section */
 
@@ -59,8 +90,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A1749972361A7F000A65B10 /* MainNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainNavigationController.h; sourceTree = "<group>"; };
+		1A1749982361A7F000A65B10 /* MainNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainNavigationController.m; sourceTree = "<group>"; };
+		1A17499A236297BE00A65B10 /* EEChatTextFiled.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEChatTextFiled.h; sourceTree = "<group>"; };
+		1A17499B236297BE00A65B10 /* EEChatTextFiled.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEChatTextFiled.m; sourceTree = "<group>"; };
+		1A17499D236297CF00A65B10 /* EEChatTextFiled.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEChatTextFiled.xib; sourceTree = "<group>"; };
+		1A17499F2362A3CE00A65B10 /* EEStudentVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEStudentVideoView.h; sourceTree = "<group>"; };
+		1A1749A02362A3CE00A65B10 /* EEStudentVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEStudentVideoView.m; sourceTree = "<group>"; };
+		1A1749A22362A3DA00A65B10 /* EEStudentVideoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEStudentVideoView.xib; sourceTree = "<group>"; };
+		1A1749A52365779B00A65B10 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		1A226C3F2369BFF40024D984 /* EEChannelAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEChannelAttr.h; sourceTree = "<group>"; };
+		1A226C402369BFF40024D984 /* EEChannelAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEChannelAttr.m; sourceTree = "<group>"; };
+		1A226C42236A7C1B0024D984 /* EEBCStudentAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCStudentAttr.h; sourceTree = "<group>"; };
+		1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCStudentAttr.m; sourceTree = "<group>"; };
+		1A226C45236A7C720024D984 /* EEBCRoomDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCRoomDataManager.h; sourceTree = "<group>"; };
+		1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCRoomDataManager.m; sourceTree = "<group>"; };
+		1A226C48236A7D8A0024D984 /* EEBCTeactherAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCTeactherAttr.h; sourceTree = "<group>"; };
+		1A226C49236A7D8A0024D984 /* EEBCTeactherAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCTeactherAttr.m; sourceTree = "<group>"; };
 		1A296C6022DEFCE6008AC68A /* StudentVideoViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StudentVideoViewCell.h; sourceTree = "<group>"; };
 		1A296C6122DEFCE6008AC68A /* StudentVideoViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StudentVideoViewCell.m; sourceTree = "<group>"; };
+		1A399E5223697E9000F5A40F /* OneToOneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneToOneViewController.h; sourceTree = "<group>"; };
+		1A399E5323697E9000F5A40F /* OneToOneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OneToOneViewController.m; sourceTree = "<group>"; };
+		1A399E562369AF8F00F5A40F /* NSString+RTMMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+RTMMessage.h"; sourceTree = "<group>"; };
+		1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+RTMMessage.m"; sourceTree = "<group>"; };
 		1A44BE3422BF863000766274 /* NetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkViewController.h; sourceTree = "<group>"; };
 		1A44BE3522BF863000766274 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1A44BE3722BF863000766274 /* RoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomViewController.h; sourceTree = "<group>"; };
@@ -101,10 +153,23 @@
 		1A44BE9122C471BF00766274 /* JsonAndStringConversions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonAndStringConversions.h; sourceTree = "<group>"; };
 		1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JsonAndStringConversions.m; sourceTree = "<group>"; };
 		1A44BE9722C4BE6600766274 /* EducationEnumerates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EducationEnumerates.h; sourceTree = "<group>"; };
+		1A6BC50C2360396B00FE8289 /* EEWhiteboardTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEWhiteboardTool.h; sourceTree = "<group>"; };
+		1A6BC50D2360396B00FE8289 /* EEWhiteboardTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEWhiteboardTool.m; sourceTree = "<group>"; };
+		1A6BC50F23603F7700FE8289 /* EEWhiteboardTool.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEWhiteboardTool.xib; sourceTree = "<group>"; };
+		1A6BC5162360447800FE8289 /* EEChatContentTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEChatContentTableView.h; sourceTree = "<group>"; };
+		1A6BC5172360447800FE8289 /* EEChatContentTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEChatContentTableView.m; sourceTree = "<group>"; };
+		1A6BC51B2360598700FE8289 /* EEChatContentViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEChatContentViewCell.h; sourceTree = "<group>"; };
+		1A6BC51C2360598700FE8289 /* EEChatContentViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEChatContentViewCell.m; sourceTree = "<group>"; };
+		1A6BC52023608AF600FE8289 /* EETeactherVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EETeactherVideoView.h; sourceTree = "<group>"; };
+		1A6BC52123608AF600FE8289 /* EETeactherVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EETeactherVideoView.m; sourceTree = "<group>"; };
+		1A6BC52323608B0900FE8289 /* EETeactherVideoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EETeactherVideoView.xib; sourceTree = "<group>"; };
 		1A70AFB02359F17500942742 /* SettingViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewCell.h; sourceTree = "<group>"; };
 		1A70AFB12359F17500942742 /* SettingViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewCell.m; sourceTree = "<group>"; };
 		1A87571023571CFE009C55A8 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		1A87571123571CFE009C55A8 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		1A8939FE2361751200C2398A /* EENavigationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EENavigationView.h; sourceTree = "<group>"; };
+		1A8939FF2361751200C2398A /* EENavigationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EENavigationView.m; sourceTree = "<group>"; };
+		1A893A012361752400C2398A /* EENavigationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EENavigationView.xib; sourceTree = "<group>"; };
 		1A93A80F234C7197001F31A6 /* MCVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCVideoView.h; sourceTree = "<group>"; };
 		1A93A810234C7197001F31A6 /* MCVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCVideoView.m; sourceTree = "<group>"; };
 		1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AgoraAlertViewController.h; sourceTree = "<group>"; };
@@ -113,6 +178,13 @@
 		1AAD07FE22CC677E0086FF4E /* RoomChatTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomChatTextField.m; sourceTree = "<group>"; };
 		1ACECF4D22E74F6B00800FAF /* ClassRoomDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClassRoomDataManager.m; sourceTree = "<group>"; };
 		1ACECF4E22E74F6B00800FAF /* ClassRoomDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassRoomDataManager.h; sourceTree = "<group>"; };
+		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
+		1AD4E994235EFB2700C415BF /* BCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCViewController.m; sourceTree = "<group>"; };
+		1AD4E999235F100400C415BF /* EESegmentedView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EESegmentedView.h; sourceTree = "<group>"; };
+		1AD4E99A235F100400C415BF /* EESegmentedView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EESegmentedView.m; sourceTree = "<group>"; };
+		1AD4E9A2236008FF00C415BF /* EEPageControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEPageControlView.h; sourceTree = "<group>"; };
+		1AD4E9A3236008FF00C415BF /* EEPageControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEPageControlView.m; sourceTree = "<group>"; };
+		1AD4E9A52360092A00C415BF /* EEPageControlView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEPageControlView.xib; sourceTree = "<group>"; };
 		1AE0D0042283C5F20092AC5E /* AgoraMiniClass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraMiniClass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D01C2283C5F40092AC5E /* AgoraMiniClassTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraMiniClassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0272283C5F40092AC5E /* AgoraMiniClassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraMiniClassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +198,21 @@
 		1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverLayer.m; sourceTree = "<group>"; };
 		1AEDE5E12338CBBF0096ADEC /* SkinCoverWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverWindow.h; sourceTree = "<group>"; };
 		1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverWindow.m; sourceTree = "<group>"; };
+		1AF1CD2C236700A400DA8B12 /* EEClassRoomTypeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEClassRoomTypeView.h; sourceTree = "<group>"; };
+		1AF1CD2D236700A400DA8B12 /* EEClassRoomTypeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEClassRoomTypeView.m; sourceTree = "<group>"; };
+		1AF1CD2F236700B300DA8B12 /* EEClassRoomTypeView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEClassRoomTypeView.xib; sourceTree = "<group>"; };
+		1AF1CD4023673AA100DA8B12 /* EEEnterFullScreenTransition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEEnterFullScreenTransition.h; sourceTree = "<group>"; };
+		1AF1CD4123673AA100DA8B12 /* EEEnterFullScreenTransition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEEnterFullScreenTransition.m; sourceTree = "<group>"; };
+		1AF2CFB92367F9D000EBA8BA /* BCFullScreenViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCFullScreenViewController.h; sourceTree = "<group>"; };
+		1AF2CFBA2367F9D000EBA8BA /* BCFullScreenViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCFullScreenViewController.m; sourceTree = "<group>"; };
+		1AF2CFBC2367F9DF00EBA8BA /* BCRightViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCRightViewController.h; sourceTree = "<group>"; };
+		1AF2CFBD2367F9DF00EBA8BA /* BCRightViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCRightViewController.m; sourceTree = "<group>"; };
+		1AF2CFBF2367F9E800EBA8BA /* BCLeftViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCLeftViewController.h; sourceTree = "<group>"; };
+		1AF2CFC02367F9E800EBA8BA /* BCLeftViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCLeftViewController.m; sourceTree = "<group>"; };
+		1AF2CFC223680C7D00EBA8BA /* EEBCBaseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCBaseView.h; sourceTree = "<group>"; };
+		1AF2CFC323680C7D00EBA8BA /* EEBCBaseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCBaseView.m; sourceTree = "<group>"; };
+		1AF2CFC5236823F800EBA8BA /* EEExitFullScreenTransitioning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEExitFullScreenTransitioning.h; sourceTree = "<group>"; };
+		1AF2CFC6236823F800EBA8BA /* EEExitFullScreenTransitioning.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEExitFullScreenTransitioning.m; sourceTree = "<group>"; };
 		40B28313D80C71B4DA8D643D /* Pods-AgoraMiniClass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraMiniClass.debug.xcconfig"; path = "Target Support Files/Pods-AgoraMiniClass/Pods-AgoraMiniClass.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAA54960A24224AEAEC570D /* Pods-AgoraMiniClass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraMiniClass.release.xcconfig"; path = "Target Support Files/Pods-AgoraMiniClass/Pods-AgoraMiniClass.release.xcconfig"; sourceTree = "<group>"; };
 		76A4F1D25B13050F999DB322 /* Pods_AgoraMiniClass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AgoraMiniClass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +244,106 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A399E4C236975AD00F5A40F /* BigClass */ = {
+			isa = PBXGroup;
+			children = (
+				1A399E552369AF2200F5A40F /* Model */,
+				1A399E4E236975D400F5A40F /* View */,
+				1A399E4D236975C200F5A40F /* Controllers */,
+			);
+			path = BigClass;
+			sourceTree = "<group>";
+		};
+		1A399E4D236975C200F5A40F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1AD4E993235EFB2700C415BF /* BCViewController.h */,
+				1AD4E994235EFB2700C415BF /* BCViewController.m */,
+				1AF2CFB92367F9D000EBA8BA /* BCFullScreenViewController.h */,
+				1AF2CFBA2367F9D000EBA8BA /* BCFullScreenViewController.m */,
+				1AF2CFBC2367F9DF00EBA8BA /* BCRightViewController.h */,
+				1AF2CFBD2367F9DF00EBA8BA /* BCRightViewController.m */,
+				1AF2CFBF2367F9E800EBA8BA /* BCLeftViewController.h */,
+				1AF2CFC02367F9E800EBA8BA /* BCLeftViewController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		1A399E4E236975D400F5A40F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1AD4E999235F100400C415BF /* EESegmentedView.h */,
+				1AD4E99A235F100400C415BF /* EESegmentedView.m */,
+				1AD4E9A2236008FF00C415BF /* EEPageControlView.h */,
+				1AD4E9A3236008FF00C415BF /* EEPageControlView.m */,
+				1AD4E9A52360092A00C415BF /* EEPageControlView.xib */,
+				1A6BC50C2360396B00FE8289 /* EEWhiteboardTool.h */,
+				1A6BC50D2360396B00FE8289 /* EEWhiteboardTool.m */,
+				1A6BC50F23603F7700FE8289 /* EEWhiteboardTool.xib */,
+				1A6BC5162360447800FE8289 /* EEChatContentTableView.h */,
+				1A6BC5172360447800FE8289 /* EEChatContentTableView.m */,
+				1A6BC51B2360598700FE8289 /* EEChatContentViewCell.h */,
+				1A6BC51C2360598700FE8289 /* EEChatContentViewCell.m */,
+				1A6BC52023608AF600FE8289 /* EETeactherVideoView.h */,
+				1A6BC52123608AF600FE8289 /* EETeactherVideoView.m */,
+				1A6BC52323608B0900FE8289 /* EETeactherVideoView.xib */,
+				1A8939FE2361751200C2398A /* EENavigationView.h */,
+				1A8939FF2361751200C2398A /* EENavigationView.m */,
+				1A893A012361752400C2398A /* EENavigationView.xib */,
+				1A17499A236297BE00A65B10 /* EEChatTextFiled.h */,
+				1A17499B236297BE00A65B10 /* EEChatTextFiled.m */,
+				1A17499D236297CF00A65B10 /* EEChatTextFiled.xib */,
+				1A17499F2362A3CE00A65B10 /* EEStudentVideoView.h */,
+				1A1749A02362A3CE00A65B10 /* EEStudentVideoView.m */,
+				1A1749A22362A3DA00A65B10 /* EEStudentVideoView.xib */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1A399E4F236975F900F5A40F /* MiniClass */ = {
+			isa = PBXGroup;
+			children = (
+				1A44BE3B22BF863000766274 /* View */,
+				1A44BE3A22BF863000766274 /* Model */,
+				1AD4E991235EDFE000C415BF /* Controllers */,
+			);
+			path = MiniClass;
+			sourceTree = "<group>";
+		};
+		1A399E502369763900F5A40F /* OneToOne */ = {
+			isa = PBXGroup;
+			children = (
+				1A399E5123697E6800F5A40F /* Controllers */,
+			);
+			path = OneToOne;
+			sourceTree = "<group>";
+		};
+		1A399E5123697E6800F5A40F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1A399E5223697E9000F5A40F /* OneToOneViewController.h */,
+				1A399E5323697E9000F5A40F /* OneToOneViewController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		1A399E552369AF2200F5A40F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1A399E562369AF8F00F5A40F /* NSString+RTMMessage.h */,
+				1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */,
+				1A226C3F2369BFF40024D984 /* EEChannelAttr.h */,
+				1A226C402369BFF40024D984 /* EEChannelAttr.m */,
+				1A226C42236A7C1B0024D984 /* EEBCStudentAttr.h */,
+				1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */,
+				1A226C45236A7C720024D984 /* EEBCRoomDataManager.h */,
+				1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */,
+				1A226C48236A7D8A0024D984 /* EEBCTeactherAttr.h */,
+				1A226C49236A7D8A0024D984 /* EEBCTeactherAttr.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		1A44BE3322BF863000766274 /* AgoraMiniClass */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,6 +355,11 @@
 				1A44BE5A22BF863000766274 /* Main.storyboard */,
 				1A44BE6222BF863000766274 /* MainViewController.h */,
 				1A44BE5C22BF863000766274 /* MainViewController.m */,
+				1A1749972361A7F000A65B10 /* MainNavigationController.h */,
+				1A1749982361A7F000A65B10 /* MainNavigationController.m */,
+				1AF1CD2C236700A400DA8B12 /* EEClassRoomTypeView.h */,
+				1AF1CD2D236700A400DA8B12 /* EEClassRoomTypeView.m */,
+				1AF1CD2F236700B300DA8B12 /* EEClassRoomTypeView.xib */,
 				1A87571323581AEC009C55A8 /* Supporting Files */,
 			);
 			path = AgoraMiniClass;
@@ -176,22 +368,11 @@
 		1A44BE3622BF863000766274 /* Room */ = {
 			isa = PBXGroup;
 			children = (
-				1A44BE3722BF863000766274 /* RoomViewController.h */,
-				1A44BE3922BF863000766274 /* RoomViewController.m */,
-				1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */,
-				1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */,
-				1A44BE3822BF863000766274 /* Network */,
-				1A44BE3A22BF863000766274 /* Model */,
-				1A44BE3B22BF863000766274 /* View */,
+				1A399E502369763900F5A40F /* OneToOne */,
+				1A399E4F236975F900F5A40F /* MiniClass */,
+				1A399E4C236975AD00F5A40F /* BigClass */,
 			);
 			path = Room;
-			sourceTree = "<group>";
-		};
-		1A44BE3822BF863000766274 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Network;
 			sourceTree = "<group>";
 		};
 		1A44BE3A22BF863000766274 /* Model */ = {
@@ -201,6 +382,10 @@
 				1A44BE8222BFA97400766274 /* RoomMessageModel.m */,
 				1A44BE8D22C104D000766274 /* RoomUserModel.h */,
 				1A44BE8E22C104D000766274 /* RoomUserModel.m */,
+				1AF2CFC5236823F800EBA8BA /* EEExitFullScreenTransitioning.h */,
+				1AF2CFC6236823F800EBA8BA /* EEExitFullScreenTransitioning.m */,
+				1AF1CD4023673AA100DA8B12 /* EEEnterFullScreenTransition.h */,
+				1AF1CD4123673AA100DA8B12 /* EEEnterFullScreenTransition.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -228,6 +413,8 @@
 				1A296C6122DEFCE6008AC68A /* StudentVideoViewCell.m */,
 				1A93A80F234C7197001F31A6 /* MCVideoView.h */,
 				1A93A810234C7197001F31A6 /* MCVideoView.m */,
+				1AF2CFC223680C7D00EBA8BA /* EEBCBaseView.h */,
+				1AF2CFC323680C7D00EBA8BA /* EEBCBaseView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -253,9 +440,8 @@
 		1A87570F23571CC9009C55A8 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
+				1AD4E992235EE15300C415BF /* Controllers */,
 				1A70AFAF2359F15000942742 /* View */,
-				1A87571023571CFE009C55A8 /* SettingViewController.h */,
-				1A87571123571CFE009C55A8 /* SettingViewController.m */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -297,6 +483,26 @@
 				1ACECF4D22E74F6B00800FAF /* ClassRoomDataManager.m */,
 			);
 			path = ClassRoomData;
+			sourceTree = "<group>";
+		};
+		1AD4E991235EDFE000C415BF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1A44BE3722BF863000766274 /* RoomViewController.h */,
+				1A44BE3922BF863000766274 /* RoomViewController.m */,
+				1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */,
+				1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		1AD4E992235EE15300C415BF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1A87571023571CFE009C55A8 /* SettingViewController.h */,
+				1A87571123571CFE009C55A8 /* SettingViewController.m */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		1AE0CFFB2283C5F20092AC5E = {
@@ -465,8 +671,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A44BE7722BF863000766274 /* Main.storyboard in Resources */,
+				1A6BC51023603F7700FE8289 /* EEWhiteboardTool.xib in Resources */,
+				1A893A022361752400C2398A /* EENavigationView.xib in Resources */,
+				1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */,
 				1A44BE7522BF863000766274 /* Assets.xcassets in Resources */,
+				1A17499E236297CF00A65B10 /* EEChatTextFiled.xib in Resources */,
+				1AF1CD30236700B300DA8B12 /* EEClassRoomTypeView.xib in Resources */,
 				1A44BE7622BF863000766274 /* LaunchScreen.storyboard in Resources */,
+				1A6BC52423608B0900FE8289 /* EETeactherVideoView.xib in Resources */,
+				1A1749A32362A3DA00A65B10 /* EEStudentVideoView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,30 +766,54 @@
 				1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */,
 				1A44BE6922BF863000766274 /* MessageListViewCell.m in Sources */,
 				1A44BE7822BF863000766274 /* MainViewController.m in Sources */,
+				1A1749992361A7F000A65B10 /* MainNavigationController.m in Sources */,
 				1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */,
 				1A296C6222DEFCE6008AC68A /* StudentVideoViewCell.m in Sources */,
+				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
+				1AF2CFC423680C7D00EBA8BA /* EEBCBaseView.m in Sources */,
 				1A44BE7D22BF863000766274 /* Configs.m in Sources */,
 				1A44BE6B22BF863000766274 /* StudentVideoListView.m in Sources */,
+				1AF2CFC12367F9E800EBA8BA /* BCLeftViewController.m in Sources */,
+				1A226C4A236A7D8A0024D984 /* EEBCTeactherAttr.m in Sources */,
 				1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */,
+				1A6BC51D2360598700FE8289 /* EEChatContentViewCell.m in Sources */,
 				1A44BE6722BF863000766274 /* WhiteBoardToolControl.m in Sources */,
+				1AF1CD4223673AA100DA8B12 /* EEEnterFullScreenTransition.m in Sources */,
+				1A893A002361751200C2398A /* EENavigationView.m in Sources */,
 				1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */,
+				1A226C47236A7C720024D984 /* EEBCRoomDataManager.m in Sources */,
 				1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */,
+				1A226C412369BFF40024D984 /* EEChannelAttr.m in Sources */,
+				1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */,
 				1A44BE6D22BF863000766274 /* RoomManageView.m in Sources */,
+				1A6BC52223608AF600FE8289 /* EETeactherVideoView.m in Sources */,
 				1A44BE7022BF863000766274 /* MemberListView.m in Sources */,
 				1A70AFB22359F17500942742 /* SettingViewCell.m in Sources */,
 				1A44BE8F22C104D000766274 /* RoomUserModel.m in Sources */,
 				1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */,
+				1AF2CFBB2367F9D000EBA8BA /* BCFullScreenViewController.m in Sources */,
+				1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */,
+				1A399E582369AF8F00F5A40F /* NSString+RTMMessage.m in Sources */,
+				1A226C44236A7C1B0024D984 /* EEBCStudentAttr.m in Sources */,
+				1A6BC5182360447800FE8289 /* EEChatContentTableView.m in Sources */,
 				1A44BE6622BF863000766274 /* RoomViewController.m in Sources */,
 				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
 				1A44BE7922BF863000766274 /* NetworkViewController.m in Sources */,
 				1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */,
+				1AD4E99B235F100400C415BF /* EESegmentedView.m in Sources */,
+				1AF2CFC7236823F800EBA8BA /* EEExitFullScreenTransitioning.m in Sources */,
 				1ACECF4F22E74F6B00800FAF /* ClassRoomDataManager.m in Sources */,
 				1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */,
 				1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */,
 				1A44BE6C22BF863000766274 /* MemberListViewCell.m in Sources */,
+				1A1749A12362A3CE00A65B10 /* EEStudentVideoView.m in Sources */,
 				1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */,
+				1AF2CFBE2367F9DF00EBA8BA /* BCRightViewController.m in Sources */,
+				1AF1CD2E236700A400DA8B12 /* EEClassRoomTypeView.m in Sources */,
+				1A17499C236297BE00A65B10 /* EEChatTextFiled.m in Sources */,
 				1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,
+				1A6BC50E2360396B00FE8289 /* EEWhiteboardTool.m in Sources */,
 				1A44BE6E22BF863000766274 /* MessageListView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -615,6 +852,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				1A44BE5922BF863000766274 /* Base */,
+				1A1749A52365779B00A65B10 /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -747,9 +985,9 @@
 			baseConfigurationReference = 40B28313D80C71B4DA8D643D /* Pods-AgoraMiniClass.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yuhua Gong (YBKA3W5TF4)";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = SW3CA7M752;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SKMGESUD9S;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -765,7 +1003,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraMiniClass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";
@@ -777,9 +1015,9 @@
 			baseConfigurationReference = 4EAA54960A24224AEAEC570D /* Pods-AgoraMiniClass.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yuhua Gong (YBKA3W5TF4)";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = SW3CA7M752;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SKMGESUD9S;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -795,7 +1033,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraMiniClass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";

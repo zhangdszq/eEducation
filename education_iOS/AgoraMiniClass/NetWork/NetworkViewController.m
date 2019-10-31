@@ -9,6 +9,7 @@
 #import "NetworkViewController.h"
 #import "RoomViewController.h"
 #import "ClassRoomDataManager.h"
+#import "BCViewController.h"
 
 @interface NetworkViewController ()<AgoraRtcEngineDelegate,ClassRoomDataManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *lostRateLabel;
@@ -128,7 +129,7 @@
         [self.agoraKit  stopLastmileProbeTest];
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
         RoomViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"room"];
-        roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
+        roomVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
         [self presentViewController:roomVC animated:YES completion:nil];
     }
 }
@@ -141,5 +142,18 @@
     }];
     [alterVC addAction:sure];
     [self presentViewController:alterVC animated:YES completion:nil];
+}
+
+#pragma mark  --------  Mandatory landscape -------
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
 }
 @end

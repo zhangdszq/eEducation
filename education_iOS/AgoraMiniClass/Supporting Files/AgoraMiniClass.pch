@@ -22,5 +22,6 @@
 #import "JsonAndStringConversions.h"
 #import "EducationEnumerates.h"
 #import <YYModel.h>
+#import <AFNetworking/AFNetworking.h>
 
 
