@@ -14,14 +14,15 @@
 #import "NetworkViewController.h"
 #import "EyeCareModeUtil.h"
 #import "SettingViewController.h"
+#import "BCViewController.h"
+#import "EEClassRoomTypeView.h"
+#import "OneToOneViewController.h"
+#import "NSString+RTMMessage.h"
 
-@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate>
+@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate,EEClassRoomTypeDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
-@property (weak, nonatomic) IBOutlet UIButton *teactherButton;
-@property (weak, nonatomic) IBOutlet UIButton *studentButton;
-@property (weak, nonatomic) IBOutlet UIButton *audienceButton;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomConstraint;
 @property (nonatomic, strong) AgoraRtmKit *agoraRtmKit;
 @property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
@@ -33,7 +34,10 @@
 @property (nonatomic, copy)   NSString *uid;
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, strong) ClassRoomDataManager *roomDataManager;
-
+@property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
+@property (weak, nonatomic) IBOutlet UIButton *roomType;
+@property (nonatomic, assign) AgoraRtmConnectionState rtmConnectionState;
+@property (nonatomic, strong) AFNetworkReachabilityManager *mageger;
 @end
 
 @implementation MainViewController
@@ -52,14 +56,14 @@
     [super viewDidLoad];
 
     self.roomDataManager = [ClassRoomDataManager shareManager];
-    self.uid = [self getJoinChannelUid];
+    self.uid = [NSString setRTMUser];
     self.roomDataManager.uid = self.uid;
     [self joinRtm];
     [self setUpView];
-    [self setAllButtonStyle];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
-   
+//    [self reachability];
+
 }
 
 - (void)setUpView {
@@ -70,19 +74,16 @@
     self.activityIndicator.backgroundColor = [UIColor whiteColor];
     self.activityIndicator.hidesWhenStopped = YES;
 
-    self.baseView.layer.cornerRadius = 12;
-
-    self.studentButton.selected = YES;
-    [self setButtonStyle:self.studentButton];
     self.classRoomRole = ClassRoomRoleStudent;
     self.roomDataManager.roomRole = ClassRoomRoleStudent;
+
+    EEClassRoomTypeView *classRoomTypeView = [EEClassRoomTypeView initWithXib:CGRectMake(30, kScreenHeight - 300, kScreenWidth - 60, 150)];
+    [self.view addSubview:classRoomTypeView];
+    self.classRoomTypeView = classRoomTypeView;
+    classRoomTypeView.hidden = YES;
+    classRoomTypeView.delegate = self;
 }
 
-- (void)setAllButtonStyle {
-    [self setButtonStyle:self.teactherButton];
-    [self setButtonStyle:self.studentButton];
-    [self setButtonStyle:self.audienceButton];
-}
 
 - (void)addTouchedRecognizer {
     UITapGestureRecognizer *touchedControl = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedBegan:)];
@@ -98,19 +99,16 @@
     self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:kAgoraAppid delegate:self];
     WEAK(self)
     [self.agoraRtmKit loginByToken:nil user:self.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
-        weakself.roomDataManager.agoraRtmKit = weakself.agoraRtmKit;
+        if (errorCode == AgoraRtmLoginErrorOk) {
+            weakself.roomDataManager.agoraRtmKit = weakself.agoraRtmKit;
+        }
     }];
 }
 
-- (void)joinRtmChannel {
+- (void)joinRtmChannelCompletion:(AgoraRtmJoinChannelBlock _Nullable)completionBlock {
     self.agoraRtmChannel  =  [self.agoraRtmKit createChannelWithId:self.className delegate:self];
-    WEAK(self)
-    [self.agoraRtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode != AgoraRtmJoinChannelErrorOk) {
-            [weakself joinClassRoomError];
-        }
-        weakself.roomDataManager.agoraRtmChannel = weakself.agoraRtmChannel;
-    }];
+    [self.agoraRtmChannel joinWithCompletion:completionBlock];
+    self.roomDataManager.agoraRtmChannel = self.agoraRtmChannel;
 }
 
 - (void)keyboardWasShown:(NSNotification *)notification {
@@ -126,6 +124,8 @@
 - (void)touchedBegan:(UIGestureRecognizer *)recognizer {
     [self.classNameTextFiled resignFirstResponder];
     [self.userNameTextFiled resignFirstResponder];
+
+    self.classRoomTypeView.hidden  = YES;
 }
 
 - (void)setButtonStyle:(UIButton *)button {
@@ -142,23 +142,8 @@
     }
 }
 
-- (IBAction)selectRole:(UIButton *)sender {
-    if (sender == self.teactherButton) {
-        self.teactherButton.selected = YES;
-        self.studentButton.selected = NO;
-        self.audienceButton.selected = NO;
-    }else if (sender == self.studentButton) {
-        self.teactherButton.selected = NO;
-        self.studentButton.selected = YES;
-        self.audienceButton.selected = NO;
-    }else {
-        self.teactherButton.selected = NO;
-        self.studentButton.selected = NO;
-        self.audienceButton.selected = YES;
-    }
-    self.classRoomRole = sender.tag;
-    self.roomDataManager.roomRole = self.classRoomRole;
-    [self setAllButtonStyle];
+- (IBAction)popupRoomType:(UIButton *)sender {
+    self.classRoomTypeView.hidden = NO;
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
@@ -171,13 +156,20 @@
         [self presentViewController:alterVC animated:YES completion:nil];
         [self.activityIndicator stopAnimating];
     }else {
-
-        self.className = self.classNameTextFiled.text;
-        self.userName = self.userNameTextFiled.text;
         self.roomDataManager.className = self.className;
         self.roomDataManager.userName = self.userName;
-        [self getServerRtmId];
-        [self joinRtmChannel];
+        if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
+            self.className = self.classNameTextFiled.text;
+            self.userName = self.userNameTextFiled.text;
+            [self getServerRtmId];
+            [self joinRtmChannelCompletion:nil];
+        }else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
+            [self presentBigClassController];
+        }else if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
+            [self presentOneToOneViewController];
+        }else {
+            [self presentAlterViewTitile:@"join error" message:@"请选择房间类型" cancelActionTitle:@"取消" confirmActionTitle:nil];
+        }
     }
 }
 
@@ -186,11 +178,52 @@
     [self.navigationController pushViewController:settingVC animated:YES];
 }
 
-
-- (void)presentNextViewController {
+- (void)presentBigClassController {
+    if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
+        [self joinRtm];
+    }else if (self.rtmConnectionState == AgoraRtmConnectionStateConnecting) {
+        [self presentAlterViewTitile:@"error" message:@"create channel error" cancelActionTitle:@"cancel" confirmActionTitle:nil];
+    }else {
+        [self joinRtmChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+            if (errorCode == AgoraRtmJoinChannelErrorTimeout) {
+                 [self presentAlterViewTitile:@"error" message:@"create channel error" cancelActionTitle:@"cancel" confirmActionTitle:nil];
+            }
+        }];
+        [self.activityIndicator stopAnimating];
+        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+        BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
+        roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:roomVC animated:YES completion:nil];
+    }
+}
+- (void)presentMiniClassViewController {
+    [self.activityIndicator stopAnimating];
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-    NetworkViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"network"];
-    [self presentViewController:roomVC animated:YES completion:nil];
+    NetworkViewController *networkVC = [story instantiateViewControllerWithIdentifier:@"network"];
+    networkVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:networkVC animated:YES completion:nil];
+}
+
+- (void)presentOneToOneViewController {
+    OneToOneViewController *oneToOneVC = [[OneToOneViewController alloc] init];
+    [self.navigationController pushViewController:oneToOneVC animated:YES];
+}
+
+- (void)presentAlterViewTitile:(NSString *)title message:(NSString *)message cancelActionTitle:(NSString *)cancelTitle confirmActionTitle:(NSString *)confirmTitle {
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    }];
+        if (cancelTitle) {
+         [alertVC addAction:cancel];
+    }
+
+    UIAlertAction *confirm = [UIAlertAction actionWithTitle:confirmTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    }];
+    if (confirmTitle) {
+        [alertVC addAction:confirm];
+    }
+    alertVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self presentViewController:alertVC animated:YES completion:nil];
 }
 
 - (BOOL)judgeClassRoomText:(NSString *)text {
@@ -205,29 +238,21 @@
 
 - (void)joinClassRoomError {
     [self.activityIndicator stopAnimating];
-    UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:@"join classRoom error" message:@"no network" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *sure = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-    }];
-    [alterVC addAction:sure];
-    [self presentViewController:alterVC animated:YES completion:nil];
-
+    [self presentAlterViewTitile:@"join classRoom error" message:@"no network" cancelActionTitle:@"取消" confirmActionTitle:nil];
 }
 
 #pragma MARK -----------------------  AgoraRtmDelegate -------------------------
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
-
+    self.rtmConnectionState = state;
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
     NSLog(@"%@----- %@",member.userId,member.channelId);
 }
 
-#pragma mark --------------------- GET ---------------------
-- (NSString *)getJoinChannelUid{
-    NSDate *datenow = [NSDate date];
-    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
-    NSString *uid =  [timeSp substringFromIndex:3];
-    return uid;
+- (void)selectRoomTypeName:(NSString *)name {
+    [self.roomType setTitle:name forState:(UIControlStateNormal)];
+    self.classRoomTypeView.hidden = YES;
 }
 
 - (void)getServerRtmId {
@@ -237,7 +262,7 @@
         NSString * str  =[[NSString alloc] initWithData:responseObj encoding:NSUTF8StringEncoding];
         weakself.roomDataManager.serverRtmId = str;
         weakself.serverRtmId = str;
-        [weakself presentNextViewController];
+        [weakself presentMiniClassViewController];
     } failure:^(NSError *error) {
         [weakself.activityIndicator stopAnimating];
         [weakself joinClassRoomError];
@@ -252,4 +277,16 @@
     return NO;
 }
 
+#pragma mark  --------  Mandatory landscape -------
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
 @end

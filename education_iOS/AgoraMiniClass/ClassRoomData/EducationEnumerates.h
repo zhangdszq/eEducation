@@ -24,3 +24,10 @@ typedef NS_ENUM(NSUInteger, NetworkSignal) {
     NetworkSignalGood = 0,
     NetworkSignalBad = 1,
 };
+
+typedef NS_ENUM(NSInteger, RotatingState)  {
+    RotatingStateSmall,
+    RotatingStateLandscape,
+    RotatingStateAnimating,
+
+};
