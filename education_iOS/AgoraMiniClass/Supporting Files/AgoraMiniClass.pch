@@ -23,5 +23,7 @@
 #import "EducationEnumerates.h"
 #import <YYModel.h>
 #import <AFNetworking/AFNetworking.h>
+#import "UIColor+Addition.h"
+
 
 

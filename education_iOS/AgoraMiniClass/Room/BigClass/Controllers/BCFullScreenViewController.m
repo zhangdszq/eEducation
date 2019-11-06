@@ -12,19 +12,27 @@
 #import "EEWhiteboardTool.h"
 #import "EEChatContentTableView.h"
 #import "EETeactherVideoView.h"
-#import "EEStudentVideoView.h"
 
-@interface BCFullScreenViewController ()<EEPageControlDelegate,EEWhiteboardToolDelegate>
+#import "BCViewController.h"
+#import "EEChatTextFiled.h"
+#import "EEColorShowView.h"
+
+
+@interface BCFullScreenViewController ()<EEPageControlDelegate,EEWhiteboardToolDelegate,UITextFieldDelegate,AgoraRtmDelegate,AgoraRtmChannelDelegate,AgoraRtcEngineDelegate>
 @property (weak, nonatomic) IBOutlet EENavigationView *navigationView;
 @property (weak, nonatomic) IBOutlet UIView *whiteboardView;
 @property (weak, nonatomic) IBOutlet EEChatContentTableView *chatContentTableView;
-@property (weak, nonatomic) IBOutlet EETeactherVideoView *teactherVideoView;
 @property (weak, nonatomic) IBOutlet EEPageControlView *pageControlView;
-@property (weak, nonatomic) IBOutlet EEStudentVideoView *studentVideoView;
 
 @property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
 @property (weak, nonatomic) IBOutlet UIButton *handUpButton;
 @property (weak, nonatomic) IBOutlet UILabel *tipLabel;
+@property (weak, nonatomic) IBOutlet EEChatTextFiled *chatTextfiled;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledBottomCon;
+@property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
+@property (nonatomic, strong) WhiteMemberState *memberState;
+
+@property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 
 
 @end
@@ -40,6 +48,20 @@
     [super viewDidAppear:animated];
     [self setNeedsStatusBarAppearanceUpdate];
     [self prefersStatusBarHidden];
+    self.baseWhiteboardView.frame = self.whiteboardView.bounds;
+    self.rtmKit.agoraRtmDelegate = self;
+    self.rtmChannel.channelDelegate = self;
+    self.rtcEngineKit.delegate = self;
+    [self.chatContentTableView.messageArray addObjectsFromArray:self.messageArray.mutableCopy];
+}
+
+- (void)getWhiteboardSceneInfo {
+    WEAK(self)
+    [self.whiteRoom getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {
+        weakself.scenes = [NSArray arrayWithArray:state.scenes];
+        weakself.sceneDirectory = @"/";
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",weakself.sceneIndex,weakself.scenes.count]];
+   }];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -58,12 +80,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 11, *)) {
+       } else {
+           self.automaticallyAdjustsScrollViewInsets = NO;
+       }
+    [self.whiteboardView addSubview:self.baseWhiteboardView];
+
     self.navigationView.titleLabelBottomConstraint.constant = 5;
     self.navigationView.closeButtonBottomConstraint.constant = 5;
     self.navigationView.wifiSignalImage.hidden = NO;
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
+    self.chatTextfiled.contentTextFiled.delegate = self;
 
+     [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     self.tipLabel.hidden = YES;
 
     self.handUpButton.layer.borderWidth = 1.f;
@@ -86,6 +116,30 @@
     self.tipLabel.layer.masksToBounds = YES;
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleDeviceOrientationChange:)
     name:UIDeviceOrientationDidChangeNotification object:nil];
+    [self addKeyboardNotification];
+    self.colorShowView.hidden = YES;
+       WEAK(self)
+    self.colorShowView.selectColor = ^(NSString *colorString) {
+        NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
+        weakself.memberState.strokeColor = colorArray;
+        [weakself.whiteRoom setMemberState:weakself.memberState];
+    };
+    self.navigationView.titleLabel.text = self.channelName;
+}
+
+- (void)addKeyboardNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWasShow:(NSNotification *)notification {
+    CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    float bottom = frame.size.height;
+    self.chatTextFiledBottomCon.constant = bottom;
+}
+
+- (void)keyboardWillBeHiden:(NSNotification *)notification {
+    self.chatTextFiledBottomCon.constant = 0;
 }
 
 //设备方向改变的处理
@@ -110,9 +164,91 @@
 
 - (void)closeRoom:(UIButton *)sender {
     NSLog(@"closeroom");
-    [self dismissViewControllerAnimated:YES completion:^{
+    [self.rtcEngineKit leaveChannel:nil];
+    UIViewController *vc =self.presentingViewController;
+    while ([vc isKindOfClass:[BCViewController class]]) {
+        vc = vc.presentingViewController;
+    }
+    [vc dismissViewControllerAnimated:NO completion:nil];
+}
 
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    WEAK(self)
+    __block NSString *content = textField.text;
+    [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:textField.text] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
+        if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
+            RoomMessageModel *messageModel = [[RoomMessageModel alloc] init];
+            messageModel.content = content;
+            messageModel.name = self.selfAttrs.account;
+            messageModel.isSelfSend = YES;
+            [weakself.chatContentTableView.messageArray addObject:messageModel];
+            [weakself.chatContentTableView reloadData];
+        }
     }];
+    textField.text = nil;
+    [textField resignFirstResponder];
+    return NO;
+}
+
+- (void)selectWhiteboardToolIndex:(NSInteger)index {
+   self.memberState = [[WhiteMemberState alloc] init];
+    switch (index) {
+        case 0:
+            self.memberState.currentApplianceName = ApplianceSelector;
+            [self.whiteRoom setMemberState:self.memberState];
+            break;
+        case 1:
+            self.memberState.currentApplianceName = AppliancePencil;
+            [self.whiteRoom setMemberState:self.memberState];
+        break;
+        case 2:
+            self.memberState.currentApplianceName = ApplianceText;
+            [self.whiteRoom setMemberState:self.memberState];
+        break;
+        case 3:
+            self.memberState.currentApplianceName = ApplianceEraser;
+            [self.whiteRoom setMemberState:self.memberState];
+        break;
+
+        default:
+            break;
+    }
+    if (index == 4) {
+        self.colorShowView.hidden = NO;
+    }else {
+        if (self.colorShowView.hidden == NO) {
+            self.colorShowView.hidden = YES;
+        }
+    }
+}
+
+- (void)previousPage {
+    if (self.sceneIndex > 1) {
+        self.sceneIndex = self.sceneIndex -1;
+       [self.whiteRoom setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
+       [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",self.sceneIndex,self.scenes.count]];
+    }
+}
+
+- (void)nextPage {
+    if (self.sceneIndex < self.scenes.count) {
+        self.sceneIndex = self.sceneIndex + 1;
+        [self.whiteRoom setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
+        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",self.sceneIndex,self.scenes.count]];
+    }
+}
+
+- (void)lastPage {
+    self.sceneIndex = self.scenes.count;
+    [self.whiteRoom setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex-1].name]];
+    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",self.sceneIndex,self.scenes.count]];
+}
+
+- (void)firstPage {
+    self.sceneIndex = 1;
+    [self.whiteRoom setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex-1].name]];
+      [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",self.sceneIndex,self.scenes.count]];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -130,6 +266,7 @@
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"BCFullScreenViewController is dealloc");
 }
 /*
@@ -141,26 +278,6 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-- (void)firstPage {
-
-}
-
-- (void)lastPage {
-
-}
-
-- (void)nextPage {
-
-}
-
-- (void)previousPage {
-
-}
-
-- (void)selectWhiteboardToolIndex:(NSInteger)index {
-
-}
 
 
 @end

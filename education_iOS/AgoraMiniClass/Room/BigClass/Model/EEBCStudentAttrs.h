@@ -1,5 +1,5 @@
 //
-//  EEBCTeactherAttr.h
+//  EEBCStudentAttr.h
 //  AgoraMiniClass
 //
 //  Created by yangmoumou on 2019/10/31.
@@ -10,18 +10,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EEBCTeactherAttr : NSObject
-@property (nonatomic, copy)   NSString *account;
+@interface EEBCStudentAttrs : NSObject
+@property (nonatomic, copy) NSString *account;
 @property (nonatomic, copy) NSString *userId;
 @property (nonatomic, assign) BOOL video;
 @property (nonatomic, assign) BOOL auudio;
 @property (nonatomic, assign) BOOL screen;
 @property (nonatomic, assign) BOOL whiteboard;
 @property (nonatomic, assign) BOOL chatroom;
-@property (nonatomic, copy)   NSString *whiteboard_uuid;
-@property (nonatomic, copy)   NSString *connect_state;
-@property (nonatomic, copy)   NSString *link_state;
-@property (nonatomic, copy) NSString *shareId;
+@property (nonatomic, copy)   NSString * _Nullable connect_state;
+@property (nonatomic, copy)   NSString * _Nullable link_state;
 @end
 
 NS_ASSUME_NONNULL_END

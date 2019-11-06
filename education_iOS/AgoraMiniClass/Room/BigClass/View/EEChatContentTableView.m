@@ -8,6 +8,7 @@
 
 #import "EEChatContentTableView.h"
 #import "EEChatContentViewCell.h"
+#import "RoomMessageModel.h"
 
 @interface EEChatContentTableView ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -27,8 +28,11 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
+        self.messageArray = [NSMutableArray array];
         self.delegate = self;
         self.dataSource = self;
+        self.separatorStyle = UITableViewCellSeparatorStyleNone;
+
         if ([self respondsToSelector:@selector(setSeparatorInset:)]) {
             [self setSeparatorInset: UIEdgeInsetsZero];
         }
@@ -45,20 +49,38 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    
+    return self.messageArray.count;
+
 }
+
 - (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     EEChatContentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"BCChatCell"];
     if (!cell) {
         cell = [[EEChatContentViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"BCChatCell"];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//    cell.messageModel = self.messageArray[indexPath.row];
+    cell.messageModel = self.messageArray[indexPath.row];
+
     return cell;
+
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 100;
+    RoomMessageModel *content = self.messageArray[indexPath.row];
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:13.f]};
+    CGSize textRect = CGSizeMake(kScreenWidth - 30, MAXFLOAT);
+    CGFloat textHeight = [content.content boundingRectWithSize:textRect
+                                               options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                            attributes:attributes
+                                               context:nil].size.height;
+    return textHeight+40;
 }
 
+
+- (void)setMessageArray:(NSMutableArray *)messageArray {
+    _messageArray = messageArray;
+    [self reloadData];
+}
 @end

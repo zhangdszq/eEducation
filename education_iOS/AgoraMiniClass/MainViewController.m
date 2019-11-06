@@ -17,7 +17,9 @@
 #import "BCViewController.h"
 #import "EEClassRoomTypeView.h"
 #import "OneToOneViewController.h"
-#import "NSString+RTMMessage.h"
+#import "BCTestViewController.h"
+#import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonCrypto.h>
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate,EEClassRoomTypeDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -54,16 +56,26 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     self.roomDataManager = [ClassRoomDataManager shareManager];
-    self.uid = [NSString setRTMUser];
+    self.uid = [self getUserID];
     self.roomDataManager.uid = self.uid;
     [self joinRtm];
     [self setUpView];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
 //    [self reachability];
+}
 
+- (NSString *)stringToMD5:(NSString *)str {
+    const char *fooData = [str UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+
+    CC_MD5(fooData, (CC_LONG)strlen(fooData), result);
+    NSMutableString *saveResult = [NSMutableString string];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [saveResult appendFormat:@"%02x", result[i]];
+    }
+    return saveResult;
 }
 
 - (void)setUpView {
@@ -84,14 +96,13 @@
     classRoomTypeView.delegate = self;
 }
 
-
 - (void)addTouchedRecognizer {
     UITapGestureRecognizer *touchedControl = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedBegan:)];
     [self.baseView addGestureRecognizer:touchedControl];
 }
 
 - (void)addKeyboardNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
@@ -111,7 +122,7 @@
     self.roomDataManager.agoraRtmChannel = self.agoraRtmChannel;
 }
 
-- (void)keyboardWasShown:(NSNotification *)notification {
+- (void)keyboardWasShow:(NSNotification *)notification {
     CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     float bottom = frame.size.height - 208;
     self.textViewBottomConstraint.constant = bottom;
@@ -124,7 +135,6 @@
 - (void)touchedBegan:(UIGestureRecognizer *)recognizer {
     [self.classNameTextFiled resignFirstResponder];
     [self.userNameTextFiled resignFirstResponder];
-
     self.classRoomTypeView.hidden  = YES;
 }
 
@@ -142,6 +152,13 @@
     }
 }
 
+- (NSString *)getUserID{
+    NSDate *datenow = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
+    NSString *uid =  [NSString stringWithFormat:@"2%@",[timeSp substringFromIndex:3]];
+    return uid;
+}
+
 - (IBAction)popupRoomType:(UIButton *)sender {
     self.classRoomTypeView.hidden = NO;
 }
@@ -149,18 +166,15 @@
 - (IBAction)joinRoom:(UIButton *)sender {
     [self.activityIndicator startAnimating];
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self judgeClassRoomText:self.classNameTextFiled.text] || ![self judgeClassRoomText:self.userNameTextFiled.text]) {
-        UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:@"请检查房间号和用户名符合规格" message:@"11位及以内的数字或者英文字符" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *sure = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alterVC addAction:sure];
-        [self presentViewController:alterVC animated:YES completion:nil];
+        [self presentAlterViewTitile:@"请检查房间号和用户名符合规格" message:@"11位及以内的数字或者英文字符" cancelActionTitle:@"取消" confirmActionTitle:nil];
         [self.activityIndicator stopAnimating];
     }else {
+
+        self.className = self.classNameTextFiled.text;
+        self.userName = self.userNameTextFiled.text;
         self.roomDataManager.className = self.className;
         self.roomDataManager.userName = self.userName;
         if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
-            self.className = self.classNameTextFiled.text;
-            self.userName = self.userNameTextFiled.text;
             [self getServerRtmId];
             [self joinRtmChannelCompletion:nil];
         }else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
@@ -193,9 +207,15 @@
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
         BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
         roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
+        roomVC.channelName = self.className;
+        roomVC.rtmKit = self.agoraRtmKit;
+        roomVC.userName = self.userName;
+        roomVC.userId = self.uid;
+        roomVC.rtmChannelName = [self stringToMD5:self.className];
         [self presentViewController:roomVC animated:YES completion:nil];
     }
 }
+
 - (void)presentMiniClassViewController {
     [self.activityIndicator stopAnimating];
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
@@ -211,15 +231,14 @@
 
 - (void)presentAlterViewTitile:(NSString *)title message:(NSString *)message cancelActionTitle:(NSString *)cancelTitle confirmActionTitle:(NSString *)confirmTitle {
     UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-    }];
-        if (cancelTitle) {
+    if (cancelTitle) {
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+               }];
          [alertVC addAction:cancel];
     }
-
-    UIAlertAction *confirm = [UIAlertAction actionWithTitle:confirmTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-    }];
     if (confirmTitle) {
+        UIAlertAction *confirm = [UIAlertAction actionWithTitle:confirmTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
         [alertVC addAction:confirm];
     }
     alertVC.view.translatesAutoresizingMaskIntoConstraints = NO;

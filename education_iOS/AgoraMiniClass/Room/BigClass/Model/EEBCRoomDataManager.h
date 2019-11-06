@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EEBCStudentAttr.h"
+#import "EEBCStudentAttrs.h"
 #import "EEBCTeactherAttr.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEBCRoomDataManager : NSObject
 + (instancetype)shareManager;
-@property (nonatomic, readonly) NSMutableArray<EEBCStudentAttr *> *studentArray;
+@property (nonatomic, readonly) NSMutableArray<EEBCStudentAttrs *> *studentArray;
 @property (nonatomic, readonly) EEBCTeactherAttr *teactherAttr;
-
+- (NSString *)sendHandUpMessage;
 @end
 
 NS_ASSUME_NONNULL_END
