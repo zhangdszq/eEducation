@@ -9,7 +9,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EEStudentVideoView">
             <connections>
+                <outlet property="audioMuteButton" destination="bZs-yj-gqt" id="5Xn-AW-hqa"/>
+                <outlet property="studentRenderView" destination="pmL-xj-wxG" id="UDw-jn-YUA"/>
                 <outlet property="studentVideoView" destination="iN0-l3-epB" id="lim-73-aqX"/>
+                <outlet property="videoMuteButton" destination="bRz-3Z-xUZ" id="CG5-Et-LjD"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -17,6 +20,10 @@
             <rect key="frame" x="0.0" y="0.0" width="85" height="120"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pmL-xj-wxG">
+                    <rect key="frame" x="0.0" y="0.0" width="85" height="120"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                </view>
                 <view alpha="0.40000000000000002" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S3W-SY-O9R">
                     <rect key="frame" x="0.0" y="96" width="85" height="24"/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -57,10 +64,14 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="1DL-Iu-OBD" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="51U-UC-nNq"/>
+                <constraint firstItem="pmL-xj-wxG" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Bfq-dM-fg1"/>
                 <constraint firstAttribute="trailing" secondItem="1DL-Iu-OBD" secondAttribute="trailing" id="LjF-5P-B9b"/>
+                <constraint firstAttribute="trailing" secondItem="pmL-xj-wxG" secondAttribute="trailing" id="Ndp-n8-Blw"/>
+                <constraint firstItem="pmL-xj-wxG" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="XQK-vA-lTV"/>
                 <constraint firstItem="1DL-Iu-OBD" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="XbF-uy-0Td"/>
                 <constraint firstAttribute="trailing" secondItem="S3W-SY-O9R" secondAttribute="trailing" id="bpi-CO-mtU"/>
                 <constraint firstAttribute="bottom" secondItem="S3W-SY-O9R" secondAttribute="bottom" id="fkF-6y-8LI"/>
+                <constraint firstAttribute="bottom" secondItem="pmL-xj-wxG" secondAttribute="bottom" id="is6-qi-ETX"/>
                 <constraint firstItem="S3W-SY-O9R" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ugS-EY-gup"/>
             </constraints>
             <nil key="simulatedBottomBarMetrics"/>

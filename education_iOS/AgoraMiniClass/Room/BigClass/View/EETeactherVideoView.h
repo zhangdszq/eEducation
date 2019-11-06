@@ -12,7 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EETeactherVideoView : UIView
 @property (strong, nonatomic) IBOutlet UIView *teactherVideoView;
+@property (weak, nonatomic) IBOutlet UIImageView *speakerImage;
 
+@property (weak, nonatomic) IBOutlet UIView *teacherRenderView;
+- (void)updateAndsetTeacherName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END

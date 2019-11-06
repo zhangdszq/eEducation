@@ -33,14 +33,14 @@
                         <action selector="clickEvent:" destination="-1" eventType="touchUpInside" id="to7-VL-p3Y"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="203" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xEb-0q-ZmZ">
+                <button opaque="NO" tag="201" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xEb-0q-ZmZ">
                     <rect key="frame" x="4" y="46" width="38" height="38"/>
                     <color key="backgroundColor" red="0.33725490196078434" green="0.33725490196078434" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="38" id="6de-Xp-lhZ"/>
                         <constraint firstAttribute="height" constant="38" id="C3a-KQ-jcU"/>
                     </constraints>
-                    <state key="normal" image="tool-eraser"/>
+                    <state key="normal" image="tool-pen"/>
                     <connections>
                         <action selector="clickEvent:" destination="-1" eventType="touchUpInside" id="uOP-Yl-66Z"/>
                     </connections>
@@ -57,19 +57,19 @@
                         <action selector="clickEvent:" destination="-1" eventType="touchUpInside" id="jbt-vH-MxW"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="204" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f1z-50-2NF">
+                <button opaque="NO" tag="203" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f1z-50-2NF">
                     <rect key="frame" x="4" y="130" width="38" height="38"/>
                     <color key="backgroundColor" red="0.33725490196078434" green="0.33725490196078434" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="38" id="R0K-uR-U04"/>
                         <constraint firstAttribute="width" constant="38" id="wwJ-km-1IC"/>
                     </constraints>
-                    <state key="normal" image="tool-pen"/>
+                    <state key="normal" image="tool-eraser"/>
                     <connections>
                         <action selector="clickEvent:" destination="-1" eventType="touchUpInside" id="zBO-Sa-rF0"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="201" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zT9-P1-z7v">
+                <button opaque="NO" tag="204" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zT9-P1-z7v">
                     <rect key="frame" x="4" y="172" width="38" height="38"/>
                     <color key="backgroundColor" red="0.33725490196078434" green="0.33725490196078434" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>

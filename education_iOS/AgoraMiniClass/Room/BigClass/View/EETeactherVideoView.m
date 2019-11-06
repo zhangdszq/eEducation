@@ -8,6 +8,11 @@
 
 #import "EETeactherVideoView.h"
 
+@interface EETeactherVideoView ()
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+
+@end
+
 @implementation EETeactherVideoView
 
 /*
@@ -34,5 +39,9 @@
 
 - (void)layoutSubviews {
     
+}
+- (void)updateAndsetTeacherName:(NSString *)name {
+    [self.nameLabel setText:self.nameLabel];
+
 }
 @end

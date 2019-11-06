@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RoomMessageModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEChatContentViewCell : UITableViewCell
-
+@property (nonatomic, copy) RoomMessageModel *messageModel;
 @end
 
 NS_ASSUME_NONNULL_END

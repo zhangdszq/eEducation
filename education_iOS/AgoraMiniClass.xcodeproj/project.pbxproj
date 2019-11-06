@@ -13,12 +13,17 @@
 		1A1749A12362A3CE00A65B10 /* EEStudentVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1749A02362A3CE00A65B10 /* EEStudentVideoView.m */; };
 		1A1749A32362A3DA00A65B10 /* EEStudentVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A1749A22362A3DA00A65B10 /* EEStudentVideoView.xib */; };
 		1A226C412369BFF40024D984 /* EEChannelAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C402369BFF40024D984 /* EEChannelAttr.m */; };
-		1A226C44236A7C1B0024D984 /* EEBCStudentAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */; };
+		1A226C44236A7C1B0024D984 /* EEBCStudentAttrs.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C43236A7C1B0024D984 /* EEBCStudentAttrs.m */; };
 		1A226C47236A7C720024D984 /* EEBCRoomDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */; };
 		1A226C4A236A7D8A0024D984 /* EEBCTeactherAttr.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C49236A7D8A0024D984 /* EEBCTeactherAttr.m */; };
+		1A226C53236BE5450024D984 /* EEColorShowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C52236BE5450024D984 /* EEColorShowView.m */; };
+		1A226C55236BE5500024D984 /* EEColorShowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A226C54236BE5500024D984 /* EEColorShowView.xib */; };
+		1A226C58236BEAEC0024D984 /* EEColorViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C57236BEAEC0024D984 /* EEColorViewCell.m */; };
+		1A226C5D236EC3BA0024D984 /* UIColor+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A226C5C236EC3BA0024D984 /* UIColor+Addition.m */; };
 		1A296C6222DEFCE6008AC68A /* StudentVideoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A296C6122DEFCE6008AC68A /* StudentVideoViewCell.m */; };
+		1A2FFA0A2371AD510049E49F /* BCTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A2FFA092371AD510049E49F /* BCTestViewController.m */; };
+		1A2FFA0D237261FF0049E49F /* UIView+EEBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A2FFA0C237261FF0049E49F /* UIView+EEBadge.m */; };
 		1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A399E5323697E9000F5A40F /* OneToOneViewController.m */; };
-		1A399E582369AF8F00F5A40F /* NSString+RTMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */; };
 		1A44BE6622BF863000766274 /* RoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE3922BF863000766274 /* RoomViewController.m */; };
 		1A44BE6722BF863000766274 /* WhiteBoardToolControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE3C22BF863000766274 /* WhiteBoardToolControl.m */; };
 		1A44BE6922BF863000766274 /* MessageListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE4722BF863000766274 /* MessageListViewCell.m */; };
@@ -101,18 +106,27 @@
 		1A1749A52365779B00A65B10 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1A226C3F2369BFF40024D984 /* EEChannelAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEChannelAttr.h; sourceTree = "<group>"; };
 		1A226C402369BFF40024D984 /* EEChannelAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEChannelAttr.m; sourceTree = "<group>"; };
-		1A226C42236A7C1B0024D984 /* EEBCStudentAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCStudentAttr.h; sourceTree = "<group>"; };
-		1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCStudentAttr.m; sourceTree = "<group>"; };
+		1A226C42236A7C1B0024D984 /* EEBCStudentAttrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCStudentAttrs.h; sourceTree = "<group>"; };
+		1A226C43236A7C1B0024D984 /* EEBCStudentAttrs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCStudentAttrs.m; sourceTree = "<group>"; };
 		1A226C45236A7C720024D984 /* EEBCRoomDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCRoomDataManager.h; sourceTree = "<group>"; };
 		1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCRoomDataManager.m; sourceTree = "<group>"; };
 		1A226C48236A7D8A0024D984 /* EEBCTeactherAttr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEBCTeactherAttr.h; sourceTree = "<group>"; };
 		1A226C49236A7D8A0024D984 /* EEBCTeactherAttr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEBCTeactherAttr.m; sourceTree = "<group>"; };
+		1A226C51236BE5450024D984 /* EEColorShowView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEColorShowView.h; sourceTree = "<group>"; };
+		1A226C52236BE5450024D984 /* EEColorShowView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEColorShowView.m; sourceTree = "<group>"; };
+		1A226C54236BE5500024D984 /* EEColorShowView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEColorShowView.xib; sourceTree = "<group>"; };
+		1A226C56236BEAEC0024D984 /* EEColorViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEColorViewCell.h; sourceTree = "<group>"; };
+		1A226C57236BEAEC0024D984 /* EEColorViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEColorViewCell.m; sourceTree = "<group>"; };
+		1A226C5B236EC3BA0024D984 /* UIColor+Addition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+Addition.h"; sourceTree = "<group>"; };
+		1A226C5C236EC3BA0024D984 /* UIColor+Addition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Addition.m"; sourceTree = "<group>"; };
 		1A296C6022DEFCE6008AC68A /* StudentVideoViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StudentVideoViewCell.h; sourceTree = "<group>"; };
 		1A296C6122DEFCE6008AC68A /* StudentVideoViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StudentVideoViewCell.m; sourceTree = "<group>"; };
+		1A2FFA082371AD510049E49F /* BCTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCTestViewController.h; sourceTree = "<group>"; };
+		1A2FFA092371AD510049E49F /* BCTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCTestViewController.m; sourceTree = "<group>"; };
+		1A2FFA0B237261FF0049E49F /* UIView+EEBadge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+EEBadge.h"; sourceTree = "<group>"; };
+		1A2FFA0C237261FF0049E49F /* UIView+EEBadge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+EEBadge.m"; sourceTree = "<group>"; };
 		1A399E5223697E9000F5A40F /* OneToOneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneToOneViewController.h; sourceTree = "<group>"; };
 		1A399E5323697E9000F5A40F /* OneToOneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OneToOneViewController.m; sourceTree = "<group>"; };
-		1A399E562369AF8F00F5A40F /* NSString+RTMMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+RTMMessage.h"; sourceTree = "<group>"; };
-		1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+RTMMessage.m"; sourceTree = "<group>"; };
 		1A44BE3422BF863000766274 /* NetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkViewController.h; sourceTree = "<group>"; };
 		1A44BE3522BF863000766274 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1A44BE3722BF863000766274 /* RoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomViewController.h; sourceTree = "<group>"; };
@@ -265,6 +279,8 @@
 				1AF2CFBD2367F9DF00EBA8BA /* BCRightViewController.m */,
 				1AF2CFBF2367F9E800EBA8BA /* BCLeftViewController.h */,
 				1AF2CFC02367F9E800EBA8BA /* BCLeftViewController.m */,
+				1A2FFA082371AD510049E49F /* BCTestViewController.h */,
+				1A2FFA092371AD510049E49F /* BCTestViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -272,6 +288,10 @@
 		1A399E4E236975D400F5A40F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				1AF2CFC5236823F800EBA8BA /* EEExitFullScreenTransitioning.h */,
+				1AF2CFC6236823F800EBA8BA /* EEExitFullScreenTransitioning.m */,
+				1AF1CD4023673AA100DA8B12 /* EEEnterFullScreenTransition.h */,
+				1AF1CD4123673AA100DA8B12 /* EEEnterFullScreenTransition.m */,
 				1AD4E999235F100400C415BF /* EESegmentedView.h */,
 				1AD4E99A235F100400C415BF /* EESegmentedView.m */,
 				1AD4E9A2236008FF00C415BF /* EEPageControlView.h */,
@@ -296,6 +316,13 @@
 				1A17499F2362A3CE00A65B10 /* EEStudentVideoView.h */,
 				1A1749A02362A3CE00A65B10 /* EEStudentVideoView.m */,
 				1A1749A22362A3DA00A65B10 /* EEStudentVideoView.xib */,
+				1A226C51236BE5450024D984 /* EEColorShowView.h */,
+				1A226C52236BE5450024D984 /* EEColorShowView.m */,
+				1A226C54236BE5500024D984 /* EEColorShowView.xib */,
+				1A226C56236BEAEC0024D984 /* EEColorViewCell.h */,
+				1A226C57236BEAEC0024D984 /* EEColorViewCell.m */,
+				1A2FFA0B237261FF0049E49F /* UIView+EEBadge.h */,
+				1A2FFA0C237261FF0049E49F /* UIView+EEBadge.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -330,12 +357,10 @@
 		1A399E552369AF2200F5A40F /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				1A399E562369AF8F00F5A40F /* NSString+RTMMessage.h */,
-				1A399E572369AF8F00F5A40F /* NSString+RTMMessage.m */,
 				1A226C3F2369BFF40024D984 /* EEChannelAttr.h */,
 				1A226C402369BFF40024D984 /* EEChannelAttr.m */,
-				1A226C42236A7C1B0024D984 /* EEBCStudentAttr.h */,
-				1A226C43236A7C1B0024D984 /* EEBCStudentAttr.m */,
+				1A226C42236A7C1B0024D984 /* EEBCStudentAttrs.h */,
+				1A226C43236A7C1B0024D984 /* EEBCStudentAttrs.m */,
 				1A226C45236A7C720024D984 /* EEBCRoomDataManager.h */,
 				1A226C46236A7C720024D984 /* EEBCRoomDataManager.m */,
 				1A226C48236A7D8A0024D984 /* EEBCTeactherAttr.h */,
@@ -360,6 +385,8 @@
 				1AF1CD2C236700A400DA8B12 /* EEClassRoomTypeView.h */,
 				1AF1CD2D236700A400DA8B12 /* EEClassRoomTypeView.m */,
 				1AF1CD2F236700B300DA8B12 /* EEClassRoomTypeView.xib */,
+				1A226C5B236EC3BA0024D984 /* UIColor+Addition.h */,
+				1A226C5C236EC3BA0024D984 /* UIColor+Addition.m */,
 				1A87571323581AEC009C55A8 /* Supporting Files */,
 			);
 			path = AgoraMiniClass;
@@ -382,10 +409,6 @@
 				1A44BE8222BFA97400766274 /* RoomMessageModel.m */,
 				1A44BE8D22C104D000766274 /* RoomUserModel.h */,
 				1A44BE8E22C104D000766274 /* RoomUserModel.m */,
-				1AF2CFC5236823F800EBA8BA /* EEExitFullScreenTransitioning.h */,
-				1AF2CFC6236823F800EBA8BA /* EEExitFullScreenTransitioning.m */,
-				1AF1CD4023673AA100DA8B12 /* EEEnterFullScreenTransition.h */,
-				1AF1CD4123673AA100DA8B12 /* EEEnterFullScreenTransition.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -676,6 +699,7 @@
 				1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */,
 				1A44BE7522BF863000766274 /* Assets.xcassets in Resources */,
 				1A17499E236297CF00A65B10 /* EEChatTextFiled.xib in Resources */,
+				1A226C55236BE5500024D984 /* EEColorShowView.xib in Resources */,
 				1AF1CD30236700B300DA8B12 /* EEClassRoomTypeView.xib in Resources */,
 				1A44BE7622BF863000766274 /* LaunchScreen.storyboard in Resources */,
 				1A6BC52423608B0900FE8289 /* EETeactherVideoView.xib in Resources */,
@@ -772,6 +796,7 @@
 				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
 				1AF2CFC423680C7D00EBA8BA /* EEBCBaseView.m in Sources */,
 				1A44BE7D22BF863000766274 /* Configs.m in Sources */,
+				1A226C53236BE5450024D984 /* EEColorShowView.m in Sources */,
 				1A44BE6B22BF863000766274 /* StudentVideoListView.m in Sources */,
 				1AF2CFC12367F9E800EBA8BA /* BCLeftViewController.m in Sources */,
 				1A226C4A236A7D8A0024D984 /* EEBCTeactherAttr.m in Sources */,
@@ -783,6 +808,7 @@
 				1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */,
 				1A226C47236A7C720024D984 /* EEBCRoomDataManager.m in Sources */,
 				1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */,
+				1A2FFA0A2371AD510049E49F /* BCTestViewController.m in Sources */,
 				1A226C412369BFF40024D984 /* EEChannelAttr.m in Sources */,
 				1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */,
 				1A44BE6D22BF863000766274 /* RoomManageView.m in Sources */,
@@ -793,8 +819,8 @@
 				1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */,
 				1AF2CFBB2367F9D000EBA8BA /* BCFullScreenViewController.m in Sources */,
 				1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */,
-				1A399E582369AF8F00F5A40F /* NSString+RTMMessage.m in Sources */,
-				1A226C44236A7C1B0024D984 /* EEBCStudentAttr.m in Sources */,
+				1A226C58236BEAEC0024D984 /* EEColorViewCell.m in Sources */,
+				1A226C44236A7C1B0024D984 /* EEBCStudentAttrs.m in Sources */,
 				1A6BC5182360447800FE8289 /* EEChatContentTableView.m in Sources */,
 				1A44BE6622BF863000766274 /* RoomViewController.m in Sources */,
 				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
@@ -805,8 +831,10 @@
 				1ACECF4F22E74F6B00800FAF /* ClassRoomDataManager.m in Sources */,
 				1A44BE8322BFA97400766274 /* RoomMessageModel.m in Sources */,
 				1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */,
+				1A2FFA0D237261FF0049E49F /* UIView+EEBadge.m in Sources */,
 				1A44BE6C22BF863000766274 /* MemberListViewCell.m in Sources */,
 				1A1749A12362A3CE00A65B10 /* EEStudentVideoView.m in Sources */,
+				1A226C5D236EC3BA0024D984 /* UIColor+Addition.m in Sources */,
 				1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */,
 				1AF2CFBE2367F9DF00EBA8BA /* BCRightViewController.m in Sources */,
 				1AF1CD2E236700A400DA8B12 /* EEClassRoomTypeView.m in Sources */,

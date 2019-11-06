@@ -35,6 +35,14 @@
     [super awakeFromNib];
     self.roomNameArray = [NSMutableArray arrayWithObjects:@"一对一",@"小班课",@"大班课", nil];
     [self addSubview:self.typeTableView];
+    self.typeTableView.layer.borderWidth = 1.f;
+    self.typeTableView.layer.borderColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0].CGColor;
+    self.typeTableView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1.0].CGColor;
+    self.typeTableView.layer.cornerRadius = 4;
+    self.typeTableView.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.15].CGColor;
+    self.typeTableView.layer.shadowOffset = CGSizeMake(0,2);
+    self.typeTableView.layer.shadowOpacity = 2;
+    self.typeTableView.layer.shadowRadius = 4;
 
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import "EESegmentedView.h"
-
+#import "UIView+EEBadge.h"
 
 @interface EESegmentedView ()
 @property (nonatomic, copy) NSArray *items;
@@ -43,7 +43,9 @@
             [itemButton setSelected:YES];
         }else {
             lineView.hidden = YES;
+
         }
+
         [self setSelectedButton:itemButton];
         [self addSubview:itemButton];
         [itemButton addTarget:self action:@selector(selectItem:) forControlEvents:(UIControlEventTouchUpInside)];
@@ -82,5 +84,16 @@
         [button.titleLabel setFont:[UIFont systemFontOfSize:16.f weight:(UIFontWeightRegular)]];
         [button setTitleColor:RCColorWithValue(0x666666, 1.f) forState:(UIControlStateNormal)];
     }
+}
+
+- (void)showBadgeWithCount:(NSInteger)count {
+    UIButton *tempButton = (UIButton *)[self viewWithTag:1001];
+    [tempButton.titleLabel showBadgeWithTopMagin:0];
+    [tempButton.titleLabel setBadgeCount:count];
+
+}
+- (void)hiddeBadge {
+    UIButton *tempButton = (UIButton *)[self viewWithTag:1001];
+    [tempButton.titleLabel hidenBadge];
 }
 @end

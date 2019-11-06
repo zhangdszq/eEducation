@@ -8,6 +8,12 @@
 
 #import "EEStudentVideoView.h"
 
+@interface EEStudentVideoView ()
+@property (weak, nonatomic) IBOutlet UIButton *videoMuteButton;
+@property (weak, nonatomic) IBOutlet UIButton *audioMuteButton;
+
+@end
+
 @implementation EEStudentVideoView
 
 /*
@@ -34,12 +40,22 @@
     self.studentVideoView.frame = self.bounds;
 }
 
-//- (void)setFrame:(CGRect)frame {
-//    [super setFrame:frame];
-//    CGRect rect = self.frame;
-//    rect.origin.x = 0;
-//    rect.origin.y = 0;
-//    self.studentVideoView.frame = rect;
-//}
+- (void)updateVideoImage:(BOOL)videoImage {
+    if (videoImage) {
+        [self.videoMuteButton setImage:[UIImage imageNamed:@"eevideoOff"] forState:(UIControlStateNormal)];
+    }else {
+        [self.videoMuteButton setImage:[UIImage imageNamed:@"eevideoOn-s"] forState:(UIControlStateNormal)];
+    }
+}
+
+- (void)updateAudioImage:(BOOL)audioImage {
+    if (audioImage) {
+        [self.audioMuteButton setImage:[UIImage imageNamed:@"icon-speakeroff"] forState:(UIControlStateNormal)];
+    }else {
+
+        [self.audioMuteButton setImage:[UIImage imageNamed:@"roomMicon"] forState:(UIControlStateNormal)];
+    }
+
+}
 
 @end

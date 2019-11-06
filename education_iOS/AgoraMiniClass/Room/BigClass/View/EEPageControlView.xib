@@ -10,6 +10,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EEPageControlView">
             <connections>
                 <outlet property="pageControlView" destination="D5m-FE-BBW" id="kzt-Uh-6pp"/>
+                <outlet property="pageCountLabel" destination="k35-e2-3UG" id="O8L-nH-o6y"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
