@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^SelectColor)(NSString *colorString);
+typedef void(^SelectColor)(NSString * _Nullable colorString);
 
 NS_ASSUME_NONNULL_BEGIN
 

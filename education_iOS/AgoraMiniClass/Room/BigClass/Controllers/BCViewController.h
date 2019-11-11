@@ -8,15 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "EENavigationView.h"
-#import "EETeactherVideoView.h"
+#import "EETeacherVideoView.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BCViewController : UIViewController
-@property (nonatomic, copy) NSString *channelName;
-@property (nonatomic, copy) AgoraRtmKit *rtmKit;
-@property (nonatomic, copy) NSString *userName;
-@property (nonatomic, copy) NSString *userId;
-@property (nonatomic, copy) NSString *rtmChannelName;
+@property (nonatomic, strong) NSDictionary *params;
 @end
 
 NS_ASSUME_NONNULL_END
