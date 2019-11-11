@@ -58,7 +58,6 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     EEColorViewCell *Cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ColorCell" forIndexPath:indexPath];
-//    Cell.outColorView.backgroundColor = [UIColor colorWithHexString:self.colorArray[indexPath.row]];
     Cell.outColorView.hidden = YES;
     Cell.colorView.backgroundColor = [UIColor colorWithHexString:self.colorArray[indexPath.row]];
     return Cell;

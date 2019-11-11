@@ -17,15 +17,14 @@
 #import "BCViewController.h"
 #import "EEClassRoomTypeView.h"
 #import "OneToOneViewController.h"
-#import "BCTestViewController.h"
 #import <Foundation/Foundation.h>
-#import <CommonCrypto/CommonCrypto.h>
+#import "EEPublicMethodsManager.h"
 
-@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate,EEClassRoomTypeDelegate>
+@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomCon;
 @property (nonatomic, strong) AgoraRtmKit *agoraRtmKit;
 @property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
 @property (nonatomic, copy)   NSString *serverRtmId;
@@ -39,7 +38,6 @@
 @property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
 @property (weak, nonatomic) IBOutlet UIButton *roomType;
 @property (nonatomic, assign) AgoraRtmConnectionState rtmConnectionState;
-@property (nonatomic, strong) AFNetworkReachabilityManager *mageger;
 @end
 
 @implementation MainViewController
@@ -63,19 +61,6 @@
     [self setUpView];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
-//    [self reachability];
-}
-
-- (NSString *)stringToMD5:(NSString *)str {
-    const char *fooData = [str UTF8String];
-    unsigned char result[CC_MD5_DIGEST_LENGTH];
-
-    CC_MD5(fooData, (CC_LONG)strlen(fooData), result);
-    NSMutableString *saveResult = [NSMutableString string];
-    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [saveResult appendFormat:@"%02x", result[i]];
-    }
-    return saveResult;
 }
 
 - (void)setUpView {
@@ -124,12 +109,12 @@
 
 - (void)keyboardWasShow:(NSNotification *)notification {
     CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    float bottom = frame.size.height - 208;
-    self.textViewBottomConstraint.constant = bottom;
+    float bottom = frame.size.height;
+    self.textViewBottomCon.constant = bottom;
 }
 
 - (void)keyboardWillBeHiden:(NSNotification *)notification {
-    self.textViewBottomConstraint.constant = 48;
+    self.textViewBottomCon.constant = 261;
 }
 
 - (void)touchedBegan:(UIGestureRecognizer *)recognizer {
@@ -165,11 +150,10 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     [self.activityIndicator startAnimating];
-    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self judgeClassRoomText:self.classNameTextFiled.text] || ![self judgeClassRoomText:self.userNameTextFiled.text]) {
+    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![EEPublicMethodsManager judgeClassRoomText:self.classNameTextFiled.text] || ![EEPublicMethodsManager judgeClassRoomText:self.userNameTextFiled.text]) {
         [self presentAlterViewTitile:@"请检查房间号和用户名符合规格" message:@"11位及以内的数字或者英文字符" cancelActionTitle:@"取消" confirmActionTitle:nil];
         [self.activityIndicator stopAnimating];
     }else {
-
         self.className = self.classNameTextFiled.text;
         self.userName = self.userNameTextFiled.text;
         self.roomDataManager.className = self.className;
@@ -193,25 +177,20 @@
 }
 
 - (void)presentBigClassController {
+    [self.activityIndicator stopAnimating];
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
-    }else if (self.rtmConnectionState == AgoraRtmConnectionStateConnecting) {
-        [self presentAlterViewTitile:@"error" message:@"create channel error" cancelActionTitle:@"cancel" confirmActionTitle:nil];
     }else {
-        [self joinRtmChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-            if (errorCode == AgoraRtmJoinChannelErrorTimeout) {
-                 [self presentAlterViewTitile:@"error" message:@"create channel error" cancelActionTitle:@"cancel" confirmActionTitle:nil];
-            }
-        }];
-        [self.activityIndicator stopAnimating];
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
         BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
         roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
-        roomVC.channelName = self.className;
-        roomVC.rtmKit = self.agoraRtmKit;
-        roomVC.userName = self.userName;
-        roomVC.userId = self.uid;
-        roomVC.rtmChannelName = [self stringToMD5:self.className];
+        roomVC.params = @{
+            @"channelName": self.className,
+            @"rtmKit" : self.agoraRtmKit,
+            @"userName": self.userName,
+            @"userId" : self.uid,
+            @"rtmChannelName":[EEPublicMethodsManager MD5WithString:self.className],
+        };
         [self presentViewController:roomVC animated:YES completion:nil];
     }
 }
@@ -227,32 +206,6 @@
 - (void)presentOneToOneViewController {
     OneToOneViewController *oneToOneVC = [[OneToOneViewController alloc] init];
     [self.navigationController pushViewController:oneToOneVC animated:YES];
-}
-
-- (void)presentAlterViewTitile:(NSString *)title message:(NSString *)message cancelActionTitle:(NSString *)cancelTitle confirmActionTitle:(NSString *)confirmTitle {
-    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    if (cancelTitle) {
-            UIAlertAction *cancel = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-               }];
-         [alertVC addAction:cancel];
-    }
-    if (confirmTitle) {
-        UIAlertAction *confirm = [UIAlertAction actionWithTitle:confirmTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alertVC addAction:confirm];
-    }
-    alertVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self presentViewController:alertVC animated:YES completion:nil];
-}
-
-- (BOOL)judgeClassRoomText:(NSString *)text {
-    NSString *regex = @"^[a-zA-Z0-9]*$";
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
-    if ([predicate evaluateWithObject:text] && text.length < 11) {
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 - (void)joinClassRoomError {
@@ -288,8 +241,20 @@
     }];
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+- (void)presentAlterViewTitile:(NSString *)title message:(NSString *)message cancelActionTitle:(NSString *)cancelTitle confirmActionTitle:(NSString *)confirmTitle {
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    if (cancelTitle) {
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+               }];
+         [alertVC addAction:cancel];
+    }
+    if (confirmTitle) {
+        UIAlertAction *confirm = [UIAlertAction actionWithTitle:confirmTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertVC addAction:confirm];
+    }
+    alertVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self presentViewController:alertVC animated:YES completion:nil];
 }
 
 - (BOOL)prefersStatusBarHidden {

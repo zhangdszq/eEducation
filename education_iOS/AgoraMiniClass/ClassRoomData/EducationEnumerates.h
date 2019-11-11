@@ -31,3 +31,10 @@ typedef NS_ENUM(NSInteger, RotatingState)  {
     RotatingStateAnimating,
 
 };
+
+typedef NS_ENUM(NSInteger, StudentLinkState) {
+    StudentLinkStateApply,
+    StudentLinkStateAccept,
+    StudentLinkStateReject,
+    StudentLinkStateTimeout,
+};

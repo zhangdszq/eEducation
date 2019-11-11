@@ -6,14 +6,14 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import "EETeactherVideoView.h"
+#import "EETeacherVideoView.h"
 
-@interface EETeactherVideoView ()
+@interface EETeacherVideoView ()
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 
 @end
 
-@implementation EETeactherVideoView
+@implementation EETeacherVideoView
 
 /*
 // Only override drawRect: if you perform custom drawing.
@@ -28,13 +28,13 @@
     self = [super initWithCoder:coder];
     if (self) {
     [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil];
-    [self addSubview:self.teactherVideoView];
+    [self addSubview:self.teacherVideoView];
     }
     return self;
 }
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.teactherVideoView.frame = self.bounds;
+    self.teacherVideoView.frame = self.bounds;
 }
 
 - (void)layoutSubviews {
