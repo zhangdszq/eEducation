@@ -35,5 +35,7 @@
     self.contentTextFiled.layer.masksToBounds = YES;
     self.contentTextFiled.layer.borderWidth = 1.f;
     self.contentTextFiled.layer.borderColor = RCColorWithValue(0xDBE2E5, 1.f).CGColor;
+    self.layer.borderWidth = 1.f;
+    self.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
 }
 @end

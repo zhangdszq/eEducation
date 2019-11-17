@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EENavigationView.h"
+#import "BCNavigationView.h"
 #import "EETeacherVideoView.h"
 NS_ASSUME_NONNULL_BEGIN
 

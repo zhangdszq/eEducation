@@ -40,7 +40,7 @@
 - (void)layoutSubviews {
     
 }
-- (void)updateAndsetTeacherName:(NSString *)name {
+- (void)updateAndsetTeacherName:(NSString * _Nullable)name {
     [self.nameLabel setText:self.nameLabel];
 
 }

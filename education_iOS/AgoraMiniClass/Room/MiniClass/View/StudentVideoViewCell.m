@@ -11,7 +11,7 @@
 @interface StudentVideoViewCell ()
 @property (nonatomic, weak) UIImageView *backImageView;
 @property (nonatomic, weak) UILabel *nameLable;
-@property (nonatomic, weak) UIImageView *networkSignalView;
+@property (nonatomic, weak) UIImageView *volumeImageView;
 @end
 
 @implementation StudentVideoViewCell
@@ -28,8 +28,8 @@
     _userModel = userModel;
     self.nameLable.text = userModel.name;
     self.backImageView.hidden = userModel.isMuteVideo ? NO : YES;
-    NSString *wifiImageName = userModel.netWorkSignal == NetworkSignalGood ? @"wifi_good" : @"wifi_bad";
-    [self.networkSignalView setImage:[UIImage imageNamed:wifiImageName]];
+//    NSString *wifiImageName = userModel.netWorkSignal == NetworkSignalGood ? @"wifi_good" : @"wifi_bad";
+//    [self.networkSignalView setImage:[UIImage imageNamed:wifiImageName]];
 }
 
 - (void)setUpView {
@@ -51,16 +51,17 @@
     [self bringSubviewToFront:nameLable];
     self.nameLable = nameLable;
 
-    UIImageView *networkSignalView = [[UIImageView alloc] init];
-    networkSignalView.frame = CGRectMake(60, 0, 15, 15);
-    [self.contentView addSubview:networkSignalView];
-    networkSignalView.backgroundColor = [UIColor redColor];
-    self.networkSignalView = networkSignalView;
+    UIImageView *volumeImageView = [[UIImageView alloc] init];
+    volumeImageView.frame = CGRectMake(75,50, 20, 20);
+    [self.contentView addSubview:volumeImageView];
+    volumeImageView.backgroundColor = [UIColor redColor];
+    [volumeImageView setImage:[UIImage imageNamed:@"eeSpeaker3"]];
+    self.volumeImageView = volumeImageView;
 }
 
 - (UILabel *)addNameLabel {
     UILabel *nameLabel = [[UILabel alloc] init];
-    nameLabel.frame = CGRectMake(0, 75-17, 75, 17);
+    nameLabel.frame = CGRectMake(0, 70-20, 95, 20);
     nameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.font = [UIFont systemFontOfSize:10.f];

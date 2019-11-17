@@ -14,7 +14,6 @@
 @end
 
 @implementation EESegmentedView
-
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -43,9 +42,7 @@
             [itemButton setSelected:YES];
         }else {
             lineView.hidden = YES;
-
         }
-
         [self setSelectedButton:itemButton];
         [self addSubview:itemButton];
         [itemButton addTarget:self action:@selector(selectItem:) forControlEvents:(UIControlEventTouchUpInside)];
@@ -53,7 +50,6 @@
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
-
 }
 
 - (void)selectItem:(UIButton *)sender {

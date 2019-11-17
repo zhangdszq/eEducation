@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<EESegmentedDelegate> delegate;
 - (void)showBadgeWithCount:(NSInteger)count;
 - (void)hiddeBadge;
+- (void)updateItems:(NSArray *)items;
 @end
 
 NS_ASSUME_NONNULL_END
