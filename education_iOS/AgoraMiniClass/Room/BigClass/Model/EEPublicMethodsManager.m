@@ -25,15 +25,47 @@
     return applyString;
 }
 
-+ (NSString *)setChannelAttrsWithName:(NSString *)name {
++ (NSString *)muteVideoStream:(BOOL)stream {
+    NSString *type = stream ? @"mute" : @"unmute";
     NSDictionary *dict = @{
-           @"account":name,
-       };
-    NSString *nameString = [JsonAndStringConversions dictionaryToJson:dict];
-    return nameString;
+        @"type":type,
+        @"resource":@"video",
+    };
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
+    return message;
 }
 
-+ (void)parseWhiteBoardRoomWithUuid:(NSString *)uuid token:(void (^)(NSString *token))token failure:(void (^)(NSString *msg))failure;{
++ (NSString *)muteAudioStream:(BOOL)stream {
+    NSString *type = stream ? @"mute" : @"unmute";
+    NSDictionary *dict = @{
+        @"type":type,
+        @"resource":@"audio",
+    };
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
+    return message;
+}
+
++ (NSString *)muteChatContent:(BOOL)isMute {
+    NSString *type = isMute ? @"mute" : @"unmute";
+    NSDictionary *dict = @{
+        @"type":type,
+        @"resource":@"audio",
+    };
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
+    return message;
+}
+
++ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
+    NSDictionary *dict = @{
+          @"account":name,
+          @"video":@(video),
+          @"audio":@(audio),
+      };
+    NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
+    return attrString;
+}
+
++ (void)parseWhiteBoardRoomWithUuid:(NSString *)uuid token:(void (^)(NSString *token))token failure:(void (^)(NSString *msg))failure{
          AgoraHttpRequest *request = [[AgoraHttpRequest alloc] init];
          NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:uuid,@"uuid", nil];
          [request post:kGetWhiteBoardRoomToken params:params success:^(id responseObj) {

@@ -22,7 +22,7 @@
     self = [super initWithCoder:coder];
     if (self) {
         [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil];
-           [self addSubview:self.pageControlView];
+        [self addSubview:self.pageControlView];
     }
     return self;
 }

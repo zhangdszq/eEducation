@@ -19,6 +19,7 @@
 #import "OneToOneViewController.h"
 #import <Foundation/Foundation.h>
 #import "EEPublicMethodsManager.h"
+#import "MCViewController.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,ClassRoomDataManagerDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -184,12 +185,13 @@
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
         BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
         roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
+        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[EEPublicMethodsManager MD5WithString:self.className]];
         roomVC.params = @{
             @"channelName": self.className,
             @"rtmKit" : self.agoraRtmKit,
             @"userName": self.userName,
             @"userId" : self.uid,
-            @"rtmChannelName":[EEPublicMethodsManager MD5WithString:self.className],
+            @"rtmChannelName":rtcChannelName,
         };
         [self presentViewController:roomVC animated:YES completion:nil];
     }
@@ -197,15 +199,39 @@
 
 - (void)presentMiniClassViewController {
     [self.activityIndicator stopAnimating];
-    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-    NetworkViewController *networkVC = [story instantiateViewControllerWithIdentifier:@"network"];
-    networkVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:networkVC animated:YES completion:nil];
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
+    MCViewController *mcVC = [story instantiateViewControllerWithIdentifier:@"mcRoom"];
+    mcVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[EEPublicMethodsManager MD5WithString:self.className]];
+    mcVC.params = @{
+                   @"channelName": self.className,
+                   @"rtmKit" : self.agoraRtmKit,
+                   @"userName": self.userName,
+                   @"userId" : self.uid,
+                   @"rtmChannelName":rtcChannelName,
+               };
+    [self presentViewController:mcVC animated:YES completion:nil];
 }
 
 - (void)presentOneToOneViewController {
-    OneToOneViewController *oneToOneVC = [[OneToOneViewController alloc] init];
-    [self.navigationController pushViewController:oneToOneVC animated:YES];
+    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[EEPublicMethodsManager MD5WithString:self.className]];
+    WEAK(self)
+    [self.agoraRtmKit getChannelMemberCount:@[rtcChannelName] completion:^(NSArray<AgoraRtmChannelMemberCount *> *channelMemberCounts, AgoraRtmChannelMemberCountErrorCode errorCode) {
+        if (errorCode == AgoraRtmChannelMemberCountErrorOk && weakself.childViewControllers.count < 2) {
+            UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
+            OneToOneViewController *onetooneVC = [story instantiateViewControllerWithIdentifier:@"oneToOneRoom"];
+            onetooneVC.modalPresentationStyle = UIModalPresentationFullScreen;
+            onetooneVC.params = @{
+                @"channelName": weakself.className,
+                @"rtmKit" : weakself.agoraRtmKit,
+                @"userName": weakself.userName,
+                @"userId" : weakself.uid,
+                @"rtmChannelName":rtcChannelName,
+            };
+            [weakself presentViewController:onetooneVC animated:YES completion:nil];
+        }
+    }];
+
 }
 
 - (void)joinClassRoomError {

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
 
 @property (weak, nonatomic) IBOutlet UIView *teacherRenderView;
-- (void)updateAndsetTeacherName:(NSString *)name;
+- (void)updateAndsetTeacherName:(NSString * _Nullable)name;
 @end
 
 NS_ASSUME_NONNULL_END

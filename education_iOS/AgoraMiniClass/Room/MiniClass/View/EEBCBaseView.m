@@ -7,7 +7,7 @@
 //
 
 #import "EEBCBaseView.h"
-#import "EENavigationView.h"
+#import "BCNavigationView.h"
 
 @implementation EEBCBaseView
 
@@ -32,14 +32,14 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     for (UIView *view  in self.subviews) {
-        if ([view isKindOfClass:[EENavigationView class]]) {
-            EENavigationView *navigation = (EENavigationView *)view;
+        if ([view isKindOfClass:[BCNavigationView class]]) {
+            BCNavigationView *navigation = (BCNavigationView *)view;
             [self verticalToFullScreen:navigation];
         }
     }
 }
 
-- (void)verticalToFullScreen:(EENavigationView *)view {
+- (void)verticalToFullScreen:(BCNavigationView *)view {
     NSLog(@"self----- %f",self.frame.size.width);
      CGFloat navigationBarHeight =  (kScreenHeight / kScreenWidth > 1.78) ? 88 : 64;
     if (kScreenWidth > kScreenHeight) {

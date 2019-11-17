@@ -6,15 +6,15 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import "EENavigationView.h"
+#import "BCNavigationView.h"
 
 
-@interface EENavigationView ()
+@interface BCNavigationView ()
 
 
 @end
 
-@implementation EENavigationView
+@implementation BCNavigationView
 
 /*
 // Only override drawRect: if you perform custom drawing.
@@ -28,7 +28,7 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        [[NSBundle mainBundle] loadNibNamed:@"EENavigationView" owner:self options:nil];
+        [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil];
         [self addSubview:self.navigationView];
     }
     return self;
