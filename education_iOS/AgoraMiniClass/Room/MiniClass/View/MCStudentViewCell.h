@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentViewCell : UITableViewCell
+@property (nonatomic, copy) NSString *userId;
 @property (nonatomic, copy) EEBCStudentAttrs *studentModel;
 @property (weak, nonatomic) IBOutlet UIButton *muteAudioButton;
 

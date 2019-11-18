@@ -38,9 +38,16 @@
     [super awakeFromNib];
     self.navigationView.frame = self.bounds;
 }
+
 - (void)layoutSubviews {
     [super layoutSubviews];
+}
 
-    NSLog(@"ssssssss ---- %f",self.frame.size.width);
+- (void)updateChannelName:(NSString *)name {
+    [self.titleLabel setText:name];
+}
+
+- (void)updateSignalImageName:(NSString *)name {
+    [self.wifiSignalImage setImage:[UIImage imageNamed:name]];
 }
 @end

@@ -182,7 +182,7 @@
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
     }else {
-        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
         BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
         roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
         NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[EEPublicMethodsManager MD5WithString:self.className]];

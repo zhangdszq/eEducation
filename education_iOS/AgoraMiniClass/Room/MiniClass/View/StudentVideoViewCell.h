@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RoomUserModel.h"
+#import "EEBCTeactherAttrs.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface StudentVideoViewCell : UICollectionViewCell
 @property (nonatomic, weak) UIView *videoCanvasView;
-@property (nonatomic, copy) RoomUserModel *userModel;
+@property (nonatomic, copy) EEBCTeactherAttrs *userModel;
 
 @end
 

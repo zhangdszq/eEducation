@@ -37,5 +37,9 @@
     NSString *videoImageName = studentModel.video ? @"eevideoOn-s" : @"eevideoOff";
        [self.muteVideoButton setImage:[UIImage imageNamed:videoImageName] forState:(UIControlStateNormal)];
     self.muteVideoButton.selected = studentModel.audio ? YES : NO;
+    self.muteVideoButton.hidden = studentModel.userId != self.userId ? YES : NO;
+   self.muteAudioButton.hidden = studentModel.userId != self.userId ? YES : NO;
 }
+
+
 @end
