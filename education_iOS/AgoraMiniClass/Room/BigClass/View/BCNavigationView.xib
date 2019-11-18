@@ -3,7 +3,7 @@
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -39,7 +39,7 @@
                     </constraints>
                     <state key="normal" title="Button" image="icon-close"/>
                 </button>
-                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fullscreen-Wifi-signal3" translatesAutoresizingMaskIntoConstraints="NO" id="MOd-IO-STS">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fullscreen-Wifi-signal3" translatesAutoresizingMaskIntoConstraints="NO" id="MOd-IO-STS">
                     <rect key="frame" x="10" y="63" width="20" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="f1a-jT-9qt"/>

@@ -49,6 +49,10 @@
 - (void)addMessageModel:(RoomMessageModel *)model {
     [self.messageArray addObject:model];
     [self.messageTableView reloadData];
+    if (self.messageArray.count > 0) {
+         [self.messageTableView scrollToRowAtIndexPath:
+          [NSIndexPath indexPathForRow:[self.messageArray count] - 1 inSection:0] atScrollPosition: UITableViewScrollPositionBottom animated:NO];
+     }
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.messageArray.count;

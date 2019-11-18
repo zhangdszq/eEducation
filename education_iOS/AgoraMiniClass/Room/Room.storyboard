@@ -50,7 +50,7 @@
                                     <constraint firstAttribute="width" constant="46" id="DEh-o5-S5H"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NVS-Me-vgb" customClass="EEColorShowView">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NVS-Me-vgb" customClass="EEColorShowView">
                                 <rect key="frame" x="110" y="200" width="220" height="124"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
@@ -72,7 +72,7 @@
                                         <rect key="frame" x="0.0" y="40" width="222" height="197"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6jm-dZ-OEY" customClass="MCStudentListView">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6jm-dZ-OEY" customClass="MCStudentListView">
                                         <rect key="frame" x="0.0" y="40" width="222" height="253"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
@@ -113,7 +113,7 @@
                                     <constraint firstAttribute="width" constant="244" id="yOJ-zu-Oah"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ibz-2e-QTK">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ibz-2e-QTK">
                                 <rect key="frame" x="100" y="100" width="752" height="314"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
@@ -134,11 +134,11 @@
                             <constraint firstItem="ZC3-I1-kGQ" firstAttribute="top" secondItem="XQy-pw-5SP" secondAttribute="top" id="GGx-Nw-jFe"/>
                             <constraint firstItem="XQy-pw-5SP" firstAttribute="trailing" secondItem="MDY-GA-tjB" secondAttribute="trailing" id="Jps-Qh-93K"/>
                             <constraint firstItem="vxR-tG-YEp" firstAttribute="top" secondItem="awo-2R-jQ0" secondAttribute="bottom" constant="10" id="KOM-t7-fOP"/>
+                            <constraint firstItem="XQy-pw-5SP" firstAttribute="trailing" secondItem="EHE-um-Y9E" secondAttribute="trailing" id="LGn-I2-LkZ"/>
                             <constraint firstItem="awo-2R-jQ0" firstAttribute="leading" secondItem="kdq-uH-xgO" secondAttribute="trailing" constant="1" id="MNa-4l-LXO"/>
                             <constraint firstAttribute="bottom" secondItem="EHE-um-Y9E" secondAttribute="bottom" id="MaG-OI-zA4"/>
                             <constraint firstItem="Ibz-2e-QTK" firstAttribute="top" secondItem="awo-2R-jQ0" secondAttribute="bottom" id="PrC-jh-O3V"/>
                             <constraint firstItem="NVS-Me-vgb" firstAttribute="bottom" secondItem="vxR-tG-YEp" secondAttribute="bottom" id="QBH-ce-aCR"/>
-                            <constraint firstItem="XQy-pw-5SP" firstAttribute="trailing" secondItem="EHE-um-Y9E" secondAttribute="trailing" id="Yme-O6-J5B"/>
                             <constraint firstAttribute="bottom" secondItem="Xwj-7G-fZc" secondAttribute="bottom" id="Ywr-z2-899"/>
                             <constraint firstItem="kdq-uH-xgO" firstAttribute="leading" secondItem="XQy-pw-5SP" secondAttribute="leading" id="Z2o-Bl-N2b"/>
                             <constraint firstItem="XQy-pw-5SP" firstAttribute="trailing" secondItem="awo-2R-jQ0" secondAttribute="trailing" id="ZzY-6H-aRo"/>
@@ -170,6 +170,7 @@
                         <outlet property="navigationView" destination="ZC3-I1-kGQ" id="yga-yh-fMj"/>
                         <outlet property="pageControlView" destination="Rf8-Xu-Hjs" id="RWi-hq-szb"/>
                         <outlet property="roomManagerView" destination="qP8-rT-5bW" id="oua-ip-kbQ"/>
+                        <outlet property="segmentedView" destination="ZbE-c2-jxD" id="Riz-B3-VHt"/>
                         <outlet property="shareScreenView" destination="Ibz-2e-QTK" id="nOE-dw-RfH"/>
                         <outlet property="showAndHideButton" destination="MDY-GA-tjB" id="ED1-4P-D1s"/>
                         <outlet property="studentListView" destination="6jm-dZ-OEY" id="9gQ-kz-AJx"/>
@@ -481,7 +482,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vhj-dL-2RV">
-                                <rect key="frame" x="673" y="88" width="1" height="326"/>
+                                <rect key="frame" x="629" y="88" width="1" height="326"/>
                                 <color key="backgroundColor" red="0.85882352939999995" green="0.8862745098" blue="0.8980392157" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="1" id="WiJ-Px-gqZ"/>
@@ -499,7 +500,6 @@
                             <constraint firstItem="sAa-4d-5e0" firstAttribute="leading" secondItem="WJH-FO-ulH" secondAttribute="leading" constant="314" id="8ow-09-4qF"/>
                             <constraint firstItem="y97-lA-yO7" firstAttribute="leading" secondItem="WJH-FO-ulH" secondAttribute="leading" id="BFu-mX-jxH"/>
                             <constraint firstItem="cHf-i5-uOr" firstAttribute="leading" secondItem="WJH-FO-ulH" secondAttribute="leading" id="GEs-ZV-r0v"/>
-                            <constraint firstAttribute="trailing" secondItem="vhj-dL-2RV" secondAttribute="trailing" constant="222" id="HcC-6R-RJ2"/>
                             <constraint firstItem="cHf-i5-uOr" firstAttribute="trailing" secondItem="WJH-FO-ulH" secondAttribute="trailing" id="IVR-oI-AB2"/>
                             <constraint firstAttribute="bottom" secondItem="dyy-96-CLV" secondAttribute="bottom" id="KHf-Xr-WqV"/>
                             <constraint firstItem="WJH-FO-ulH" firstAttribute="trailing" secondItem="xUa-Gt-BRi" secondAttribute="trailing" constant="10" id="LKt-6X-H58"/>
@@ -508,6 +508,7 @@
                             <constraint firstItem="cmR-yN-DIn" firstAttribute="centerX" secondItem="WJH-FO-ulH" secondAttribute="centerX" id="MyJ-J4-dv4"/>
                             <constraint firstItem="vhj-dL-2RV" firstAttribute="top" secondItem="cHf-i5-uOr" secondAttribute="bottom" id="NJx-gf-VNR"/>
                             <constraint firstItem="y97-lA-yO7" firstAttribute="top" secondItem="f9x-Vm-XDS" secondAttribute="bottom" id="OJN-FQ-Xdf"/>
+                            <constraint firstItem="WJH-FO-ulH" firstAttribute="trailing" secondItem="vhj-dL-2RV" secondAttribute="trailing" constant="222" id="Qdl-L1-LPf"/>
                             <constraint firstItem="uxm-fj-U5J" firstAttribute="leading" secondItem="WJH-FO-ulH" secondAttribute="leading" constant="10" id="RDA-GJ-Qhe"/>
                             <constraint firstItem="fi1-5a-0qF" firstAttribute="trailing" secondItem="WJH-FO-ulH" secondAttribute="trailing" id="TIn-58-rmu"/>
                             <constraint firstItem="UrG-kJ-ucf" firstAttribute="top" secondItem="f9x-Vm-XDS" secondAttribute="bottom" constant="44" id="TtM-PG-6oW"/>

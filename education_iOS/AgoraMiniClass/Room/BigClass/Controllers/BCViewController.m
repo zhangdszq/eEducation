@@ -43,12 +43,11 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageViewTopCon;
 
 @property (weak, nonatomic) IBOutlet UIView *lineView;
-
-
 @property (nonatomic, weak) UIButton *closeButton;
 @property (weak, nonatomic) IBOutlet EETeacherVideoView *teactherVideoView;
 @property (weak, nonatomic) IBOutlet EEStudentVideoView *studentVideoView;
 @property (weak, nonatomic) IBOutlet EESegmentedView *segmentedView;
+@property (nonatomic, assign) NSInteger segmentedIndex;
 @property (weak, nonatomic) IBOutlet BCNavigationView *navigationView;
 @property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
 @property (weak, nonatomic) IBOutlet EEPageControlView *pageControlView;
@@ -57,20 +56,19 @@
 @property (weak, nonatomic) IBOutlet UILabel *tipLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textFiledBottomConstraint;
-
 @property (weak, nonatomic) IBOutlet UIView *windowShareView;
 @property (weak, nonatomic) IBOutlet EEChatTextFiled *chatTextFiled;
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
-@property (nonatomic, strong) WhiteBoardView *boardView;
-@property (nonatomic, strong) WhiteSDK *sdk;
-@property (nonatomic, strong, nullable) WhiteRoom *room;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 @property (nonatomic, strong) AgoraRtcVideoCanvas *teacherCanvas;
 @property (nonatomic, strong) AgoraRtcVideoCanvas *studentCanvas;
-@property (nonatomic, strong) NSMutableDictionary *studentList;
+@property (nonatomic, strong) NSMutableDictionary *studentListDict;
 @property (nonatomic, strong) EEBCTeactherAttrs *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
+@property (nonatomic, strong) WhiteBoardView *boardView;
+@property (nonatomic, strong) WhiteSDK *sdk;
+@property (nonatomic, strong, nullable) WhiteRoom *room;
 @property (nonatomic, assign) NSInteger sceneIndex;
 @property (nonatomic, copy) NSString *sceneDirectory;
 @property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
@@ -91,7 +89,7 @@
 @end
 
 @implementation BCViewController
-
+#pragma mark ------------------------ SET/GET -----------------------------
 - (void)setParams:(NSDictionary *)params {
     _params = params;
     if (params[@"rtmKit"]) {
@@ -100,19 +98,8 @@
         self.userName = params[@"userName"];
         self.userId = params[@"userId"];
         self.rtmChannelName = params[@"rtmChannelName"];
+        NSLog(@"rtmChannelName----- %@",_rtmChannelName);
     }
-}
-
-- (void)getRtmChannelAttrs{
-    WEAK(self)
-    [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
-        [weakself parsingTheChannelAttr:attributes];
-        if (weakself.teacherAttr) {
-           weakself.teacherInRoom = YES;
-           [weakself joinWhiteBoardRoomUUID:weakself.teacherAttr.whiteboard_uid];
-        }
-        [weakself setChannelAttrsWithVideo:NO audio:NO];
-    }];
 }
 
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
@@ -133,29 +120,40 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationView updateChannelName:self.channelName];
+    [self addNotification];
     [self setUpView];
 
-    self.navigationView.titleLabel.text = self.channelName;
+    self.studentListDict = [NSMutableDictionary dictionary];
+
+    [self.rtmKit setAgoraRtmDelegate:self];
+
+    [self joinAgoraRtcChannel];
+    [self joinRtmChannel];
+    [self setChannelAttrsWithVideo:NO audio:NO];
     UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
     if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
-       [self landscapeConstraints];
+        [self landscapeConstraints];
     }else {
-       [self verticalScreenConstraints];
+        [self verticalScreenConstraints];
     }
-    [self.rtmKit setAgoraRtmDelegate:self];
-    [self addNotification];
-    self.studentList = [NSMutableDictionary dictionary];
-    [self joinAgoraRtcChannel];
-    [self joinWhiteBoardRoomUUID:@"f988fb64078e48baa410058bd728009b"];
+}
 
+#pragma mark ---------------------------- Notification ---------------------
+- (void)addNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleDeviceOrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+}
 
-    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-       if (errorCode == AgoraRtmJoinChannelErrorOk) {
-           NSLog(@"频道加入成功");
-       }
-    }];
-    [self getRtmChannelAttrs];
+- (void)keyboardWasShow:(NSNotification *)notification {
+    CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    float bottom = frame.size.height;
+    self.textFiledBottomConstraint.constant = bottom;
+}
+
+- (void)keyboardWillBeHiden:(NSNotification *)notification {
+    self.textFiledBottomConstraint.constant = 0;
 }
 
 #pragma mark -----------------------------------Private Method ---------------------------
@@ -203,30 +201,22 @@
     [self.rtcEngineKit startPreview];
     [self.rtcEngineKit enableAudioVolumeIndication:300 smooth:3 report_vad:NO];
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.channelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+        
+    }];
+}
+
+- (void)joinRtmChannel {
+    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
+    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+        if (errorCode == AgoraRtmJoinChannelErrorOk) {
+            NSLog(@"RTM - 频道加入成功");
+        }
     }];
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid {
      self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
         WEAK(self)
-//     AgoraHttpRequest *request = [[AgoraHttpRequest alloc] init];
-
-//    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.channelName,@"name",@"100",@"limit", nil];
-//    [request post:kGetWhiteBoardUuid params:params success:^(id responseObj) {
-//               NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:responseObj options:0 error:nil];
-//               if ([responseObject[@"code"] integerValue] == 200) {
-//                   NSDictionary *roomDict = responseObject[@"msg"][@"room"];
-//                    WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:roomDict[@"uuid"] roomToken:responseObject[@"msg"][@"roomToken"]];
-//                   [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
-//                       weakself.room = room;
-//                       [weakself getWhiteboardSceneInfo];
-////                       [weakself.room disableDeviceInputs:YES];
-//                 }];
-//               }
-//           } failure:^(NSError *error) {
-
-//           }];
-
     [EEPublicMethodsManager parseWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
         [weakself.sdk joinRoomWithConfig:roomConfig callbacks:nil completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
@@ -269,6 +259,9 @@
 }
 - (void)landscapeConstraints {
 
+    BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
+    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
+    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
     self.segmentedView.hidden = YES;
     self.lineView.hidden = NO;
     self.chatTextFiled.hidden = NO;
@@ -284,22 +277,24 @@
     self.chatTextFiledWidthCon.constant = 223;
     self.tipLabelTopCon.constant = 10;
     self.messageViewTopCon.constant = 0;
-    self.whiteboardViewRightCon.constant = -223;
+    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -223;
     self.whiteboardViewTopCon.constant = 0;
     self.teacherVideoViewHeightCon.constant = 125;
     self.studentVideoViewLeftCon.constant = 66;
     self.studentViewHeightCon.constant = 85;
     self.studentViewWidthCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
-    self.boardView.frame = CGRectMake(0, 0, kScreenWidth - 223, kScreenHeight - 40);
+    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - 223;
+    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 40);
 }
 
 - (void)verticalScreenConstraints {
-
+    self.chatTextFiled.hidden = self.segmentedIndex == 0 ? YES : NO;
     self.lineView.hidden = YES;
     self.segmentedView.hidden = NO;
-
-    CGFloat navigationBarHeight =  (kScreenHeight / kScreenWidth > 1.78) ? 88 : 64;
+    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
+    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
+    CGFloat navigationBarHeight =  (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? 88 : 64;
     self.navigationHeightCon.constant = navigationBarHeight;
     self.navigationView.titleLabelBottomConstraint.constant = 12;
     self.navigationView.closeButtonBottomConstraint.constant = 7;
@@ -347,7 +342,6 @@
         }
     }];
     sender.enabled = NO;
-
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (weakself.linkState == StudentLinkStateApply) {
             weakself.handUpButton.enabled = YES;
@@ -373,38 +367,17 @@
            NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
            if ([channelAttr.key isEqualToString:@"teacher"]) {
                self.teacherAttr = [EEBCTeactherAttrs yy_modelWithDictionary:valueDict];
-               self.pageControlView.hidden = NO;
-               self.handUpButton.hidden = NO;
-               self.teactherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-               [self.teactherVideoView.defaultImageView setImage:[UIImage imageNamed:@"video-close"]];
-               NSString *speakerImage = self.teacherAttr.audio ? @"eeSpeaker2": @"speaker-close";
-               [self.teactherVideoView.speakerImage setImage:[UIImage imageNamed:speakerImage]];
-               [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
+               self.teacherInRoom = YES;
+               [self joinWhiteBoardRoomUUID:self.teacherAttr.whiteboard_uid];
            }else {
                EEBCStudentAttrs *studentAttr = [EEBCStudentAttrs yy_modelWithJSON:valueDict];
                studentAttr.userId = channelAttr.key;
-               [self.studentList setValue:studentAttr forKey:channelAttr.key];
+               [self.studentListDict setValue:studentAttr forKey:channelAttr.key];
            }
         }
     }
 }
 
-#pragma mark ---------------------------- Notification ---------------------
-- (void)addNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleDeviceOrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
-- (void)keyboardWasShow:(NSNotification *)notification {
-    CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    float bottom = frame.size.height;
-    self.textFiledBottomConstraint.constant = bottom;
-}
-
-- (void)keyboardWillBeHiden:(NSNotification *)notification {
-    self.textFiledBottomConstraint.constant = 0;
-}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     WEAK(self)
@@ -429,6 +402,7 @@
         self.colorShowView.hidden = YES;
     }
     if (index == 0) {
+        self.segmentedIndex = 0;
         self.messageView.hidden = YES;
         self.chatTextFiled.hidden = YES;
         self.pageControlView.hidden = self.teacherInRoom ? NO: YES;
@@ -437,7 +411,7 @@
         self.whiteboardTool.hidden = self.teacherInRoom ? NO: YES;
         self.handUpButton.hidden = self.teacherInRoom ? NO: YES;
     }else {
-
+        self.segmentedIndex = 0;
         self.messageView.hidden = NO;
         self.chatTextFiled.hidden = NO;
         self.pageControlView.hidden = YES;
@@ -532,7 +506,7 @@
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid != [self.teacherAttr.uid integerValue]) {
-        EEBCStudentAttrs *studentAttrs = [self.studentList objectForKey:@(uid)];
+        EEBCStudentAttrs *studentAttrs = [self.studentListDict objectForKey:@(uid)];
         [self.studentVideoView updateVideoImageWithMuteState:studentAttrs.video];
         [self.studentVideoView updateAudioImageWithMuteState:studentAttrs.audio];
     }
@@ -567,13 +541,33 @@
         }
     }
 }
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+    switch (type) {
+        case AgoraNetworkTypeUnknown:
+        case AgoraNetworkTypeMobile4G:
+        case AgoraNetworkTypeWIFI:
+            [self.navigationView updateSignalImageName:@"icon-Wifi-signal_good"];
+            break;
+        case AgoraNetworkTypeMobile3G:
+        case AgoraNetworkTypeMobile2G:
+             [self.navigationView updateSignalImageName:@"icon-Wifi-signal_medium"];
+            break;
+        case AgoraNetworkTypeLAN:
+        case AgoraNetworkTypeDisconnected:
+            [self.navigationView updateSignalImageName:@"icon-Wifi-signal_bad"];
+            break;
+        default:
+            break;
+    }
+}
 #pragma mark --------------------- RTM Delegate -------------------
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
     NSString *userName = nil;
     if ([member.userId isEqualToString: self.teacherAttr.uid]) {
         userName = self.teacherAttr.account;
     }else {
-        EEBCStudentAttrs *attrs = self.studentList[member.userId];
+        EEBCStudentAttrs *attrs = self.studentListDict[member.userId];
         userName = attrs.account;
     }
     RoomMessageModel *messageModel = [[RoomMessageModel alloc] init];
@@ -645,13 +639,13 @@
     }
 }
 - (void)clickMuteVideoButton {
-    EEBCStudentAttrs *attrs =  [self.studentList objectForKey:self.userId];
+    EEBCStudentAttrs *attrs =  [self.studentListDict objectForKey:self.userId];
     [self setChannelAttrsWithVideo:!attrs.video audio:attrs.audio];
     [self.studentVideoView updateVideoImageWithMuteState:!attrs.video];
 }
 
 - (void)clickMuteAudioButton {
-    EEBCStudentAttrs *attrs =  [self.studentList objectForKey:self.userId];
+    EEBCStudentAttrs *attrs =  [self.studentListDict objectForKey:self.userId];
     [self setChannelAttrsWithVideo:attrs.video audio:!attrs.audio];
     [self.studentVideoView updateAudioImageWithMuteState:!attrs.audio];
 }

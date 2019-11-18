@@ -57,15 +57,15 @@
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     StudentVideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
-//    cell.userModel = self.studentArray[indexPath.row];
-//    if (self.studentVideoList) {
-//        self.studentVideoList(cell.videoCanvasView,indexPath);
-//    }
+    cell.userModel = self.studentArray[indexPath.row];
+    if (self.studentVideoList) {
+        self.studentVideoList(cell.videoCanvasView,indexPath);
+    }
     return cell;
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 20;
+    return self.studentArray.count;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {

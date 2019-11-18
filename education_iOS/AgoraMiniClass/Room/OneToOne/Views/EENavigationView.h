@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EENavigationView : UIView
 @property (weak, nonatomic) IBOutlet UIButton *closeButton;
-
+- (void)startTimer;
+- (void)stopTimer;
 @end
 
 NS_ASSUME_NONNULL_END

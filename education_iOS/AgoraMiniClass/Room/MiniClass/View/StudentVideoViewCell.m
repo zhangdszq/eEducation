@@ -24,13 +24,13 @@
     return self;
 }
 
-- (void)setUserModel:(RoomUserModel *)userModel {
+- (void)setUserModel:(EEBCTeactherAttrs *)userModel {
     _userModel = userModel;
-    self.nameLable.text = userModel.name;
-    self.backImageView.hidden = userModel.isMuteVideo ? NO : YES;
-//    NSString *wifiImageName = userModel.netWorkSignal == NetworkSignalGood ? @"wifi_good" : @"wifi_bad";
-//    [self.networkSignalView setImage:[UIImage imageNamed:wifiImageName]];
+    self.nameLable.text = userModel.account;
+    self.backImageView.hidden = userModel.video ? NO : YES;
+
 }
+
 
 - (void)setUpView {
     self.backgroundColor = [UIColor grayColor];

@@ -114,6 +114,7 @@
            NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
            if ([channelAttr.key isEqualToString:@"teacher"]) {
                self.teacherAttr = [EEBCTeactherAttrs yy_modelWithDictionary:valueDict];
+               [self.navigationView startTimer];
                if (!self.teacherAttr.video) {
                    [self.teacherView.defaultImageView setImage:[UIImage imageNamed:@"video-close"]];
                }else {
@@ -253,6 +254,7 @@
 }
 
 - (void)closeRoom:(UIButton *)sender {
+    [self.navigationView stopTimer];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -282,6 +284,7 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskLandscapeRight;
 }
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

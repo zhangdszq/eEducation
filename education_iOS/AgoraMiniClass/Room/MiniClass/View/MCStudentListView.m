@@ -53,7 +53,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    return self.studentArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -64,10 +64,32 @@
 
     cell.studentModel = self.studentArray[indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    if (self.userId) {
+         cell.userId = self.userId;
+    }
+    [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
+    [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 40;
+}
+
+- (void)muteAudio:(UIButton *)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteAudioStream:)]) {
+        [self.delegate muteAudioStream:sender.selected];
+    }
+}
+
+- (void)muteVideo:(UIButton *)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
+           [self.delegate muteVideoStream:sender.selected];
+       }
+}
+
+- (void)setUserId:(NSString *)userId {
+    _userId = userId;
+    [self.studentTableView reloadData];
 }
 @end

@@ -18,6 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentListView : UIView
+@property (nonatomic, copy) NSString *userId;
 @property (nonatomic, weak)id<MCStudentViewDelegate> delegate;
 - (void)addStudentModel:(EEBCStudentAttrs *)model;
 - (void)removeStudentModel:(EEBCStudentAttrs *)model;

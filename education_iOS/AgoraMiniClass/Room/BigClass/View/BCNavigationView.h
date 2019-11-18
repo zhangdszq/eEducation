@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonBottomConstraint;
 @property (strong, nonatomic) IBOutlet UIView *navigationView;
 
+- (void)updateChannelName:(NSString *)name;
+- (void)updateSignalImageName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END
