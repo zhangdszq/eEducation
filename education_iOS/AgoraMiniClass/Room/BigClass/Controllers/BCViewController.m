@@ -61,8 +61,6 @@
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *teacherCanvas;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *studentCanvas;
 @property (nonatomic, strong) NSMutableDictionary *studentListDict;
 @property (nonatomic, strong) EEBCTeactherAttrs *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
@@ -118,6 +116,7 @@
     }];
 }
 
+#pragma mark ------------------------ sys methods -----------------------------
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationView updateChannelName:self.channelName];
@@ -352,9 +351,6 @@
 
     if (self.linkState == StudentLinkStateAccept) {
         [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
-        self.studentCanvas.view = nil;
-        self.studentCanvas.uid = [self.userId integerValue];
-        [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
         [self.studentVideoView updateAudioImageWithMuteState:NO];
         [self.studentVideoView updateVideoImageWithMuteState:NO];
         self.studentVideoView.hidden = YES;
@@ -489,17 +485,17 @@
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoDecodedOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
         self.teactherVideoView.defaultImageView.hidden = NO;
-        self.teacherCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        self.teacherCanvas.uid = uid;
-        self.teacherCanvas.view = self.teactherVideoView.teacherRenderView;
-        [self.rtcEngineKit setupRemoteVideo:self.teacherCanvas];
+        AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+        canvas.uid = uid;
+        canvas.view = self.teactherVideoView.teacherRenderView;
+        [self.rtcEngineKit setupRemoteVideo:canvas];
     }else {
         self.studentVideoView.hidden = NO;
         [self.studentVideoView setButtonEnabled:NO];
-        self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        self.studentCanvas.uid = uid;
-        self.studentCanvas.view = self.studentVideoView.studentRenderView;
-        [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
+        AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+        canvas.uid = uid;
+        canvas.view = self.studentVideoView.studentRenderView;
+        [self.rtcEngineKit setupRemoteVideo:canvas];
         self.linkUserId = [NSString stringWithFormat:@"%ld",uid];
     }
 }
@@ -513,11 +509,7 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        self.teacherCanvas = nil;
-    }else {
-        self.studentCanvas = nil;
-    }
+
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didAudioMuted:(BOOL)muted byUid:(NSUInteger)uid {
@@ -603,10 +595,10 @@
         }else if ([dict[@"type"] isEqualToString:@"accept"]) {
             [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
             self.linkState = StudentLinkStateAccept;
-            self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
-            self.studentCanvas.uid = [self.userId integerValue];
-            self.studentCanvas.view = self.studentVideoView.studentRenderView;
-            [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
+            AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+            canvas.uid = [self.userId integerValue];
+            canvas.view = self.studentVideoView.studentRenderView;
+            [self.rtcEngineKit setupLocalVideo:canvas];
             self.studentVideoView.hidden = NO;
             [self.studentVideoView setButtonEnabled:YES];
             [self.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
