@@ -42,15 +42,12 @@
     self.studentTableView.frame = self.bounds;
 }
 
-- (void)addStudentModel:(EEBCStudentAttrs *)model {
-    [self.studentArray addObject:model];
+- (void)updateStudentArray:(NSMutableArray *)array {
+    [self.studentArray removeAllObjects];
+    [self.studentArray addObjectsFromArray:array];
     [self.studentTableView reloadData];
 }
 
-- (void)removeStudentModel:(EEBCStudentAttrs *)model {
-    [self.studentArray removeObject:model];
-    [self.studentTableView reloadData];
-}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.studentArray.count;
@@ -64,11 +61,11 @@
 
     cell.studentModel = self.studentArray[indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    if (self.userId) {
-         cell.userId = self.userId;
-    }
+
     [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
     [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
+    cell.muteVideoButton.hidden = cell.studentModel.userId != self.userId ? YES : NO;
+    cell.muteAudioButton.hidden = cell.studentModel .userId != self.userId ? YES : NO;
     return cell;
 }
 
@@ -80,12 +77,18 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(muteAudioStream:)]) {
         [self.delegate muteAudioStream:sender.selected];
     }
+    sender.selected = !sender.selected;
+    NSString *imageName = sender.selected ? @"mic-speaker3":@"speaker-close";
+    [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
 - (void)muteVideo:(UIButton *)sender {
     if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
            [self.delegate muteVideoStream:sender.selected];
        }
+    sender.selected = !sender.selected;
+    NSString *imageName = sender.selected ? @"roomCameraOn":@"roomCameraOff";
+    [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
 - (void)setUserId:(NSString *)userId {

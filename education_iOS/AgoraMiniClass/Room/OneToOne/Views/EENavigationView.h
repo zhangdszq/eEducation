@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *closeButton;
 - (void)startTimer;
 - (void)stopTimer;
+- (void)updateChannelName:(NSString *)name;
+- (void)updateSignalImageName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END

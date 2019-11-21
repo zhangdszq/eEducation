@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL chatroom;
 @property (nonatomic, copy)   NSString * _Nullable connect_state;
 @property (nonatomic, copy)   NSString * _Nullable link_state;
+- (instancetype)initWithParams:(NSDictionary *_Nonnull)param;
 @end
 
 NS_ASSUME_NONNULL_END

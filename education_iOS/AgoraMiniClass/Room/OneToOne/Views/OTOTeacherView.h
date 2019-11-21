@@ -12,8 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OTOTeacherView : UIView
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
-@property (strong, nonatomic) IBOutlet UIView *teacherView;
-- (void)updateSpeakerEnabled:(BOOL)enable volume:(CGFloat)volume;
+@property (weak, nonatomic) IBOutlet UIView *videoRenderView;
+
+- (void)updateSpeakerEnabled:(BOOL)enable;
+- (void)updateUserName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END

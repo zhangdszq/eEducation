@@ -46,17 +46,15 @@
 - (void)post:(NSString *)url params:(NSDictionary *)params success:(void (^)(id))success failure:(void (^)(NSError *))failure
 {
     AFHTTPSessionManager *mgr = self.manager;
-    mgr.responseSerializer = [AFHTTPResponseSerializer serializer];
+    mgr.requestSerializer = [AFJSONRequestSerializer serializer];
     mgr.requestSerializer.timeoutInterval = 10;
-    [mgr POST:url parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [mgr POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (success) {
-            success(responseObject);
-        }
+                   success(responseObject);
+               }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         if (failure) {
-            failure(error);
+          failure(error);
         }
     }];
 }

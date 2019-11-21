@@ -11,8 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCTeacherVideoView : UIView
-@property (strong, nonatomic) IBOutlet UIView *teacherVideoView;
+@property (weak, nonatomic) IBOutlet UIView *videoRenderView;
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
+- (void)updateUserName:(NSString *)userName;
+- (void)updateSpeakerImageName:(NSString *)name;
 
 @end
 

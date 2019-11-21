@@ -8,6 +8,12 @@
 
 #import "OTOStudentView.h"
 
+@interface OTOStudentView ()
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (strong, nonatomic) IBOutlet UIView *studentView;
+@end
+
+
 @implementation OTOStudentView
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -23,19 +29,26 @@
     [super awakeFromNib];
     self.studentView.frame = self.bounds;
 }
+
 - (IBAction)muteMic:(UIButton *)sender {
-    if (self.muteMic) {
-        self.muteMic(!sender.selected);
-    }
     sender.selected = !sender.selected;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteAudioStream:)]) {
+        [self.delegate muteAudioStream:sender.selected];
+    }
+    NSString *imageName = sender.selected ? @"icon-speaker-off" : @"icon-speaker3";
+    [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
 - (IBAction)muteVideo:(UIButton *)sender {
-    if (self.muteVideo) {
-        self.muteVideo(!sender.selected);
-    }
     sender.selected = !sender.selected;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
+         [self.delegate muteVideoStream:sender.selected];
+     }
+    NSString *imageName = sender.selected ? @"roomCameraOff" : @"roomCameraOn";
+     [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
-
+- (void)updateUserName:(NSString *)name {
+    [self.nameLabel setText:name];
+}
 @end

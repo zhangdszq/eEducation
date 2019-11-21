@@ -33,8 +33,8 @@ typedef NS_ENUM(NSInteger, RotatingState)  {
 };
 
 typedef NS_ENUM(NSInteger, StudentLinkState) {
+    StudentLinkStateIdle,
     StudentLinkStateApply,
     StudentLinkStateAccept,
-    StudentLinkStateReject,
-    StudentLinkStateTimeout,
+    StudentLinkStateReject
 };

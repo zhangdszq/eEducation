@@ -7,7 +7,7 @@
 //
 
 #import "StudentVideoListView.h"
-#import "StudentVideoViewCell.h"
+#import "MCStudentVideoCell.h"
 
 @interface StudentVideoListView ()<UICollectionViewDelegate,UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *videoListView;
@@ -34,7 +34,6 @@
 - (void)setUpView {
     [self addSubview:self.videoListView];
     self.layer.masksToBounds = YES;
-    self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.0];
     _videoListView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionViewLeftCon = [_videoListView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:0];
       NSLayoutConstraint *rightCon = [_videoListView.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:0];
@@ -56,7 +55,7 @@
 }
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    StudentVideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
+    MCStudentVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
     cell.userModel = self.studentArray[indexPath.row];
     if (self.studentVideoList) {
         self.studentVideoList(cell.videoCanvasView,indexPath);
@@ -86,7 +85,7 @@
         listLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         listLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
         _videoListView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-        [_videoListView registerClass:[StudentVideoViewCell class] forCellWithReuseIdentifier:@"VideoCell"];
+        [_videoListView registerClass:[MCStudentVideoCell class] forCellWithReuseIdentifier:@"VideoCell"];
     }
     return _videoListView;
 }

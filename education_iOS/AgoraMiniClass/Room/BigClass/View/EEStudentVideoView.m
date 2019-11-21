@@ -67,7 +67,7 @@
 
 - (void)updateAudioImageWithMuteState:(BOOL)state {
     if (state) {
-        [self.audioMuteButton setImage:[UIImage imageNamed:@"icon-speakeroff"] forState:(UIControlStateNormal)];
+        [self.audioMuteButton setImage:[UIImage imageNamed:@"icon-speaker-off"] forState:(UIControlStateNormal)];
     }else {
         [self.audioMuteButton setImage:[UIImage imageNamed:@"roomMicon"] forState:(UIControlStateNormal)];
     }

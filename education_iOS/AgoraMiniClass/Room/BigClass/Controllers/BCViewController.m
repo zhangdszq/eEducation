@@ -16,15 +16,15 @@
 #import <WhiteSDK.h>
 #import "AgoraHttpRequest.h"
 #import "MainViewController.h"
-#import "EEPublicMethodsManager.h"
+#import "EERTMMessageProtocol.h"
 #import "RoomMessageModel.h"
 #import "EEColorShowView.h"
-#import "EEPublicMethodsManager.h"
+#import "EERTMMessageProtocol.h"
 #import "EEBCStudentAttrs.h"
 #import "EEBCTeactherAttrs.h"
 #import "EEMessageView.h"
 
-
+#define kLandscapeViewWidth    223
 @interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,EEPageControlDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,AgoraRtmDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,StudentViewDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
@@ -96,14 +96,13 @@
         self.userName = params[@"userName"];
         self.userId = params[@"userId"];
         self.rtmChannelName = params[@"rtmChannelName"];
-        NSLog(@"rtmChannelName----- %@",_rtmChannelName);
     }
 }
 
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
     AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
     setAttr.key = self.userId;
-    setAttr.value = [EEPublicMethodsManager setAndUpdateStudentChannelAttrsWithName:self.userName video:NO audio:NO];
+    setAttr.value = [EERTMMessageProtocol setAndUpdateStudentChannelAttrsWithName:self.userName video:NO audio:NO];
     AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
     options.enableNotificationToChannelMembers = YES;
     NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
@@ -173,11 +172,11 @@
 
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
     self.handUpButton.layer.cornerRadius = 6;
-    [EEPublicMethodsManager addShadowWithView:self.handUpButton alpha:0.1];
+    [EERTMMessageProtocol addShadowWithView:self.handUpButton alpha:0.1];
 
     self.tipLabel.layer.backgroundColor = RCColorWithValue(0x000000, 0.7).CGColor;
     self.tipLabel.layer.cornerRadius = 6;
-    [EEPublicMethodsManager addShadowWithView:self.tipLabel alpha:0.25];
+    [EERTMMessageProtocol addShadowWithView:self.tipLabel alpha:0.25];
 
     self.segmentedView.delegate = self;
     self.whiteboardTool.delegate = self;
@@ -198,6 +197,7 @@
     [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
     [self.rtcEngineKit enableVideo];
     [self.rtcEngineKit startPreview];
+    [self.rtcEngineKit enableWebSdkInteroperability:YES];
     [self.rtcEngineKit enableAudioVolumeIndication:300 smooth:3 report_vad:NO];
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.channelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
         
@@ -216,7 +216,7 @@
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid {
      self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
         WEAK(self)
-    [EEPublicMethodsManager parseWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
+    [EERTMMessageProtocol parseWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
         [weakself.sdk joinRoomWithConfig:roomConfig callbacks:nil completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
             weakself.room = room;
@@ -269,21 +269,21 @@
     self.navigationHeightCon.constant = 30;
     self.navigationView.titleLabelBottomConstraint.constant = 5;
     self.navigationView.closeButtonBottomConstraint.constant = 0;
-    self.teacherVideoWidthCon.constant = 223;
+    self.teacherVideoWidthCon.constant = kLandscapeViewWidth;
     self.handupButtonRightCon.constant = 233;
     self.whiteboardToolTopCon.constant = 10;
-    self.messageViewWidthCon.constant = 223;
-    self.chatTextFiledWidthCon.constant = 223;
+    self.messageViewWidthCon.constant = kLandscapeViewWidth;
+    self.chatTextFiledWidthCon.constant = kLandscapeViewWidth;
     self.tipLabelTopCon.constant = 10;
     self.messageViewTopCon.constant = 0;
-    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -223;
+    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -kLandscapeViewWidth;
     self.whiteboardViewTopCon.constant = 0;
     self.teacherVideoViewHeightCon.constant = 125;
     self.studentVideoViewLeftCon.constant = 66;
     self.studentViewHeightCon.constant = 85;
     self.studentViewWidthCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
-    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - 223;
+    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
     self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 40);
 }
 
@@ -315,45 +315,60 @@
 }
 
 - (void)closeRoom:(UIButton *)sender {
-    WEAK(self)
-    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"是否退出房间" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-    }];
-    UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+     WEAK(self)
+    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
         [weakself.rtcEngineKit leaveChannel:nil];
+        [weakself.room disconnect:^{
+
+        }];
         AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
         options.enableNotificationToChannelMembers = YES;
         [weakself.rtmKit deleteChannel:weakself.channelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
         [weakself.rtmChannel leaveWithCompletion:nil];
         [weakself dismissViewControllerAnimated:NO completion:nil];
     }];
-    [alertVC addAction:cancelAction];
-    [alertVC addAction:confirmAction];
-    [self presentViewController:alertVC animated:NO completion:nil];
 }
 
 - (IBAction)handUpEvent:(UIButton *)sender {
     WEAK(self)
-    [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[EEPublicMethodsManager studentApplyLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-        if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
-            weakself.linkState = StudentLinkStateApply;
-            [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup x"] forState:(UIControlStateNormal)];
+    switch (self.linkState) {
+        case StudentLinkStateIdle:
+        {
+            [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[EERTMMessageProtocol studentApplyLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+                if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
+                    weakself.linkState = StudentLinkStateApply;
+                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
+                }
+            }];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (weakself.linkState == StudentLinkStateApply) {
+                    weakself.handUpButton.enabled = YES;
+                    weakself.linkState = StudentLinkStateIdle;
+                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+                }
+            });
         }
-    }];
-    sender.enabled = NO;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (weakself.linkState == StudentLinkStateApply) {
-            weakself.handUpButton.enabled = YES;
-            weakself.linkState = StudentLinkStateTimeout;
-            [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+            break;
+        case StudentLinkStateAccept:
+        {
+            [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[EERTMMessageProtocol studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+                if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
+                    weakself.linkState = StudentLinkStateIdle;
+                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+                }
+            }];
         }
-    });
-
-    if (self.linkState == StudentLinkStateAccept) {
-        [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
-        [self.studentVideoView updateAudioImageWithMuteState:NO];
-        [self.studentVideoView updateVideoImageWithMuteState:NO];
-        self.studentVideoView.hidden = YES;
+            break;
+        case StudentLinkStateApply:
+        {
+            [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
+            [self.studentVideoView updateAudioImageWithMuteState:NO];
+            [self.studentVideoView updateVideoImageWithMuteState:NO];
+            self.studentVideoView.hidden = YES;
+        }
+             break;
+        default:
+            break;
     }
 }
 
@@ -539,15 +554,15 @@
         case AgoraNetworkTypeUnknown:
         case AgoraNetworkTypeMobile4G:
         case AgoraNetworkTypeWIFI:
-            [self.navigationView updateSignalImageName:@"icon-Wifi-signal_good"];
+            [self.navigationView updateSignalImageName:@"icon-signal3"];
             break;
         case AgoraNetworkTypeMobile3G:
         case AgoraNetworkTypeMobile2G:
-             [self.navigationView updateSignalImageName:@"icon-Wifi-signal_medium"];
+             [self.navigationView updateSignalImageName:@"icon-signal2"];
             break;
         case AgoraNetworkTypeLAN:
         case AgoraNetworkTypeDisconnected:
-            [self.navigationView updateSignalImageName:@"icon-Wifi-signal_bad"];
+            [self.navigationView updateSignalImageName:@"icon-signal1"];
             break;
         default:
             break;

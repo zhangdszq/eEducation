@@ -13,6 +13,7 @@
 @interface OTOTeacherView ()
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *speakerImageView;
+@property (strong, nonatomic) IBOutlet UIView *teacherView;
 @end
 
 @implementation OTOTeacherView
@@ -31,7 +32,12 @@
     self.teacherView.frame = self.bounds;
 }
 
-- (void)updateSpeakerEnabled:(BOOL)enable volume:(CGFloat)volume {
+- (void)updateSpeakerEnabled:(BOOL)enable{
+     NSString *imageName = !enable ? @"icon-speakeroff-dark" : @"icon-speaker3";
+    [self.speakerImageView setImage:[UIImage imageNamed:imageName]];
+}
 
+- (void)updateUserName:(NSString *)name {
+    [self.nameLabel setText:name];
 }
 @end

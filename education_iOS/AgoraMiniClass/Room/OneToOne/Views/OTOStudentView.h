@@ -9,16 +9,15 @@
 #import <UIKit/UIKit.h>
 
 
-typedef void(^MuteMic)(BOOL isMute);
-typedef void(^MuteVideo)(BOOL isMute);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OTOStudentView : UIView
-@property (strong, nonatomic) IBOutlet UIView *studentView;
+@property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
+@property (weak, nonatomic) IBOutlet UIView *videoRenderView;
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
 
-@property (nonatomic, copy) MuteMic muteMic;
-@property (nonatomic, copy) MuteMic muteVideo;
+- (void)updateUserName:(NSString *)name;
 @end
 
 NS_ASSUME_NONNULL_END

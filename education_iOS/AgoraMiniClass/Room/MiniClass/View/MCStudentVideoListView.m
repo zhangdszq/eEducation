@@ -7,11 +7,12 @@
 //
 
 #import "MCStudentVideoListView.h"
-#import "StudentVideoViewCell.h"
+#import "MCStudentVideoCell.h"
 
 @interface MCStudentVideoListView ()<UICollectionViewDataSource,UICollectionViewDelegate>
 @property (nonatomic, strong) UICollectionView *videoListView;
 @property (nonatomic, strong) NSLayoutConstraint *collectionViewLeftCon;
+@property (nonatomic, strong) NSMutableArray *studentArray;
 @end
 
 @implementation MCStudentVideoListView
@@ -28,12 +29,12 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self setUpView];
+    self.studentArray = [NSMutableArray array];
 }
 
 - (void)setUpView {
     [self addSubview:self.videoListView];
     self.layer.masksToBounds = YES;
-    self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.0];
     _videoListView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionViewLeftCon = [_videoListView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:0];
       NSLayoutConstraint *rightCon = [_videoListView.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:0];
@@ -56,7 +57,7 @@
 }
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    StudentVideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
+    MCStudentVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
     cell.userModel = self.studentArray[indexPath.row];
     if (self.studentVideoList) {
         self.studentVideoList(cell.videoCanvasView,indexPath);
@@ -72,8 +73,26 @@
     return CGSizeMake(95, 70);
 }
 
-- (void)setStudentArray:(NSMutableArray *)studentArray {
-    _studentArray = studentArray;
+- (void)updateStudentArray:(NSMutableArray *)studentArray {
+    NSMutableArray *tempArray = [NSMutableArray  arrayWithArray:self.studentArray];
+    for (NSInteger i = 0; i < studentArray.count; i ++) {
+        if (i >= tempArray.count) {
+            [self.studentArray addObject:studentArray[i]];
+            [self.videoListView reloadData];
+        }else {
+            EEBCStudentAttrs *studentModel = studentArray[i];
+            EEBCStudentAttrs *tempStudentModel = self.studentArray[i];
+            if (studentModel.video != tempStudentModel.video || studentModel.audio != tempStudentModel.audio) {
+                [self.studentArray replaceObjectAtIndex:i withObject:studentModel];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                [self.videoListView reloadItemsAtIndexPaths:@[indexPath]];
+            }
+        }
+    }
+}
+
+- (void)removeStudentModel:(EEBCStudentAttrs *)model {
+    [self.studentArray removeObject:model];
     [self.videoListView reloadData];
 }
 #pragma mark  ----  lazy ------
@@ -85,8 +104,8 @@
         _videoListView.delegate = self;
         listLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         listLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-        _videoListView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-        [_videoListView registerClass:[StudentVideoViewCell class] forCellWithReuseIdentifier:@"VideoCell"];
+        _videoListView.backgroundColor = [UIColor whiteColor];
+        [_videoListView registerClass:[MCStudentVideoCell class] forCellWithReuseIdentifier:@"VideoCell"];
     }
     return _videoListView;
 }
