@@ -14,13 +14,14 @@
     dispatch_source_t timer;
 }
 @property (strong, nonatomic) IBOutlet UIView *navigationView;
-@property (strong, nonatomic) IBOutlet UIView *wifiSigView;
 @property (weak, nonatomic) IBOutlet UILabel *roomNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (nonatomic) BOOL isStart;
 @property (nonatomic) BOOL isPause;
 @property (nonatomic) BOOL isCreat;
 @property (nonatomic,assign) int timeCount;
+@property (weak, nonatomic) IBOutlet UIImageView *wifiSignalView;
+
 @end
 
 @implementation EENavigationView
@@ -64,13 +65,24 @@
 }
 
 - (void)stopTimer {
-    dispatch_source_cancel(timer);
+    if (timer) {
+         dispatch_source_cancel(timer);
+    }
 }
 
 - (void)dealloc
 {
-    dispatch_source_cancel(timer);
+   if (timer) {
+            dispatch_source_cancel(timer);
+       }
 
 }
 
+- (void)updateChannelName:(NSString *)name {
+    [self.roomNameLabel setText:name];
+}
+
+- (void)updateSignalImageName:(NSString *)name {
+    [self.wifiSignalView setImage:[UIImage imageNamed:name]];
+}
 @end

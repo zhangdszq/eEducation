@@ -9,7 +9,13 @@
 #import "MCTeacherVideoView.h"
 
 
+@interface MCTeacherVideoView ()
+@property (strong, nonatomic) IBOutlet UIView *teacherVideoView;
 
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *speakerImageView;
+
+@end
 
 @implementation MCTeacherVideoView
 
@@ -26,6 +32,14 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.teacherVideoView.frame = self.bounds;
+}
+
+- (void)updateUserName:(NSString *)userName {
+    [self.nameLabel setText:userName];
+}
+
+- (void)updateSpeakerImageName:(NSString *)name {
+    [self.speakerImageView setImage:[UIImage imageNamed:name]];
 }
 
 @end

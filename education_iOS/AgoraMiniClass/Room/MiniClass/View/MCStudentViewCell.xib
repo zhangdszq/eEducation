@@ -40,7 +40,7 @@
                             <constraint firstAttribute="height" constant="30" id="DXW-7E-MY4"/>
                             <constraint firstAttribute="width" constant="30" id="su1-Ai-QiR"/>
                         </constraints>
-                        <state key="normal" image="eeSpeaker3"/>
+                        <state key="normal" image="icon-speaker3-max"/>
                     </button>
                 </subviews>
                 <constraints>
@@ -63,7 +63,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="eeSpeaker3" width="60" height="60"/>
         <image name="icon-camera-dark" width="30" height="30"/>
+        <image name="icon-speaker3-max" width="30" height="30"/>
     </resources>
 </document>

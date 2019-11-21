@@ -24,6 +24,8 @@
 #import <YYModel.h>
 #import <AFNetworking/AFNetworking.h>
 #import "UIColor+Addition.h"
+#import "EEAlertView.h"
+#import "AEClassRoomProtocol.h"
 
 
 

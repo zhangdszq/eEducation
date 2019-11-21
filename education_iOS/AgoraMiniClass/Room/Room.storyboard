@@ -18,7 +18,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZC3-I1-kGQ" customClass="EENavigationView">
                                 <rect key="frame" x="0.0" y="0.0" width="896" height="30"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" red="0.96078431372549022" green="0.96862745098039216" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="tDD-0G-Ump"/>
                                 </constraints>
@@ -59,7 +59,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qP8-rT-5bW">
-                                <rect key="frame" x="630" y="100" width="222" height="293"/>
+                                <rect key="frame" x="630" y="100" width="222" height="314"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZbE-c2-jxD" customClass="MCSegmentedView">
                                         <rect key="frame" x="0.0" y="0.0" width="222" height="40"/>
@@ -69,15 +69,15 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UhH-8E-NlU" customClass="EEMessageView">
-                                        <rect key="frame" x="0.0" y="40" width="222" height="197"/>
+                                        <rect key="frame" x="0.0" y="40" width="222" height="218"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6jm-dZ-OEY" customClass="MCStudentListView">
-                                        <rect key="frame" x="0.0" y="40" width="222" height="253"/>
+                                        <rect key="frame" x="0.0" y="40" width="222" height="274"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemYellowColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="UhH-8E-NlU" secondAttribute="trailing" id="2bP-ZV-3i5"/>
                                     <constraint firstItem="6jm-dZ-OEY" firstAttribute="leading" secondItem="qP8-rT-5bW" secondAttribute="leading" id="4WC-Tn-8Xa"/>
@@ -119,7 +119,7 @@
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EHE-um-Y9E" customClass="EEChatTextFiled">
                                 <rect key="frame" x="630" y="358" width="222" height="56"/>
-                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="222" id="Nrs-ys-7Ux"/>
                                     <constraint firstAttribute="height" constant="56" id="i3b-92-7jF"/>
@@ -144,6 +144,7 @@
                             <constraint firstItem="XQy-pw-5SP" firstAttribute="trailing" secondItem="awo-2R-jQ0" secondAttribute="trailing" id="ZzY-6H-aRo"/>
                             <constraint firstItem="Xwj-7G-fZc" firstAttribute="top" secondItem="awo-2R-jQ0" secondAttribute="bottom" id="h40-Tb-5OZ"/>
                             <constraint firstItem="ZC3-I1-kGQ" firstAttribute="leading" secondItem="CdO-8M-KYo" secondAttribute="leading" id="j41-43-Q4x"/>
+                            <constraint firstAttribute="bottom" secondItem="qP8-rT-5bW" secondAttribute="bottom" id="jaE-hM-SQW"/>
                             <constraint firstItem="NVS-Me-vgb" firstAttribute="leading" secondItem="vxR-tG-YEp" secondAttribute="trailing" constant="10" id="joe-0b-x92"/>
                             <constraint firstItem="MDY-GA-tjB" firstAttribute="top" secondItem="awo-2R-jQ0" secondAttribute="bottom" constant="10" id="kH2-Qh-Ubo"/>
                             <constraint firstItem="qP8-rT-5bW" firstAttribute="top" secondItem="awo-2R-jQ0" secondAttribute="bottom" id="ktJ-6B-kDA"/>
@@ -156,7 +157,6 @@
                             <constraint firstItem="kdq-uH-xgO" firstAttribute="top" secondItem="ZC3-I1-kGQ" secondAttribute="bottom" id="u7C-2Z-0hd"/>
                             <constraint firstAttribute="bottomMargin" secondItem="Rf8-Xu-Hjs" secondAttribute="bottom" constant="10" id="uh7-8H-aE9"/>
                             <constraint firstAttribute="trailing" secondItem="ZC3-I1-kGQ" secondAttribute="trailing" id="uiH-9G-DG3"/>
-                            <constraint firstItem="qP8-rT-5bW" firstAttribute="bottom" secondItem="CdO-8M-KYo" secondAttribute="bottomMargin" id="zkK-yq-fbx"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="XQy-pw-5SP"/>
                     </view>
@@ -194,7 +194,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BeR-4x-kaE" customClass="EENavigationView">
                                 <rect key="frame" x="44" y="0.0" width="808" height="30"/>
-                                <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.96078431372549022" green="0.96862745098039216" blue="0.97254901960784312" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Ahl-83-Ulx"/>
                                 </constraints>
@@ -228,7 +228,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q6b-b8-ijW">
-                                        <rect key="frame" x="0.0" y="41" width="1" height="266"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="1" height="307"/>
                                         <color key="backgroundColor" red="0.85882352939999995" green="0.8862745098" blue="0.8980392157" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="1" id="QCs-pE-Sls"/>
@@ -237,10 +237,10 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
+                                    <constraint firstItem="q6b-b8-ijW" firstAttribute="top" secondItem="q06-0V-osc" secondAttribute="top" id="0jB-y4-q2U"/>
                                     <constraint firstItem="k2k-rm-qaH" firstAttribute="leading" secondItem="q06-0V-osc" secondAttribute="leading" id="0mb-1c-mBg"/>
                                     <constraint firstItem="5BX-sj-rqt" firstAttribute="leading" secondItem="q06-0V-osc" secondAttribute="leading" id="33H-8K-feF"/>
                                     <constraint firstAttribute="bottom" secondItem="5BX-sj-rqt" secondAttribute="bottom" constant="54" id="7QF-AB-SmM"/>
-                                    <constraint firstItem="q6b-b8-ijW" firstAttribute="top" secondItem="k2k-rm-qaH" secondAttribute="bottom" id="97P-Gt-9WD"/>
                                     <constraint firstAttribute="width" constant="222" id="Dkp-a3-Anv"/>
                                     <constraint firstAttribute="trailing" secondItem="oiE-cC-ty9" secondAttribute="trailing" id="LK6-dW-N8C"/>
                                     <constraint firstAttribute="trailing" secondItem="k2k-rm-qaH" secondAttribute="trailing" id="Wbc-8c-zSr"/>
@@ -310,9 +310,14 @@
                                     <constraint firstAttribute="height" constant="124" id="TPe-bo-XIi"/>
                                 </constraints>
                             </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFF-yv-psL">
+                                <rect key="frame" x="236" y="30" width="616" height="384"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="VFF-yv-psL" firstAttribute="leading" secondItem="7UW-EO-MKZ" secondAttribute="trailing" id="4QQ-eW-RSb"/>
                             <constraint firstItem="7UW-EO-MKZ" firstAttribute="leading" secondItem="s36-6T-qPf" secondAttribute="leading" id="4ca-xS-wfg"/>
                             <constraint firstItem="xny-i6-BC3" firstAttribute="trailing" secondItem="s36-6T-qPf" secondAttribute="trailing" id="4yw-QH-55Y"/>
                             <constraint firstItem="xny-i6-BC3" firstAttribute="top" secondItem="BeR-4x-kaE" secondAttribute="bottom" id="9Ek-7Z-Vvk"/>
@@ -330,8 +335,10 @@
                             <constraint firstAttribute="bottom" secondItem="xny-i6-BC3" secondAttribute="bottom" id="UhO-D6-hlK"/>
                             <constraint firstItem="ie6-9R-0Rb" firstAttribute="leading" secondItem="s36-6T-qPf" secondAttribute="leading" id="Ydi-mh-cJV"/>
                             <constraint firstItem="XxH-jL-deb" firstAttribute="top" secondItem="BeR-4x-kaE" secondAttribute="bottom" constant="5" id="ZVV-n5-cSu"/>
+                            <constraint firstItem="VFF-yv-psL" firstAttribute="top" secondItem="BeR-4x-kaE" secondAttribute="bottom" id="arL-wR-Mva"/>
                             <constraint firstItem="ZYw-LM-zX3" firstAttribute="top" secondItem="BeR-4x-kaE" secondAttribute="bottom" constant="10" id="bMP-QP-hAh"/>
                             <constraint firstAttribute="bottom" secondItem="zlQ-MN-29k" secondAttribute="bottom" constant="20" id="cVi-VC-HL9"/>
+                            <constraint firstItem="s36-6T-qPf" firstAttribute="trailing" secondItem="VFF-yv-psL" secondAttribute="trailing" id="cga-kh-caj"/>
                             <constraint firstItem="ie6-9R-0Rb" firstAttribute="top" secondItem="7UW-EO-MKZ" secondAttribute="bottom" id="gyT-jb-EyT"/>
                             <constraint firstItem="ZYw-LM-zX3" firstAttribute="leading" secondItem="7UW-EO-MKZ" secondAttribute="trailing" constant="10" id="hs9-nZ-Fqz"/>
                             <constraint firstItem="s36-6T-qPf" firstAttribute="trailing" secondItem="BeR-4x-kaE" secondAttribute="trailing" id="iG6-p9-Tmg"/>
@@ -339,6 +346,7 @@
                             <constraint firstItem="q06-0V-osc" firstAttribute="leading" secondItem="zlQ-MN-29k" secondAttribute="trailing" constant="10" id="orG-j5-kdb"/>
                             <constraint firstItem="Bgs-EZ-Kzx" firstAttribute="trailing" secondItem="s36-6T-qPf" secondAttribute="trailing" id="pHA-GD-eQP"/>
                             <constraint firstItem="q06-0V-osc" firstAttribute="trailing" secondItem="s36-6T-qPf" secondAttribute="trailing" id="tbK-9j-3La"/>
+                            <constraint firstAttribute="bottom" secondItem="VFF-yv-psL" secondAttribute="bottom" id="u6P-43-6cu"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="s36-6T-qPf"/>
                     </view>
@@ -351,6 +359,7 @@
                         <outlet property="messageListView" destination="5BX-sj-rqt" id="kc7-Sh-GJz"/>
                         <outlet property="navigationView" destination="BeR-4x-kaE" id="Cv5-M3-acf"/>
                         <outlet property="pageControlView" destination="zlQ-MN-29k" id="6Zq-fw-Lmu"/>
+                        <outlet property="shareScreenView" destination="VFF-yv-psL" id="jI7-Un-GEg"/>
                         <outlet property="studentView" destination="ie6-9R-0Rb" id="0jg-8j-JXR"/>
                         <outlet property="teacherView" destination="7UW-EO-MKZ" id="WVc-IN-pQn"/>
                         <outlet property="textFiledBottomCon" destination="THs-LT-zx8" id="YkJ-fE-41W"/>
@@ -363,12 +372,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qTx-K7-I8g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2255" y="149"/>
+            <point key="canvasLocation" x="2254.6875" y="147.82608695652175"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="yab-Rw-vIz">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="B9p-oB-gGf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="bcroom" id="9wq-TI-HdZ" customClass="BCViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="sPV-E2-eMd">
                         <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
@@ -560,6 +568,7 @@
                         <outlet property="windowShareView" destination="ec7-A3-q2A" id="7TA-3Q-PeL"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="B9p-oB-gGf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1480" y="-1088"/>
         </scene>

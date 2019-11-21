@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *account;
 @property (nonatomic, copy) NSString *uid;
 @property (nonatomic, copy) NSString *whiteboard_uid;
+@property (nonatomic, copy) NSString *shared_uid;
 @property (nonatomic, copy) NSString *room;
 @property (nonatomic, copy) NSString *role;
 @property (nonatomic, copy) NSString *roomName;
