@@ -25,10 +25,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="370" height="160"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                 </view>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pic-teacher" translatesAutoresizingMaskIntoConstraints="NO" id="f5H-88-1yl">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-teacher" translatesAutoresizingMaskIntoConstraints="NO" id="f5H-88-1yl">
                     <rect key="frame" x="0.0" y="0.0" width="370" height="160"/>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="fefff" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YeG-z0-CGp">
+                <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YeG-z0-CGp">
                     <rect key="frame" x="15" y="130" width="100" height="20"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -45,7 +45,7 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </label>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="eeSpeaker2" translatesAutoresizingMaskIntoConstraints="NO" id="mOG-4A-akB">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-speaker3-max" translatesAutoresizingMaskIntoConstraints="NO" id="mOG-4A-akB">
                     <rect key="frame" x="330" y="120" width="30" height="30"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="30" id="0BH-9l-z1y"/>
@@ -73,7 +73,7 @@
         </view>
     </objects>
     <resources>
-        <image name="eeSpeaker2" width="60" height="60"/>
-        <image name="pic-teacher" width="80" height="80"/>
+        <image name="icon-speaker3-max" width="30" height="30"/>
+        <image name="icon-teacher" width="80" height="80"/>
     </resources>
 </document>

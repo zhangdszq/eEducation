@@ -25,7 +25,7 @@
 #import "EEMessageView.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,EEPageControlDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,AgoraRtmDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,StudentViewDelegate>
+@interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,EEPageControlDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,StudentViewDelegate,AgoraRtmDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -96,6 +96,7 @@
         self.userName = params[@"userName"];
         self.userId = params[@"userId"];
         self.rtmChannelName = params[@"rtmChannelName"];
+        NSLog(@"rtmChannelName----  %@",self.rtmChannelName);
     }
 }
 
@@ -121,11 +122,8 @@
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
-
-    self.studentListDict = [NSMutableDictionary dictionary];
-
     [self.rtmKit setAgoraRtmDelegate:self];
-
+    self.studentListDict = [NSMutableDictionary dictionary];
     [self joinAgoraRtcChannel];
     [self joinRtmChannel];
     [self setChannelAttrsWithVideo:NO audio:NO];
@@ -199,7 +197,7 @@
     [self.rtcEngineKit startPreview];
     [self.rtcEngineKit enableWebSdkInteroperability:YES];
     [self.rtcEngineKit enableAudioVolumeIndication:300 smooth:3 report_vad:NO];
-    [self.rtcEngineKit joinChannelByToken:nil channelId:self.channelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+    [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
         
     }];
 }
@@ -351,9 +349,14 @@
             break;
         case StudentLinkStateAccept:
         {
+            if (self.segmentedIndex == 0) {
+                self.whiteboardTool.hidden = NO;
+            }
             [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[EERTMMessageProtocol studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
                 if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
                     weakself.linkState = StudentLinkStateIdle;
+                    weakself.studentVideoView.hidden = YES;
+                    [weakself.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
                     [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
                 }
             }];
@@ -361,7 +364,6 @@
             break;
         case StudentLinkStateApply:
         {
-            [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
             [self.studentVideoView updateAudioImageWithMuteState:NO];
             [self.studentVideoView updateVideoImageWithMuteState:NO];
             self.studentVideoView.hidden = YES;
@@ -380,6 +382,11 @@
                self.teacherAttr = [EEBCTeactherAttrs yy_modelWithDictionary:valueDict];
                self.teacherInRoom = YES;
                [self joinWhiteBoardRoomUUID:self.teacherAttr.whiteboard_uid];
+               [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
+               if (self.segmentedIndex == 0) {
+                   self.handUpButton.hidden = NO;
+                   self.pageControlView.hidden = NO;
+               }
            }else {
                EEBCStudentAttrs *studentAttr = [EEBCStudentAttrs yy_modelWithJSON:valueDict];
                studentAttr.userId = channelAttr.key;
@@ -416,13 +423,12 @@
         self.segmentedIndex = 0;
         self.messageView.hidden = YES;
         self.chatTextFiled.hidden = YES;
-        self.pageControlView.hidden = self.teacherInRoom ? NO: YES;
+        self.pageControlView.hidden = self.teacherAttr ? NO: YES;
         self.handUpButton.hidden = NO;
-        self.whiteboardTool.hidden = self.linkState == StudentLinkStateApply ? NO : YES;
-        self.whiteboardTool.hidden = self.teacherInRoom ? NO: YES;
+        self.whiteboardTool.hidden = self.linkState == StudentLinkStateAccept ? NO : YES;
         self.handUpButton.hidden = self.teacherInRoom ? NO: YES;
     }else {
-        self.segmentedIndex = 0;
+        self.segmentedIndex = 1;
         self.messageView.hidden = NO;
         self.chatTextFiled.hidden = NO;
         self.pageControlView.hidden = YES;
@@ -499,7 +505,7 @@
 #pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoDecodedOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
-        self.teactherVideoView.defaultImageView.hidden = NO;
+        self.teactherVideoView.defaultImageView.hidden = YES;
         AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
         canvas.uid = uid;
         canvas.view = self.teactherVideoView.teacherRenderView;
@@ -524,7 +530,11 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+    if (uid  == [self.teacherAttr.uid integerValue]) {
 
+    }else {
+        self.studentVideoView.hidden = YES;
+    }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didAudioMuted:(BOOL)muted byUid:(NSUInteger)uid {
@@ -540,10 +550,10 @@
         for (AgoraRtcAudioVolumeInfo *info in speakers) {
             if (info.uid == [self.teacherAttr.uid integerValue]) {
                 NSArray *imageArray = @[@"eeSpeaker1",@"eeSpeaker2",@"eeSpeaker3"];
-                [self.teactherVideoView.speakerImage setAnimationImages:imageArray];
-                [self.teactherVideoView.speakerImage setAnimationRepeatCount:0];
-                [self.teactherVideoView.speakerImage setAnimationDuration:3.0f];
-                [self.teactherVideoView.speakerImage startAnimating];
+//                [self.teactherVideoView.speakerImage setAnimationImages:imageArray];
+//                [self.teactherVideoView.speakerImage setAnimationRepeatCount:0];
+//                [self.teactherVideoView.speakerImage setAnimationDuration:3.0f];
+//                [self.teactherVideoView.speakerImage startAnimating];
             }
         }
     }
@@ -589,6 +599,7 @@
 }
 
 - (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
+    NSLog(@"ddddd%@",message.text);
     if ([peerId isEqualToString:self.teacherAttr.uid]) {
         NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
         if ([dict[@"type"] isEqualToString:@"mute"]) {
@@ -624,9 +635,11 @@
            });
             self.handUpButton.enabled = YES;
         }else if ([dict[@"type"] isEqualToString:@"reject"]) {
-            [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
             self.linkState = StudentLinkStateReject;
             self.handUpButton.enabled = YES;
+        }else if ([dict[@"type"] isEqualToString:@"cancel"]) {
+            self.whiteboardTool.hidden = YES;
+            self.linkState = StudentLinkStateIdle;
         }
     }
 }

@@ -94,11 +94,9 @@
 
 - (void)joinRtm {
     self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:kAgoraAppid delegate:self];
-    WEAK(self)
     [self.agoraRtmKit loginByToken:nil user:self.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
         if (errorCode == AgoraRtmLoginErrorOk) {
             NSLog(@"rtm login success");
-            weakself.roomDataManager.agoraRtmKit = weakself.agoraRtmKit;
         }
     }];
 }
@@ -140,16 +138,9 @@
 }
 
 - (NSString *)getUserID{
-    NSString *uid;
-    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
-    if ([userDefault objectForKey:@"userID"]) {
-        uid = [userDefault objectForKey:@"userID"];
-    }else {
-        NSDate *datenow = [NSDate date];
-        NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
-        uid =  [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
-        [userDefault setObject:uid forKey:@"userID"];
-    }
+    NSDate *datenow = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
+    NSString *uid =  [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
     return uid;
 }
 
@@ -273,6 +264,9 @@
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
     NSLog(@"%@----- %@",member.userId,member.channelId);
+}
+- (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
+    
 }
 
 - (void)selectRoomTypeName:(NSString *)name {

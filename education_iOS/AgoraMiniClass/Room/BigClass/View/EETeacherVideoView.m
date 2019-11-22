@@ -41,7 +41,7 @@
     
 }
 - (void)updateAndsetTeacherName:(NSString * _Nullable)name {
-    [self.nameLabel setText:self.nameLabel];
+    [self.nameLabel setText:name];
 
 }
 @end

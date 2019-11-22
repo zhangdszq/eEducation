@@ -56,7 +56,7 @@
     _messageModel = messageModel;
     if (messageModel.isSelfSend) {
         CGSize size =  [self sizeWithContent:messageModel.content];
-        self.rightViewWidthCon.constant = size.width + 18 > self.cellWidth ? self.cellWidth : size.width + 18;
+        self.rightViewWidthCon.constant = (size.width + 25) > self.cellWidth ? self.cellWidth : size.width + 25;
         [self.rightContentLabel setText:messageModel.content];
         self.rightView.hidden = NO;
         self.rightContentLabel.hidden = NO;
@@ -65,7 +65,7 @@
         self.nameLabel.textAlignment = NSTextAlignmentRight;
     }else {
         CGSize size =  [self sizeWithContent:messageModel.content];
-        self.leftViewWidthCon.constant = size.width + 18 > self.cellWidth ? self.cellWidth : size.width + 18;
+        self.leftViewWidthCon.constant = size.width + 25 > self.cellWidth ? self.cellWidth : size.width +25;
         [self.leftContentLabel setText:messageModel.content];
         self.rightView.hidden = YES;
         self.rightContentLabel.hidden = YES;
@@ -76,7 +76,7 @@
     [self.nameLabel setText:messageModel.name];
 }
 - (CGSize)sizeWithContent:(NSString *)string {
-    CGSize labelSize = [string boundingRectWithSize:CGSizeMake(self.cellWidth - 38, 1000) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
+    CGSize labelSize = [string boundingRectWithSize:CGSizeMake(self.cellWidth - 38, 1000) options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
     return labelSize;
 }
 @end
