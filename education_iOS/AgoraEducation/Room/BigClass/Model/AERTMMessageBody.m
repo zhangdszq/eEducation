@@ -18,8 +18,8 @@
 @implementation AERTMMessageBody
 + (NSString *)studentApplyLink {
     NSDictionary *dict = @{
-        @"type":@"apply",
-        @"resource":@"co-video",
+        @"cmd":@(RTMp2pTypeApply),
+        @"text":@"co-video",
     };
     NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
     return applyString;
@@ -27,7 +27,7 @@
 
 + (NSString *)studentCancelLink {
     NSDictionary *dict = @{
-        @"cmd":@(108),
+        @"cmd":@(RTMp2pTypeCancel),
         @"text":@"",
     };
     NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
@@ -35,30 +35,30 @@
 }
 
 + (NSString *)muteVideoStream:(BOOL)stream {
-    NSString *type = stream ? @"mute" : @"unmute";
+    NSNumber *type = stream ? @(RTMp2pTypeMuteVideo) : @(RTMp2pTypeUnMuteVideo);
     NSDictionary *dict = @{
-        @"type":type,
-        @"resource":@"video",
+        @"cmd":type,
+        @"resource":@"",
     };
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteAudioStream:(BOOL)stream {
-    NSString *type = stream ? @"mute" : @"unmute";
+    NSNumber *type = stream ? @(RTMp2pTypeMuteAudio) : @(RTMp2pTypeUnMuteAudio);
     NSDictionary *dict = @{
-        @"type":type,
-        @"resource":@"audio",
+        @"cmd":type,
+        @"text":@"",
     };
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteChatContent:(BOOL)isMute {
-    NSString *type = isMute ? @"mute" : @"unmute";
+    NSNumber *type = isMute ? @(RTMp2pTypeMuteChat): @(RTMp2pTypeUnMuteChat);
     NSDictionary *dict = @{
-        @"type":type,
-        @"resource":@"audio",
+        @"cmd":type,
+        @"text":@"",
     };
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;

@@ -25,14 +25,14 @@
 - (void)setMessageModel:(RoomMessageModel *)messageModel {
     _messageModel = messageModel;
     if (messageModel.isSelfSend) {
-        [self.rightNameLabel setText:messageModel.name];
+        [self.rightNameLabel setText:messageModel.account];
         [self.rightContentLabel setText:messageModel.content];
         self.leftNameLabel.hidden = YES;
         self.leftContentLabel.hidden = YES;
         self.rightNameLabel.hidden = NO;
         self.rightContentLabel.hidden = NO;
     }else {
-        [self.leftNameLabel setText:messageModel.name];
+        [self.leftNameLabel setText:messageModel.account];
         [self.leftContentLabel setText:messageModel.content];
         self.rightNameLabel.hidden = YES;
         self.rightContentLabel.hidden = YES;

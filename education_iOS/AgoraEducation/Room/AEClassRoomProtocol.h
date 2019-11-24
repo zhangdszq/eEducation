@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol AEClassRoomProtocol <NSObject>
 - (void)muteVideoStream:(BOOL)stream;
 - (void)muteAudioStream:(BOOL)stream;
-
 @end
 
 NS_ASSUME_NONNULL_END

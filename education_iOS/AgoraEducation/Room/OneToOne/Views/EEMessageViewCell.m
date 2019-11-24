@@ -73,7 +73,7 @@
         self.leftContentLabel.hidden = NO;
         self.nameLabel.textAlignment = NSTextAlignmentLeft;
     }
-    [self.nameLabel setText:messageModel.name];
+    [self.nameLabel setText:messageModel.account];
 }
 - (CGSize)sizeWithContent:(NSString *)string {
     CGSize labelSize = [string boundingRectWithSize:CGSizeMake(self.cellWidth - 38, 1000) options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;

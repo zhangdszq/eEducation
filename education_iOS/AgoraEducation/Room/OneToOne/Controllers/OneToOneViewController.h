@@ -6,12 +6,11 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "AERoomViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OneToOneViewController : UIViewController
-@property (nonatomic, strong) NSDictionary *params;
+@interface OneToOneViewController : AERoomViewController
 @end
 
 NS_ASSUME_NONNULL_END

@@ -16,15 +16,6 @@
 @end
 
 @implementation BCStudentVideoView
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -42,39 +33,37 @@
 }
 
 - (IBAction)muteAudio:(UIButton *)sender {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(clickMuteAudioButton)]) {
-        [self.delegate clickMuteAudioButton];
+    sender.selected = !sender.selected;
+    NSString *imageName = sender.selected ? @"icon-speakeroff-dark" : @"icon-speaker3";
+    [self.audioMuteButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteAudioStream:)]) {
+        [self.delegate muteAudioStream:sender.selected];
     }
+
 }
 
 - (IBAction)muteVideo:(UIButton *)sender {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(clickMuteVideoButton)]) {
-        [self.delegate clickMuteVideoButton];
+    sender.selected = !sender.selected;
+    NSString *imageName = sender.selected ? @"icon-video-off-min" : @"icon-video-on-min";
+    [self.videoMuteButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
+        [self.delegate muteVideoStream:sender.selected];
     }
+}
+
+- (void)updateVideoImageWithMuted:(BOOL)muted {
+    NSString *imageName = muted ? @"icon-video-off-min" : @"icon-video-on-min";
+    self.defaultImageView.hidden = !muted;
+    [self.videoMuteButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
+}
+
+- (void)updateAudioImageWithMuted:(BOOL)muted {
+    NSString *imageName = muted ? @"icon-speakeroff-dark" : @"icon-speaker3";
+    [self.audioMuteButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
 - (void)setButtonEnabled:(BOOL)enabled {
     [self.videoMuteButton setEnabled:enabled];
-    [self.videoMuteButton setEnabled:enabled];
-}
-
-- (void)updateVideoImageWithMuteState:(BOOL)state {
-    if (state) {
-        [self.videoMuteButton setImage:[UIImage imageNamed:@"icon-video-on-min"] forState:(UIControlStateNormal)];
-    }else {
-        [self.videoMuteButton setImage:[UIImage imageNamed:@"icon-videooff-dark"] forState:(UIControlStateNormal)];
-    }
-}
-
-- (void)updateAudioImageWithMuteState:(BOOL)state {
-    if (state) {
-        [self.audioMuteButton setImage:[UIImage imageNamed:@"icon-speakeroff-dark"] forState:(UIControlStateNormal)];
-    }else {
-        [self.audioMuteButton setImage:[UIImage imageNamed:@"icon-speaker3"] forState:(UIControlStateNormal)];
-    }
-}
-
-- (void)updateImageName:(NSString *)name {
-    [self.defaultImageView setImage:[UIImage imageNamed:name]];
+    [self.audioMuteButton setEnabled:enabled];
 }
 @end

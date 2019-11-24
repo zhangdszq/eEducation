@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 #import "AERTMMessageBody.h"
 #import "MCViewController.h"
+#import "AERoomViewController.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -29,7 +30,6 @@
 @property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
 @property (nonatomic, copy)   NSString  *className;
 @property (nonatomic, copy)   NSString *userName;
-@property (nonatomic, assign) ClassRoomRole classRoomRole;
 @property (nonatomic, copy)   NSString *uid;
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
@@ -38,12 +38,15 @@
 @end
 
 @implementation MainViewController
+#pragma mark ---------------------- System methods --------------------
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]) {
         [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
     }
+  
 }
+
 - (void)viewWillAppear:(BOOL)animated {
     self.navigationController.navigationBarHidden = YES;
 }
@@ -64,8 +67,6 @@
     self.activityIndicator.color = [UIColor grayColor];
     self.activityIndicator.backgroundColor = [UIColor whiteColor];
     self.activityIndicator.hidesWhenStopped = YES;
-
-    self.classRoomRole = ClassRoomRoleStudent;
 
     EEClassRoomTypeView *classRoomTypeView = [EEClassRoomTypeView initWithXib:CGRectMake(30, kScreenHeight - 300, kScreenWidth - 60, 150)];
     [self.view addSubview:classRoomTypeView];
@@ -148,17 +149,7 @@
         self.className = self.classNameTextFiled.text;
         self.userName = self.userNameTextFiled.text;
         if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
-            WEAK(self)
-            NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
-            [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
-                if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-                    if (attributes.count < 17) {
-                        [weakself presentMiniClassViewController];
-                    }else {
-                        [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
-                    }
-                }
-            }];
+            [self presentMiniClassViewController];
         }else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
             [self presentBigClassController];
         }else if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
@@ -179,35 +170,28 @@
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
     }else {
-        UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
-        BCViewController *roomVC = [story instantiateViewControllerWithIdentifier:@"bcroom"];
-        roomVC.modalPresentationStyle = UIModalPresentationFullScreen;
         NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
-        roomVC.params = @{
-            @"channelName": self.className,
-            @"rtmKit" : self.agoraRtmKit,
-            @"userName": self.userName,
-            @"userId" : self.uid,
-            @"rtmChannelName":rtcChannelName,
-        };
-        [self presentViewController:roomVC animated:YES completion:nil];
+
+        [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName];
+
     }
 }
 
 - (void)presentMiniClassViewController {
     [self.activityIndicator stopAnimating];
-    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
-    MCViewController *mcVC = [story instantiateViewControllerWithIdentifier:@"mcRoom"];
-    mcVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    WEAK(self)
     NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
-    mcVC.params = @{
-                   @"channelName": self.className,
-                   @"rtmKit" : self.agoraRtmKit,
-                   @"userName": self.userName,
-                   @"userId" : self.uid,
-                   @"rtmChannelName":rtcChannelName,
-               };
-    [self presentViewController:mcVC animated:YES completion:nil];
+    [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
+            if (attributes.count < 17) {
+
+                [weakself joinClassRoomWithIdentifier:@"mcRoom"  rtmChannelName:rtcChannelName];
+            }else {
+                [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
+            }
+        }
+    }];
+
 }
 
 - (void)presentOneToOneViewController {
@@ -223,22 +207,26 @@
                 }
             }
             if (!isHaveStudent) {
-                UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
-                OneToOneViewController *onetooneVC = [story instantiateViewControllerWithIdentifier:@"oneToOneRoom"];
-                onetooneVC.modalPresentationStyle = UIModalPresentationFullScreen;
-                onetooneVC.params = @{
-                   @"channelName": weakself.className,
-                   @"rtmKit" : weakself.agoraRtmKit,
-                   @"userName": weakself.userName,
-                   @"userId" : weakself.uid,
-                   @"rtmChannelName":rtcChannelName,
-                };
-                [weakself presentViewController:onetooneVC animated:YES completion:nil];
+                [weakself joinClassRoomWithIdentifier:@"oneToOneRoom"  rtmChannelName:rtcChannelName];
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
             }
         }
     }];
+}
+
+- (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName {
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
+    AERoomViewController *viewController = [story instantiateViewControllerWithIdentifier:identifier];
+    viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    viewController.params = @{
+        @"channelName": self.className,
+        @"rtmKit" : self.agoraRtmKit,
+        @"userName": self.userName,
+        @"userId" : self.uid,
+        @"rtmChannelName":rtmChannelName,
+    };
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)joinClassRoomError {
@@ -251,9 +239,6 @@
     self.rtmConnectionState = state;
 }
 
-- (void)channel:(AgoraRtmChannel * _Nonnull)channel memberJoined:(AgoraRtmMember * _Nonnull)member {
-    NSLog(@"%@----- %@",member.userId,member.channelId);
-}
 - (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
     
 }
