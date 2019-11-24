@@ -8,24 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol StudentViewDelegate <NSObject>
-@optional
-- (void)clickMuteVideoButton;
-- (void)clickMuteAudioButton;
-@end
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BCStudentVideoView : UIView
-@property (weak, nonatomic) id<StudentViewDelegate> delegate;
+@property (weak, nonatomic) id<AEClassRoomProtocol> delegate;
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
-
-
 @property (weak, nonatomic) IBOutlet UIView *studentRenderView;
 - (void)setButtonEnabled:(BOOL)enabled;
-- (void)updateVideoImageWithMuteState:(BOOL)state;
-- (void)updateAudioImageWithMuteState:(BOOL)state;
-- (void)updateImageName:(NSString *)name;
+- (void)updateVideoImageWithMuted:(BOOL)muted;
+- (void)updateAudioImageWithMuted:(BOOL)muted;
 @end
 
 NS_ASSUME_NONNULL_END

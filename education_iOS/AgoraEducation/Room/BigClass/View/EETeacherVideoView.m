@@ -10,18 +10,11 @@
 
 @interface EETeacherVideoView ()
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-
+@property (strong, nonatomic) IBOutlet UIView *teacherVideoView;
+@property (weak, nonatomic) IBOutlet UIImageView *speakerImage;
 @end
 
 @implementation EETeacherVideoView
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -37,11 +30,12 @@
     self.teacherVideoView.frame = self.bounds;
 }
 
-- (void)layoutSubviews {
-    
-}
 - (void)updateAndsetTeacherName:(NSString * _Nullable)name {
     [self.nameLabel setText:name];
+}
 
+- (void)updateSpeakerImageWithMuted:(BOOL)muted {
+    NSString *imageName = muted ? @"icon-speakeroff-dark" : @"icon-speaker3-max";
+    [self.speakerImage setImage:[UIImage imageNamed:imageName]];
 }
 @end

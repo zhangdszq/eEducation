@@ -29,7 +29,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="85" height="120"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </imageView>
-                <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1DL-Iu-OBD">
+                <view alpha="0.40000000000000002" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1DL-Iu-OBD">
                     <rect key="frame" x="0.0" y="96" width="85" height="24"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bRz-3Z-xUZ">
@@ -55,7 +55,7 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="bRz-3Z-xUZ" firstAttribute="leading" secondItem="bZs-yj-gqt" secondAttribute="trailing" constant="3" id="Cso-zg-ZaR"/>
                         <constraint firstAttribute="bottom" secondItem="bRz-3Z-xUZ" secondAttribute="bottom" id="KvW-Eu-0SI"/>
