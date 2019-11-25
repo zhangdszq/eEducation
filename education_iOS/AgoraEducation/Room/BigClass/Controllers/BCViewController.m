@@ -98,11 +98,11 @@
 - (void)setUpView {
     UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
     if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
-       [self stateBarHidden:YES];
-       [self landscapeConstraints];
+        [self stateBarHidden:YES];
+        [self landscapeConstraints];
     }else {
-       [self stateBarHidden:NO];
-       [self verticalScreenConstraints];
+        [self stateBarHidden:NO];
+        [self verticalScreenConstraints];
     }
     self.view.backgroundColor = [UIColor whiteColor];
     if (@available(iOS 11, *)) {
@@ -130,9 +130,9 @@
 - (void)selectPencilColor {
     WEAK(self)
     self.colorShowView.selectColor = ^(NSString *colorString) {
-       NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-       weakself.memberState.strokeColor = colorArray;
-       [weakself.room setMemberState:weakself.memberState];
+        NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
+        weakself.memberState.strokeColor = colorArray;
+        [weakself.room setMemberState:weakself.memberState];
     };
 }
 
@@ -178,7 +178,7 @@
     NSString *new = [NSString stringWithFormat:@"%@",change[@"new"]];
     NSString *old = [NSString stringWithFormat:@"%@",change[@"old"]];
     if (![new isEqualToString:old]) {
-         if ([keyPath isEqualToString:@"uid"]) {
+        if ([keyPath isEqualToString:@"uid"]) {
             NSUInteger uid = [change[@"new"] integerValue];
             if (uid > 0 ) {
                 self.teacherInRoom = YES;
@@ -334,8 +334,8 @@
     WEAK(self)
     [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
         if (weakself.linkState == StudentLinkStateAccept) {
-             [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-             }];
+            [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+            }];
         }
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself.room disconnect:^{
@@ -350,39 +350,12 @@
 }
 
 - (IBAction)handUpEvent:(UIButton *)sender {
-    WEAK(self)
     switch (self.linkState) {
         case StudentLinkStateIdle:
-        {
-            [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentApplyLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-                if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
-                    weakself.linkState = StudentLinkStateApply;
-                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
-                }
-            }];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if (weakself.linkState == StudentLinkStateApply) {
-                    weakself.handUpButton.enabled = YES;
-                    weakself.linkState = StudentLinkStateIdle;
-                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
-                }
-            });
-        }
+            [self studentApplyLink];
             break;
         case StudentLinkStateAccept:
-        {
-            if (self.segmentedIndex == 0) {
-                self.whiteboardTool.hidden = YES;
-            }
-            [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-                if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
-                    weakself.linkState = StudentLinkStateIdle;
-                    weakself.studentVideoView.hidden = YES;
-                    [weakself.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
-                    [sender setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
-                }
-            }];
-        }
+            [self studentCancelLink];
             break;
         case StudentLinkStateApply:
         {
@@ -396,6 +369,51 @@
     }
 }
 
+- (void)studentApplyLink {
+    WEAK(self)
+    [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentApplyLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+        if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
+            weakself.linkState = StudentLinkStateApply;
+            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
+        }
+    }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (weakself.linkState == StudentLinkStateApply) {
+            weakself.handUpButton.enabled = YES;
+            weakself.linkState = StudentLinkStateIdle;
+            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+        }
+    });
+}
+
+- (void)studentCancelLink {
+    WEAK(self)
+    if (self.segmentedIndex == 0) {
+        self.whiteboardTool.hidden = YES;
+    }
+    [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+        if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
+            weakself.linkState = StudentLinkStateIdle;
+            weakself.studentVideoView.hidden = YES;
+            [weakself.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
+            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+        }
+    }];
+}
+
+- (void)teacherAcceptLink {
+    [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
+    self.linkState = StudentLinkStateAccept;
+    [self addStudentVideoWithUid:[self.userId integerValue] remoteVideo:NO];
+    [self.studentVideoView setButtonEnabled:YES];
+    [self.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
+    [self setChannelAttrsWithVideo:YES audio:YES];
+    WEAK(self)
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        weakself.tipLabel.hidden = YES;
+    });
+    self.handUpButton.enabled = YES;
+}
 - (void)parsingTheChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     if (attributes.count > 0) {
         for (AgoraRtmChannelAttribute *channelAttr in attributes) {
@@ -412,6 +430,7 @@
                 [self.studentListDict setValue:studentAttr forKey:channelAttr.key];
             }
         }
+        //及时更新连麦的学生的mute状态
         if ([self.teacherAttr.link_uid integerValue] > 0) {
             AEStudentModel *studentAttr = [self.studentListDict objectForKey:self.teacherAttr.link_uid];
             [self.studentVideoView updateVideoImageWithMuted:!studentAttr.video];
@@ -560,8 +579,6 @@
         canvas.uid = uid;
         canvas.view = self.teactherVideoView.teacherRenderView;
         [self.rtcEngineKit setupRemoteVideo:canvas];
-    }else if(uid != kWhiteBoardUid){
-         [self addStudentVideoWithUid:uid remoteVideo:YES];
     }
 }
 
@@ -570,6 +587,7 @@
     }else if (uid == kWhiteBoardUid) {
         [self addShareScreenVideoWithUid:uid];
     }else {
+        [self addStudentVideoWithUid:uid remoteVideo:YES];
         [self.studentVideoView setButtonEnabled:NO];
     }
 }
@@ -675,17 +693,7 @@
                 break;
             case RTMp2pTypeAccept:
             {
-                [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
-                self.linkState = StudentLinkStateAccept;
-                [self addStudentVideoWithUid:[self.userId integerValue] remoteVideo:NO];
-                [self.studentVideoView setButtonEnabled:YES];
-                [self.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
-                [self setChannelAttrsWithVideo:YES audio:YES];
-                WEAK(self)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    weakself.tipLabel.hidden = YES;
-                });
-                self.handUpButton.enabled = YES;
+                [self teacherAcceptLink];
             }
                 break;
             case RTMp2pTypeCancel:
@@ -738,4 +746,3 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end
-
