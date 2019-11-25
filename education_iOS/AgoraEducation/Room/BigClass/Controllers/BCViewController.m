@@ -410,8 +410,12 @@
                 AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
                 studentAttr.userId = channelAttr.key;
                 [self.studentListDict setValue:studentAttr forKey:channelAttr.key];
-
             }
+        }
+        if ([self.teacherAttr.link_uid integerValue] > 0) {
+            AEStudentModel *studentAttr = [self.studentListDict objectForKey:self.teacherAttr.link_uid];
+            [self.studentVideoView updateVideoImageWithMuted:!studentAttr.video];
+            [self.studentVideoView updateAudioImageWithMuted:!studentAttr.audio];
         }
     }
 }
