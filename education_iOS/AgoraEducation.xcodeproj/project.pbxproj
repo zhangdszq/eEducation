@@ -63,7 +63,6 @@
 		1A8EEB6A237ABBCB00A809B1 /* EENavigationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A8EEB69237ABBCB00A809B1 /* EENavigationView.xib */; };
 		1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A93A810234C7197001F31A6 /* MCVideoView.m */; };
 		1A9B621D2384E9A6001E366C /* EEAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9B621C2384E9A6001E366C /* EEAlertView.m */; };
-		1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */; };
 		1AAD07FF22CC677E0086FF4E /* RoomChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAD07FE22CC677E0086FF4E /* RoomChatTextField.m */; };
 		1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E994235EFB2700C415BF /* BCViewController.m */; };
 		1AD4E99B235F100400C415BF /* EESegmentedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E99A235F100400C415BF /* EESegmentedView.m */; };
@@ -203,8 +202,6 @@
 		1A93A810234C7197001F31A6 /* MCVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCVideoView.m; sourceTree = "<group>"; };
 		1A9B621B2384E9A6001E366C /* EEAlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEAlertView.h; sourceTree = "<group>"; };
 		1A9B621C2384E9A6001E366C /* EEAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEAlertView.m; sourceTree = "<group>"; };
-		1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AgoraAlertViewController.h; sourceTree = "<group>"; };
-		1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AgoraAlertViewController.m; sourceTree = "<group>"; };
 		1AAD07FD22CC677E0086FF4E /* RoomChatTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomChatTextField.h; sourceTree = "<group>"; };
 		1AAD07FE22CC677E0086FF4E /* RoomChatTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomChatTextField.m; sourceTree = "<group>"; };
 		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
@@ -534,8 +531,6 @@
 		1AD4E991235EDFE000C415BF /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				1AAD07E622C8C77F0086FF4E /* AgoraAlertViewController.h */,
-				1AAD07E722C8C77F0086FF4E /* AgoraAlertViewController.m */,
 				1A05ADA1237E4B3B0041F27B /* MCViewController.h */,
 				1A05ADA2237E4B3B0041F27B /* MCViewController.m */,
 			);
@@ -835,7 +830,6 @@
 				1A44BE6B22BF863000766274 /* StudentVideoListView.m in Sources */,
 				1A61CB8E2389405D003D9E81 /* AERoomViewController.m in Sources */,
 				1A226C4A236A7D8A0024D984 /* AETeactherModel.m in Sources */,
-				1AAD07E822C8C77F0086FF4E /* AgoraAlertViewController.m in Sources */,
 				1A8EEB5F23796D5600A809B1 /* EEMessageViewCell.m in Sources */,
 				1A893A002361751200C2398A /* BCNavigationView.m in Sources */,
 				1A61CB812387CE35003D9E81 /* BCStudentVideoView.m in Sources */,
@@ -1043,9 +1037,9 @@
 			baseConfigurationReference = 40B28313D80C71B4DA8D643D /* Pods-AgoraEducation.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6BZ36YLV2M;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = SW3CA7M752;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1062,7 +1056,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";
@@ -1074,9 +1068,9 @@
 			baseConfigurationReference = 4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6BZ36YLV2M;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = SW3CA7M752;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1093,7 +1087,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";

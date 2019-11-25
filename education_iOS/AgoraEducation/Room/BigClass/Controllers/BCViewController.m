@@ -78,11 +78,13 @@
 @property (nonatomic, strong) AgoraRtcVideoCanvas *studentCanvas;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @property (nonatomic, assign) BOOL statusBarHidden;
+@property (nonatomic, assign) BOOL isLandscape;
 @end
 
 @implementation BCViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self getRtmChannelAttrs];
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
@@ -95,7 +97,14 @@
     [self setChannelAttrsWithVideo:NO audio:NO];
 }
 
+- (void)getRtmChannelAttrs{
+    WEAK(self)
+    [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+        [weakself parsingChannelAttr:attributes];
+    }];
+}
 - (void)setUpView {
+    [self addWhiteBoardViewToView:self.whiteboardView];
     UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
     if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
         [self stateBarHidden:YES];
@@ -109,7 +118,6 @@
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    [self addWhiteBoardViewToView:self.whiteboardView];
     [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     self.handUpButton.layer.borderWidth = 1.f;
     self.handUpButton.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
@@ -143,7 +151,6 @@
     [self.rtcEngineKit enableVideo];
     [self.rtcEngineKit startPreview];
     [self.rtcEngineKit enableWebSdkInteroperability:YES];
-    [self.rtcEngineKit enableAudioVolumeIndication:300 smooth:3 report_vad:NO];
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
     }];
 }
@@ -170,6 +177,25 @@
         }else {
             NSLog(@"更新失败");
         }
+    }];
+}
+
+- (void)joinWhiteBoardRoomUUID:(NSString *)uuid {
+    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
+    if (self.room) {
+        [self.room disconnect:^{
+        }];
+    }
+    WEAK(self)
+    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
+        WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
+        [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
+            weakself.room = room;
+            [weakself getWhiteboardSceneInfo];
+            [weakself.room disableOperations:YES];
+        }];
+    } failure:^(NSString * _Nonnull msg) {
+        NSLog(@"获取失败 %@",msg);
     }];
 }
 
@@ -241,7 +267,7 @@
         weakself.scenes = [NSArray arrayWithArray:state.scenes];
         weakself.sceneDirectory = @"/";
         weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",(long)weakself.sceneIndex,(long)weakself.scenes.count]];
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",(long)weakself.sceneIndex+1,(long)weakself.scenes.count]];
     }];
 }
 
@@ -272,62 +298,7 @@
 - (void)stateBarHidden:(BOOL)hidden {
     self.statusBarHidden = hidden;
     [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)landscapeConstraints {
-    BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
-    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
-    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
-    self.segmentedView.hidden = YES;
-    self.lineView.hidden = NO;
-    self.chatTextFiled.hidden = NO;
-    self.messageView.hidden = NO;
-    self.navigationHeightCon.constant = 30;
-    self.navigationView.titleLabelBottomConstraint.constant = 5;
-    self.navigationView.closeButtonBottomConstraint.constant = 0;
-    self.teacherVideoWidthCon.constant = kLandscapeViewWidth;
-    self.handupButtonRightCon.constant = 233;
-    self.whiteboardToolTopCon.constant = 10;
-    self.messageViewWidthCon.constant = kLandscapeViewWidth;
-    self.chatTextFiledWidthCon.constant = kLandscapeViewWidth;
-    self.tipLabelTopCon.constant = 10;
-    self.messageViewTopCon.constant = 0;
-    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -kLandscapeViewWidth;
-    self.whiteboardViewTopCon.constant = 0;
-    self.teacherVideoViewHeightCon.constant = 125;
-    self.studentVideoViewLeftCon.constant = 66;
-    self.studentViewHeightCon.constant = 85;
-    self.studentViewWidthCon.constant = 120;
-    [self.view bringSubviewToFront:self.studentVideoView];
-    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
-    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 40);
-}
-
-- (void)verticalScreenConstraints {
-    self.chatTextFiled.hidden = self.segmentedIndex == 0 ? YES : NO;
-    self.lineView.hidden = YES;
-    self.segmentedView.hidden = NO;
-    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
-    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
-    CGFloat navigationBarHeight =  (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? 88 : 64;
-    self.navigationHeightCon.constant = navigationBarHeight;
-    self.navigationView.titleLabelBottomConstraint.constant = 12;
-    self.navigationView.closeButtonBottomConstraint.constant = 7;
-    self.teacherVideoWidthCon.constant = kScreenWidth;
-    self.handupButtonRightCon.constant = 10;
-    self.whiteboardToolTopCon.constant = 267;
-    self.messageViewWidthCon.constant = kScreenWidth;
-    self.chatTextFiledWidthCon.constant = kScreenWidth;
-    self.tipLabelTopCon.constant = 267;
-    self.messageViewTopCon.constant = 44;
-    self.whiteboardViewRightCon.constant = 0;
-    self.whiteboardViewTopCon.constant = 257;
-    self.teacherVideoViewHeightCon.constant = 213;
-    self.studentVideoViewLeftCon.constant = kScreenWidth - 100;
-    self.studentViewWidthCon.constant = 85;
-    self.studentViewHeightCon.constant = 120;
-    [self.view bringSubviewToFront:self.studentVideoView];
-    self.boardView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 257);
+    self.isLandscape = hidden; // 横屏隐藏
 }
 
 - (void)closeRoom:(UIButton *)sender {
@@ -414,7 +385,7 @@
     });
     self.handUpButton.enabled = YES;
 }
-- (void)parsingTheChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
+- (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     if (attributes.count > 0) {
         for (AgoraRtmChannelAttribute *channelAttr in attributes) {
             NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
@@ -439,6 +410,63 @@
     }
 }
 
+- (void)landscapeConstraints {
+    BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
+    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
+    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
+    self.segmentedView.hidden = YES;
+    self.lineView.hidden = NO;
+    self.chatTextFiled.hidden = NO;
+    self.messageView.hidden = NO;
+    self.navigationHeightCon.constant = 30;
+    self.navigationView.titleLabelBottomConstraint.constant = 5;
+    self.navigationView.closeButtonBottomConstraint.constant = 0;
+    self.teacherVideoWidthCon.constant = kLandscapeViewWidth;
+    self.handupButtonRightCon.constant = 233;
+    self.whiteboardToolTopCon.constant = 10;
+    self.messageViewWidthCon.constant = kLandscapeViewWidth;
+    self.chatTextFiledWidthCon.constant = kLandscapeViewWidth;
+    self.tipLabelTopCon.constant = 10;
+    self.messageViewTopCon.constant = 0;
+    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -kLandscapeViewWidth;
+    self.whiteboardViewTopCon.constant = 0;
+    self.teacherVideoViewHeightCon.constant = 125;
+    self.studentVideoViewLeftCon.constant = 66;
+    self.studentViewHeightCon.constant = 85;
+    self.studentViewWidthCon.constant = 120;
+    [self.view bringSubviewToFront:self.studentVideoView];
+    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
+    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 40);
+}
+
+- (void)verticalScreenConstraints {
+    self.chatTextFiled.hidden = self.segmentedIndex == 0 ? YES : NO;
+    self.messageView.hidden = self.segmentedIndex == 0 ? YES : NO;
+    self.whiteboardView.hidden = self.segmentedIndex == 0 ? NO : YES;
+    self.lineView.hidden = YES;
+    self.segmentedView.hidden = NO;
+    self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
+    self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
+    CGFloat navigationBarHeight =  (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? 88 : 64;
+    self.navigationHeightCon.constant = navigationBarHeight;
+    self.navigationView.titleLabelBottomConstraint.constant = 12;
+    self.navigationView.closeButtonBottomConstraint.constant = 7;
+    self.teacherVideoWidthCon.constant = kScreenWidth;
+    self.handupButtonRightCon.constant = 10;
+    self.whiteboardToolTopCon.constant = 267;
+    self.messageViewWidthCon.constant = kScreenWidth;
+    self.chatTextFiledWidthCon.constant = kScreenWidth;
+    self.tipLabelTopCon.constant = 267;
+    self.messageViewTopCon.constant = 44;
+    self.whiteboardViewRightCon.constant = 0;
+    self.whiteboardViewTopCon.constant = 257;
+    self.teacherVideoViewHeightCon.constant = 213;
+    self.studentVideoViewLeftCon.constant = kScreenWidth - 100;
+    self.studentViewWidthCon.constant = 85;
+    self.studentViewHeightCon.constant = 120;
+    [self.view bringSubviewToFront:self.studentVideoView];
+    self.boardView.frame = CGRectMake(0, 0, MIN(kScreenWidth, kScreenHeight), MAX(kScreenHeight, kScreenWidth) - 257);
+}
 #pragma mark ---------------------------- Notification ----------------------------
 - (void)addNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
@@ -450,12 +478,15 @@
     if (self.isChatTextFieldKeyboard) {
         CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
         float bottom = frame.size.height;
+        BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
+        self.chatTextFiledWidthCon.constant = (isIphoneX && self.isLandscape) ? kScreenWidth - 44 : kScreenWidth;
         self.textFiledBottomConstraint.constant = bottom;
     }
 }
 
 - (void)keyboardWillBeHiden:(NSNotification *)notification {
     self.textFiledBottomConstraint.constant = 0;
+    self.chatTextFiledWidthCon .constant = self.isLandscape ? kLandscapeViewWidth : MIN(kScreenHeight, kScreenWidth);
 }
 
 #pragma mark ---------------------------- Segment Delegate ----------------------------
@@ -579,6 +610,8 @@
         canvas.uid = uid;
         canvas.view = self.teactherVideoView.teacherRenderView;
         [self.rtcEngineKit setupRemoteVideo:canvas];
+    }else {
+        [self addStudentVideoWithUid:uid remoteVideo:YES];
     }
 }
 
@@ -586,8 +619,7 @@
     if (uid == [self.teacherAttr.uid integerValue]) {
     }else if (uid == kWhiteBoardUid) {
         [self addShareScreenVideoWithUid:uid];
-    }else {
-        [self addStudentVideoWithUid:uid remoteVideo:YES];
+    }else if(uid == self.linkUserId){
         [self.studentVideoView setButtonEnabled:NO];
     }
 }
@@ -650,7 +682,7 @@
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
-    [self parsingTheChannelAttr:attributes];
+    [self parsingChannelAttr:attributes];
 }
 
 - (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
