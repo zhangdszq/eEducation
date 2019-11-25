@@ -48,7 +48,7 @@
 @property (nonatomic, strong) UIColor *pencilColor;
 @property (nonatomic, strong) WhiteMemberState *memberState;
 @property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
-@property (nonatomic, strong) AETeactherModel *teacherAttrs;
+@property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) NSMutableDictionary *studentList;
 @property (nonatomic, strong) NSMutableArray *studentListArray;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
@@ -86,16 +86,13 @@
     [self.studentList setValue:studentAttrs forKey:self.userId];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
-    WEAK(self)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [weakself setChannelAttrsWithVideo:YES audio:YES];
-    });
+    [self setChannelAttrsWithVideo:YES audio:YES];
 }
 
 - (void)getRtmChannelAttrs{
     WEAK(self)
     [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
-        [weakself parsingTheChannelAttr:attributes];
+        [weakself parsingChannelAttr:attributes];
     }];
 }
 
@@ -104,7 +101,6 @@
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-
     [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     [self addWhiteBoardViewToView:self.whiteboardBaseView];
     self.boardView.frame = self.whiteboardBaseView.bounds;
@@ -115,20 +111,6 @@
     self.roomManagerView.layer.borderWidth = 1.f;
     self.roomManagerView.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
     [self.navigationView updateChannelName:self.channelName];
-}
-- (void)addTeacherObserver {
-    self.teacherAttrs = [[AETeactherModel alloc] init];
-    [self.teacherAttrs addObserver:self forKeyPath:@"shared_uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    [self.teacherAttrs addObserver:self forKeyPath:@"uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    [self.teacherAttrs addObserver:self forKeyPath:@"whiteboard_uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    [self.teacherAttrs addObserver:self forKeyPath:@"mute_chat" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)removeTeacherObserver {
-    [self.teacherAttrs removeObserver:self forKeyPath:@"shared_uid"];
-    [self.teacherAttrs removeObserver:self forKeyPath:@"uid"];
-    [self.teacherAttrs removeObserver:self forKeyPath:@"whiteboard_uid"];
-    [self.teacherAttrs removeObserver:self forKeyPath:@"mute_chat"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -190,7 +172,6 @@
         [weakself.room setMemberState:weakself.memberState];
     }];
 
-
     [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
         AEStudentModel *model = weakself.studentListArray[indexPath.row];
         AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
@@ -220,7 +201,7 @@
         weakself.scenes = [NSArray arrayWithArray:state.scenes];
         weakself.sceneDirectory = @"/";
         weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%lu",(long)weakself.sceneIndex,(unsigned long)weakself.scenes.count]];
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%lu",(long)weakself.sceneIndex+1,(unsigned long)weakself.scenes.count]];
     }];
 }
 
@@ -240,11 +221,11 @@
     }];
 }
 
-- (void)parsingTheChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
+- (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
         NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
         if ([channelAttr.key isEqualToString:@"teacher"]) {
-            [self.teacherAttrs modelWithDict:valueDict];
+            [self.teacherAttr modelWithDict:valueDict];
             [self.navigationView startTimer];
         }else {
             AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
@@ -288,7 +269,8 @@
         CGRect frame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
         float bottom = frame.size.height;
         self.chatTextFiledBottomCon.constant = bottom;
-        self.chatTextFiledWidthCon.constant = kScreenWidth;
+        BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
+        self.chatTextFiledWidthCon.constant = isIphoneX ? kScreenWidth - 44 : kScreenWidth;
     }
 }
 
@@ -426,7 +408,7 @@
 }
 #pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
-    if (uid == [self.teacherAttrs.uid integerValue]) {
+    if (uid == [self.teacherAttr.uid integerValue]) {
         AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
         canvas.uid = uid;
         canvas.view = self.teacherVideoView.videoRenderView;
@@ -436,12 +418,20 @@
     }else if (uid == kWhiteBoardUid  && !self.shareScreenCanvas) {
         [self addShareScreenVideoWithUid:uid];
     }
-    [self.teacherVideoView updateUserName:self.teacherAttrs.account];
+    [self.teacherVideoView updateUserName:self.teacherAttr.account];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
     if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
+    }else {
+        AEStudentModel *studentModel = [self.studentList objectForKey:@(uid)];
+        if (studentModel) {
+            [self.studentListArray removeObject:studentModel];
+            [self.studentList removeObjectForKey:@(uid)];
+            [self.studentListView updateStudentArray:self.studentListArray];
+            [self.studentVideoListView removeStudentModel:studentModel];
+        }
     }
 }
 
@@ -483,24 +473,27 @@
 }
 
 - (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
-    if ([member.userId isEqualToString:self.teacherAttrs.uid]) {
+    if ([member.userId isEqualToString:self.teacherAttr.uid]) {
         self.teacherVideoView.defaultImageView.hidden = NO;
         [self.teacherVideoView updateUserName:@""];
         [self.teacherVideoView updateSpeakerImageName:@"icon-speakeroff-dark"];
-        self.teacherAttrs = nil;
+        self.teacherAttr = nil;
     }else {
         AEStudentModel *studentModel = [self.studentList objectForKey:member.userId];
-        [self.studentListArray removeObject:studentModel];
-        [self.studentListView updateStudentArray:self.studentListArray];
-        [self.studentVideoListView removeStudentModel:studentModel];
+        if (studentModel) {
+            [self.studentListArray removeObject:studentModel];
+            [self.studentList removeObjectForKey:member.userId];
+            [self.studentListView updateStudentArray:self.studentListArray];
+            [self.studentVideoListView removeStudentModel:studentModel];
+        }
     }
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
-    [self parsingTheChannelAttr:attributes];
-    if (self.teacherAttrs) {
-        self.teacherVideoView.defaultImageView.hidden = self.teacherAttrs.video ? YES : NO;
-        NSString *imageName = self.teacherAttrs.audio ? @"mic-speaker3" : @"speaker-close";
+    [self parsingChannelAttr:attributes];
+    if (self.teacherAttr) {
+        self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+        NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
         [self.teacherVideoView updateSpeakerImageName:imageName];
     }
 }

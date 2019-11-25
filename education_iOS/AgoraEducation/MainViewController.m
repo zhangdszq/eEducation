@@ -44,7 +44,6 @@
     if ([[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]) {
         [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
     }
-  
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -236,6 +235,7 @@
 
 #pragma MARK -----------------------  AgoraRtmDelegate -------------------------
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
+    NSLog(@"rtmConnectionState--- %ld",state);
     self.rtmConnectionState = state;
 }
 

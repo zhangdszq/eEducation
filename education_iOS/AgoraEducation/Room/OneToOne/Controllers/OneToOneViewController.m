@@ -166,24 +166,6 @@
     }
 }
 
-//- (void)joinWhiteBoardRoomUUID:(NSString *)uuid {
-//    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
-//    if (self.room) {
-//        [self.room disconnect:^{
-//        }];
-//    }
-//    WEAK(self)
-//    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
-//        WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-//        [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
-//            weakself.room = room;
-//            [weakself getWhiteboardSceneInfo];
-//        }];
-//    } failure:^(NSString * _Nonnull msg) {
-//        NSLog(@"获取失败 %@",msg);
-//    }];
-//}
-
 - (void)getWhiteboardSceneInfo {
     WEAK(self)
     [self.room getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {

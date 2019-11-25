@@ -8,6 +8,6 @@ target 'AgoraEducation' do
   pod 'MJExtension', '~> 3.0.16'
   pod 'AgoraRtm_iOS', '~> 1.1.0'
   pod 'White-SDK-iOS'
-  pod 'AgoraRtcEngine_iOS', '~> 2.9.0'
+  pod 'AgoraRtcEngine_iOS', '<=2.9.0'
 end
 
