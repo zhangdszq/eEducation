@@ -6,8 +6,8 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import "RoomMessageModel.h"
+#import "AERoomMessageModel.h"
 
-@implementation RoomMessageModel
+@implementation AERoomMessageModel
 
 @end

@@ -13,8 +13,6 @@
 @interface AERTMMessageBody ()
 
 @end
-
-
 @implementation AERTMMessageBody
 + (NSString *)studentApplyLink {
     NSDictionary *dict = @{
@@ -84,8 +82,6 @@
     return dict;
 }
 
-
-
 + (NSString *)MD5WithString:(NSString *)str {
     const char *fooData = [str UTF8String];
     unsigned char result[CC_MD5_DIGEST_LENGTH];
@@ -101,7 +97,7 @@
 + (BOOL)judgeClassRoomText:(NSString *)text {
     NSString *regex = @"^[a-zA-Z0-9]*$";
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
-    if ([predicate evaluateWithObject:text] && text.length < 11) {
+    if ([predicate evaluateWithObject:text] && text.length <= 11) {
         return YES;
     } else {
         return NO;

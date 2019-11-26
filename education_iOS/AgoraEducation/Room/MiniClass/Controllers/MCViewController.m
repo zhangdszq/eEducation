@@ -16,7 +16,7 @@
 #import "AETeactherModel.h"
 #import "AEStudentModel.h"
 #import "EEChatTextFiled.h"
-#import "RoomMessageModel.h"
+#import "AERoomMessageModel.h"
 #import "EEMessageView.h"
 #import "MCStudentListView.h"
 #import "MCSegmentedView.h"
@@ -25,7 +25,7 @@
 #import "AgoraHttpRequest.h"
 
 #define kLandscapeViewWidth    222
-@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,EEWhiteboardToolDelegate,EEPageControlDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,AgoraRtmDelegate>
+@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,EEWhiteboardToolDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,AgoraRtmDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoManagerViewRightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledBottomCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledWidthCon;
@@ -46,8 +46,6 @@
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
 @property (nonatomic, strong) UIColor *pencilColor;
-@property (nonatomic, strong) WhiteMemberState *memberState;
-@property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) NSMutableDictionary *studentList;
 @property (nonatomic, strong) NSMutableArray *studentListArray;
@@ -70,7 +68,6 @@
     self.isMuteVideo = NO;
     self.isMuteAudio = NO;
     [self loadAgoraRtcEngine];
-    [self joinRtmChannnel];
     [self setUpView];
     [self loadBlock];
     [self addTeacherObserver];
@@ -106,7 +103,6 @@
     self.boardView.frame = self.whiteboardBaseView.bounds;
     self.chatTextFiled.contentTextFiled.delegate = self;
     self.whiteboardTool.delegate = self;
-    self.pageControlView.delegate = self;
     self.studentListView.delegate = self;
     self.roomManagerView.layer.borderWidth = 1.f;
     self.roomManagerView.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
@@ -133,6 +129,12 @@
                 self.chatTextFiled.contentTextFiled.placeholder = @"禁言中";
             }else {
                 self.chatTextFiled.contentTextFiled.enabled = YES;
+            }
+        }else if ([keyPath isEqualToString:@"class_state"]) {
+            if ([new boolValue] == YES) {
+                [self.navigationView startTimer];
+            }else {
+                [self.navigationView stopTimer];
             }
         }
     }
@@ -186,25 +188,6 @@
     }];
 }
 
-- (void)joinRtmChannnel {
-    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode == AgoraRtmJoinChannelErrorOk) {
-            NSLog(@"频道加入成功");
-        }
-    }];
-}
-
-- (void)getWhiteboardSceneInfo {
-    WEAK(self)
-    [self.room getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {
-        weakself.scenes = [NSArray arrayWithArray:state.scenes];
-        weakself.sceneDirectory = @"/";
-        weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%lu",(long)weakself.sceneIndex+1,(unsigned long)weakself.scenes.count]];
-    }];
-}
-
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
     AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
     setAttr.key = self.userId;
@@ -222,11 +205,14 @@
 }
 
 - (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
+
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
         NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
         if ([channelAttr.key isEqualToString:@"teacher"]) {
+            if (!self.teacherAttr) {
+                self.teacherAttr = [[AETeactherModel alloc] init];
+            }
             [self.teacherAttr modelWithDict:valueDict];
-            [self.navigationView startTimer];
         }else {
             AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
             studentAttr.userId = channelAttr.key;
@@ -321,7 +307,7 @@
     
     [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
         if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-            RoomMessageModel *messageModel = [[RoomMessageModel alloc] init];
+            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
             messageModel.content = content;
             messageModel.account = weakself.userName;
             messageModel.isSelfSend = YES;
@@ -367,45 +353,6 @@
     }
 }
 
-- (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
-    if (modifyState.sceneState && modifyState.sceneState.scenes.count > self.scenes.count) {
-        NSLog(@"modifyState --- %@",modifyState);
-        self.scenes = [NSArray arrayWithArray:modifyState.sceneState.scenes];
-        self.sceneDirectory = @"/";
-        self.sceneIndex = modifyState.sceneState.index;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
-    }
-}
-
-#pragma mark ----------------------------------- PageControl Delegate ---------------------------
-- (void)previousPage {
-    if (self.sceneIndex > 0) {
-        self.sceneIndex--;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
-    }
-}
-
-- (void)nextPage {
-    if (self.sceneIndex < self.scenes.count - 1) {
-        self.sceneIndex ++;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
-    }
-}
-
-- (void)lastPage {
-    self.sceneIndex = self.scenes.count;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex - 1].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%zd/%zd",self.scenes.count,self.scenes.count]];
-}
-
-- (void)firstPage {
-    self.sceneIndex = 0;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[0].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"1/%zd",self.scenes.count]];
-}
 #pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
@@ -422,7 +369,10 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid == kWhiteBoardUid) {
+    if (uid == [self.teacherAttr.uid integerValue]) {
+        self.teacherVideoView.defaultImageView.hidden = NO;
+        [self.teacherVideoView updateUserName:@"icon-speakeroff-dark"];
+    }else if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
     }else {
         AEStudentModel *studentModel = [self.studentList objectForKey:@(uid)];
@@ -462,7 +412,7 @@
 #pragma mark --------------- RTM Delegate -----------
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
     NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
-    RoomMessageModel *messageModel = [RoomMessageModel yy_modelWithDictionary:dict];
+    AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
     messageModel.isSelfSend = NO;
     [self.messageView addMessageModel:messageModel];
 }
@@ -474,9 +424,7 @@
 
 - (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
     if ([member.userId isEqualToString:self.teacherAttr.uid]) {
-        self.teacherVideoView.defaultImageView.hidden = NO;
         [self.teacherVideoView updateUserName:@""];
-        [self.teacherVideoView updateSpeakerImageName:@"icon-speakeroff-dark"];
         self.teacherAttr = nil;
     }else {
         AEStudentModel *studentModel = [self.studentList objectForKey:member.userId];
