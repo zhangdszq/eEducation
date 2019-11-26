@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RoomMessageModel.h"
+#import "AERoomMessageModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEMessageViewCell : UITableViewCell
 - (CGSize)sizeWithContent:(NSString *)string;
-@property (nonatomic, copy) RoomMessageModel *messageModel;
+@property (nonatomic, copy) AERoomMessageModel *messageModel;
 @property (nonatomic, assign) CGFloat cellWidth;
 @end
 

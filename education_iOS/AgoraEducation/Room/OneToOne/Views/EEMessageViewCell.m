@@ -52,7 +52,7 @@
     // Configure the view for the selected state
 }
 
-- (void)setMessageModel:(RoomMessageModel *)messageModel {
+- (void)setMessageModel:(AERoomMessageModel *)messageModel {
     _messageModel = messageModel;
     if (messageModel.isSelfSend) {
         CGSize size =  [self sizeWithContent:messageModel.content];

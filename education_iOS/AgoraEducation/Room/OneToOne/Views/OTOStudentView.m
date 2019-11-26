@@ -44,7 +44,7 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
          [self.delegate muteVideoStream:sender.selected];
      }
-    NSString *imageName = sender.selected ? @"roomCameraOff" : @"roomCameraOn";
+    NSString *imageName = sender.selected ? @"icon-video-off-min" : @"icon-video-on-min";
      [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 

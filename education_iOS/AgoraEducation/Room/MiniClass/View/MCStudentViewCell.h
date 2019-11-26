@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *muteAudioButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *muteVideoButton;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -25,10 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger sceneIndex;
 @property (nonatomic, copy) NSString *sceneDirectory;
 @property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
+@property (nonatomic, strong) WhiteMemberState *memberState;
+
+@property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
+
+- (void)joinRTMChannel;
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid;
 - (void)getWhiteboardSceneInfo;
 - (void)addWhiteBoardViewToView:(UIView *)view;
-
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;
 @end

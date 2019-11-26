@@ -46,7 +46,7 @@
 - (void)updateTableView {
     [self.messageTableView reloadData];
 }
-- (void)addMessageModel:(RoomMessageModel *)model {
+- (void)addMessageModel:(AERoomMessageModel *)model {
     [self.messageArray addObject:model];
     [self.messageTableView reloadData];
     if (self.messageArray.count > 0) {
@@ -70,7 +70,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    RoomMessageModel *messageModel = self.messageArray[indexPath.row];
+    AERoomMessageModel *messageModel = self.messageArray[indexPath.row];
     CGSize labelSize = [messageModel.content boundingRectWithSize:CGSizeMake(self.messageTableView.frame.size.width - 38, 1000) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
     return labelSize.height + 60;
 }

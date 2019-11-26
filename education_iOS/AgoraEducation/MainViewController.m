@@ -8,7 +8,6 @@
 
 #import "MainViewController.h"
 #import "AgoraHttpRequest.h"
-#import "RoomUserModel.h"
 #import "EyeCareModeUtil.h"
 #import "SettingViewController.h"
 #import "BCViewController.h"
@@ -194,11 +193,11 @@
 }
 
 - (void)presentOneToOneViewController {
-    [self.activityIndicator stopAnimating];
     NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
     WEAK(self)
     [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
+            [weakself.activityIndicator stopAnimating];
             BOOL isHaveStudent  = NO;
             for (AgoraRtmChannelAttribute *attr in attributes) {
                 if (![attr.key isEqualToString:@"teacher"]) {
@@ -210,6 +209,8 @@
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
             }
+        }else {
+            [EEAlertView showAlertWithController:self title:@"获取频道属性失败"];
         }
     }];
 }
@@ -235,12 +236,8 @@
 
 #pragma MARK -----------------------  AgoraRtmDelegate -------------------------
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
-    NSLog(@"rtmConnectionState--- %ld",state);
+    NSLog(@"rtmConnectionState--- %ld",(long)state);
     self.rtmConnectionState = state;
-}
-
-- (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
-    
 }
 
 - (void)selectRoomTypeName:(NSString *)name {

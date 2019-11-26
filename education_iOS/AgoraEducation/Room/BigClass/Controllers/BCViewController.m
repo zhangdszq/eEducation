@@ -16,7 +16,7 @@
 #import "AgoraHttpRequest.h"
 #import "MainViewController.h"
 #import "AERTMMessageBody.h"
-#import "RoomMessageModel.h"
+#import "AERoomMessageModel.h"
 #import "EEColorShowView.h"
 #import "AERTMMessageBody.h"
 #import "AEStudentModel.h"
@@ -25,7 +25,7 @@
 #import "AEP2pMessageModel.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,EEPageControlDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,AgoraRtmDelegate,AEClassRoomProtocol>
+@interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,AgoraRtmDelegate,AEClassRoomProtocol>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -65,10 +65,8 @@
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (nonatomic, strong) UIColor *pencilColor;
-@property (nonatomic, strong) WhiteMemberState *memberState;
 @property (nonatomic, assign) NSInteger unreadMessageCount;
 @property (nonatomic, assign) StudentLinkState linkState;
-@property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
 @property (nonatomic, strong) NSMutableArray *channelAttrs;
 
 
@@ -93,7 +91,6 @@
     [self.rtmKit setAgoraRtmDelegate:self];
     self.studentListDict = [NSMutableDictionary dictionary];
     [self joinAgoraRtcChannel];
-    [self joinRtmChannel];
     [self setChannelAttrsWithVideo:NO audio:NO];
 }
 
@@ -130,7 +127,6 @@
     [AERTMMessageBody addShadowWithView:self.tipLabel alpha:0.25];
     self.segmentedView.delegate = self;
     self.whiteboardTool.delegate = self;
-    self.pageControlView.delegate = self;
     self.studentVideoView.delegate = self;
     self.chatTextFiled.contentTextFiled.delegate = self;
 }
@@ -152,15 +148,6 @@
     [self.rtcEngineKit startPreview];
     [self.rtcEngineKit enableWebSdkInteroperability:YES];
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
-    }];
-}
-
-- (void)joinRtmChannel {
-    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode == AgoraRtmJoinChannelErrorOk) {
-            NSLog(@"RTM - 频道加入成功");
-        }
     }];
 }
 
@@ -186,13 +173,16 @@
         [self.room disconnect:^{
         }];
     }
+    
     WEAK(self)
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
         [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
             weakself.room = room;
             [weakself getWhiteboardSceneInfo];
-            [weakself.room disableOperations:YES];
+            [room refreshViewSize];
+            [room disableCameraTransform:NO];
+            [weakself.room disableDeviceInputs:YES];
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
@@ -259,16 +249,6 @@
     self.studentVideoView.defaultImageView.hidden = NO;
     self.studentVideoView.hidden = YES;
     self.studentCanvas = nil;
-}
-
-- (void)getWhiteboardSceneInfo {
-    WEAK(self)
-    [self.room getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {
-        weakself.scenes = [NSArray arrayWithArray:state.scenes];
-        weakself.sceneDirectory = @"/";
-        weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",(long)weakself.sceneIndex+1,(long)weakself.scenes.count]];
-    }];
 }
 
 //设备方向改变的处理
@@ -390,6 +370,9 @@
         for (AgoraRtmChannelAttribute *channelAttr in attributes) {
             NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
             if ([channelAttr.key isEqualToString:@"teacher"]) {
+                if (!self.teacherAttr) {
+                    self.teacherAttr = [[AETeactherModel alloc] init];
+                }
                 [self.teacherAttr modelWithDict:valueDict];
                 if (self.segmentedIndex == 0) {
                     self.handUpButton.hidden = NO;
@@ -529,7 +512,7 @@
     __block NSString *content = textField.text;
     [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
         if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-            RoomMessageModel *messageModel = [[RoomMessageModel alloc] init];
+            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
             messageModel.content = content;
             messageModel.account = weakself.userName;
             messageModel.isSelfSend = YES;
@@ -571,35 +554,6 @@
             self.colorShowView.hidden = YES;
         }
     }
-}
-
-#pragma mark ----------------------------------- PageControl Delegate ---------------------------
-- (void)previousPage {
-    if (self.sceneIndex > 0) {
-        self.sceneIndex--;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
-    }
-}
-
-- (void)nextPage {
-    if (self.sceneIndex < self.scenes.count - 1) {
-        self.sceneIndex ++;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
-    }
-}
-
-- (void)lastPage {
-    self.sceneIndex = self.scenes.count;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex - 1].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%zd/%zd",self.scenes.count,self.scenes.count]];
-}
-
-- (void)firstPage {
-    self.sceneIndex = 0;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[0].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"1/%zd",self.scenes.count]];
 }
 
 #pragma mark --------------------- RTC Delegate -------------------
@@ -672,7 +626,7 @@
 #pragma mark --------------------- RTM Delegate -------------------
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
     NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
-    RoomMessageModel *messageModel = [RoomMessageModel yy_modelWithDictionary:dict];
+    AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
     messageModel.isSelfSend = NO;
     [self.messageView addMessageModel:messageModel];
     if (self.messageView.hidden == YES) {
@@ -741,17 +695,6 @@
             default:
                 break;
         }
-    }
-}
-
-#pragma mark ------------------------- whiteboard Delegate ---------------------------
-- (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
-    if (modifyState.sceneState && modifyState.sceneState.scenes.count > self.scenes.count) {
-        self.scenes = [NSArray arrayWithArray:modifyState.sceneState.scenes];
-        self.sceneDirectory = @"/";
-        self.sceneIndex = modifyState.sceneState.index;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",(long)self.sceneIndex+1,self.scenes.count]];
     }
 }
 

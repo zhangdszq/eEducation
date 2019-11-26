@@ -9,9 +9,4 @@
 #import "AEP2pMessageModel.h"
 
 @implementation AEP2pMessageModel
-//+ (NSDictionary *)modelCustomPropertyMapper {
-//    return @{
-//        @"p2pType": @"cmd"
-//        };
-//}
 @end

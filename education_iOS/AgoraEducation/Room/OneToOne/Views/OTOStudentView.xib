@@ -47,7 +47,7 @@
                                 <constraint firstAttribute="width" constant="24" id="0rQ-Qy-8xo"/>
                                 <constraint firstAttribute="height" constant="24" id="uFH-V4-lE9"/>
                             </constraints>
-                            <state key="normal" image="white-video-open"/>
+                            <state key="normal" image="icon-video-on-min"/>
                             <connections>
                                 <action selector="muteVideo:" destination="-1" eventType="touchUpInside" id="dMr-aV-1Mz"/>
                             </connections>
@@ -97,6 +97,6 @@
     <resources>
         <image name="icon-speaker2" width="24" height="24"/>
         <image name="icon-student" width="80" height="80"/>
-        <image name="white-video-open" width="24" height="24"/>
+        <image name="icon-video-on-min" width="24" height="24"/>
     </resources>
 </document>

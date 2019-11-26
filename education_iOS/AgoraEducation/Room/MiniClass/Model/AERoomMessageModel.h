@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RoomMessageModel : NSObject
+@interface AERoomMessageModel : NSObject
 @property (nonatomic, assign) BOOL isSelfSend;
 @property (nonatomic, copy)   NSString *account;
 @property (nonatomic, copy)   NSString *content;
