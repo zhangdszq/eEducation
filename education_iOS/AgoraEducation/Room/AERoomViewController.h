@@ -14,20 +14,22 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AERoomViewController : UIViewController
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, copy) NSString *channelName;
-@property (nonatomic, strong) AgoraRtmKit *rtmKit;
 @property (nonatomic, copy) NSString *userName;
 @property (nonatomic, copy) NSString *userId;
 @property (nonatomic, copy) NSString *rtmChannelName;
-@property (nonatomic, strong) WhiteBoardView *boardView;
 
+@property (nonatomic, strong) WhiteBoardView *boardView;
 @property (nonatomic, strong) WhiteSDK *sdk;
-@property (nonatomic, strong, nullable) WhiteRoom *room;
+@property (nonatomic, strong) WhiteRoom *room;
 @property (nonatomic, assign) NSInteger sceneIndex;
 @property (nonatomic, copy) NSString *sceneDirectory;
 @property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
 @property (nonatomic, strong) WhiteMemberState *memberState;
 
+@property (nonatomic, strong) AgoraRtmKit *rtmKit;
 @property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
+@property (nonatomic, strong) AgoraRtcVideoCanvas *shareScreenCanvas;
+@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
 - (void)joinRTMChannel;
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid;
@@ -35,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;
+- (void)addShareScreenVideoWithUid:(NSInteger)uid;
+- (void)removeShareScreen;
 @end
 
 NS_ASSUME_NONNULL_END

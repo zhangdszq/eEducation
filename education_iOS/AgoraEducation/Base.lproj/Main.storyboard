@@ -232,6 +232,7 @@
                         <outlet property="ClassNameTextFiled" destination="C8r-GQ-Fxh" id="YTt-FC-lBz"/>
                         <outlet property="baseView" destination="ltr-0i-D4J" id="MEj-5N-l42"/>
                         <outlet property="classNameTextFiled" destination="C8r-GQ-Fxh" id="0Mu-eJ-iWO"/>
+                        <outlet property="joinButton" destination="UEU-w3-aae" id="22R-YT-H0v"/>
                         <outlet property="roomType" destination="uVJ-fP-Ktw" id="RYZ-cu-fRc"/>
                         <outlet property="textViewBottomCon" destination="S3x-UW-WZS" id="rJp-xJ-VD3"/>
                         <outlet property="userNameTextFiled" destination="bpE-MQ-ak5" id="d6q-kP-8FN"/>

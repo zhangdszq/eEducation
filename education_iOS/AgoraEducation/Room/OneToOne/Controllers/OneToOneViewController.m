@@ -46,12 +46,11 @@
 
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) AEStudentModel *studentAttrs;
-@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 @property (nonatomic, strong) UIColor *pencilColor;
 
 @property (nonatomic, assign) BOOL teacherInRoom;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *shareScreenCanvas;
+
 @end
 
 @implementation OneToOneViewController
@@ -140,7 +139,6 @@
 }
 
 - (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
         NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
         if ([channelAttr.key isEqualToString:@"teacher"]) {
@@ -195,6 +193,7 @@
     self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
     self.shareScreenCanvas.uid = uid;
     self.shareScreenCanvas.view = self.shareScreenView;
+    self.shareScreenCanvas.renderMode = AgoraVideoRenderModeFit;
     [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
 }
 
@@ -211,6 +210,7 @@
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself removeTeacherObserver];
         [weakself.room disconnect:^{
+
         }];
         AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
         options.enableNotificationToChannelMembers = YES;

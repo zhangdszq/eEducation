@@ -18,6 +18,7 @@
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
 @property (nonatomic, weak) EEColorShowView *colorShowView;
+@property (nonatomic, weak) UIView *shareScreenView;
 @end
 
 @implementation AERoomViewController
@@ -62,7 +63,9 @@
         [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
             weakself.room = room;
             [weakself getWhiteboardSceneInfo];
+            [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:1024 height:1024]];
             [room refreshViewSize];
+            
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
@@ -105,6 +108,19 @@
     [self.teacherAttr removeObserver:self forKeyPath:@"class_state"];
 }
 
+- (void)addShareScreenVideoWithUid:(NSInteger)uid {
+    self.shareScreenView.hidden = NO;
+    self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
+    self.shareScreenCanvas.uid = uid;
+    self.shareScreenCanvas.view = self.shareScreenView;
+    self.shareScreenCanvas.renderMode = AgoraVideoRenderModeFit;
+    [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
+}
+
+- (void)removeShareScreen {
+    self.shareScreenView.hidden = YES;
+    self.shareScreenCanvas = nil;
+}
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
     self.sceneIndex = modifyState.sceneState.index;

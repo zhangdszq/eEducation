@@ -49,8 +49,6 @@
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) NSMutableDictionary *studentList;
 @property (nonatomic, strong) NSMutableArray *studentListArray;
-@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *shareScreenCanvas;
 
 @property (nonatomic, assign) BOOL isTeacherInRoom;
 @property (nonatomic, assign) BOOL isMuteVideo;
@@ -111,6 +109,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    NSLog(@"-------------");
     NSString *new = [NSString stringWithFormat:@"%@",change[@"new"]];
     NSString *old = [NSString stringWithFormat:@"%@",change[@"old"]];
     if (![new isEqualToString:old]) {
@@ -145,6 +144,7 @@
     self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
     self.shareScreenCanvas.uid = uid;
     self.shareScreenCanvas.view = self.shareScreenView;
+    self.shareScreenCanvas.renderMode = AgoraVideoRenderModeFit;
     [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
 }
 
@@ -425,7 +425,6 @@
 - (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
     if ([member.userId isEqualToString:self.teacherAttr.uid]) {
         [self.teacherVideoView updateUserName:@""];
-        self.teacherAttr = nil;
     }else {
         AEStudentModel *studentModel = [self.studentList objectForKey:member.userId];
         if (studentModel) {
