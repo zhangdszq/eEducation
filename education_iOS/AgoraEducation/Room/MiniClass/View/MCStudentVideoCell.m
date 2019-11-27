@@ -42,7 +42,7 @@
     backImageView.frame = self.contentView.bounds;
     [self.contentView addSubview:backImageView];
     backImageView.image = [UIImage imageNamed:@"icon-student"];
-    backImageView.backgroundColor = RCColorWithValue(0xDBE2E5, 1.0);
+    backImageView.backgroundColor = [UIColor colorWithHexString:@"DBE2E5"];
     self.backImageView = backImageView;
 
     UILabel *nameLable = [self addNameLabel];

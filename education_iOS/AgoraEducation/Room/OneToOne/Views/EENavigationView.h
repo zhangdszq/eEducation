@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EENavigationView : UIView
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
+@property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
 - (void)startTimer;
 - (void)stopTimer;
 - (void)updateChannelName:(NSString *)name;

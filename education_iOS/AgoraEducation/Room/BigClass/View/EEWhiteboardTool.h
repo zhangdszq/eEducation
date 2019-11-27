@@ -9,12 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @protocol EEWhiteboardToolDelegate <NSObject>
-
 - (void)selectWhiteboardToolIndex:(NSInteger)index;
-
 @end
-
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEWhiteboardTool : UIView

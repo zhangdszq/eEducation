@@ -32,7 +32,7 @@
     bottomLineView.frame = CGRectMake(0, 39, self.bounds.size.width, 1);
 
     self.layer.backgroundColor = [UIColor whiteColor].CGColor;
-    self.layer.shadowColor = RCColorWithValue(0x000000, 0.15).CGColor;
+    self.layer.shadowColor = [UIColor colorWithHexString:@"000000" alpha:0.15].CGColor;
     self.layer.shadowOffset = CGSizeMake(0,2);
     self.layer.shadowOpacity = 2;
     self.layer.shadowRadius = 4;
@@ -41,7 +41,7 @@
         [itemButton setTitle:self.items[i] forState:(UIControlStateNormal)];
         [itemButton setFrame:CGRectMake(i * self.bounds.size.width / 2, 0, self.bounds.size.width/2, self.frame.size.height)];
         UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake((i * self.bounds.size.width / 2) + 14, 39, self.bounds.size.width/2 - 28, 2.f)];
-        lineView.backgroundColor = RCColorWithValue(0x44A2FC, 1);
+        lineView.backgroundColor = [UIColor colorWithHexString:@"44A2FC"];
         [self addSubview:lineView];
         lineView.tag = i + 100;
         itemButton.tag = i + 1000; //tag设计不太好，因为如果你封装东西，可能整个加载u页面会有其他的设置
@@ -82,10 +82,10 @@
     if (button.selected) {
         [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:16.f]];
         [button.titleLabel setFont:[UIFont systemFontOfSize:16.f weight:(UIFontWeightMedium)]];
-        [button setTitleColor:RCColorWithValue(0x44A2FC, 1.f) forState:(UIControlStateNormal)];
+        [button setTitleColor:[UIColor colorWithHexString:@"44A2FC"] forState:(UIControlStateNormal)];
     }else {
         [button.titleLabel setFont:[UIFont systemFontOfSize:16.f weight:(UIFontWeightRegular)]];
-        [button setTitleColor:RCColorWithValue(0x666666, 1.f) forState:(UIControlStateNormal)];
+        [button setTitleColor:[UIColor colorWithHexString:@"666666"] forState:(UIControlStateNormal)];
     }
 }
 

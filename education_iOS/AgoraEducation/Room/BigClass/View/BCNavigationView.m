@@ -10,20 +10,10 @@
 
 
 @interface BCNavigationView ()
-
-
+@property (weak, nonatomic) IBOutlet UIButton *closeButton;
 @end
 
 @implementation BCNavigationView
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -50,4 +40,10 @@
 - (void)updateSignalImageName:(NSString *)name {
     [self.wifiSignalImage setImage:[UIImage imageNamed:name]];
 }
+- (IBAction)colseRoom:(UIButton *)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(closeRoom)]) {
+        [self.delegate closeRoom];
+    }
+}
+
 @end

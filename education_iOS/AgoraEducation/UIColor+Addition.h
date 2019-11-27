@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 //设置十六进制颜色
 + (UIColor *)colorWithHex:(NSInteger)hex;
 + (UIColor*)colorWithHexString:(NSString *)hexString;
++(UIColor *)colorWithHexString:(NSString *)hexString alpha:(CGFloat)alpha;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -20,11 +20,11 @@
             SkinCoverLayer *skinCoverLayer = [SkinCoverLayer layer];
             UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
             if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
-                skinCoverLayer.frame = CGRectMake(0, 0, frame.size.height, frame.size.width);
+                skinCoverLayer.frame = CGRectMake(0, 0, MAX(frame.size.height, frame.size.width), MIN(frame.size.height, frame.size.width));
             }else {
-                skinCoverLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+                skinCoverLayer.frame = CGRectMake(0, 0, MIN(frame.size.height, frame.size.width), MAX(frame.size.height, frame.size.width));
             }
-            skinCoverLayer.backgroundColor = RCColorWithValue(0xFF9900, 0.1f).CGColor;
+            skinCoverLayer.backgroundColor = [UIColor colorWithHexString:@"FF9900" alpha:0.1].CGColor;
             [self.layer addSublayer:skinCoverLayer];
         }
     }

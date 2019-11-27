@@ -25,7 +25,7 @@
 #import "AgoraHttpRequest.h"
 
 #define kLandscapeViewWidth    222
-@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,EEWhiteboardToolDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,AgoraRtmDelegate>
+@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,AgoraRtmDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoManagerViewRightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledBottomCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledWidthCon;
@@ -36,7 +36,6 @@
 @property (weak, nonatomic) IBOutlet UIView *whiteboardBaseView;
 @property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
-@property (weak, nonatomic) IBOutlet UIButton *showAndHideButton;
 @property (weak, nonatomic) IBOutlet UIView *roomManagerView;
 @property (weak, nonatomic) IBOutlet EEPageControlView *pageControlView;
 @property (weak, nonatomic) IBOutlet UIView *shareScreenView;
@@ -45,7 +44,6 @@
 @property (weak, nonatomic) IBOutlet MCStudentListView *studentListView;
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
-@property (nonatomic, strong) UIColor *pencilColor;
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) NSMutableDictionary *studentList;
 @property (nonatomic, strong) NSMutableArray *studentListArray;
@@ -68,6 +66,8 @@
     [self loadAgoraRtcEngine];
     [self setUpView];
     [self loadBlock];
+    [self setWhiteBoardBrushColor];
+    [self setAllStudentVideoRender];
     [self addTeacherObserver];
     [self addNotification];
     [self.rtmKit setAgoraRtmDelegate:self];
@@ -96,12 +96,11 @@
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     [self addWhiteBoardViewToView:self.whiteboardBaseView];
     self.boardView.frame = self.whiteboardBaseView.bounds;
     self.chatTextFiled.contentTextFiled.delegate = self;
-    self.whiteboardTool.delegate = self;
     self.studentListView.delegate = self;
+    self.navigationView.delegate = self;
     self.roomManagerView.layer.borderWidth = 1.f;
     self.roomManagerView.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
     [self.navigationView updateChannelName:self.channelName];
@@ -148,11 +147,21 @@
     [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
 }
 
-- (void)removeShareScreen {
-    self.shareScreenView.hidden = YES;
-    self.shareScreenCanvas = nil;
+- (void)setAllStudentVideoRender {
+    WEAK(self)
+    [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
+        AEStudentModel *model = weakself.studentListArray[indexPath.row];
+        AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+        videoCanvas.uid = [model.userId integerValue];
+        videoCanvas.view = imageView;
+        if ([model.userId isEqualToString:weakself.userId]) {
+            [weakself.rtcEngineKit setupLocalVideo:videoCanvas];
+        }else {
+            [weakself.rtcEngineKit setRemoteVideoStream:[model.userId integerValue] type:(AgoraVideoStreamTypeLow)];
+            [weakself.rtcEngineKit setupRemoteVideo:videoCanvas];
+        }
+    }];
 }
-
 - (void)loadBlock {
     WEAK(self)
     [self.segmentedView setSelectIndex:^(NSInteger index) {
@@ -166,25 +175,6 @@
             weakself.studentListView.hidden = NO;
         }
 
-    }];
-    
-    [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
-       NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-        weakself.memberState.strokeColor = colorArray;
-        [weakself.room setMemberState:weakself.memberState];
-    }];
-
-    [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
-        AEStudentModel *model = weakself.studentListArray[indexPath.row];
-        AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        videoCanvas.uid = [model.userId integerValue];
-        videoCanvas.view = imageView;
-        if ([model.userId isEqualToString:weakself.userId]) {
-            [weakself.rtcEngineKit setupLocalVideo:videoCanvas];
-        }else {
-            [weakself.rtcEngineKit setRemoteVideoStream:[model.userId integerValue] type:(AgoraVideoStreamTypeLow)];
-            [weakself.rtcEngineKit setupRemoteVideo:videoCanvas];
-        }
     }];
 }
 
@@ -265,24 +255,7 @@
     self.chatTextFiledWidthCon.constant = 222;
 }
 
-- (void)closeRoom:(UIButton *)sender {
-    WEAK(self)
-    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
-        [[NSNotificationCenter defaultCenter] removeObserver:weakself];
-        [weakself.navigationView stopTimer];
-        [weakself.rtcEngineKit leaveChannel:nil];
-        [weakself.room disconnect:^{
-
-        }];
-        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-        options.enableNotificationToChannelMembers = YES;
-        [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
-        [weakself.rtmChannel leaveWithCompletion:nil];
-        [weakself dismissViewControllerAnimated:YES completion:nil];
-    }];
-}
-
-- (IBAction)showAndHide:(UIButton *)sender {
+- (IBAction)messageViewshowAndHide:(UIButton *)sender {
     self.infoManagerViewRightCon.constant = sender.isSelected ? 0.f : 222.f;
     self.roomManagerView.hidden = sender.isSelected ? NO : YES;
     self.chatTextFiled.hidden = sender.isSelected ? NO : YES;
@@ -304,7 +277,6 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     WEAK(self)
     __block NSString *content = textField.text;
-    
     [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
         if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
             AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
@@ -319,38 +291,21 @@
     return NO;
 }
 
-#pragma mark --------------------- WhiteBoard Tool Delegate -------------------
-- (void)selectWhiteboardToolIndex:(NSInteger)index {
+- (void)closeRoom {
+    WEAK(self)
+    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+        [[NSNotificationCenter defaultCenter] removeObserver:weakself];
+        [weakself.navigationView stopTimer];
+        [weakself.rtcEngineKit leaveChannel:nil];
+        [weakself.room disconnect:^{
 
-    self.memberState = [[WhiteMemberState alloc] init];
-    switch (index) {
-        case 0:
-            self.memberState.currentApplianceName = ApplianceSelector;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 1:
-            self.memberState.currentApplianceName = AppliancePencil;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 2:
-            self.memberState.currentApplianceName = ApplianceText;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 3:
-            self.memberState.currentApplianceName = ApplianceEraser;
-            [self.room setMemberState:self.memberState];
-            break;
-
-        default:
-            break;
-    }
-    if (index == 4) {
-        self.colorShowView.hidden = NO;
-    }else {
-        if (self.colorShowView.hidden == NO) {
-            self.colorShowView.hidden = YES;
-        }
-    }
+        }];
+        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
+        options.enableNotificationToChannelMembers = YES;
+        [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
+        [weakself.rtmChannel leaveWithCompletion:nil];
+        [weakself dismissViewControllerAnimated:YES completion:nil];
+    }];
 }
 
 #pragma mark --------------------- RTC Delegate -------------------

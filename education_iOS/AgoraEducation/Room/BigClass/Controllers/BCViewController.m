@@ -7,7 +7,7 @@
 //
 
 #import "BCViewController.h"
-#import "EESegmentedView.h"
+#import "BCSegmentedView.h"
 #import "EEPageControlView.h"
 #import "EEWhiteboardTool.h"
 #import "EEChatTextFiled.h"
@@ -25,7 +25,7 @@
 #import "AEP2pMessageModel.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<EESegmentedDelegate,EEWhiteboardToolDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,AgoraRtmDelegate,AEClassRoomProtocol>
+@interface BCViewController ()<BCSegmentedDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,AgoraRtmDelegate,AEClassRoomProtocol>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -49,7 +49,7 @@
 @property (nonatomic, weak) UIButton *closeButton;
 @property (weak, nonatomic) IBOutlet EETeacherVideoView *teactherVideoView;
 @property (weak, nonatomic) IBOutlet BCStudentVideoView *studentVideoView;
-@property (weak, nonatomic) IBOutlet EESegmentedView *segmentedView;
+@property (weak, nonatomic) IBOutlet BCSegmentedView *segmentedView;
 @property (nonatomic, assign) NSInteger segmentedIndex;
 @property (weak, nonatomic) IBOutlet BCNavigationView *navigationView;
 @property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
@@ -66,11 +66,9 @@
 @property (nonatomic, strong) NSMutableDictionary *studentListDict;
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
-@property (nonatomic, strong) UIColor *pencilColor;
 @property (nonatomic, assign) NSInteger unreadMessageCount;
 @property (nonatomic, assign) StudentLinkState linkState;
 @property (nonatomic, strong) NSMutableArray *channelAttrs;
-
 
 @property (nonatomic, assign) NSUInteger linkUserId;
 @property (nonatomic, assign) BOOL teacherInRoom;
@@ -87,7 +85,7 @@
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
-    [self selectPencilColor];
+    [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
     [self.rtmKit setAgoraRtmDelegate:self];
     self.studentListDict = [NSMutableDictionary dictionary];
@@ -106,7 +104,7 @@
     UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
     if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
         [self stateBarHidden:YES];
-        [self landscapeConstraints];
+        [self landscapeScreenConstraints];
     }else {
         [self stateBarHidden:NO];
         [self verticalScreenConstraints];
@@ -116,29 +114,19 @@
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     self.handUpButton.layer.borderWidth = 1.f;
     self.handUpButton.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
     self.handUpButton.layer.cornerRadius = 6;
 
     [AERTMMessageBody addShadowWithView:self.handUpButton alpha:0.1];
-    self.tipLabel.layer.backgroundColor = RCColorWithValue(0x000000, 0.7).CGColor;
+    self.tipLabel.layer.backgroundColor = [UIColor colorWithHexString:@"000000" alpha:0.7].CGColor;
     self.tipLabel.layer.cornerRadius = 6;
     [AERTMMessageBody addShadowWithView:self.tipLabel alpha:0.25];
     self.segmentedView.delegate = self;
-    self.whiteboardTool.delegate = self;
     self.studentVideoView.delegate = self;
+    self.navigationView.delegate = self;
     self.chatTextFiled.contentTextFiled.delegate = self;
-}
-
-- (void)selectPencilColor {
-    WEAK(self)
-    self.colorShowView.selectColor = ^(NSString *colorString) {
-        NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-        weakself.memberState.strokeColor = colorArray;
-        [weakself.room setMemberState:weakself.memberState];
-    };
 }
 
 - (void)joinAgoraRtcChannel {
@@ -254,7 +242,7 @@
         case UIDeviceOrientationLandscapeRight:
         {
             [self stateBarHidden:YES];
-            [self landscapeConstraints];
+            [self landscapeScreenConstraints];
         }
             break;
         default:
@@ -269,24 +257,7 @@
     self.isLandscape = hidden; // 横屏隐藏
 }
 
-- (void)closeRoom:(UIButton *)sender {
-    WEAK(self)
-    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
-        if (weakself.linkState == StudentLinkStateAccept) {
-            [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-            }];
-        }
-        [weakself.rtcEngineKit leaveChannel:nil];
-        [weakself.room disconnect:^{
-        }];
-        [weakself removeTeacherObserver];
-        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-        options.enableNotificationToChannelMembers = YES;
-        [weakself.rtmKit deleteChannel:weakself.channelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
-        [weakself.rtmChannel leaveWithCompletion:nil];
-        [weakself dismissViewControllerAnimated:NO completion:nil];
-    }];
-}
+
 
 - (IBAction)handUpEvent:(UIButton *)sender {
     switch (self.linkState) {
@@ -297,11 +268,9 @@
             [self studentCancelLink];
             break;
         case StudentLinkStateApply:
-        {
             [self.studentVideoView updateVideoImageWithMuted:NO];
             [self.studentVideoView updateAudioImageWithMuted:NO];
             self.studentVideoView.hidden = YES;
-        }
             break;
         default:
             break;
@@ -381,7 +350,7 @@
     }
 }
 
-- (void)landscapeConstraints {
+- (void)landscapeScreenConstraints {
     BOOL isIphoneX = (MAX(kScreenHeight, kScreenWidth) / MIN(kScreenHeight, kScreenWidth) > 1.78) ? YES : NO;
     self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
     self.handUpButton.hidden = self.teacherInRoom ? NO : YES;
@@ -464,7 +433,7 @@
     self.chatTextFiledWidthCon .constant = self.isLandscape ? kLandscapeViewWidth : MIN(kScreenHeight, kScreenWidth);
 }
 
-#pragma mark ---------------------------- Segment Delegate ----------------------------
+#pragma mark ---------------------------- Delegate ----------------------------
 - (void)selectedItemIndex:(NSInteger)index {
     if (self.colorShowView.hidden == NO) {
         self.colorShowView.hidden = YES;
@@ -488,7 +457,26 @@
         [self.segmentedView hiddeBadge];
     }
 }
-#pragma mark ---------------------------- Text Delegate ----------------------------
+
+- (void)closeRoom {
+    WEAK(self)
+    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+        if (weakself.linkState == StudentLinkStateAccept) {
+            [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+            }];
+        }
+        [weakself.rtcEngineKit leaveChannel:nil];
+        [weakself.room disconnect:^{
+        }];
+        [weakself removeTeacherObserver];
+        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
+        options.enableNotificationToChannelMembers = YES;
+        [weakself.rtmKit deleteChannel:weakself.channelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
+        [weakself.rtmChannel leaveWithCompletion:nil];
+        [weakself dismissViewControllerAnimated:NO completion:nil];
+    }];
+}
+
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     self.isChatTextFieldKeyboard = YES;
     return YES;
@@ -515,40 +503,7 @@
     [textField resignFirstResponder];
     return NO;
 }
-#pragma mark --------------------- WhiteBoard Tool Delegate -------------------
-- (void)selectWhiteboardToolIndex:(NSInteger)index {
-    self.memberState = [[WhiteMemberState alloc] init];
-    switch (index) {
-        case 0:
-            self.memberState.currentApplianceName = ApplianceSelector;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 1:
-            self.memberState.currentApplianceName = AppliancePencil;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 2:
-            self.memberState.currentApplianceName = ApplianceText;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 3:
-            self.memberState.currentApplianceName = ApplianceEraser;
-            [self.room setMemberState:self.memberState];
-            break;
 
-        default:
-            break;
-    }
-    if (index == 4) {
-        self.colorShowView.hidden = NO;
-    }else {
-        if (self.colorShowView.hidden == NO) {
-            self.colorShowView.hidden = YES;
-        }
-    }
-}
-
-#pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoDecodedOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
         self.teactherVideoView.defaultImageView.hidden = YES;
@@ -615,7 +570,7 @@
             break;
     }
 }
-#pragma mark --------------------- RTM Delegate -------------------
+
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
     NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
     AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
@@ -690,7 +645,6 @@
     }
 }
 
-#pragma mark ------------------------------- ClassRoom Delegate------------------
 - (void)muteVideoStream:(BOOL)stream {
     AEStudentModel *attrs =  [self.studentListDict objectForKey:self.userId];
     [self setChannelAttrsWithVideo:!attrs.video audio:attrs.audio];

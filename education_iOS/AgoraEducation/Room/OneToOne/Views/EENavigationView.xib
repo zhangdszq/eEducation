@@ -10,7 +10,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EENavigationView">
             <connections>
-                <outlet property="closeButton" destination="tqZ-0g-Ac8" id="4bk-5f-NgN"/>
+                <outlet property="closeButton" destination="tqZ-0g-Ac8" id="diT-xv-mQn"/>
                 <outlet property="navigationView" destination="iN0-l3-epB" id="FfU-AT-YYx"/>
                 <outlet property="roomNameLabel" destination="2UB-9x-doh" id="y8u-VD-CGU"/>
                 <outlet property="timeLabel" destination="mLi-28-eUa" id="JvY-fG-OiE"/>
@@ -63,6 +63,9 @@
                         <constraint firstAttribute="height" constant="30" id="mGK-3g-pqY"/>
                     </constraints>
                     <state key="normal" image="icon-close"/>
+                    <connections>
+                        <action selector="closeRoom:" destination="-1" eventType="touchUpInside" id="mA0-G4-TYS"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" red="0.96078431372549022" green="0.96862745098039216" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

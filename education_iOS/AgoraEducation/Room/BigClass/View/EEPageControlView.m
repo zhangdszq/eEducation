@@ -31,8 +31,8 @@
     [super awakeFromNib];
     self.pageControlView.frame = self.bounds;
     self.layer.borderWidth = 1.f;
-    self.layer.borderColor = RCColorWithValue(0xDBE2E5, 1.f).CGColor;
-    self.layer.shadowColor = RCColorWithValue(0x000000, 1.f).CGColor;
+    self.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
+    self.layer.shadowColor = [UIColor colorWithHexString:@"000000"].CGColor;
     self.layer.shadowOffset = CGSizeMake(0.f, 2.f);
     self.layer.shadowOpacity = 2.f;
     self.layer.shadowRadius = 4.f;
