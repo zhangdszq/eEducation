@@ -41,6 +41,9 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *studentViewHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageViewWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageViewTopCon;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareScreenTopCon;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareScreenRightCon;
+
 
 @property (weak, nonatomic) IBOutlet UIView *lineView;
 @property (nonatomic, weak) UIButton *closeButton;
@@ -56,11 +59,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *tipLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textFiledBottomConstraint;
-@property (weak, nonatomic) IBOutlet UIView *windowShareView;
+@property (weak, nonatomic) IBOutlet UIView *shareScreenView;
 @property (weak, nonatomic) IBOutlet EEChatTextFiled *chatTextFiled;
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
-@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 @property (nonatomic, strong) NSMutableDictionary *studentListDict;
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
@@ -72,7 +74,6 @@
 
 @property (nonatomic, assign) NSUInteger linkUserId;
 @property (nonatomic, assign) BOOL teacherInRoom;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcVideoCanvas *studentCanvas;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @property (nonatomic, assign) BOOL statusBarHidden;
@@ -173,7 +174,6 @@
         [self.room disconnect:^{
         }];
     }
-    
     WEAK(self)
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
@@ -183,6 +183,7 @@
             [room refreshViewSize];
             [room disableCameraTransform:NO];
             [weakself.room disableDeviceInputs:YES];
+            [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:1024 height:1024]];
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
@@ -216,19 +217,6 @@
             self.linkUserId = [new integerValue];
         }
     }
-}
-
-- (void)addShareScreenVideoWithUid:(NSInteger)uid {
-    self.windowShareView.hidden = NO;
-    self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
-    self.shareScreenCanvas.uid = uid;
-    self.shareScreenCanvas.view = self.windowShareView;
-    [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
-}
-
-- (void)removeShareScreen {
-    self.windowShareView.hidden = YES;
-    self.shareScreenCanvas = nil;
 }
 
 - (void)addStudentVideoWithUid:(NSInteger)uid remoteVideo:(BOOL)remote {
@@ -411,15 +399,17 @@
     self.chatTextFiledWidthCon.constant = kLandscapeViewWidth;
     self.tipLabelTopCon.constant = 10;
     self.messageViewTopCon.constant = 0;
-    self.whiteboardViewRightCon.constant = isIphoneX ? -267 : -kLandscapeViewWidth;
+    self.whiteboardViewRightCon.constant = -kLandscapeViewWidth;
+    self.shareScreenRightCon.constant = kLandscapeViewWidth;
     self.whiteboardViewTopCon.constant = 0;
+    self.shareScreenTopCon.constant = 0;
     self.teacherVideoViewHeightCon.constant = 125;
     self.studentVideoViewLeftCon.constant = 66;
     self.studentViewHeightCon.constant = 85;
     self.studentViewWidthCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
-    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 301 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
-    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 40);
+    CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 311 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
+    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 30);
 }
 
 - (void)verticalScreenConstraints {
@@ -442,7 +432,9 @@
     self.tipLabelTopCon.constant = 267;
     self.messageViewTopCon.constant = 44;
     self.whiteboardViewRightCon.constant = 0;
+    self.shareScreenRightCon.constant = 0;
     self.whiteboardViewTopCon.constant = 257;
+    self.shareScreenTopCon.constant = 257;
     self.teacherVideoViewHeightCon.constant = 213;
     self.studentVideoViewLeftCon.constant = kScreenWidth - 100;
     self.studentViewWidthCon.constant = 85;
@@ -564,14 +556,14 @@
         canvas.uid = uid;
         canvas.view = self.teactherVideoView.teacherRenderView;
         [self.rtcEngineKit setupRemoteVideo:canvas];
-    }else {
+    }else if (uid != kWhiteBoardUid) {
         [self addStudentVideoWithUid:uid remoteVideo:YES];
     }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
-    }else if (uid == kWhiteBoardUid) {
+    }else if (uid == kWhiteBoardUid && !self.shareScreenCanvas) {
         [self addShareScreenVideoWithUid:uid];
     }else if(uid == self.linkUserId){
         [self.studentVideoView setButtonEnabled:NO];

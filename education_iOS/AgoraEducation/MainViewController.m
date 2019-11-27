@@ -33,6 +33,8 @@
 @property (nonatomic, strong) NSMutableArray *userArray;
 @property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
 @property (weak, nonatomic) IBOutlet UIButton *roomType;
+@property (weak, nonatomic) IBOutlet UIButton *joinButton;
+
 @property (nonatomic, assign) AgoraRtmConnectionState rtmConnectionState;
 @end
 
@@ -140,6 +142,7 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     [self.activityIndicator startAnimating];
+    [sender setEnabled:NO];
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![AERTMMessageBody judgeClassRoomText:self.classNameTextFiled.text] || ![AERTMMessageBody judgeClassRoomText:self.userNameTextFiled.text]) {
         [EEAlertView showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
         [self.activityIndicator stopAnimating];
@@ -165,46 +168,43 @@
 
 - (void)presentBigClassController {
     [self.activityIndicator stopAnimating];
+    [self.joinButton setEnabled:YES];
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
     }else {
         NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
-
         [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName];
-
     }
 }
 
 - (void)presentMiniClassViewController {
-    [self.activityIndicator stopAnimating];
     WEAK(self)
     NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
     [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+        [weakself.activityIndicator stopAnimating];
+        [weakself.joinButton setEnabled:YES];
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            if (attributes.count < 17) {
-
+            NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
+            if (studentCount < 16) {
                 [weakself joinClassRoomWithIdentifier:@"mcRoom"  rtmChannelName:rtcChannelName];
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
             }
+        }else {
+            [EEAlertView showAlertWithController:self title:@"获取频道属性失败"];
         }
     }];
-
 }
 
 - (void)presentOneToOneViewController {
     NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
     WEAK(self)
     [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+        [weakself.activityIndicator stopAnimating];
+        [weakself.joinButton setEnabled:YES];
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            [weakself.activityIndicator stopAnimating];
-            BOOL isHaveStudent  = NO;
-            for (AgoraRtmChannelAttribute *attr in attributes) {
-                if (![attr.key isEqualToString:@"teacher"]) {
-                    isHaveStudent = YES;
-                }
-            }
-            if (!isHaveStudent) {
+            NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
+            if (studentCount < 1) {
                 [weakself joinClassRoomWithIdentifier:@"oneToOneRoom"  rtmChannelName:rtcChannelName];
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
@@ -213,6 +213,16 @@
             [EEAlertView showAlertWithController:self title:@"获取频道属性失败"];
         }
     }];
+}
+
+- (NSInteger)judgeStudentCountWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
+    NSMutableArray *tempArray = [NSMutableArray arrayWithArray:attributes];
+    for (AgoraRtmChannelAttribute *attr in attributes) {
+    if ([attr.key isEqualToString:@"teacher"]) {
+            [tempArray removeObject:attr];
+        }
+    }
+    return tempArray.count;
 }
 
 - (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName {
