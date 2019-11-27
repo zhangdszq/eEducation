@@ -102,7 +102,7 @@
                                 </constraints>
                                 <state key="normal" image="view-close"/>
                                 <connections>
-                                    <action selector="showAndHide:" destination="TUm-sE-AH2" eventType="touchUpInside" id="bU3-Uc-Bqx"/>
+                                    <action selector="messageViewshowAndHide:" destination="TUm-sE-AH2" eventType="touchUpInside" id="aNf-Sw-V8T"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rf8-Xu-Hjs" customClass="EEPageControlView">
@@ -172,7 +172,6 @@
                         <outlet property="roomManagerView" destination="qP8-rT-5bW" id="oua-ip-kbQ"/>
                         <outlet property="segmentedView" destination="ZbE-c2-jxD" id="Riz-B3-VHt"/>
                         <outlet property="shareScreenView" destination="Ibz-2e-QTK" id="nOE-dw-RfH"/>
-                        <outlet property="showAndHideButton" destination="MDY-GA-tjB" id="ED1-4P-D1s"/>
                         <outlet property="studentListView" destination="6jm-dZ-OEY" id="9gQ-kz-AJx"/>
                         <outlet property="studentVideoListView" destination="awo-2R-jQ0" id="eU2-Lh-iPV"/>
                         <outlet property="teacherVideoView" destination="kdq-uH-xgO" id="zQz-hF-3NC"/>
@@ -299,7 +298,7 @@
                                 </constraints>
                                 <state key="normal" image="view-close"/>
                                 <connections>
-                                    <action selector="hideAndShowChatRoomView:" destination="4kJ-eb-zFy" eventType="touchUpInside" id="son-Un-qw5"/>
+                                    <action selector="chatRoomViewShowAndHide:" destination="4kJ-eb-zFy" eventType="touchUpInside" id="dbw-GX-rpF"/>
                                 </connections>
                             </button>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fga-Xt-gl6" customClass="EEColorShowView">
@@ -447,7 +446,7 @@
                                     <constraint firstAttribute="width" constant="414" id="6UM-w7-GBL"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y97-lA-yO7" customClass="EESegmentedView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y97-lA-yO7" customClass="BCSegmentedView">
                                 <rect key="frame" x="44" y="301" width="808" height="44"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>

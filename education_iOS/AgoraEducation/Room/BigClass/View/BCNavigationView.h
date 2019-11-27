@@ -13,10 +13,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BCNavigationView : UIView
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
+@property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *wifiSignalImage;
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *titleLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeButtonBottomConstraint;
 @property (strong, nonatomic) IBOutlet UIView *navigationView;

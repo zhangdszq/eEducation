@@ -12,7 +12,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BCViewController : AERoomViewController
-//@property (nonatomic, strong) NSDictionary *params;
 @end
 
 NS_ASSUME_NONNULL_END

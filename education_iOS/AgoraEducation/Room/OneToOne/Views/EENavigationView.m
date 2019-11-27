@@ -16,12 +16,12 @@
 @property (strong, nonatomic) IBOutlet UIView *navigationView;
 @property (weak, nonatomic) IBOutlet UILabel *roomNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet UIButton *closeButton;
 @property (nonatomic) BOOL isStart;
 @property (nonatomic) BOOL isPause;
 @property (nonatomic) BOOL isCreat;
 @property (nonatomic,assign) int timeCount;
 @property (weak, nonatomic) IBOutlet UIImageView *wifiSignalView;
-
 @end
 
 @implementation EENavigationView
@@ -45,7 +45,6 @@
     dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, globalQueue);
     _isCreat = YES;
-
      WEAK(self)
     //    每秒执行一次
     dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), 1.0*NSEC_PER_SEC, 0);
@@ -54,8 +53,6 @@
     int minutes = (weakself.timeCount - (3600*hours)) / 60;
     int seconds = weakself.timeCount%60;
     NSString *strTime = [NSString stringWithFormat:@"%.2d:%.2d:%.2d",hours,minutes,seconds];
-
-
     dispatch_async(dispatch_get_main_queue(), ^{
         weakself.timeLabel.text = strTime;
     });
@@ -70,14 +67,6 @@
     }
 }
 
-- (void)dealloc
-{
-   if (timer) {
-            dispatch_source_cancel(timer);
-       }
-
-}
-
 - (void)updateChannelName:(NSString *)name {
     [self.roomNameLabel setText:name];
 }
@@ -85,4 +74,18 @@
 - (void)updateSignalImageName:(NSString *)name {
     [self.wifiSignalView setImage:[UIImage imageNamed:name]];
 }
+
+- (IBAction)closeRoom:(UIButton *)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(closeRoom)]) {
+        [self.delegate closeRoom];
+    }
+}
+
+- (void)dealloc
+{
+   if (timer) {
+        dispatch_source_cancel(timer);
+    }
+}
+
 @end

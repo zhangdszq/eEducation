@@ -30,7 +30,7 @@ static NSInteger const rightRange = 0; //距离控件右边的距离
 
 - (void)setBadgeCount:(NSInteger)count {
     self.badge.hidden = NO;
-    [self.badge setText:[NSString stringWithFormat:@"%ld",count]];
+    [self.badge setText:[NSString stringWithFormat:@"%zi",count]];
     [self.badge setTextColor:[UIColor colorWithHexString:@"FFFFFF"]];
     [self.badge setFont:[UIFont fontWithName:@"Helvetica Neue" size:10.f]];
     [self.badge setFont:[UIFont systemFontOfSize:12 weight:(UIFontWeightMedium)]];

@@ -12,6 +12,7 @@
 #import "EEPageControlView.h"
 #import "EEWhiteboardTool.h"
 #import "EEColorShowView.h"
+#import "EEWhiteboardTool.h"
 
 @interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AgoraRtmChannelDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
@@ -65,7 +66,6 @@
             [weakself getWhiteboardSceneInfo];
             [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:1024 height:1024]];
             [room refreshViewSize];
-            
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
@@ -121,6 +121,16 @@
     self.shareScreenView.hidden = YES;
     self.shareScreenCanvas = nil;
 }
+
+- (void)setWhiteBoardBrushColor {
+    WEAK(self)
+    [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
+        NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
+        weakself.memberState.strokeColor = colorArray;
+        [weakself.room setMemberState:weakself.memberState];
+    }];
+}
+
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
     self.sceneIndex = modifyState.sceneState.index;
@@ -129,14 +139,14 @@
         self.sceneDirectory = @"/";
         [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
     }
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld",(long)self.sceneIndex+1,(long)self.scenes.count]];
+    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%i/%i",self.sceneIndex+1,self.scenes.count]];
 }
 
 - (void)previousPage {
     if (self.sceneIndex > 0) {
         self.sceneIndex--;
         [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%i/%zd",self.sceneIndex+1,self.scenes.count]];
     }
 }
 
@@ -144,7 +154,7 @@
     if (self.sceneIndex < self.scenes.count - 1  && self.scenes.count > 0) {
         self.sceneIndex ++;
         [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%i/%zd",self.sceneIndex+1,self.scenes.count]];
     }
 }
 
@@ -179,7 +189,6 @@
             self.memberState.currentApplianceName = ApplianceEraser;
             [self.room setMemberState:self.memberState];
             break;
-
         default:
             break;
     }
@@ -192,11 +201,9 @@
     }
 }
 
-
 - (void)dealloc
 {
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     NSLog(@"AERoomViewController is Dealloc");
 }
-
 @end

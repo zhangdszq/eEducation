@@ -117,15 +117,15 @@
 
 - (void)setButtonStyle:(UIButton *)button {
     if (button.selected == YES) {
-        [button setBackgroundColor:RCColorWithValue(0x006EDE, 1)];
+        [button setBackgroundColor:[UIColor colorWithHexString:@"006EDE"]];
         [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:16]];
 
     }else {
         [button setBackgroundColor:[UIColor whiteColor]];
-        button.layer.borderColor = RCColorWithValue(0xCCCCCC, 1).CGColor;
+        button.layer.borderColor = [UIColor colorWithHexString:@"CCCCCC"].CGColor;
         button.layer.borderWidth = 1;
-        [button setTitleColor:RCColorWithValue(0xCCCCCC,1) forState:(UIControlStateNormal)];
+        [button setTitleColor:[UIColor colorWithHexString:@"CCCCCC"] forState:(UIControlStateNormal)];
     }
 }
 
@@ -218,7 +218,9 @@
 - (NSInteger)judgeStudentCountWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     NSMutableArray *tempArray = [NSMutableArray arrayWithArray:attributes];
     for (AgoraRtmChannelAttribute *attr in attributes) {
-    if ([attr.key isEqualToString:@"teacher"]) {
+        if ([attr.key isEqualToString:@"teacher"]) {
+            [tempArray removeObject:attr];
+        }else if ([attr.key isEqualToString:self.uid]) {
             [tempArray removeObject:attr];
         }
     }

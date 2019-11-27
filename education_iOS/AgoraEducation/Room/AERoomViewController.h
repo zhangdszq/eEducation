@@ -25,10 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *sceneDirectory;
 @property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
 @property (nonatomic, strong) WhiteMemberState *memberState;
+@property (nonatomic, strong) UIColor *pencilColor;
 
 @property (nonatomic, strong) AgoraRtmKit *rtmKit;
 @property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
-@property (nonatomic, strong) AgoraRtcVideoCanvas *shareScreenCanvas;
+@property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
 - (void)joinRTMChannel;
@@ -39,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeTeacherObserver;
 - (void)addShareScreenVideoWithUid:(NSInteger)uid;
 - (void)removeShareScreen;
+- (void)setWhiteBoardBrushColor;
 @end
 
 NS_ASSUME_NONNULL_END

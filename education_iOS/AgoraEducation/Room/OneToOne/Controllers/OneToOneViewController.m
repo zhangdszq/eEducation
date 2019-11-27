@@ -46,11 +46,8 @@
 
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, strong) AEStudentModel *studentAttrs;
-@property (nonatomic, strong) UIColor *pencilColor;
-
 @property (nonatomic, assign) BOOL teacherInRoom;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
-
 @end
 
 @implementation OneToOneViewController
@@ -59,7 +56,7 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     [self setUpView];
-    [self selectPencilColor];
+    [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
     [self addNotification];
     [self loadAgoraEngine];
@@ -79,18 +76,9 @@
     }
     [self addWhiteBoardViewToView:self.whiteboardView];
     self.studentView.delegate = self;
+    self.navigationView.delegate = self;
     self.chatTextFiled.contentTextFiled.delegate = self;
-    [self.navigationView.closeButton addTarget:self action:@selector(closeRoom:) forControlEvents:(UIControlEventTouchUpInside)];
     [self.navigationView updateChannelName:self.channelName];
-}
-
-- (void)selectPencilColor {
-    WEAK(self)
-    self.colorShowView.selectColor = ^(NSString *colorString) {
-       NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-       weakself.memberState.strokeColor = colorArray;
-       [weakself.room setMemberState:weakself.memberState];
-    };
 }
 
 - (void)addNotification {
@@ -197,30 +185,7 @@
     [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
 }
 
-- (void)removeShareScreen {
-    self.shareScreenView.hidden = YES;
-    self.shareScreenCanvas = nil;
-}
-
-- (void)closeRoom:(UIButton *)sender {
-    WEAK(self)
-    [EEAlertView showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
-        [weakself.navigationView stopTimer];
-        [weakself.rtcEngineKit stopPreview];
-        [weakself.rtcEngineKit leaveChannel:nil];
-        [weakself removeTeacherObserver];
-        [weakself.room disconnect:^{
-
-        }];
-        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-        options.enableNotificationToChannelMembers = YES;
-        [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
-        [weakself.rtmChannel leaveWithCompletion:nil];
-        [weakself dismissViewControllerAnimated:NO completion:nil];
-    }];
-}
-
-- (IBAction)hideAndShowChatRoomView:(UIButton *)sender {
+- (IBAction)chatRoomViewShowAndHide:(UIButton *)sender {
     self.chatRoomViewRightCon.constant = sender.isSelected ? 0.f : 222.f;
     self.textFiledRightCon.constant = sender.isSelected ? 0.f : 222.f;
     self.chatRoomView.hidden = sender.isSelected ? NO : YES;
@@ -230,7 +195,7 @@
     sender.selected = !sender.selected;
 }
 
-#pragma mark --------------------- Text Delegate ------------
+#pragma mark --------------------- Delegate  ---------------------
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     self.isChatTextFieldKeyboard = YES;
     return YES;
@@ -239,7 +204,6 @@
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     self.isChatTextFieldKeyboard =  NO;
     return YES;
-
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -259,6 +223,24 @@
     return NO;
 }
 
+- (void)closeRoom {
+    WEAK(self)
+    [EEAlertView showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
+        [weakself.navigationView stopTimer];
+        [weakself.rtcEngineKit stopPreview];
+        [weakself.rtcEngineKit leaveChannel:nil];
+        [weakself removeTeacherObserver];
+        [weakself.room disconnect:^{
+
+        }];
+        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
+        options.enableNotificationToChannelMembers = YES;
+        [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
+        [weakself.rtmChannel leaveWithCompletion:nil];
+        [weakself dismissViewControllerAnimated:NO completion:nil];
+    }];
+}
+
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
         AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
@@ -272,7 +254,6 @@
     [self.teacherView updateUserName:self.teacherAttr.account];
 }
 
-#pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
     if (uid == [self.teacherAttr.shared_uid integerValue]) {
         [self removeShareScreen];
@@ -299,40 +280,6 @@
     }
 }
 
-#pragma mark --------------------- WhiteBoard Delegate -------------------
-- (void)selectWhiteboardToolIndex:(NSInteger)index {
-    self.memberState = [[WhiteMemberState alloc] init];
-    switch (index) {
-        case 0:
-            self.memberState.currentApplianceName = ApplianceSelector;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 1:
-            self.memberState.currentApplianceName = AppliancePencil;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 2:
-            self.memberState.currentApplianceName = ApplianceText;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 3:
-            self.memberState.currentApplianceName = ApplianceEraser;
-            [self.room setMemberState:self.memberState];
-            break;
-
-        default:
-            break;
-    }
-    if (index == 4) {
-        self.colorShowView.hidden = NO;
-    }else {
-        if (self.colorShowView.hidden == NO) {
-            self.colorShowView.hidden = YES;
-        }
-    }
-}
-
-#pragma mark --------------------- RTM Delegate -------------------
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
     NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
     AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
@@ -360,7 +307,6 @@
     }
 }
 
-#pragma mark ----------------------- mute Delegate
 - (void)muteVideoStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalVideoStream:stream];
     [self setChannelAttrsWithVideo:!stream audio:self.studentAttrs.audio];
@@ -372,8 +318,6 @@
     [self setChannelAttrsWithVideo:self.studentAttrs.video audio:!stream];
 }
 
-
-#pragma mark  --------  Mandatory landscape -------
 - (BOOL)shouldAutorotate {
     return NO;
 }

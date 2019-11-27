@@ -58,7 +58,7 @@
 		1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A93A810234C7197001F31A6 /* MCVideoView.m */; };
 		1A9B621D2384E9A6001E366C /* EEAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9B621C2384E9A6001E366C /* EEAlertView.m */; };
 		1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E994235EFB2700C415BF /* BCViewController.m */; };
-		1AD4E99B235F100400C415BF /* EESegmentedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E99A235F100400C415BF /* EESegmentedView.m */; };
+		1AD4E99B235F100400C415BF /* BCSegmentedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E99A235F100400C415BF /* BCSegmentedView.m */; };
 		1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A3236008FF00C415BF /* EEPageControlView.m */; };
 		1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A52360092A00C415BF /* EEPageControlView.xib */; };
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
@@ -184,8 +184,8 @@
 		1A9B621C2384E9A6001E366C /* EEAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEAlertView.m; sourceTree = "<group>"; };
 		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
 		1AD4E994235EFB2700C415BF /* BCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCViewController.m; sourceTree = "<group>"; };
-		1AD4E999235F100400C415BF /* EESegmentedView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EESegmentedView.h; sourceTree = "<group>"; };
-		1AD4E99A235F100400C415BF /* EESegmentedView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EESegmentedView.m; sourceTree = "<group>"; };
+		1AD4E999235F100400C415BF /* BCSegmentedView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCSegmentedView.h; sourceTree = "<group>"; };
+		1AD4E99A235F100400C415BF /* BCSegmentedView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCSegmentedView.m; sourceTree = "<group>"; };
 		1AD4E9A2236008FF00C415BF /* EEPageControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEPageControlView.h; sourceTree = "<group>"; };
 		1AD4E9A3236008FF00C415BF /* EEPageControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EEPageControlView.m; sourceTree = "<group>"; };
 		1AD4E9A52360092A00C415BF /* EEPageControlView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EEPageControlView.xib; sourceTree = "<group>"; };
@@ -268,8 +268,8 @@
 		1A399E4E236975D400F5A40F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1AD4E999235F100400C415BF /* EESegmentedView.h */,
-				1AD4E99A235F100400C415BF /* EESegmentedView.m */,
+				1AD4E999235F100400C415BF /* BCSegmentedView.h */,
+				1AD4E99A235F100400C415BF /* BCSegmentedView.m */,
 				1AD4E9A2236008FF00C415BF /* EEPageControlView.h */,
 				1AD4E9A3236008FF00C415BF /* EEPageControlView.m */,
 				1AD4E9A52360092A00C415BF /* EEPageControlView.xib */,
@@ -807,7 +807,7 @@
 				1A226C44236A7C1B0024D984 /* AEStudentModel.m in Sources */,
 				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
 				1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */,
-				1AD4E99B235F100400C415BF /* EESegmentedView.m in Sources */,
+				1AD4E99B235F100400C415BF /* BCSegmentedView.m in Sources */,
 				1A44BE8322BFA97400766274 /* AERoomMessageModel.m in Sources */,
 				1A93A811234C7197001F31A6 /* MCVideoView.m in Sources */,
 				1A2FFA0D237261FF0049E49F /* UIView+EEBadge.m in Sources */,
