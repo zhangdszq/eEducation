@@ -1,0 +1,65 @@
+{
+  "name": "agora-edu-web",
+  "version": "2.9.0",
+  "private": true,
+  "homepage": "https://webdemo.agora.io/agora-web-showcase/examples/agora-edu-web/",
+  "main": "src/index.js",
+  "agora_electron": {
+    "electron_version": "5.0.8",
+    "prebuilt": true,
+    "platform": "darwin"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.5.1",
+    "@material-ui/icons": "^4.5.1",
+    "@types/jest": "^24.0.19",
+    "@types/lodash": "^4.14.145",
+    "@types/node": "^12.11.1",
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.2",
+    "@types/react-router-dom": "^5.1.0",
+    "agora-rtc-sdk": "2.9.0",
+    "agora-rtm-sdk": "^1.1.0",
+    "animate.css": "^3.7.2",
+    "immutable": "^4.0.0-rc.12",
+    "js-md5": "^0.7.3",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "node-sass": "^4.12.0",
+    "react": "^16.10.2",
+    "react-color": "^2.17.3",
+    "react-dom": "^16.10.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.2.0",
+    "typescript": "^3.6.4"
+  },
+  "scripts": {
+    "web-dev": "BROWSER=none react-app-rewired start",
+    "dev": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react-color": "^3.0.1",
+    "customize-cra": "^0.8.0",
+    "electron": "5.0.8",
+    "react-app-rewired": "^2.1.4",
+    "white-web-sdk": "^2.3.10"
+  }
+}
