@@ -1,6 +1,6 @@
 const logger = require("./logger").get("whiteboard");
 const request = require("request");
-const baseUrl = "https://cloudcapiv3.herewhite.com";
+const baseUrl = "https://cloudcapiv4.herewhite.com";
 const {WHITE_TOKEN} = require("./config");
 const multer = require('multer');
 const storage = multer.memoryStorage();
