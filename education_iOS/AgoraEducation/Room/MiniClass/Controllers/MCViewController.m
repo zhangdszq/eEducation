@@ -45,8 +45,9 @@
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
-@property (nonatomic, strong) NSMutableDictionary *studentList;
+@property (nonatomic, strong) NSMutableDictionary *studentListDict;
 @property (nonatomic, strong) NSMutableArray *studentListArray;
+@property (nonatomic, strong) NSMutableArray *studentUidArray;
 
 @property (nonatomic, assign) BOOL isTeacherInRoom;
 @property (nonatomic, assign) BOOL isMuteVideo;
@@ -58,27 +59,28 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.studentList = [NSMutableDictionary dictionary];
+    self.studentListDict = [NSMutableDictionary dictionary];
     self.studentListArray = [NSMutableArray array];
+    self.studentUidArray = [NSMutableArray array];
     self.studentListView.userId = self.userId;
     self.isMuteVideo = NO;
     self.isMuteAudio = NO;
     [self loadAgoraRtcEngine];
     [self setUpView];
-    [self loadBlock];
+    [self getRtmChannelAttrs];
+    [self selectSegmentIndex];
     [self setWhiteBoardBrushColor];
     [self setAllStudentVideoRender];
     [self addTeacherObserver];
     [self addNotification];
     [self.rtmKit setAgoraRtmDelegate:self];
-    [self getRtmChannelAttrs];
-    [self setStudentAttrs];
 }
 
 - (void)setStudentAttrs {
-    AEStudentModel *studentAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
-    [self.studentListArray addObject:studentAttrs];
-    [self.studentList setValue:studentAttrs forKey:self.userId];
+    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
+    [self.studentListArray addObject:self.ownAttrs];
+    [self.studentListDict setValue:self.ownAttrs forKeyPath:self.userId];
+    [self.studentUidArray addObject:self.userId];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
     [self setChannelAttrsWithVideo:YES audio:YES];
@@ -88,6 +90,7 @@
     WEAK(self)
     [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         [weakself parsingChannelAttr:attributes];
+        [weakself setStudentAttrs];
     }];
 }
 
@@ -108,18 +111,26 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    NSLog(@"-------------");
     NSString *new = [NSString stringWithFormat:@"%@",change[@"new"]];
     NSString *old = [NSString stringWithFormat:@"%@",change[@"old"]];
     if (![new isEqualToString:old]) {
         if ([keyPath isEqualToString:@"uid"]) {
-            NSUInteger uid = [change[@"new"] integerValue];
+            NSUInteger uid = [new integerValue];
             if (uid > 0 ) {
-                self.isTeacherInRoom = YES;
+                AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+                canvas.uid = uid;
+                canvas.view = self.teacherVideoView.videoRenderView;
+                self.teacherVideoView.defaultImageView.hidden = YES;
+                [self.rtcEngineKit setRemoteVideoStream:uid type:(AgoraVideoStreamTypeLow)];
+                [self.rtcEngineKit setupRemoteVideo:canvas];
+                [self.teacherVideoView updateUserName:self.teacherAttr.account];
+            }else {
+                [self.teacherVideoView updateUserName:@""];
+                self.teacherVideoView.defaultImageView.hidden = NO;
             }
         }else if ([keyPath isEqualToString:@"whiteboard_uid"]) {
             if (change[@"new"]) {
-                [self joinWhiteBoardRoomUUID:change[@"new"]];
+                [self joinWhiteBoardRoomUUID:change[@"new"] disableDevice:false];
             }
         }else if ([keyPath isEqualToString:@"mute_chat"]) {
             if ([change[@"new"] boolValue]) {
@@ -127,6 +138,7 @@
                 self.chatTextFiled.contentTextFiled.placeholder = @"禁言中";
             }else {
                 self.chatTextFiled.contentTextFiled.enabled = YES;
+                self.chatTextFiled.contentTextFiled.placeholder = @"说点什么";
             }
         }else if ([keyPath isEqualToString:@"class_state"]) {
             if ([new boolValue] == YES) {
@@ -162,7 +174,7 @@
         }
     }];
 }
-- (void)loadBlock {
+- (void)selectSegmentIndex {
     WEAK(self)
     [self.segmentedView setSelectIndex:^(NSInteger index) {
         if (index == 0) {
@@ -178,24 +190,7 @@
     }];
 }
 
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
-    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
-    setAttr.key = self.userId;
-    setAttr.value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio];
-    AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-    options.enableNotificationToChannelMembers = YES;
-    NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
-    [self.rtmKit addOrUpdateChannel:self.rtmChannelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"更新成功");
-        }else {
-            NSLog(@"更新失败 %ld",(long)errorCode);
-        }
-    }];
-}
-
 - (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
         NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
         if ([channelAttr.key isEqualToString:@"teacher"]) {
@@ -203,26 +198,76 @@
                 self.teacherAttr = [[AETeactherModel alloc] init];
             }
             [self.teacherAttr modelWithDict:valueDict];
+            self.teacherUid = [self.teacherAttr.uid integerValue];
+            self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+            NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
+            [self.teacherVideoView updateSpeakerImageName:imageName];
         }else {
             AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
             studentAttr.userId = channelAttr.key;
-            if (![self.studentList objectForKey:channelAttr.key]) {
-                [self.studentListArray addObject:studentAttr];
-                [self.studentList setValue:studentAttr forKey:channelAttr.key];
-            }else {
-                for (NSInteger i = 0 ; i < self.studentListArray.count; i++) {
-                    AEStudentModel *studentModel =  self.studentListArray[i];
-                    if ([studentModel.userId isEqualToString:channelAttr.key]) {
-                        [self.studentListArray replaceObjectAtIndex:i withObject:studentAttr];
-                    }
-                }
+            [self.studentListDict setValue:studentAttr forKeyPath:channelAttr.key];
+            if ([channelAttr.key isEqualToString:self.userId]) {
+                self.ownAttrs = [AEStudentModel yy_modelWithDictionary:valueDict];
             }
         }
-        [self.studentListView updateStudentArray:self.studentListArray];
-        [self.studentVideoListView updateStudentArray:self.studentListArray];
     }
+    [self updateStudentModelArray];
 }
 
+- (BOOL)judgeUidArrayWithUid:(NSInteger)uid {
+    for (NSInteger i = 0; i< self.studentUidArray.count; i++) {
+        if ([self.studentUidArray[i] integerValue] ==uid) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)updateStudentModelArray {
+    NSInteger studentCount = self.studentUidArray.count;
+    for (NSInteger i = 0; i < studentCount; i++) {
+        if ([self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%@",self.studentUidArray[i]]]) {
+            AEStudentModel *model = [self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%@",self.studentUidArray[i]]];
+            if (![self queryStudentListArrayContainsStudentModel:model]) {
+                [self.studentListArray addObject:model];
+            }else {
+                [self updateStudentListArrayStudentModel:model];
+            }
+        }
+    }
+    [self.studentListView updateStudentArray:self.studentListArray];
+    [self.studentVideoListView updateStudentArray:self.studentListArray];
+}
+
+- (BOOL)judgeStudentArrayWithModel:(AEStudentModel *)model {
+    for (NSInteger j = 0; j < self.studentListArray.count; j++) {
+        AEStudentModel *tempModel = self.studentListArray[j];
+        if ([tempModel.userId isEqualToString:model.userId]) {
+            return YES;
+            break;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)queryStudentListArrayContainsStudentModel:(AEStudentModel *)model {
+    for (NSInteger i = 0; i < self.studentListArray.count; i++) {
+        AEStudentModel *studentModel = self.studentListArray[i];
+        if ([studentModel.userId isEqualToString:model.userId]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)updateStudentListArrayStudentModel:(AEStudentModel *)model {
+    for (NSInteger i = 0; i < self.studentListArray.count; i++) {
+        AEStudentModel *studentModel = self.studentListArray[i];
+        if ([studentModel.userId isEqualToString:model.userId]) {
+            [self.studentListArray replaceObjectAtIndex:i withObject:model];
+        }
+    }
+}
 - (void)loadAgoraRtcEngine {
     self.rtcEngineKit = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppid delegate:self];
     [self.rtcEngineKit setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
@@ -310,33 +355,31 @@
 
 #pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
-        canvas.uid = uid;
-        canvas.view = self.teacherVideoView.videoRenderView;
-        self.teacherVideoView.defaultImageView.hidden = YES;
-        [self.rtcEngineKit setRemoteVideoStream:uid type:(AgoraVideoStreamTypeLow)];
-        [self.rtcEngineKit setupRemoteVideo:canvas];
-    }else if (uid == kWhiteBoardUid  && !self.shareScreenCanvas) {
+    if (self.teacherUid == uid) {
+    
+    }else if (uid == kWhiteBoardUid){
         [self addShareScreenVideoWithUid:uid];
+
+    }else {
+        if (![self judgeUidArrayWithUid:uid]) {
+            [self.studentUidArray addObject:@(uid)];
+            [self updateStudentModelArray];
+        }
     }
-    [self.teacherVideoView updateUserName:self.teacherAttr.account];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        self.teacherVideoView.defaultImageView.hidden = NO;
-        [self.teacherVideoView updateUserName:@"icon-speakeroff-dark"];
+    if (uid == self.teacherUid) {
+        self.teacherAttr.uid = [NSString stringWithFormat:@"0"];
+        self.teacherUid = 0;
     }else if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
     }else {
-        AEStudentModel *studentModel = [self.studentList objectForKey:@(uid)];
-        if (studentModel) {
-            [self.studentListArray removeObject:studentModel];
-            [self.studentList removeObjectForKey:@(uid)];
-            [self.studentListView updateStudentArray:self.studentListArray];
-            [self.studentVideoListView removeStudentModel:studentModel];
-        }
+        AEStudentModel *model =  [self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%zd",uid]];
+        [self.studentListArray removeObject:model];
+        [self.studentUidArray removeObject:@(uid)];
+        [self.studentListView updateStudentArray:self.studentListArray];
+        [self.studentVideoListView updateStudentArray:self.studentListArray];
     }
 }
 
@@ -372,32 +415,8 @@
     [self.messageView addMessageModel:messageModel];
 }
 
-- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
-    if (state == AgoraRtmConnectionStateAborted) {
-    }
-}
-
-- (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
-    if ([member.userId isEqualToString:self.teacherAttr.uid]) {
-        [self.teacherVideoView updateUserName:@""];
-    }else {
-        AEStudentModel *studentModel = [self.studentList objectForKey:member.userId];
-        if (studentModel) {
-            [self.studentListArray removeObject:studentModel];
-            [self.studentList removeObjectForKey:member.userId];
-            [self.studentListView updateStudentArray:self.studentListArray];
-            [self.studentVideoListView removeStudentModel:studentModel];
-        }
-    }
-}
-
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
     [self parsingChannelAttr:attributes];
-    if (self.teacherAttr) {
-        self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-        NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
-        [self.teacherVideoView updateSpeakerImageName:imageName];
-    }
 }
 
 - (void)muteAudioStream:(BOOL)stream {
@@ -426,6 +445,11 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskLandscapeRight;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+  return UIStatusBarStyleLightContent;
 }
 
 - (void)dealloc

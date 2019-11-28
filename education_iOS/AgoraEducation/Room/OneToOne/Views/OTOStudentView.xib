@@ -9,7 +9,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OTOStudentView">
             <connections>
+                <outlet property="cameraButton" destination="Rzv-Uc-3S4" id="Of9-fu-vPb"/>
                 <outlet property="defaultImageView" destination="cT5-Kf-LiK" id="0T3-WU-DIm"/>
+                <outlet property="micButton" destination="bxv-I6-WpO" id="X8u-yY-PWE"/>
                 <outlet property="nameLabel" destination="m11-z6-p1k" id="uMU-B7-Wr8"/>
                 <outlet property="studentView" destination="iN0-l3-epB" id="rgR-2N-Id2"/>
                 <outlet property="videoRenderView" destination="vhW-ma-x7s" id="7Nx-eN-CSu"/>

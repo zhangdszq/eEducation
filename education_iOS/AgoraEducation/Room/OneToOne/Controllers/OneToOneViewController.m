@@ -45,7 +45,7 @@
 @property (weak, nonatomic) IBOutlet UIView *shareScreenView;
 
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
-@property (nonatomic, strong) AEStudentModel *studentAttrs;
+
 @property (nonatomic, assign) BOOL teacherInRoom;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @end
@@ -62,6 +62,7 @@
     [self loadAgoraEngine];
     [self getRtmChannelAttrs];
     [self.studentView updateUserName:self.userName];
+    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -101,23 +102,6 @@
     self.textFiledBottomCon.constant = 0;
 }
 
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
-    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
-    setAttr.key = self.userId;
-    setAttr.value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio];
-    AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-    options.enableNotificationToChannelMembers = YES;
-    NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
-    [self.rtmKit addOrUpdateChannel:self.rtmChannelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"更新成功");
-        }else {
-            NSLog(@"更新失败");
-        }
-    }];
-    self.studentAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:video audio:audio]];
-}
-
 - (void)getRtmChannelAttrs {
     WEAK(self)
     [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
@@ -134,11 +118,16 @@
                 self.teacherAttr = [[AETeactherModel alloc] init];
             }
             [self.teacherAttr modelWithDict:valueDict];
+            self.teacherView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+            [self.teacherView updateSpeakerEnabled:self.teacherAttr.audio];
+            [self.teacherView updateUserName:self.teacherAttr.account];
             if (!self.teacherAttr.video) {
                 [self.teacherView.defaultImageView setImage:[UIImage imageNamed:@"video-close"]];
             }else {
                 [self.teacherView.defaultImageView setHidden:YES];
             }
+        }else if ([channelAttr.key isEqualToString:self.userId]) {
+            self.ownAttrs = [AEStudentModel yy_modelWithDictionary:valueDict];
         }
     }
 }
@@ -164,13 +153,21 @@
     if (![new isEqualToString:old]) {
         if ([keyPath isEqualToString:@"whiteboard_uid"]) {
             if (change[@"new"]) {
-                [self joinWhiteBoardRoomUUID:change[@"new"]];
+                [self joinWhiteBoardRoomUUID:change[@"new"] disableDevice:false];
             }
         }else if ([keyPath isEqualToString:@"class_state"]) {
             if ([new boolValue] == YES) {
                 [self.navigationView startTimer];
             }else {
                 [self.navigationView stopTimer];
+            }
+        }else if ([keyPath isEqualToString:@"mute_chat"]) {
+            if ([change[@"new"] boolValue]) {
+                self.chatTextFiled.contentTextFiled.enabled = NO;
+                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+            }else {
+                self.chatTextFiled.contentTextFiled.enabled = YES;
+                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
             }
         }
     }
@@ -193,6 +190,19 @@
     NSString *imageName = sender.isSelected ? @"view-close" : @"view-open";
     [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
     sender.selected = !sender.selected;
+}
+
+- (void)teacherMuteStudentVideo:(BOOL)mute {
+    [self.rtcEngineKit muteLocalVideoStream:mute];
+    [self setChannelAttrsWithVideo:!mute audio:self.ownAttrs.audio];
+    self.studentView.defaultImageView.hidden = mute ? NO : YES;
+    [self.studentView updateCameraImageWithLocalVideoMute:mute];
+}
+
+- (void)teacherMuteStudentAudio:(BOOL)mute {
+    [self.rtcEngineKit muteLocalAudioStream:mute];
+    [self setChannelAttrsWithVideo:self.ownAttrs.video audio:!mute];
+    [self.studentView updateMicImageWithLocalVideoMute:mute];
 }
 
 #pragma mark --------------------- Delegate  ---------------------
@@ -248,15 +258,19 @@
         canvas.view = self.teacherView.videoRenderView;
         self.teacherView.defaultImageView.hidden = YES;
         [self.rtcEngineKit setupRemoteVideo:canvas];
+        [self.teacherView updateUserName:self.teacherAttr.account];
     }else if(uid == kWhiteBoardUid){
         [self addShareScreenVideoWithUid:uid];
     }
-    [self.teacherView updateUserName:self.teacherAttr.account];
+
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
     if (uid == [self.teacherAttr.shared_uid integerValue]) {
         [self removeShareScreen];
+    }else if (uid == [self.teacherAttr.uid integerValue]) {
+        self.teacherView.defaultImageView.hidden = NO;
+        [self.teacherView updateUserName:@""];
     }
 }
 
@@ -289,11 +303,6 @@
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
     [self parsingChannelAttr:attributes];
-    if (self.teacherAttr) {
-        self.teacherView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-        [self.teacherView updateSpeakerEnabled:self.teacherAttr.audio];
-        [self.teacherView updateUserName:self.teacherAttr.account];
-    }
 }
 
 - (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
@@ -309,13 +318,13 @@
 
 - (void)muteVideoStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalVideoStream:stream];
-    [self setChannelAttrsWithVideo:!stream audio:self.studentAttrs.audio];
+    [self setChannelAttrsWithVideo:!stream audio:self.ownAttrs.audio];
     self.studentView.defaultImageView.hidden = stream ? NO : YES;
 }
 
 - (void)muteAudioStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalAudioStream:stream];
-    [self setChannelAttrsWithVideo:self.studentAttrs.video audio:!stream];
+    [self setChannelAttrsWithVideo:self.ownAttrs.video audio:!stream];
 }
 
 - (BOOL)shouldAutorotate {

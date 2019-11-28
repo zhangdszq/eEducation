@@ -11,6 +11,9 @@
 @interface OTOStudentView ()
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (strong, nonatomic) IBOutlet UIView *studentView;
+@property (weak, nonatomic) IBOutlet UIButton *cameraButton;
+@property (weak, nonatomic) IBOutlet UIButton *micButton;
+
 @end
 
 
@@ -45,10 +48,20 @@
          [self.delegate muteVideoStream:sender.selected];
      }
     NSString *imageName = sender.selected ? @"icon-video-off-min" : @"icon-video-on-min";
-     [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
+    [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
 - (void)updateUserName:(NSString *)name {
     [self.nameLabel setText:name];
+}
+
+- (void)updateCameraImageWithLocalVideoMute:(BOOL)mute {
+    NSString *imageName = mute ? @"icon-video-off-min" : @"icon-video-on-min";
+    [self.cameraButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
+}
+
+- (void)updateMicImageWithLocalVideoMute:(BOOL)mute {
+    NSString *imageName = mute ? @"icon-speaker-off-min" : @"icon-speaker3-min";
+    [self.micButton setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 @end
