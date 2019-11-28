@@ -40,7 +40,6 @@
       CGFloat red, blue, green;
       switch ([colorString length]) {
           case 3: // #RGB
-              alpha = 1.0f;
               red   = [self colorComponentFrom: colorString start: 0 length: 1];
               green = [self colorComponentFrom: colorString start: 1 length: 1];
               blue  = [self colorComponentFrom: colorString start: 2 length: 1];
@@ -52,7 +51,6 @@
               blue  = [self colorComponentFrom: colorString start: 3 length: 1];
               break;
           case 6: // #RRGGBB
-              alpha = 1.0f;
               red   = [self colorComponentFrom: colorString start: 0 length: 2];
               green = [self colorComponentFrom: colorString start: 2 length: 2];
               blue  = [self colorComponentFrom: colorString start: 4 length: 2];
