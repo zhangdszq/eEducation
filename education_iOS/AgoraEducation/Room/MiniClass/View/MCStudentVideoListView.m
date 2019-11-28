@@ -74,27 +74,11 @@
 }
 
 - (void)updateStudentArray:(NSMutableArray *)studentArray {
-    NSMutableArray *tempArray = [NSMutableArray  arrayWithArray:self.studentArray];
-    for (NSInteger i = 0; i < studentArray.count; i ++) {
-        if (i >= tempArray.count) {
-            [self.studentArray addObject:studentArray[i]];
-            [self.videoListView reloadData];
-        }else {
-            AEStudentModel *studentModel = studentArray[i];
-            AEStudentModel *tempStudentModel = self.studentArray[i];
-            if (studentModel.video != tempStudentModel.video || studentModel.audio != tempStudentModel.audio) {
-                [self.studentArray replaceObjectAtIndex:i withObject:studentModel];
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-                [self.videoListView reloadItemsAtIndexPaths:@[indexPath]];
-            }
-        }
-    }
-}
-
-- (void)removeStudentModel:(AEStudentModel *)model {
-    [self.studentArray removeObject:model];
+    [self.studentArray removeAllObjects];
+    [self.studentArray addObjectsFromArray:studentArray];
     [self.videoListView reloadData];
 }
+
 #pragma mark  ----  lazy ------
 - (UICollectionView *)videoListView {
     if (!_videoListView) {

@@ -30,6 +30,11 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return self.topViewController.supportedInterfaceOrientations;
 }
+
+- (BOOL)prefersStatusBarHidden {
+    return NO;
+}
+
 /*
 #pragma mark - Navigation
 

@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MCStudentVideoListView : UIView
 @property (nonatomic, copy) StudentVideoList studentVideoList;
 - (void)updateStudentArray:(NSMutableArray *)studentArray;
-- (void)removeStudentModel:(AEStudentModel *)model;
 @end
 
 NS_ASSUME_NONNULL_END

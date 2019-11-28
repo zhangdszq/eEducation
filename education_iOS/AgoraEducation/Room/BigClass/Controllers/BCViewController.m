@@ -140,67 +140,35 @@
     }];
 }
 
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
-    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
-    setAttr.key = self.userId;
-    setAttr.value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio];
-    AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-    options.enableNotificationToChannelMembers = YES;
-    NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
-    [self.rtmKit addOrUpdateChannel:self.rtmChannelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"更新成功");
-        }else {
-            NSLog(@"更新失败");
-        }
-    }];
-}
-
-- (void)joinWhiteBoardRoomUUID:(NSString *)uuid {
-    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
-    if (self.room) {
-        [self.room disconnect:^{
-        }];
-    }
-    WEAK(self)
-    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
-        WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-        [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
-            weakself.room = room;
-            [weakself getWhiteboardSceneInfo];
-            [room refreshViewSize];
-            [room disableCameraTransform:NO];
-            [weakself.room disableDeviceInputs:YES];
-            [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:1024 height:1024]];
-        }];
-    } failure:^(NSString * _Nonnull msg) {
-        NSLog(@"获取失败 %@",msg);
-    }];
-}
-
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     NSString *new = [NSString stringWithFormat:@"%@",change[@"new"]];
     NSString *old = [NSString stringWithFormat:@"%@",change[@"old"]];
+    if ([keyPath isEqualToString:@"uid"]) {
+        NSUInteger uid = [change[@"new"] integerValue];
+        if (uid > 0 ) {
+            self.teacherInRoom = YES;
+            self.teacherUid = [new integerValue];
+        }else {
+            self.teacherUid = 0;
+        }
+    }else if ([keyPath isEqualToString:@"account"]) {
+        [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
+    }
+    
     if (![new isEqualToString:old]) {
-        if ([keyPath isEqualToString:@"uid"]) {
-            NSUInteger uid = [change[@"new"] integerValue];
-            if (uid > 0 ) {
-                self.teacherInRoom = YES;
-            }
-        }else if ([keyPath isEqualToString:@"whiteboard_uid"]) {
+        if ([keyPath isEqualToString:@"whiteboard_uid"]) {
             if (change[@"new"]) {
-                [self joinWhiteBoardRoomUUID:change[@"new"]];
+                [self joinWhiteBoardRoomUUID:change[@"new"] disableDevice:true];
             }
         }else if ([keyPath isEqualToString:@"mute_chat"]) {
             if ([change[@"new"] boolValue]) {
                 self.chatTextFiled.contentTextFiled.enabled = NO;
-                self.chatTextFiled.contentTextFiled.placeholder = @"禁言中";
+                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
             }else {
                 self.chatTextFiled.contentTextFiled.enabled = YES;
+                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
             }
-        }else if ([keyPath isEqualToString:@"account"]) {
-            [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
         }else if ([keyPath isEqualToString:@"link_uid"] && [new integerValue] > 0) {
             self.linkUserId = [new integerValue];
         }
@@ -222,9 +190,11 @@
 }
 
 - (void)removeStudentVideo {
+    [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
     self.studentVideoView.defaultImageView.hidden = NO;
     self.studentVideoView.hidden = YES;
     self.studentCanvas = nil;
+    [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
 }
 
 //设备方向改变的处理
@@ -302,9 +272,7 @@
     [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
         if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
             weakself.linkState = StudentLinkStateIdle;
-            weakself.studentVideoView.hidden = YES;
-            [weakself.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
-            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+            [weakself removeStudentVideo];
         }
     }];
 }
@@ -526,8 +494,10 @@
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid  == [self.teacherAttr.uid integerValue]) {
+    if (uid  == self.teacherUid) {
         self.teacherInRoom = NO;
+        self.teactherVideoView.defaultImageView.hidden = NO;
+        [self.teactherVideoView updateAndsetTeacherName:@""];
     }else if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
     }else {
@@ -592,31 +562,14 @@
         AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
         switch (model.cmd) {
             case RTMp2pTypeMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:YES];
-                [self.studentVideoView updateAudioImageWithMuted:YES];
-            }
                 break;
             case RTMp2pTypeUnMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:NO];
-                [self.studentVideoView updateAudioImageWithMuted:NO];
-            }
                 break;
             case RTMp2pTypeMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:YES];
-                [self.studentVideoView updateVideoImageWithMuted:YES];
-            }
                 break;
             case RTMp2pTypeUnMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:NO];
-                [self.studentVideoView updateVideoImageWithMuted:NO];
-            }
                 break;
             case RTMp2pTypeApply:
-
                 break;
             case RTMp2pTypeReject:
             {
@@ -633,11 +586,17 @@
             {
                 self.whiteboardTool.hidden = YES;
                 self.linkState = StudentLinkStateIdle;
+                [self removeStudentVideo];
+                [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
             }
                 break;
             case RTMp2pTypeMuteChat:
+                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+                self.chatTextFiled.contentTextFiled.enabled = NO;
                 break;
             case RTMp2pTypeUnMuteChat:
+                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
+                self.chatTextFiled.contentTextFiled.enabled = YES;
                 break;
             default:
                 break;

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <WhiteSDK.h>
+#import "AEStudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,8 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
+@property (nonatomic, strong) AEStudentModel *ownAttrs;
+@property (nonatomic, assign)NSInteger teacherUid;
+
 - (void)joinRTMChannel;
-- (void)joinWhiteBoardRoomUUID:(NSString *)uuid;
+- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio;
+- (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
 - (void)getWhiteboardSceneInfo;
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)addTeacherObserver;

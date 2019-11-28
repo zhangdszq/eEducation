@@ -17,6 +17,7 @@
 #import "AERTMMessageBody.h"
 #import "MCViewController.h"
 #import "AERoomViewController.h"
+#import "AEStudentModel.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -173,7 +174,7 @@
         [self joinRtm];
     }else {
         NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
-        [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName];
+        [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
     }
 }
 
@@ -185,8 +186,9 @@
         [weakself.joinButton setEnabled:YES];
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
             NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
+            NSInteger teacherUid = [self getTeacherUidWithChannelAttribute:attributes];
             if (studentCount < 16) {
-                [weakself joinClassRoomWithIdentifier:@"mcRoom"  rtmChannelName:rtcChannelName];
+                [weakself joinClassRoomWithIdentifier:@"mcRoom"  rtmChannelName:rtcChannelName teacherUid:teacherUid];
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
             }
@@ -204,8 +206,9 @@
         [weakself.joinButton setEnabled:YES];
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
             NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
+            NSInteger teacherUid = [self getTeacherUidWithChannelAttribute:attributes];
             if (studentCount < 1) {
-                [weakself joinClassRoomWithIdentifier:@"oneToOneRoom"  rtmChannelName:rtcChannelName];
+                [weakself joinClassRoomWithIdentifier:@"oneToOneRoom"  rtmChannelName:rtcChannelName teacherUid:teacherUid];
             }else {
                 [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
             }
@@ -227,7 +230,17 @@
     return tempArray.count;
 }
 
-- (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName {
+- (NSInteger)getTeacherUidWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
+    for (AgoraRtmChannelAttribute *attr in attributes) {
+        NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:attr.value];
+       if ([attr.key isEqualToString:@"teacher"]) {
+           return [[valueDict objectForKey:@"uid"] integerValue];
+       }
+    }
+    return 0;
+}
+
+- (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName teacherUid:(NSInteger)teacherUid {
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
     AERoomViewController *viewController = [story instantiateViewControllerWithIdentifier:identifier];
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -238,6 +251,7 @@
         @"userId" : self.uid,
         @"rtmChannelName":rtmChannelName,
     };
+    viewController.teacherUid = teacherUid;
     [self presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -274,4 +288,5 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskPortrait;
 }
+
 @end

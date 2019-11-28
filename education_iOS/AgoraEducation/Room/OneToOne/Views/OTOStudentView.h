@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
 
 - (void)updateUserName:(NSString *)name;
+- (void)updateCameraImageWithLocalVideoMute:(BOOL)mute;
+- (void)updateMicImageWithLocalVideoMute:(BOOL)mute;
 @end
 
 NS_ASSUME_NONNULL_END
