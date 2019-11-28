@@ -7,6 +7,6 @@ jobs:
 
   - template: cicd/templates/build-ios.yml
     parameters:
-      displayName: 'AgoraMiniClass'
+      displayName: 'AgoraEducation'
       workingDirectory: 'education_iOS'
-      scheme: 'AgoraMiniClass'
+      scheme: 'AgoraEducation'
