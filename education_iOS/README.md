@@ -12,21 +12,21 @@ git clone https://github.com/AgoraIO-Usecase/eEducation.git
 ```
 cd education_iOS
 pod install
-open AgoraMiniClass.xcworkspace
+open AgoraEducation.xcworkspace
 ```
 
 #### Config parameter
-first, update Configs.m file  "kAgoraAppid" value
+first, update Configs.m file  "AgoraAppid" value
 
 ```
-#define kAgoraAppid  <#@" your Appid"#>
+#define kAgoraAppid  <#@" your Appid"#> 
 
 ```
 
-Second, update Configs.m file "kBaseUrl" value
+Second, update Configs.m file "kWhiteBoardToken" value
 
 ```
-#define kBaseUrl           <#@"Your BaseUrl"#>
+#define kWhiteBoardToken       <#@"herewhite token"#>
 
 ```
 
@@ -38,6 +38,8 @@ Second, update Configs.m file "kBaseUrl" value
 ## Connect Us
 - You can find full API document at [Document Center](https://docs.agora.io/en/)
 - You can file bugs about this demo at [issue](https://github.com/AgoraIO/RTM/issues)
+- you can get Agora Appid at [Agora console](https://console.agora.io/)
+- you can get herewhite Token at [herewhite console](https://console.herewhite.com/)
 
 <!-- LICENSE -->
 ## License
