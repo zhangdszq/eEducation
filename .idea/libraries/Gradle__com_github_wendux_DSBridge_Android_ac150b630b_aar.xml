@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.wendux:DSBridge-Android:ac150b630b@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/c2fc3352c1b94b9b20bb695564005376/jetified-DSBridge-Android-ac150b630b/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/c2fc3352c1b94b9b20bb695564005376/jetified-DSBridge-Android-ac150b630b/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/c2fc3352c1b94b9b20bb695564005376/jetified-DSBridge-Android-ac150b630b/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/modules-2/files-2.1/com.github.wendux/DSBridge-Android/ac150b630b/81153b664d08b9df0fbac5faaf615733d595c72c/DSBridge-Android-ac150b630b-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
