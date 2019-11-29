@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: io.agora.rtc:full-sdk:2.9.2@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/res" />
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/libs/agora-rtc-sdk.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/modules-2/files-2.1/io.agora.rtc/full-sdk/2.9.2/28bd490d8ec58f83f886b8b9689d3df9f2108bf7/full-sdk-2.9.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/modules-2/files-2.1/io.agora.rtc/full-sdk/2.9.2/28bd490d8ec58f83f886b8b9689d3df9f2108bf7/full-sdk-2.9.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
