@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) AEStudentModel *ownAttrs;
 @property (nonatomic, assign)NSInteger teacherUid;
 
-- (void)joinRTMChannel;
+- (void)joinRTMChannelCompletion:(AgoraRtmJoinChannelBlock _Nullable)completionBlock;
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio;
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
 - (void)getWhiteboardSceneInfo;

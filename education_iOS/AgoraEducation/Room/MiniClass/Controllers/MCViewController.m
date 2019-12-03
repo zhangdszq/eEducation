@@ -67,6 +67,7 @@
     self.isMuteAudio = NO;
     [self loadAgoraRtcEngine];
     [self setUpView];
+    [self joinChannel];
     [self getRtmChannelAttrs];
     [self selectSegmentIndex];
     [self setWhiteBoardBrushColor];
@@ -74,6 +75,7 @@
     [self addTeacherObserver];
     [self addNotification];
     [self.rtmKit setAgoraRtmDelegate:self];
+    [self setStudentAttrs];
 }
 
 - (void)setStudentAttrs {
@@ -83,6 +85,11 @@
     [self.studentUidArray addObject:self.userId];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
+}
+
+- (void)joinChannel {
+    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+    }];
     [self setChannelAttrsWithVideo:YES audio:YES];
 }
 
@@ -90,7 +97,6 @@
     WEAK(self)
     [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         [weakself parsingChannelAttr:attributes];
-        [weakself setStudentAttrs];
     }];
 }
 
@@ -343,8 +349,8 @@
         [weakself.navigationView stopTimer];
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself.room disconnect:^{
-
         }];
+        [weakself removeTeacherObserver];
         AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
         options.enableNotificationToChannelMembers = YES;
         [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
