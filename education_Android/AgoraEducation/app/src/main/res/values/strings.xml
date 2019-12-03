@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Agora Education</string>
+    <string name="powered_by_agora_io">Powered by agora.io</string>
+    <string name="hint_room_name">Room Name</string>
+    <string name="hint_your_name">Your Name</string>
+    <string name="hint_room_type">Room Type</string>
+    <string name="one_to_one">一对一</string>
+    <string name="mini_class">小班课</string>
+    <string name="large_class">大班课</string>
+    <string name="eye_care_mode">护眼模式</string>
+    <string name="Join">Join</string>
+    <string name="Setting">Setting</string>
+    <string name="title_room_name">Room Name(%1$s)</string>
+    <string name="title_teaching_material">教材区</string>
+    <string name="title_chat_room">Chatroom</string>
+    <string name="send">发送</string>
+    <string name="name_teacher">Teacher %1$s</string>
+    <string name="confirm_disconnection_content">确定断开连麦？</string>
+    <string name="confirm_leave_room_content">确定离开房间？</string>
+    <string name="disconnection">断开</string>
+    <string name="leave">离开</string>
+    <string name="cancel">取消</string>
+    <string name="toast_teacher_accept_call">Teacher %1$s接受了你的连麦申请！</string>
+    <string name="toast_teacher_refuse_call">Teacher %1$s拒绝了你的连麦申请！</string>
+    <string name="hint_im_message">说点什么</string>
+    <string name="confirm">确定</string>
+    <string name="you_got_the_whiteboard_permission">您获得了白板权限</string>
+    <string name="Student">Student</string>
+    <string name="Room_name_should_not_be_empty">Room name should not be empty.</string>
+    <string name="Your_name_should_not_be_empty">Your name should not be empty.</string>
+    <string name="Room_type_should_not_be_empty">Room type should not be empty.</string>
+    <string name="color_picker">Color Picker</string>
+    <string name="send_message_failed">Send message failed.</string>
+</resources>
