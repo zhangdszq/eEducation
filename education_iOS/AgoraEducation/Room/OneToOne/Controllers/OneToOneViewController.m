@@ -60,9 +60,9 @@
     [self addTeacherObserver];
     [self addNotification];
     [self loadAgoraEngine];
+    [self joinChannel];
     [self getRtmChannelAttrs];
     [self.studentView updateUserName:self.userName];
-    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -102,11 +102,20 @@
     self.textFiledBottomCon.constant = 0;
 }
 
+- (void)joinChannel {
+    WEAK(self)
+    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+        if (errorCode == AgoraRtmJoinChannelErrorOk) {
+            [weakself setChannelAttrsWithVideo:YES audio:YES];
+        }
+    }];
+    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
+}
+
 - (void)getRtmChannelAttrs {
     WEAK(self)
     [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         [weakself parsingChannelAttr:attributes];
-        [weakself setChannelAttrsWithVideo:YES audio:YES];
     }];
 }
 
@@ -241,7 +250,6 @@
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself removeTeacherObserver];
         [weakself.room disconnect:^{
-
         }];
         AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
         options.enableNotificationToChannelMembers = YES;

@@ -42,19 +42,14 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    [self joinRTMChannel];
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
     [self.rtmKit setAgoraRtmDelegate:self];
 }
 
-- (void)joinRTMChannel {
+- (void)joinRTMChannelCompletion:(AgoraRtmJoinChannelBlock _Nullable)completionBlock {
     self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode == AgoraRtmJoinChannelErrorOk) {
-            NSLog(@"频道加入成功");
-        }
-    }];
+    [self.rtmChannel joinWithCompletion:completionBlock];
 }
 
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
@@ -235,7 +230,6 @@
     if ([peerId isEqualToString:self.teacherAttr.uid]) {
         NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
         AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
-        NSLog(@"cmd------- %ld",model.cmd);
         switch (model.cmd) {
             case RTMp2pTypeMuteAudio:
             {

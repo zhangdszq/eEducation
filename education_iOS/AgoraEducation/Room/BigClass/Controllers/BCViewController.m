@@ -85,12 +85,21 @@
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
+    [self joinChannel];
     [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
     [self.rtmKit setAgoraRtmDelegate:self];
     self.studentListDict = [NSMutableDictionary dictionary];
     [self joinAgoraRtcChannel];
-    [self setChannelAttrsWithVideo:NO audio:NO];
+}
+
+- (void)joinChannel {
+    WEAK(self)
+    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+        if (errorCode == AgoraRtmJoinChannelErrorOk) {
+            [weakself setChannelAttrsWithVideo:NO audio:NO];
+        }
+    }];
 }
 
 - (void)getRtmChannelAttrs{
@@ -99,6 +108,7 @@
         [weakself parsingChannelAttr:attributes];
     }];
 }
+
 - (void)setUpView {
     [self addWhiteBoardViewToView:self.whiteboardView];
     UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
