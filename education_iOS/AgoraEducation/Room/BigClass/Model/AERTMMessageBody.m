@@ -15,70 +15,46 @@
 @end
 @implementation AERTMMessageBody
 + (NSString *)studentApplyLink {
-    NSDictionary *dict = @{
-        @"cmd":@(RTMp2pTypeApply),
-        @"text":@"co-video",
-    };
+    NSDictionary *dict = @{@"cmd":@(RTMp2pTypeApply),@"text":@"co-video"};
     NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
     return applyString;
 }
 
 + (NSString *)studentCancelLink {
-    NSDictionary *dict = @{
-        @"cmd":@(RTMp2pTypeCancel),
-        @"text":@"",
-    };
+    NSDictionary *dict = @{@"cmd":@(RTMp2pTypeCancel),@"text":@""};
     NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
     return applyString;
 }
 
 + (NSString *)muteVideoStream:(BOOL)stream {
     NSNumber *type = stream ? @(RTMp2pTypeMuteVideo) : @(RTMp2pTypeUnMuteVideo);
-    NSDictionary *dict = @{
-        @"cmd":type,
-        @"resource":@"",
-    };
+    NSDictionary *dict = @{@"cmd":type,@"resource":@""};
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteAudioStream:(BOOL)stream {
     NSNumber *type = stream ? @(RTMp2pTypeMuteAudio) : @(RTMp2pTypeUnMuteAudio);
-    NSDictionary *dict = @{
-        @"cmd":type,
-        @"text":@"",
-    };
+    NSDictionary *dict = @{@"cmd":type,@"text":@""};
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteChatContent:(BOOL)isMute {
     NSNumber *type = isMute ? @(RTMp2pTypeMuteChat): @(RTMp2pTypeUnMuteChat);
-    NSDictionary *dict = @{
-        @"cmd":type,
-        @"text":@"",
-    };
+    NSDictionary *dict = @{@"cmd":type,@"text":@""};
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{
-        @"account":name,
-        @"video":@(video),
-        @"audio":@(audio),
-    };
+    NSDictionary *dict = @{@"account":name,@"video":@(video),@"audio":@(audio)};
     NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
     return attrString;
 }
 
 + (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{
-        @"account":name,
-        @"userId": userId,
-        @"video":@(video),
-        @"audio":@(audio),
-    };
+    NSDictionary *dict = @{@"account":name,@"userId": userId,@"video":@(video),@"audio":@(audio)};
     return dict;
 }
 
@@ -120,10 +96,7 @@
 }
 
 + (NSString *)sendP2PMessageWithName:(NSString *)name content:(NSString *)content {
-    NSDictionary *dict = @{
-        @"account":name,
-        @"content":content,
-    };
+    NSDictionary *dict = @{@"account":name,@"content":content,};
     NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
