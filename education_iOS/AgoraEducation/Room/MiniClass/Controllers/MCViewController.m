@@ -67,7 +67,6 @@
     self.isMuteAudio = NO;
     [self loadAgoraRtcEngine];
     [self setUpView];
-    [self joinChannel];
     [self getRtmChannelAttrs];
     [self selectSegmentIndex];
     [self setWhiteBoardBrushColor];
@@ -85,11 +84,6 @@
     [self.studentUidArray addObject:self.userId];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
-}
-
-- (void)joinChannel {
-    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-    }];
     [self setChannelAttrsWithVideo:YES audio:YES];
 }
 

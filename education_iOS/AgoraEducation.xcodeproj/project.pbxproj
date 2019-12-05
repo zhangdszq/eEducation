@@ -60,6 +60,7 @@
 		1AD4E99B235F100400C415BF /* BCSegmentedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E99A235F100400C415BF /* BCSegmentedView.m */; };
 		1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A3236008FF00C415BF /* EEPageControlView.m */; };
 		1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A52360092A00C415BF /* EEPageControlView.xib */; };
+		1AEBC2FB23979E9C0054B58C /* AgoraRtmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AEBC2FA23979E9C0054B58C /* AgoraRtmKit.framework */; };
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
 		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
 		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
@@ -193,6 +194,7 @@
 		1AE0D0A222897EA60092AC5E /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1AE0D0A422897EC40092AC5E /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		1AE0D0A622897ECD0092AC5E /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		1AEBC2FA23979E9C0054B58C /* AgoraRtmKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AgoraRtmKit.framework; sourceTree = "<group>"; };
 		1AEDE5DB2338C0B40096ADEC /* EyeCareModeUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EyeCareModeUtil.h; sourceTree = "<group>"; };
 		1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EyeCareModeUtil.m; sourceTree = "<group>"; };
 		1AEDE5DE2338CB9E0096ADEC /* SkinCoverLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverLayer.h; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AEBC2FB23979E9C0054B58C /* AgoraRtmKit.framework in Frameworks */,
 				933AE560CF5F0977F2647C18 /* Pods_AgoraEducation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -546,6 +549,7 @@
 		E01323DE5BE7ACD24D968F1E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1AEBC2FA23979E9C0054B58C /* AgoraRtmKit.framework */,
 				1AE0D0A622897ECD0092AC5E /* libc++.tbd */,
 				1AE0D0A422897EC40092AC5E /* libresolv.tbd */,
 				1AE0D0A222897EA60092AC5E /* CoreTelephony.framework */,
@@ -567,7 +571,7 @@
 				1AE0D0012283C5F20092AC5E /* Frameworks */,
 				1AE0D0022283C5F20092AC5E /* Resources */,
 				F26EA06C7F855A9A6E058336 /* [CP] Embed Pods Frameworks */,
-				5781159065BBB5F873901CAC /* [CP] Copy Pods Resources */,
+				5FE8A39AF7FA57416557A85D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -704,7 +708,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5781159065BBB5F873901CAC /* [CP] Copy Pods Resources */ = {
+		5FE8A39AF7FA57416557A85D /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -985,7 +989,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = SW3CA7M752;
+				DEVELOPMENT_TEAM = 7289G77ZF3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1002,7 +1006,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				PROVISIONING_PROFILE_SPECIFIER = AgoraIOTest2019;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";
@@ -1016,7 +1020,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = SW3CA7M752;
+				DEVELOPMENT_TEAM = 7289G77ZF3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1033,7 +1037,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				PROVISIONING_PROFILE_SPECIFIER = AgoraIOTest2019;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";

@@ -42,7 +42,7 @@
                         <action selector="colseRoom:" destination="-1" eventType="touchUpInside" id="sYn-ab-0KH"/>
                     </connections>
                 </button>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fullscreen-Wifi-signal3" translatesAutoresizingMaskIntoConstraints="NO" id="MOd-IO-STS">
+                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-signal3" translatesAutoresizingMaskIntoConstraints="NO" id="MOd-IO-STS">
                     <rect key="frame" x="10" y="63" width="20" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="f1a-jT-9qt"/>
@@ -65,7 +65,7 @@
         </view>
     </objects>
     <resources>
-        <image name="fullscreen-Wifi-signal3" width="20" height="20"/>
         <image name="icon-close" width="30" height="30"/>
+        <image name="icon-signal3" width="20" height="20"/>
     </resources>
 </document>

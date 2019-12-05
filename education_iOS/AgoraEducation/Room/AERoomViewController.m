@@ -42,14 +42,16 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [self joinRTMChannel];
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
     [self.rtmKit setAgoraRtmDelegate:self];
 }
 
-- (void)joinRTMChannelCompletion:(AgoraRtmJoinChannelBlock _Nullable)completionBlock {
+- (void)joinRTMChannel {
     self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:completionBlock];
+    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
+    }];
 }
 
 - (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {

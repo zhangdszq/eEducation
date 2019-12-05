@@ -81,25 +81,16 @@
 @implementation BCViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self getRtmChannelAttrs];
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
-    [self joinChannel];
     [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
     [self.rtmKit setAgoraRtmDelegate:self];
     self.studentListDict = [NSMutableDictionary dictionary];
     [self joinAgoraRtcChannel];
-}
 
-- (void)joinChannel {
-    WEAK(self)
-    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode == AgoraRtmJoinChannelErrorOk) {
-            [weakself setChannelAttrsWithVideo:NO audio:NO];
-        }
-    }];
+
 }
 
 - (void)getRtmChannelAttrs{
@@ -146,7 +137,11 @@
     [self.rtcEngineKit enableVideo];
     [self.rtcEngineKit startPreview];
     [self.rtcEngineKit enableWebSdkInteroperability:YES];
+    WEAK(self)
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+        NSLog(@"join channel success");
+        [weakself getRtmChannelAttrs];
+        [weakself setChannelAttrsWithVideo:NO audio:NO];
     }];
 }
 
@@ -159,13 +154,33 @@
         if (uid > 0 ) {
             self.teacherInRoom = YES;
             self.teacherUid = [new integerValue];
+            self.teactherVideoView.defaultImageView.hidden = YES;
+            AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
+            canvas.uid = uid;
+            canvas.view = self.teactherVideoView.teacherRenderView;
+            [self.rtcEngineKit setupRemoteVideo:canvas];
         }else {
             self.teacherUid = 0;
         }
     }else if ([keyPath isEqualToString:@"account"]) {
         [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
+    }else if ([keyPath isEqualToString:@"link_uid"]) {
+        self.linkUserId = [new integerValue];
+        if (self.linkUserId > 0) {
+            AEStudentModel *studentModel = [self.studentListDict valueForKeyPath:new];
+            [self.studentVideoView updateVideoImageWithMuted:!studentModel.video];
+            [self.studentVideoView updateAudioImageWithMuted:!studentModel.audio];
+            if (self.linkUserId == [self.userId integerValue]) {
+                 [self addStudentVideoWithUid:self.linkUserId remoteVideo:NO];
+            }else {
+                [self.studentVideoView setButtonEnabled:NO];
+                [self addStudentVideoWithUid:self.linkUserId remoteVideo:YES];
+            }
+        }else {
+            [self removeStudentVideo];
+        }
     }
-    
+
     if (![new isEqualToString:old]) {
         if ([keyPath isEqualToString:@"whiteboard_uid"]) {
             if (change[@"new"]) {
@@ -179,24 +194,23 @@
                 self.chatTextFiled.contentTextFiled.enabled = YES;
                 self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
             }
-        }else if ([keyPath isEqualToString:@"link_uid"] && [new integerValue] > 0) {
-            self.linkUserId = [new integerValue];
         }
     }
 }
 
 - (void)addStudentVideoWithUid:(NSInteger)uid remoteVideo:(BOOL)remote {
     self.studentVideoView.hidden = NO;
-    self.studentVideoView.defaultImageView.hidden = YES;
-    self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
-    self.studentCanvas.uid = uid;
-    self.studentCanvas.view = self.studentVideoView.studentRenderView;
-    if (remote) {
-        [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
-    }else {
-        [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
+    if (!self.studentCanvas) {
+        self.studentVideoView.defaultImageView.hidden = YES;
+        self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
+        self.studentCanvas.uid = uid;
+        self.studentCanvas.view = self.studentVideoView.studentRenderView;
+        if (remote) {
+            [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
+        }else {
+            [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
+        }
     }
-
 }
 
 - (void)removeStudentVideo {
@@ -240,21 +254,20 @@
 
 
 - (IBAction)handUpEvent:(UIButton *)sender {
-    switch (self.linkState) {
-        case StudentLinkStateIdle:
-            [self studentApplyLink];
-            break;
-        case StudentLinkStateAccept:
-            [self studentCancelLink];
-            break;
-        case StudentLinkStateApply:
-            [self.studentVideoView updateVideoImageWithMuted:NO];
-            [self.studentVideoView updateAudioImageWithMuted:NO];
-            self.studentVideoView.hidden = YES;
-            break;
-        default:
-            break;
-    }
+        switch (self.linkState) {
+            case StudentLinkStateIdle:
+                [self studentApplyLink];
+                break;
+            case StudentLinkStateAccept:
+                [self studentCancelLink];
+                break;
+            case StudentLinkStateApply:
+                [self.studentVideoView updateVideoImageWithMuted:NO];
+                [self.studentVideoView updateAudioImageWithMuted:NO];
+                break;
+            default:
+                break;
+        }
 }
 
 - (void)studentApplyLink {
@@ -267,6 +280,7 @@
     }];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (weakself.linkState == StudentLinkStateApply) {
+            [weakself studentCancelLink];
             weakself.handUpButton.enabled = YES;
             weakself.linkState = StudentLinkStateIdle;
             [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
@@ -318,12 +332,6 @@
                 studentAttr.userId = channelAttr.key;
                 [self.studentListDict setValue:studentAttr forKey:channelAttr.key];
             }
-        }
-        //及时更新连麦的学生的mute状态
-        if ([self.teacherAttr.link_uid integerValue] > 0) {
-            AEStudentModel *studentAttr = [self.studentListDict objectForKey:self.teacherAttr.link_uid];
-            [self.studentVideoView updateVideoImageWithMuted:!studentAttr.video];
-            [self.studentVideoView updateAudioImageWithMuted:!studentAttr.audio];
         }
     }
 }
@@ -441,6 +449,7 @@
     [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
         if (weakself.linkState == StudentLinkStateAccept) {
             [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
+                NSLog(@"退出消息发送成功与否--- %ld",errorCode);
             }];
         }
         [weakself.rtcEngineKit leaveChannel:nil];
@@ -482,24 +491,10 @@
     return NO;
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine firstRemoteVideoDecodedOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        self.teactherVideoView.defaultImageView.hidden = YES;
-        AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
-        canvas.uid = uid;
-        canvas.view = self.teactherVideoView.teacherRenderView;
-        [self.rtcEngineKit setupRemoteVideo:canvas];
-    }else if (uid != kWhiteBoardUid) {
-        [self addStudentVideoWithUid:uid remoteVideo:YES];
-    }
-}
-
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
     }else if (uid == kWhiteBoardUid && !self.shareScreenCanvas) {
         [self addShareScreenVideoWithUid:uid];
-    }else if(uid == self.linkUserId){
-        [self.studentVideoView setButtonEnabled:NO];
     }
 }
 
@@ -618,7 +613,7 @@
     AEStudentModel *attrs =  [self.studentListDict objectForKey:self.userId];
     [self setChannelAttrsWithVideo:!attrs.video audio:attrs.audio];
     [self.rtcEngineKit muteLocalVideoStream:attrs.video];
-    self.studentVideoView.defaultImageView.hidden = attrs.video ? NO : YES;
+    self.studentVideoView.defaultImageView.hidden = stream ? NO : YES;
 }
 
 - (void)muteAudioStream:(BOOL)stream {

@@ -60,9 +60,10 @@
     [self addTeacherObserver];
     [self addNotification];
     [self loadAgoraEngine];
-    [self joinChannel];
     [self getRtmChannelAttrs];
     [self.studentView updateUserName:self.userName];
+    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
+    [self setChannelAttrsWithVideo:YES audio:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -100,16 +101,6 @@
 - (void)keyboardWillBeHiden:(NSNotification *)notification {
     self.textFiledWidthCon.constant = 222;
     self.textFiledBottomCon.constant = 0;
-}
-
-- (void)joinChannel {
-    WEAK(self)
-    [self joinRTMChannelCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-        if (errorCode == AgoraRtmJoinChannelErrorOk) {
-            [weakself setChannelAttrsWithVideo:YES audio:YES];
-        }
-    }];
-    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
 }
 
 - (void)getRtmChannelAttrs {
