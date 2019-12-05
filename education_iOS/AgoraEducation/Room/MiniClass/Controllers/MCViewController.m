@@ -322,15 +322,17 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     WEAK(self)
     __block NSString *content = textField.text;
-    [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
-        if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
-            messageModel.content = content;
-            messageModel.account = weakself.userName;
-            messageModel.isSelfSend = YES;
-            [weakself.messageView addMessageModel:messageModel];
-        }
-    }];
+    if (content.length > 0) {
+        [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
+             if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
+                 AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
+                 messageModel.content = content;
+                 messageModel.account = weakself.userName;
+                 messageModel.isSelfSend = YES;
+                 [weakself.messageView addMessageModel:messageModel];
+             }
+        }];
+    }
     textField.text = nil;
     [textField resignFirstResponder];
     return NO;

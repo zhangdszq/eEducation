@@ -89,8 +89,6 @@
     [self.rtmKit setAgoraRtmDelegate:self];
     self.studentListDict = [NSMutableDictionary dictionary];
     [self joinAgoraRtcChannel];
-
-
 }
 
 - (void)getRtmChannelAttrs{
@@ -171,7 +169,7 @@
             [self.studentVideoView updateVideoImageWithMuted:!studentModel.video];
             [self.studentVideoView updateAudioImageWithMuted:!studentModel.audio];
             if (self.linkUserId == [self.userId integerValue]) {
-                 [self addStudentVideoWithUid:self.linkUserId remoteVideo:NO];
+                [self addStudentVideoWithUid:self.linkUserId remoteVideo:NO];
             }else {
                 [self.studentVideoView setButtonEnabled:NO];
                 [self addStudentVideoWithUid:self.linkUserId remoteVideo:YES];
@@ -200,7 +198,7 @@
 
 - (void)addStudentVideoWithUid:(NSInteger)uid remoteVideo:(BOOL)remote {
     self.studentVideoView.hidden = NO;
-    if (!self.studentCanvas) {
+    if (!self.studentCanvas || uid != self.studentCanvas.uid) {
         self.studentVideoView.defaultImageView.hidden = YES;
         self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
         self.studentCanvas.uid = uid;
@@ -254,20 +252,20 @@
 
 
 - (IBAction)handUpEvent:(UIButton *)sender {
-        switch (self.linkState) {
-            case StudentLinkStateIdle:
-                [self studentApplyLink];
-                break;
-            case StudentLinkStateAccept:
-                [self studentCancelLink];
-                break;
-            case StudentLinkStateApply:
-                [self.studentVideoView updateVideoImageWithMuted:NO];
-                [self.studentVideoView updateAudioImageWithMuted:NO];
-                break;
-            default:
-                break;
-        }
+    switch (self.linkState) {
+        case StudentLinkStateIdle:
+            [self studentApplyLink];
+            break;
+        case StudentLinkStateAccept:
+            [self studentCancelLink];
+            break;
+        case StudentLinkStateApply:
+            [self.studentVideoView updateVideoImageWithMuted:NO];
+            [self.studentVideoView updateAudioImageWithMuted:NO];
+            break;
+        default:
+            break;
+    }
 }
 
 - (void)studentApplyLink {
@@ -327,6 +325,9 @@
                     self.handUpButton.hidden = NO;
                     self.pageControlView.hidden = NO;
                 }
+                [self.teactherVideoView updateSpeakerImageWithMuted:!self.teacherAttr.audio];
+                self.teactherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+                [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
             }else {
                 AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
                 studentAttr.userId = channelAttr.key;
@@ -477,15 +478,17 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     WEAK(self)
     __block NSString *content = textField.text;
-    [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
-        if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
-            messageModel.content = content;
-            messageModel.account = weakself.userName;
-            messageModel.isSelfSend = YES;
-            [weakself.messageView addMessageModel:messageModel];
-        }
-    }];
+    if (content.length > 0) {
+        [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
+              if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
+                  AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
+                  messageModel.content = content;
+                  messageModel.account = weakself.userName;
+                  messageModel.isSelfSend = YES;
+                  [weakself.messageView addMessageModel:messageModel];
+              }
+        }];
+    }
     textField.text = nil;
     [textField resignFirstResponder];
     return NO;
