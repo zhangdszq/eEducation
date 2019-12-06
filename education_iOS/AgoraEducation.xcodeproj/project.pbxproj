@@ -37,7 +37,7 @@
 		1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6022BF863000766274 /* AppDelegate.m */; };
 		1A44BE7D22BF863000766274 /* Configs.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6522BF863000766274 /* Configs.m */; };
 		1A44BE8322BFA97400766274 /* AERoomMessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE8222BFA97400766274 /* AERoomMessageModel.m */; };
-		1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */; };
+		1A44BE9322C471BF00766274 /* DataTypeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE9222C471BF00766274 /* DataTypeManager.m */; };
 		1A61CB7F2387CE2C003D9E81 /* BCStudentVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A61CB7E2387CE2C003D9E81 /* BCStudentVideoView.xib */; };
 		1A61CB812387CE35003D9E81 /* BCStudentVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A61CB802387CE35003D9E81 /* BCStudentVideoView.m */; };
 		1A61CB852387CF4A003D9E81 /* AERTMMessageBody.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A61CB832387CF4A003D9E81 /* AERTMMessageBody.m */; };
@@ -61,6 +61,7 @@
 		1AD4E9A4236008FF00C415BF /* EEPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A3236008FF00C415BF /* EEPageControlView.m */; };
 		1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD4E9A52360092A00C415BF /* EEPageControlView.xib */; };
 		1AEBC2FB23979E9C0054B58C /* AgoraRtmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AEBC2FA23979E9C0054B58C /* AgoraRtmKit.framework */; };
+		1AEBC3002399F3600054B58C /* RTMManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEBC2FF2399F3600054B58C /* RTMManager.m */; };
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
 		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
 		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
@@ -143,8 +144,8 @@
 		1A44BE7E22BF874A00766274 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A44BE8122BFA97400766274 /* AERoomMessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AERoomMessageModel.h; sourceTree = "<group>"; };
 		1A44BE8222BFA97400766274 /* AERoomMessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AERoomMessageModel.m; sourceTree = "<group>"; };
-		1A44BE9122C471BF00766274 /* JsonAndStringConversions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonAndStringConversions.h; sourceTree = "<group>"; };
-		1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JsonAndStringConversions.m; sourceTree = "<group>"; };
+		1A44BE9122C471BF00766274 /* DataTypeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataTypeManager.h; sourceTree = "<group>"; };
+		1A44BE9222C471BF00766274 /* DataTypeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataTypeManager.m; sourceTree = "<group>"; };
 		1A44BE9722C4BE6600766274 /* EducationEnumerates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EducationEnumerates.h; sourceTree = "<group>"; };
 		1A61CB762386303B003D9E81 /* AEClassRoomProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEClassRoomProtocol.h; sourceTree = "<group>"; };
 		1A61CB7D238799CD003D9E81 /* AgoraMiniClass.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AgoraMiniClass.pch; path = "../../../../../../Desktop/education_iOS/AgoraMiniClass/Supporting Files/AgoraMiniClass.pch"; sourceTree = "<group>"; };
@@ -195,6 +196,8 @@
 		1AE0D0A422897EC40092AC5E /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		1AE0D0A622897ECD0092AC5E /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		1AEBC2FA23979E9C0054B58C /* AgoraRtmKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AgoraRtmKit.framework; sourceTree = "<group>"; };
+		1AEBC2FE2399F3600054B58C /* RTMManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTMManager.h; sourceTree = "<group>"; };
+		1AEBC2FF2399F3600054B58C /* RTMManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTMManager.m; sourceTree = "<group>"; };
 		1AEDE5DB2338C0B40096ADEC /* EyeCareModeUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EyeCareModeUtil.h; sourceTree = "<group>"; };
 		1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EyeCareModeUtil.m; sourceTree = "<group>"; };
 		1AEDE5DE2338CB9E0096ADEC /* SkinCoverLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverLayer.h; sourceTree = "<group>"; };
@@ -345,6 +348,7 @@
 		1A44BE3322BF863000766274 /* AgoraEducation */ = {
 			isa = PBXGroup;
 			children = (
+				1AEBC2FC2399F3360054B58C /* Libs */,
 				1A87570F23571CC9009C55A8 /* Setting */,
 				1AEDE5DA2338C09C0096ADEC /* EyeCare */,
 				1ACECF4C22E74F6B00800FAF /* ClassRoomData */,
@@ -480,8 +484,8 @@
 			children = (
 				1A87571623581C96009C55A8 /* AFNetwork */,
 				1A44BE9722C4BE6600766274 /* EducationEnumerates.h */,
-				1A44BE9122C471BF00766274 /* JsonAndStringConversions.h */,
-				1A44BE9222C471BF00766274 /* JsonAndStringConversions.m */,
+				1A44BE9122C471BF00766274 /* DataTypeManager.h */,
+				1A44BE9222C471BF00766274 /* DataTypeManager.m */,
 			);
 			path = ClassRoomData;
 			sourceTree = "<group>";
@@ -522,6 +526,23 @@
 				1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1AEBC2FC2399F3360054B58C /* Libs */ = {
+			isa = PBXGroup;
+			children = (
+				1AEBC2FD2399F3460054B58C /* RTM */,
+			);
+			path = Libs;
+			sourceTree = "<group>";
+		};
+		1AEBC2FD2399F3460054B58C /* RTM */ = {
+			isa = PBXGroup;
+			children = (
+				1AEBC2FE2399F3600054B58C /* RTMManager.h */,
+				1AEBC2FF2399F3600054B58C /* RTMManager.m */,
+			);
+			path = RTM;
 			sourceTree = "<group>";
 		};
 		1AEDE5DA2338C09C0096ADEC /* EyeCare */ = {
@@ -810,8 +831,9 @@
 				1A44BE8322BFA97400766274 /* AERoomMessageModel.m in Sources */,
 				1A2FFA0D237261FF0049E49F /* UIView+EEBadge.m in Sources */,
 				1A226C5D236EC3BA0024D984 /* UIColor+Addition.m in Sources */,
-				1A44BE9322C471BF00766274 /* JsonAndStringConversions.m in Sources */,
+				1A44BE9322C471BF00766274 /* DataTypeManager.m in Sources */,
 				1AF1CD2E236700A400DA8B12 /* EEClassRoomTypeView.m in Sources */,
+				1AEBC3002399F3600054B58C /* RTMManager.m in Sources */,
 				1A17499C236297BE00A65B10 /* EEChatTextFiled.m in Sources */,
 				1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,

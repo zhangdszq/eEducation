@@ -230,7 +230,7 @@
 
 - (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
     if ([peerId isEqualToString:self.teacherAttr.uid]) {
-        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
+        NSDictionary *dict = [DataTypeManager dictionaryWithJsonString:message.text];
         AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
         switch (model.cmd) {
             case RTMp2pTypeMuteAudio:

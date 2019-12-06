@@ -118,10 +118,10 @@
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
     self.handUpButton.layer.cornerRadius = 6;
 
-    [AERTMMessageBody addShadowWithView:self.handUpButton alpha:0.1];
+    [DataTypeManager addShadowWithView:self.handUpButton alpha:0.1];
     self.tipLabel.layer.backgroundColor = [UIColor colorWithHexString:@"000000" alpha:0.7].CGColor;
     self.tipLabel.layer.cornerRadius = 6;
-    [AERTMMessageBody addShadowWithView:self.tipLabel alpha:0.25];
+    [DataTypeManager addShadowWithView:self.tipLabel alpha:0.25];
     self.segmentedView.delegate = self;
     self.studentVideoView.delegate = self;
     self.navigationView.delegate = self;
@@ -315,7 +315,7 @@
 - (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     if (attributes.count > 0) {
         for (AgoraRtmChannelAttribute *channelAttr in attributes) {
-            NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
+            NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:channelAttr.value];
             if ([channelAttr.key isEqualToString:@"teacher"]) {
                 if (!self.teacherAttr) {
                     self.teacherAttr = [[AETeactherModel alloc] init];
@@ -550,7 +550,7 @@
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
-    NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
+    NSDictionary *dict =  [DataTypeManager dictionaryWithJsonString:message.text];
     AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
     messageModel.isSelfSend = NO;
     [self.messageView addMessageModel:messageModel];
@@ -566,7 +566,7 @@
 
 - (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
     if ([peerId isEqualToString:self.teacherAttr.uid]) {
-        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
+        NSDictionary *dict = [DataTypeManager dictionaryWithJsonString:message.text];
         AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
         switch (model.cmd) {
             case RTMp2pTypeMuteAudio:

@@ -18,6 +18,7 @@
 #import "MCViewController.h"
 #import "AERoomViewController.h"
 #import "AEStudentModel.h"
+#import "RTMManager.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -144,7 +145,7 @@
 - (IBAction)joinRoom:(UIButton *)sender {
     [self.activityIndicator startAnimating];
     [sender setEnabled:NO];
-    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![AERTMMessageBody judgeClassRoomText:self.classNameTextFiled.text] || ![AERTMMessageBody judgeClassRoomText:self.userNameTextFiled.text]) {
+    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![DataTypeManager judgeClassRoomText:self.classNameTextFiled.text] || ![DataTypeManager judgeClassRoomText:self.userNameTextFiled.text]) {
         [EEAlertView showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
         [self.activityIndicator stopAnimating];
     }else {
@@ -173,14 +174,14 @@
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
     }else {
-        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
+        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[DataTypeManager MD5WithString:self.className]];
         [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
     }
 }
 
 - (void)presentMiniClassViewController {
     WEAK(self)
-    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
+    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[DataTypeManager MD5WithString:self.className]];
     [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
@@ -199,7 +200,7 @@
 }
 
 - (void)presentOneToOneViewController {
-    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
+    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[DataTypeManager MD5WithString:self.className]];
     WEAK(self)
     [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
         [weakself.activityIndicator stopAnimating];
@@ -232,7 +233,7 @@
 
 - (NSInteger)getTeacherUidWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     for (AgoraRtmChannelAttribute *attr in attributes) {
-        NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:attr.value];
+        NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:attr.value];
        if ([attr.key isEqualToString:@"teacher"]) {
            return [[valueDict objectForKey:@"uid"] integerValue];
        }

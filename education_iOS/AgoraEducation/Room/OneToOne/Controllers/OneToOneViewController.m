@@ -112,7 +112,7 @@
 
 - (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
-        NSDictionary *valueDict =   [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
+        NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:channelAttr.value];
         if ([channelAttr.key isEqualToString:@"teacher"]) {
             if (!self.teacherAttr) {
                 self.teacherAttr = [[AETeactherModel alloc] init];
@@ -296,7 +296,7 @@
 }
 
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
-    NSDictionary *dict =  [JsonAndStringConversions dictionaryWithJsonString:message.text];
+    NSDictionary *dict =  [DataTypeManager dictionaryWithJsonString:message.text];
     AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
     messageModel.isSelfSend = NO;
     [self.messageListView addMessageModel:messageModel];
