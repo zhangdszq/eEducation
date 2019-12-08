@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AEStudentModel.h"
+#import "RolesInfoModel.h"
 
 typedef void(^ StudentVideoList)(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath);
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentVideoListView : UIView
 @property (nonatomic, copy) StudentVideoList studentVideoList;
-- (void)updateStudentArray:(NSMutableArray *)studentArray;
+- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)array;
 @end
 
 NS_ASSUME_NONNULL_END

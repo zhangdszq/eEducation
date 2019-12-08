@@ -28,16 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) WhiteMemberState *memberState;
 @property (nonatomic, strong) UIColor *pencilColor;
 
-@property (nonatomic, strong) AgoraRtmKit *rtmKit;
-@property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
 @property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
-@property (nonatomic, strong) AEStudentModel *ownAttrs;
-@property (nonatomic, assign)NSInteger teacherUid;
+//@property (nonatomic, strong) AEStudentModel *ownAttrs;
+//@property (nonatomic, assign)NSInteger teacherUid;
 
-- (void)joinRTMChannel;
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio;
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
 - (void)getWhiteboardSceneInfo;
 - (void)addWhiteBoardViewToView:(UIView *)view;
