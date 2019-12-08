@@ -17,7 +17,9 @@
 #import "AERTMMessageBody.h"
 #import "EEChatTextFiled.h"
 
-@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AgoraRtmChannelDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate,AgoraRtmDelegate>
+#import "MessageManager.h"
+
+@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate, MessageDataSourceDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
@@ -29,45 +31,20 @@
 @implementation AERoomViewController
 - (void)setParams:(NSDictionary *)params {
     _params = params;
-    if (params[@"rtmKit"]) {
-        self.rtmKit = params[@"rtmKit"];
-        self.channelName = params[@"channelName"];
-        self.userName = params[@"userName"];
-        self.userId = params[@"userId"];
-        self.rtmChannelName = params[@"rtmChannelName"];
-    }
+ 
+    self.channelName = params[@"channelName"];
+    self.userName = params[@"userName"];
+    self.userId = params[@"userId"];
+    self.rtmChannelName = params[@"rtmChannelName"];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    [self joinRTMChannel];
+
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
-    [self.rtmKit setAgoraRtmDelegate:self];
-}
-
-- (void)joinRTMChannel {
-    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-    }];
-}
-
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
-    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
-    setAttr.key = self.userId;
-    setAttr.value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio];
-    AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-    options.enableNotificationToChannelMembers = YES;
-    NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
-    [self.rtmKit addOrUpdateChannel:self.rtmChannelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"更新成功");
-        }else {
-            NSLog(@"更新失败");
-        }
-    }];
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
@@ -224,58 +201,6 @@
     }else {
         if (self.colorShowView.hidden == NO) {
             self.colorShowView.hidden = YES;
-        }
-    }
-}
-
-- (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
-    if ([peerId isEqualToString:self.teacherAttr.uid]) {
-        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
-        AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
-        switch (model.cmd) {
-            case RTMp2pTypeMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:YES];
-                [self setChannelAttrsWithVideo:self.ownAttrs.video audio:NO];
-                [self teacherMuteStudentAudio:YES];
-            }
-                break;
-            case RTMp2pTypeUnMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:NO];
-                [self setChannelAttrsWithVideo:self.ownAttrs.video audio:YES];
-                [self teacherMuteStudentAudio:NO];
-            }
-                break;
-            case RTMp2pTypeMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:YES];
-                [self setChannelAttrsWithVideo:NO audio:self.ownAttrs.audio];
-                [self teacherMuteStudentVideo:YES];
-            }
-                break;
-            case RTMp2pTypeUnMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:NO];
-                [self setChannelAttrsWithVideo:YES audio:self.ownAttrs.audio];
-                [self teacherMuteStudentVideo:NO];
-            }
-                break;
-            case RTMp2pTypeApply:
-            case RTMp2pTypeReject:
-            case RTMp2pTypeAccept:
-            case RTMp2pTypeCancel:
-                break;
-            case RTMp2pTypeMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-                self.chatTextFiled.contentTextFiled.enabled = NO;
-                break;
-            case RTMp2pTypeUnMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-                self.chatTextFiled.contentTextFiled.enabled = YES;
-                break;
-            default:
-                break;
         }
     }
 }

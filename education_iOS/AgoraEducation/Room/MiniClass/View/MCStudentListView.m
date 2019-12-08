@@ -9,10 +9,9 @@
 #import "MCStudentListView.h"
 #import "MCStudentViewCell.h"
 
-
 @interface MCStudentListView ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) UITableView *studentTableView;
-@property (nonatomic, strong) NSMutableArray *studentArray;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentArray;
 
 @end
 
@@ -42,9 +41,9 @@
     self.studentTableView.frame = self.bounds;
 }
 
-- (void)updateStudentArray:(NSMutableArray *)array {
-    [self.studentArray removeAllObjects];
-    [self.studentArray addObjectsFromArray:array];
+- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)array {
+    
+    self.studentArray = [NSArray arrayWithArray:array];
     [self.studentTableView reloadData];
 }
 
@@ -59,13 +58,16 @@
         cell = [[[NSBundle mainBundle] loadNibNamed:@"MCStudentViewCell" owner:self options:nil] firstObject];
     }
 
-    cell.studentModel = self.studentArray[indexPath.row];
+    RolesStudentInfoModel *infoModel = self.studentArray[indexPath.row];
+    AEStudentModel *stuModel = infoModel.studentModel;
+    stuModel.userId = infoModel.attrKey;
+    cell.studentModel = stuModel;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
     [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
     cell.muteVideoButton.hidden = cell.studentModel.userId != self.userId ? YES : NO;
-    cell.muteAudioButton.hidden = cell.studentModel .userId != self.userId ? YES : NO;
+    cell.muteAudioButton.hidden = cell.studentModel.userId != self.userId ? YES : NO;
     return cell;
 }
 
@@ -78,7 +80,7 @@
         [self.delegate muteAudioStream:sender.selected];
     }
     sender.selected = !sender.selected;
-    NSString *imageName = sender.selected ? @"mic-speaker3":@"speaker-close";
+    NSString *imageName = sender.selected ? @"icon-speaker3-max":@"speaker-close";
     [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
