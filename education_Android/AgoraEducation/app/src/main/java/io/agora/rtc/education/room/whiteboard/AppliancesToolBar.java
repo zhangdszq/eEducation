@@ -1,5 +1,6 @@
-package io.agora.rtc.education.whiteboard;
+package io.agora.rtc.education.room.whiteboard;
 
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -9,7 +10,7 @@ import com.herewhite.sdk.domain.MemberState;
 
 import java.util.Map;
 
-public class AppliancesTooBar {
+public class AppliancesToolBar {
 
     private final Map<String, ImageView> mAppliances;
     private String mCurrentApplianceName;
@@ -18,7 +19,7 @@ public class AppliancesTooBar {
     private int mTextWidth = 8;
     private int[] mColor = {0,0,0};
 
-    public AppliancesTooBar(Map<String, ImageView> appliances) {
+    public AppliancesToolBar(Map<String, ImageView> appliances) {
         mCurrentApplianceName = Appliance.ERASER;
         mAppliances = appliances;
 

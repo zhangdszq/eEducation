@@ -1,4 +1,4 @@
-package io.agora.rtc.education.room.bean;
+package io.agora.rtc.education.room.rtm;
 
 public class RtmRoomControl {
 

@@ -13,13 +13,16 @@ import android.widget.TextView;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
 import io.agora.rtc.education.base.BaseListAdapter;
-import io.agora.rtc.education.room.bean.User;
+import io.agora.rtc.education.room.rtm.ChannelMsg;
+import io.agora.rtc.education.room.rtm.RtmRepository;
 
 public class ChatroomFragment extends BaseFragment {
 
     private ListView mLvMsg;
     private MsgListAdapter mAdapter;
     private EditText mEdtSendMsg;
+    private View mViewRoot;
+    private RtmRepository mRtmRepository;
 
     public static ChatroomFragment newInstance() {
         ChatroomFragment fragment = new ChatroomFragment();
@@ -29,43 +32,63 @@ public class ChatroomFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_chatroom, container, false);
+        if (mViewRoot != null) {
+            ViewGroup parent = (ViewGroup) mViewRoot.getParent();
+            if (parent != null) {
+                parent.removeView(mViewRoot);
+            }
+            return mViewRoot;
+        }
+        mViewRoot = inflater.inflate(R.layout.fragment_chatroom, container, false);
 
-        mLvMsg = root.findViewById(R.id.lv_msg);
+        mLvMsg = mViewRoot.findViewById(R.id.lv_msg);
         mAdapter = new MsgListAdapter();
         mLvMsg.setAdapter(mAdapter);
 
-        mEdtSendMsg = root.findViewById(R.id.edt_send_msg);
-        mEdtSendMsg.setEnabled(true);
+        mEdtSendMsg = mViewRoot.findViewById(R.id.edt_send_msg);
+        mEdtSendMsg.setEnabled(false);
         mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (!mEdtSendMsg.isEnabled() || mRtmRepository == null) {
+                    return false;
+                }
                 String text = mEdtSendMsg.getText().toString();
                 if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && !TextUtils.isEmpty(text)) {
-//                    final ChannelMessage channelMessage = new ChannelMessage();
-//                    channelMessage.name = ChannelMessage.SEND_NAME;
-//                    channelMessage.args = new ChannelMessage.Args();
-//                    channelMessage.args.uid = UserConfig.getRtmUserId();
-//                    channelMessage.args.message = text;
-//                    channelMessage.args.role = UserConfig.getRole().intValue();
-//                    rtmManager().sendChatMsg(channelMessage, msgCallback);
-
+                    ChannelMsg msg = mRtmRepository.sendChannelMessage(text);
                     mEdtSendMsg.setText("");
+                    addMessage(msg);
                     return true;
                 }
                 return false;
             }
         });
-        return root;
+        return mViewRoot;
     }
 
+    public void setEditTextEnable(boolean isEnable) {
+        if (mEdtSendMsg != null) {
+            mEdtSendMsg.setEnabled(isEnable);
+        }
+    }
 
-    static class MsgListAdapter extends BaseListAdapter<User> {
+    public void addMessage(ChannelMsg channelMsg) {
+        if (mLvMsg != null) {
+            mAdapter.addItem(channelMsg);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setRtmRepository(RtmRepository repository) {
+        this.mRtmRepository = repository;
+    }
+
+    static class MsgListAdapter extends BaseListAdapter<ChannelMsg> {
         @Override
-        protected void onBindViewHolder(BaseViewHolder viewHolder, User user, int position) {
+        protected void onBindViewHolder(BaseViewHolder viewHolder, ChannelMsg msg, int position) {
             ViewHolder holder = (ViewHolder) viewHolder;
-            holder.tvName.setText(user.name);
-            holder.tvContent.setText(user.content);
+            holder.tvName.setText(msg.account);
+            holder.tvContent.setText(msg.content);
         }
 
         @Override

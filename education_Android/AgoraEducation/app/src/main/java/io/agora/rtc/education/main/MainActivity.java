@@ -1,28 +1,39 @@
 package io.agora.rtc.education.main;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
 import org.jetbrains.annotations.Nullable;
 
+import io.agora.rtc.Constants;
 import io.agora.rtc.education.AGApplication;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
+import io.agora.rtc.education.constant.Constant;
 import io.agora.rtc.education.constant.IntentKey;
+import io.agora.rtc.education.constant.SPKey;
 import io.agora.rtc.education.room.largeclass.LargeClassActivity;
 import io.agora.rtc.education.room.miniclass.MiniClassActivity;
 import io.agora.rtc.education.room.onetoone.OneToOneActivity;
 import io.agora.rtc.education.setting.SettingActivity;
+import io.agora.rtc.lib.rtm.RtmManager;
+import io.agora.rtc.lib.util.AppUtil;
+import io.agora.rtc.lib.util.CryptoUtil;
+import io.agora.rtc.lib.util.SPUtil;
 import io.agora.rtc.lib.util.ToastUtil;
 
 public class MainActivity extends BaseActivity {
     CardView layoutRoomType;
     EditText edtRoomType;
+    private int userId;
 
     @Override
     protected void initUI(@Nullable Bundle savedInstanceState) {
@@ -35,12 +46,18 @@ public class MainActivity extends BaseActivity {
     protected void initData() {
         super.initData();
         AGApplication app = AGApplication.the();
-        app.initToastUtil();
         app.initRtmManager();
         app.initWorkerThread();
+
+        userId = SPUtil.get(SPKey.MY_USER_ID, 0);
+        if (userId < 1) {
+            userId = Math.abs((int) (System.nanoTime()));
+            SPUtil.put(SPKey.MY_USER_ID, userId);
+        }
+        rtmManager().login(String.valueOf(userId));
     }
 
-    public void onClickJoin(View view) {
+    private void joinRoom() {
         EditText edtRoomName = findViewById(R.id.edt_room_name);
         String roomName = edtRoomName.getText().toString();
         if (TextUtils.isEmpty(roomName)) {
@@ -60,17 +77,58 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
+        if (rtmManager().getLoginStatus() != RtmManager.LOGIN_STATUS_SUCCESS) {
+            ToastUtil.showShort("RTM登录未成功，请检查稍后重试！");
+            rtmManager().login(String.valueOf(userId));
+        }
+
         Intent intent;
+        int roomTypeInt;
         if (roomType.equals(getString(R.string.one_to_one))) {
             intent = new Intent(this, OneToOneActivity.class);
+            roomTypeInt = Constant.RoomType.ONE_TO_ONE;
         } else if (roomType.equals(getString(R.string.mini_class))) {
             intent = new Intent(this, MiniClassActivity.class);
+            roomTypeInt = Constant.RoomType.SMALL_CLASS;
         } else {
             intent = new Intent(this, LargeClassActivity.class);
+            roomTypeInt = Constant.RoomType.BIG_CLASS;
         }
-        intent.putExtra(IntentKey.ROOM_NAME, roomName)
-                .putExtra(IntentKey.YOUR_NAME, yourName);
-        startActivity(intent);
+        String roomNameReal = roomTypeInt + CryptoUtil.md5(roomName);
+        if (!TextUtils.isEmpty(roomNameReal)) {
+            intent.putExtra(IntentKey.ROOM_NAME, roomName)
+                    .putExtra(IntentKey.ROOM_NAME_REAL, roomNameReal)
+                    .putExtra(IntentKey.USER_ID, userId)
+                    .putExtra(IntentKey.YOUR_NAME, yourName);
+            startActivity(intent);
+        }
+    }
+
+    private static final int PERMISSION_CODE = 100;
+
+    public void onClickJoin(View view) {
+        String[] requestPermission = {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        if (AppUtil.checkAndRequestAppPermission(this, requestPermission, PERMISSION_CODE)) {
+            joinRoom();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != PERMISSION_CODE)
+            return;
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                ToastUtil.showShort(R.string.No_enough_permissions);
+                return;
+            }
+        }
+        joinRoom();
     }
 
     public void onClickRoomType(View view) {

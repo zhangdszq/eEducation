@@ -1,11 +1,11 @@
 package io.agora.rtc.education.room.bean;
 
 public class User {
-    public int role;
-    public transient boolean isMe;
-    public String name;
-    public String content;
-    public boolean isMuteAudio;
-    public boolean isMuteVideo;
-    public int uid;
+    public String account; // 昵称
+    public int audio; // 0:mute, 1: un mute
+    public int video; // 0:mute, 1: un mute
+
+    public int getUid() {
+        return 0;
+    }
 }

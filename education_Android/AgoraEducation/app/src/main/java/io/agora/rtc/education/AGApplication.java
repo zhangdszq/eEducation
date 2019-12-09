@@ -2,8 +2,10 @@ package io.agora.rtc.education;
 
 import android.app.Application;
 
+import io.agora.rtc.education.room.whiteboard.WhiteboardAPI;
 import io.agora.rtc.lib.rtc.RtcWorkerThread;
 import io.agora.rtc.lib.rtm.RtmManager;
+import io.agora.rtc.lib.util.LogUtil;
 import io.agora.rtc.lib.util.SPUtil;
 import io.agora.rtc.lib.util.ToastUtil;
 
@@ -24,6 +26,17 @@ public class AGApplication extends Application {
         instance = this;
 
         initSpUtil();
+        initToastUtil();
+        initWhiteboardSdkToken();
+        initLogUtil();
+    }
+
+    private void initLogUtil() {
+        LogUtil.setTagPre("education_");
+    }
+
+    private void initWhiteboardSdkToken() {
+        WhiteboardAPI.init(getString(R.string.whiteboard_sdk_token));
     }
 
     public void initRtmManager() {
@@ -39,11 +52,11 @@ public class AGApplication extends Application {
         }
     }
 
-    public void initSpUtil() {
+    private void initSpUtil() {
         SPUtil.init(this);
     }
 
-    public void initToastUtil() {
+    private void initToastUtil() {
         ToastUtil.init(this);
     }
 

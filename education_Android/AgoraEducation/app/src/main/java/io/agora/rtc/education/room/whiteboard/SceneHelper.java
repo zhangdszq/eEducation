@@ -1,4 +1,4 @@
-package io.agora.rtc.education.whiteboard;
+package io.agora.rtc.education.room.whiteboard;
 
 import com.herewhite.sdk.Room;
 import com.herewhite.sdk.domain.Scene;

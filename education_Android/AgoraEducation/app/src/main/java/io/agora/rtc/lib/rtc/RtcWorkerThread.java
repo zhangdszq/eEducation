@@ -61,6 +61,20 @@ public class RtcWorkerThread extends HandlerThread {
         }
 
         @Override
+        public void onRtcStats(RtcStats stats) {
+            if (mRtcHandler != null) {
+                mRtcHandler.onRtcStats(stats);
+            }
+        }
+
+        @Override
+        public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
+            if (mRtcHandler != null) {
+                mRtcHandler.onNetworkQuality(uid, txQuality, rxQuality);
+            }
+        }
+
+        @Override
         public void onLastmileProbeResult(LastmileProbeResult result) {
             if (mRtcHandler != null)
                 mRtcHandler.onLastmileProbeResult(result);
@@ -82,18 +96,6 @@ public class RtcWorkerThread extends HandlerThread {
         public void onUserOffline(int uid, int reason) {
             if (mRtcHandler != null)
                 mRtcHandler.onUserOffline(uid, reason);
-        }
-
-        @Override
-        public void onUserMuteAudio(int uid, boolean muted) {
-            if (mRtcHandler != null)
-                mRtcHandler.onUserMuteAudio(uid, muted);
-        }
-
-        @Override
-        public void onUserMuteVideo(int uid, boolean muted) {
-            if (mRtcHandler != null)
-                mRtcHandler.onUserMuteVideo(uid, muted);
         }
     };
 
