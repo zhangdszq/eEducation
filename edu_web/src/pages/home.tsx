@@ -9,6 +9,7 @@ import FormSelect from '../components/form-select';
 import { isElectron } from '../utils/platform';
 import {roomTypes} from '../hooks/use-room-control';
 import useHomePage from '../hooks/use-homepage';
+import { usePlatform } from '../containers/platform-container';
 
 const useStyles = makeStyles ((theme: Theme) => ({
   formControl: {
@@ -17,10 +18,10 @@ const useStyles = makeStyles ((theme: Theme) => ({
   }
 }));
 
-export default function HomePage() {
+function HomePage() {
   const classes = useStyles();
   const {
-    handleClose,
+    handleSetting,
     required,
     handleClick,
     role,
@@ -33,8 +34,10 @@ export default function HomePage() {
     setYourName,
   } = useHomePage();
 
+  const {HomeBtn} = usePlatform();
+
   return (
-    <div className={`flex-container ${isElectron ? null : 'home-cover-web' }`}>
+    <div className={`flex-container ${isElectron ? 'draggable' : 'home-cover-web' }`}>
       {isElectron ? null : 
       <div className="web-menu">
         <div className="web-menu-container">
@@ -42,7 +45,7 @@ export default function HomePage() {
             <span className="title">Agora Education</span>
             <span className="subtitle">Powered by agora.io</span>
           </div>
-          <Icon className="icon-setting" onClick={handleClose}/>
+          <Icon className="icon-setting" onClick={handleSetting}/>
         </div>
       </div>
       }
@@ -61,14 +64,7 @@ export default function HomePage() {
         </div>
         <div className="flex-item card">
           <div className="position-top card-menu">
-          {isElectron ? 
-            <>
-              <Icon className="icon-setting" onClick={handleClose}/>
-              <div className="icon-container">
-                <Icon className="icon-minimum" icon />
-                <Icon className="icon-close" icon/>
-              </div>
-            </> : null}
+            <HomeBtn handleSetting={handleSetting}/>
           </div>
           <div className="position-content flex-direction-column">
             <FormControl className={classes.formControl}>
@@ -92,7 +88,7 @@ export default function HomePage() {
                 onChange={(evt: any) => {
                   setRoomType(evt.target.value)
                 }}
-                menus={roomTypes}
+                items={roomTypes}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
@@ -107,3 +103,4 @@ export default function HomePage() {
     </div>
   )
 }
+export default React.memo(HomePage);

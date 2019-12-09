@@ -3,13 +3,16 @@ import Icon from './icon';
 import SettingCard from '../components/setting-card';
 import './nav.scss';
 import Button from './custom-button';
-import { isElectron } from '../utils/platform';
 import * as moment from 'moment';
 import { useRootContext } from '../store';
 import { useAgoraSDK } from '../hooks/use-agora-sdk';
 import { ClassState } from '../reducers/types';
 import { useHistory } from 'react-router';
-import { NetworkQualityEvaluation } from '../utils/helper';
+import { NetworkQualityEvaluation, ResolveNetworkQuality } from '../utils/helper';
+import { useGlobalContext } from '../containers/global-container';
+import { usePlatform } from '../containers/platform-container';
+import AgoraWebClient from '../utils/agora-rtc-client';
+import { AgoraElectronClient } from '../utils/agora-electron-client';
 
 interface NavProps {
   delay: string
@@ -24,7 +27,6 @@ interface NavProps {
   handleClick: (type: string) => void
 }
 
-
 export function Nav ({
   delay,
   network,
@@ -37,7 +39,9 @@ export function Nav ({
   classState,
   onCardConfirm,
 }: NavProps) {
-  
+
+  const {platform, NavBtn} = usePlatform();
+    
   const handleFinish = (evt: any) => {
     onCardConfirm('setting');
   }
@@ -53,10 +57,10 @@ export function Nav ({
           }} /> : null}
       </div>
       <div className="network-state">
-        <span className="net-field">Delay: <span className="net-field-value">{delay}</span></span>
+        {platform === 'web' ? <span className="net-field">Delay: <span className="net-field-value">{delay}</span></span> : null}
         {/* <span className="net-field">Packet Loss Rate: <span className="net-field-value">{lossPacket}</span></span> */}
         <span className="net-field">Network: <span className="net-field-value">{network}</span></span>
-        {isElectron ? <span className="net-field">CPU: <span className="net-field-value">{cpu}</span></span> : null}
+        {platform === 'electron' ? <span className="net-field">CPU: <span className="net-field-value">{cpu}</span></span> : null}
       </div>
       <div className="menu">
         <div className="timer">
@@ -72,16 +76,7 @@ export function Nav ({
             handleClick("exit");
           }} />
         </div>
-        {isElectron ?
-        <>
-        <span className="menu-split" />
-        <div className="menu-group">
-          <Icon className="icon-minimum" icon />
-          <Icon className="icon-maximum" icon />
-          <Icon className="icon-close" icon />
-        </div>
-        </>
-        : null }
+        <NavBtn />
       </div>
     </div>
     {showSetting ? 
@@ -100,10 +95,18 @@ export default function NavContainer() {
   const {
     showDialog,
     removeDialog,
+  } = useGlobalContext();
+
+  const {
+    platform
+  } = usePlatform();
+
+  const {
     exitAll,
+    rtcClient
   } = useAgoraSDK();
 
-  const refTime = useRef<any>('init');
+  const ref = useRef<boolean>(false);
 
   const [time, updateTime] = useState<number>(0);
 
@@ -111,22 +114,18 @@ export default function NavContainer() {
 
   const calcDuration = (time: number) => {
     return setInterval(() => {
-      refTime.current === null && updateTime(+Date.now() - time);
+      !ref.current && updateTime(+Date.now() - time);
     }, 150, time)
   }
-
-  const ref = useRef<boolean>(false);
-
 
   const [card, setCard] = useState<boolean>(false);
 
   const [rtt, updateRtt] = useState<number>(0);
   const [quality, updateQuality] = useState<string>('unknown');
+  const [cpuUsage, updateCpuUsage] = useState<number>(0);
 
   useEffect(() => {
-    refTime.current = null;
     return () => {
-      refTime.current = true;
       ref.current = true;
       if (timer) {
         clearInterval(timer);
@@ -136,18 +135,45 @@ export default function NavContainer() {
   }, []);
 
   useEffect(() => {
-    if (store.global.rtcClient) {
-      store.global.rtcClient.on('watch-rtt', (rtt: number) => {
-        // !ref.current && dispatch({type: ActionType.UPDATE_RTT, rtt});
+    if (platform === 'web') {
+      const webClient = rtcClient as AgoraWebClient;
+      webClient.rtc.on('watch-rtt', (rtt: number) => {
         !ref.current && updateRtt(rtt);
       });
-      store.global.rtcClient.on('network-quality', (evt: any) => {
+      webClient.rtc.on('network-quality', (evt: any) => {
         const quality = NetworkQualityEvaluation(evt);
         !ref.current && updateQuality(quality);
-        // !ref.current && dispatch({type: ActionType.UPDATE_QUALITY, quality});
-      });
+      })
+      return () => {
+        webClient.rtc.off('watch-rtt', () => {});
+        webClient.rtc.off('network-quality', () => {});
+      }
     }
-  }, [store.global.rtcClient]);
+    if (platform === 'electron') {
+      const nativeClient = rtcClient as AgoraElectronClient;
+      nativeClient.on('rtcStats', ({cpuTotalUsage}: any) => {
+        !ref.current && updateCpuUsage(cpuTotalUsage);
+      });
+      nativeClient.on('networkquality', (
+        uid: number,
+        txquality: number,
+        rxquality: number) => {
+        if (uid === 0) {
+          const quality = NetworkQualityEvaluation({
+            downlinkNetworkQuality: rxquality,
+            uplinkNetworkQuality: txquality,
+          });
+          !ref.current && updateQuality(quality);
+        }
+      })
+
+      return () => {
+        nativeClient.off('rtcStats', () => {});
+        nativeClient.off('networkquality', () => {});
+        nativeClient.off('audioquality', () => {});
+      }
+    }
+  }, [rtcClient]);
 
   useEffect(() => {
     if (store.room.classState === ClassState.STARTED
@@ -197,7 +223,6 @@ export default function NavContainer() {
       case 'exitRoom':
         removeDialog();
         exitAll().then(() => {
-          // console.log("exit - all");
         }).catch(console.warn)
           .finally(() => {
             history.push('/');
@@ -214,7 +239,7 @@ export default function NavContainer() {
       delay={`${rtt}ms`}
       time={time}
       network={`${quality}`}
-      cpu={`${cpu}%`}
+      cpu={`${cpuUsage}%`}
       showSetting={card}
       onCardConfirm={handleCardConfirm}
       handleClick={handleClick}

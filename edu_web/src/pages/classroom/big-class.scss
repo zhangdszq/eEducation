@@ -23,7 +23,7 @@
 @media screen and (max-width: 1366px) and (max-height: 768px) {
   .big-class.classroom {
     .chat-board {
-      min-height: 499px;
+      // min-height: 499px;
     }
   }
   .classroom {
@@ -125,5 +125,6 @@
 }
 
 .media-board {
+  overflow: hidden;
   height: 100%;
 }

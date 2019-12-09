@@ -1,6 +1,13 @@
 # 项目组成
-  * web [已完成]
-  * electron
+  * web [refactoring]
+  * electron [refactoring]
+  
+# 重构
+  - mediaboard
+  - video-player
+  - nav
+  - setting-card
+  - use-agora-sdk
 
 # 搭建之前先获取 agora appid和netless sdktoken
   按照.env.example

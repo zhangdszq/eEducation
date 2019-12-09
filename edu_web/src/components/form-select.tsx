@@ -2,18 +2,36 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { Select, FormControl, InputLabel, MenuItem } from '@material-ui/core';
 
-export default function (props: any) {
+export interface FormSelectItems {
+  text: string
+}
+
+export interface FormSelect {
+  items: FormSelectItems[]
+  Label: string
+  value: any
+  onChange: (evt: any) => any,
+}
+
+const FormSelect: React.FC<FormSelect> = ({
+  Label,
+  value,
+  onChange,
+  items
+}) => {
   return (
     <>
-      <InputLabel>{props.Label}</InputLabel>
+      <InputLabel>{Label}</InputLabel>
       <Select
-        value={props.value}
-        onChange={props.onChange}
+        value={value}
+        onChange={onChange}
       >
-        {props.menus.map((item: any, key: number) => 
+        {items.map((item: any, key: number) => 
           <MenuItem key={key} value={key}>{item.text}</MenuItem>
         )}
       </Select>
     </>
   );
 }
+
+export default React.memo(FormSelect);

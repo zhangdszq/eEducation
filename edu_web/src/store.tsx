@@ -1,8 +1,10 @@
 import { RootAction } from './reducers/types';
 import {RootState} from './reducers/initialize-state';
-import React, { useReducer, ReactChildren, createContext, Dispatch, useContext, useEffect } from 'react';
+import React, { useReducer, createContext, Dispatch, useContext, useEffect } from 'react';
 import {defaultState, RootReducer} from './reducers/index';
 import GlobalStorage from './reducers/custom-storage';
+import { HashRouter as Router, useLocation } from 'react-router-dom';
+import { isElectron } from './utils/platform';
 
 export interface RootStore {
   store: RootState
@@ -14,6 +16,25 @@ export const RootContext = createContext({} as RootStore);
 export const useRootContext = () => useContext(RootContext);
 
 export const useRootObserver = (store: RootState) => {
+
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log(' [mediaInfo] ', store.global.mediaInfo);
+  }, [store.global.mediaInfo]);
+
+  // useEffect(() => {
+  //   if (isElectron) {
+  //     const ipcRenderer = window.require("electron").ipcRenderer;
+  //     if (['/', '/home', '/device_test'].indexOf(location.pathname) === -1) {
+  //       ipcRenderer.send("resize-window", {width: 990, height: 706});
+  //     } else {
+  //       ipcRenderer.send("resize-window", {width: 700, height: 500});
+  //     }
+  //   }
+  //   console.log("location.pathname ", location.pathname);
+  // }, [location.pathname]);
+
   useEffect(() => {
     GlobalStorage.save('room', store.room);
     // console.log('room ', store.room.users);
@@ -53,11 +74,8 @@ export const useRootObserver = (store: RootState) => {
   }, [store.global.canPass]);
 }
 
-export function GlobalStoreProvider(props: {children: ReactChildren}) {
-
+export const StoreContainer: React.FC<any> = ({children}: {children: any}) => {
   const [store, dispatch] = useReducer(RootReducer, defaultState);
-
-
   // @ts-ignore
   window.reducer = {
     store,
@@ -70,8 +88,10 @@ export function GlobalStoreProvider(props: {children: ReactChildren}) {
   };
 
   return (
-    <RootContext.Provider value={value}>
-      {props.children}
-    </RootContext.Provider>
+    <Router>
+      <RootContext.Provider value={value}>
+        {children}
+      </RootContext.Provider>
+    </Router>
   )
 }

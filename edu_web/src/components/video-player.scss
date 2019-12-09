@@ -48,7 +48,16 @@
   min-height: 159px;
   max-height: 159px;
   position: relative;
+  overflow: hidden;
   flex: 1;
+  canvas {
+    z-index: 1;
+  }
+
+  &.show-placeholder > div:last-child {
+    display: none !important;
+  }
+
   .teacher-placeholder,
   .student-placeholder {
     display: flex;
@@ -72,7 +81,7 @@
     top: 6px;
     right: 6px;
     display: flex;
-    z-index: 8;
+    z-index: 10;
     width: 18px;
     height: 18px;
     background-color: rgba(0,0,0,0.4);
@@ -85,5 +94,6 @@
   .screen-sharing {
     display: flex;
     flex: 1;
+    width: 1px;
   }
 }

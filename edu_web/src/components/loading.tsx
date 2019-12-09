@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useRootContext } from '../store';
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -22,12 +23,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Loading () {
+export const Loading: React.FC<{}> = () => {
   const classes = useStyles();
-
   return (
     <div className={classes.container}>
       <CircularProgress className={classes.progress} />
     </div>
   );
+}
+
+export default function LoadContainer () {
+
+  const {store} = useRootContext();
+
+  const loading = useMemo(() => store.global.loading, [store.global.loading]);
+
+  return (
+    loading ? <Loading /> : null
+  )
 }

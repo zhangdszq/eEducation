@@ -1,8 +1,7 @@
-import { BizError, ChatMessage, RoomType, User, ClassState, UserRole, Dialog } from './types';
+import { BizError, ChatMessage, RoomType, User, ClassState, UserRole, Dialog, AgoraStream } from './types';
 import { List, Map } from 'immutable';
 import GlobalStorage from './custom-storage';
 import AgoraRTMClient from '../utils/agora-rtm-client';
-import AgoraRTCClient from '../utils/agora-rtc-client';
 import NetlessWhiteboardClient from '../utils/netless-whiteboard-client';
 
 export interface RoomState {
@@ -15,6 +14,7 @@ export interface RoomState {
   sharedId: number
   muteChat: number
   classState: ClassState
+  linkId: number
 }
 
 export interface UserState {
@@ -41,14 +41,11 @@ export interface MediaInfo {
 
 export interface GlobalState {
   loading: boolean
-  errors: Map<string, BizError>
   rtmClient?: AgoraRTMClient
-  rtcClient?: AgoraRTCClient
-  shareClient?: AgoraRTCClient
-  localStream?: any
-  sharedStream?: any
+  localStream?: AgoraStream
+  sharedStream?: AgoraStream
+  remoteStreams: Map<string, AgoraStream>
   messages: List<ChatMessage>
-  remoteStreams: Map<string, any>
   timerState?: number
   canPass: boolean
   whiteboard: {
@@ -93,15 +90,12 @@ export interface RootState {
 
 export const defaultGlobalState: GlobalState = {
   loading: false,
-  errors: Map<string, BizError>(),
   rtmClient: undefined,
-  rtcClient: undefined,
-  shareClient: undefined,
-  messages: List<ChatMessage>(),
-  timerState: undefined,
+  remoteStreams: Map<string, any>(),
   localStream: undefined,
   sharedStream: undefined,
-  remoteStreams: Map<string, any>(),
+  messages: List<ChatMessage>(),
+  timerState: undefined,
   canPass: Boolean(GlobalStorage.read('pass')),
   whiteboard: {
     state: '',
@@ -137,6 +131,7 @@ export const defaultRoomState: RoomState = {
   muteChat: 0,
   users: Map<string, User>(),
   classState: ClassState.CLOSED,
+  linkId: 0,
 }
 
 export const defaultUserState: UserState = {

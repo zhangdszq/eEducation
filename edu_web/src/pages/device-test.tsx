@@ -3,7 +3,7 @@ import {useHistory} from 'react-router-dom';
 import SettingCard from '../components/setting-card';
 import { isElectron } from '../utils/platform';
 
-export default function () {
+function DeviceTest() {
   const history = useHistory();
 
   const handleClick = (evt: any) => {
@@ -11,8 +11,10 @@ export default function () {
   }
 
   return (
-    <div className={`flex-container ${isElectron ? null : 'home-cover-web'}`}>
+    <div className={`flex-container ${isElectron ? 'draggable' : 'home-cover-web'}`}>
       <SettingCard handleFinish={handleClick} />
     </div>
   )
 }
+
+export default React.memo(DeviceTest);

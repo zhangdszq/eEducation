@@ -1,3 +1,4 @@
+import { SHARE_ID } from './../utils/agora-rtc-client';
 import { useHistory } from "react-router";
 import { useEffect, useState, useMemo } from "react";
 import { useRootContext } from "../store";
@@ -46,13 +47,9 @@ const useRoomControl = () => {
     return store.global.screenSharing;
   }, [store.global.screenSharing]);
 
-  const sharedStream = useMemo(() => {
-    return store.global.sharedStream;
-  }, [store.global.sharedStream]);
-
   const updateScreenSharedId = async () => {
       if (store.user.role === UserRole.teacher && store.global.rtmClient) {
-        const sharedId = sharedStream.getId();
+        const sharedId = SHARE_ID;
         await store.global.rtmClient.updateChannelAttrs(store, {
           shared_uid: sharedId
         })
@@ -67,7 +64,6 @@ const useRoomControl = () => {
     visibleSettingDialog,
     classState,
     screenSharing,
-    sharedStream,
     updateScreenSharedId
   }
 };

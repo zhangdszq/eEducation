@@ -5,9 +5,7 @@ import Button from './custom-button';
 import Icon from './icon';
 import FormSelect from './form-select';
 import SpeakerVolume from './volume/speaker';
-import VoiceVolume from './volume/voice';
 import useSettingControl from '../hooks/use-setting-control';
-import VideoPlayer from './video-player';
 
 import {isElectron} from '../utils/platform';
 
@@ -26,7 +24,6 @@ interface SettingProps {
 export default function (props: SettingProps) {
   const classes = useStyles();
   const {
-    localStream,
     cameraList,
     microphoneList,
     speakerList,
@@ -39,14 +36,10 @@ export default function (props: SettingProps) {
     volume,
     speakerVolume,
     setSpeakerVolume,
-    save
+    save,
+    PreviewPlayer,
+    MicrophoneVolume
   } = useSettingControl();
-
-  useEffect(() => {
-    if (localStream) {
-      localStream.close();
-    }
-  }, [])
 
   const changeCamera = (evt: any) => {
     setCamera(evt.target.value);
@@ -68,15 +61,17 @@ export default function (props: SettingProps) {
     <div className={props.className ? props.className : "flex-container"}>
       <div className="custom-card">
         <div className="flex-item cover">
-          {localStream ?
+          <PreviewPlayer />
+          {/* {localStream ?
             <VideoPlayer
+              local={true}
               domId={"local"}
               preview={true}
               stream={localStream}
               video={true}
               audio={true}
             /> :
-            <div className="cover-placeholder"></div>}
+            <div className="cover-placeholder"></div>} */}
         </div>
         <div className="flex-item card">
           <div className="position-top card-menu">
@@ -92,7 +87,7 @@ export default function (props: SettingProps) {
                 Label={"Camera"}
                 value={camera}
                 onChange={changeCamera}
-                menus={cameraList}
+                items={cameraList}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
@@ -100,16 +95,17 @@ export default function (props: SettingProps) {
                 Label={"Microphone"}
                 value={microphone}
                 onChange={changeMicrophone}
-                menus={microphoneList}
+                items={microphoneList}
               />
-              <VoiceVolume volume={volume}/>
+              <MicrophoneVolume />
+              {/* <VoiceVolume volume={volume}/> */}
             </FormControl>
             <FormControl className={classes.formControl}>
               <FormSelect 
                 Label={"Speaker"}
                 value={speaker}
                 onChange={changeSpeaker}
-                menus={speakerList}
+                items={speakerList}
               />
               <SpeakerVolume volume={speakerVolume} onChange={changeSpeakerVolume} />
             </FormControl>

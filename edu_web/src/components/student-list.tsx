@@ -87,11 +87,11 @@ export default function StudentList ({
             }
             // @ts-ignore
             const mediaState: number = targetUser[type];
-            if (type === 'chat') {
+            if (type === 'audio') {
               body.cmd = mediaState ? RoomMessage.muteAudio : RoomMessage.unmuteAudio
             }
             if (type === 'video') {
-              body.cmd = mediaState ? RoomMessage.muteAudio : RoomMessage.unmuteAudio
+              body.cmd = mediaState ? RoomMessage.muteVideo : RoomMessage.unmuteVideo
             }
             if (type === 'chat') {
               body.cmd = mediaState ? RoomMessage.muteChat : RoomMessage.unmuteChat
