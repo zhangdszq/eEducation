@@ -141,38 +141,6 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
           rtmClient: undefined
         }
       }
-    case ActionType.ADD_RTC_CLIENT:
-      return {
-        ...state,
-        global: {
-          ...state.global,
-          rtcClient: action.client
-        }
-      }
-    case ActionType.ADD_SHARE_RTC_CLIENT:
-      return {
-        ...state,
-        global: {
-          ...state.global,
-          shareClient: action.client
-        }
-      }
-    case ActionType.REMOVE_SHARE_RTC_CLIENT:
-      return {
-        ...state,
-        global: {
-          ...state.global,
-          shareClient: undefined
-        }
-      }
-    case ActionType.REMOVE_RTC_CLIENT:
-      return {
-        ...state,
-        global: {
-          ...state.global,
-          rtcClient: undefined
-        }
-      }
     case ActionType.UPDATE_CHANNEL_ATTRS:
       const { teacher, accounts, room } = action.attrs;
       const _teacher = teacher as TeacherInfo
@@ -198,6 +166,7 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
             sharedId: room.shared_uid,
             users,
             muteChat: room.mute_chat,
+            linkId: room.link_uid
           },
           user: {
             ...state.user,
@@ -216,6 +185,7 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
               sharedId: room.shared_uid,
               muteChat: room.mute_chat,
               users,
+              linkId: room.link_uid
             },
             user: {
               ...state.user,
@@ -235,6 +205,7 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
           sharedId: room.shared_uid,
           muteChat: room.mute_chat,
           users,
+          linkId: room.link_uid,
         },
       }
     case ActionType.CLEAR_STREAMS:
@@ -250,7 +221,7 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
     case ActionType.ADD_REMOTE_STREAM: {
       const remoteStreams = state.global.remoteStreams;
       const exists = remoteStreams.some(
-        (it: any) => it.getId() === action.stream.getId());
+        (it: any) => it.streamID === action.stream.streamID);
       if (exists) {
         return {
           ...state
@@ -260,7 +231,7 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
         ...state,
         global: {
           ...state.global,
-          remoteStreams: remoteStreams.set(`${action.stream.getId()}`, action.stream)
+          remoteStreams: remoteStreams.set(`${action.stream.streamID}`, action.stream)
         }
       }
     }
@@ -273,8 +244,6 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
         }
       }
     case ActionType.REMOVE_REMOTE_STREAM:
-      // const stream = state.global.remoteStreams.get(`${action.streamID}`)
-      // stream && stream.stop();
       return {
         ...state,
         global: {
@@ -395,16 +364,6 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
         }
       }
       return state;
-    }
-    case ActionType.UPDATE_LINK_UID: {
-      const peerId = action.peerId
-      return {
-        ...state,
-        global: {
-          ...state.global,
-          linkId: peerId
-        }
-      }
     }
     case ActionType.ACCEPT_APPLY: {
       const peerId = action.peerId

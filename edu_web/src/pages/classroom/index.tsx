@@ -12,6 +12,8 @@ import './room.scss';
 import { useRootContext } from '../../store';
 import { useAgoraSDK } from '../../hooks/use-agora-sdk';
 import useRoomControl from '../../hooks/use-room-control';
+import { useGlobalContext } from '../../containers/global-container';
+import NativeSharedWindow from '../../components/native-shared-window';
 
 function RoomPage({ children, roomType }: any) {
   const history = useHistory();
@@ -25,13 +27,9 @@ function RoomPage({ children, roomType }: any) {
     }
   }, []);
   const {
-    rtcClient,
-    initRTC,
     rtmClient,
     initRTM,
     exitAll,
-    sharedStream,
-    removeDialog,
     onApplyConfirm,
     onRejectApply,
     onCloseConfirm,
@@ -39,19 +37,12 @@ function RoomPage({ children, roomType }: any) {
   } = useAgoraSDK();
 
   const {
-    screenSharing,
-    updateScreenSharedId,
-  } = useRoomControl();
-
-  useEffect(() => {
-    window.onbeforeunload = () => {
-      dispatch({ type: ActionType.UPDATE_CAN_PASS, pass: true });
-    }
-  }, [location]);
+    removeDialog
+  } = useGlobalContext();
 
   useEffect(() => {
     if (!ref.current
-      && AgoraRTMClient._instance === undefined) {
+      && !rtmClient) {
       initRTM()
         .then(() => {
         })
@@ -65,91 +56,6 @@ function RoomPage({ children, roomType }: any) {
         });
     }
   }, []);
-
-  // in big-class only teacher can publish directly, student role as audience
-  const publish = useMemo(() => {
-    if (!location.pathname.match(/big-class/)) {
-      return true;
-    }
-    if (store.user.role === UserRole.teacher) {
-      return true;
-    }
-    if (store.global.linkId && store.user.id && store.global.linkId === store.user.id) {
-      return true;
-    }
-    return false;
-  }, [store.user, location, store.global.linkId]);
-
-  const rtcClientLock = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (!ref.current && rtmClient && !rtcClient && !rtcClientLock.current) {
-      rtcClientLock.current = true
-      initRTC({ publish, media: store.global.mediaInfo })
-        .then(() => {
-          rtcClientLock.current = false
-        }).catch((err: any) => {
-          rtcClientLock.current = false
-          console.error(err);
-        })
-    }
-  }, [rtmClient]);
-
-  useEffect(() => {
-    if (store.user.role !== UserRole.teacher
-      && publish
-      && !rtcClientLock.current
-      && store.global.rtcClient
-      && store.global.rtcClient._published === false) {
-      rtcClientLock.current = true;
-      store.global.rtcClient.publishStream({
-        ...store.global.mediaInfo,
-        video: true,
-        audio: true
-      }).then(() => {
-        rtcClientLock.current = false;
-      }).catch((err: any) => {
-        rtcClientLock.current = false;
-        console.warn(err);
-      })
-    }
-    if (store.user.role !== UserRole.teacher
-      && !publish
-      && !rtcClientLock.current
-      && store.global.rtcClient
-      && store.global.rtcClient._published === true) {
-      rtcClientLock.current = true;
-      store.global.rtcClient.unpublishStream().then(() => {
-        rtcClientLock.current = false;
-      }).catch((err: any) => {
-        rtcClientLock.current = false;
-        console.warn(err);
-      }).finally(() => {
-        dispatch({ type: ActionType.REMOVE_LOCAL_STREAM });
-      })
-    }
-  }, [publish]);
-
-  const { cameraId, microphoneId, speakerId, speakerVolume } = useMemo(() => {
-    return store.global.mediaInfo;
-  }, [store.global.mediaInfo]);
-
-  useEffect(() => {
-    if (publish && store.global.rtcClient && !rtcClientLock.current) {
-      rtcClientLock.current = true;
-      dispatch({ type: ActionType.REMOVE_LOCAL_STREAM });
-      store.global.rtcClient.republishStream({
-        ...store.global.mediaInfo,
-        video: true,
-        audio: true
-      }).then(() => {
-        rtcClientLock.current = false;
-      }).catch((err: any) => {
-        rtcClientLock.current = false;
-        console.warn(err);
-      })
-    }
-  }, [cameraId, microphoneId, speakerId, speakerVolume]);
 
   const handleConfirm = (type: string) => {
     switch (type) {
@@ -181,7 +87,6 @@ function RoomPage({ children, roomType }: any) {
         return;
       case 'apply':
         onRejectApply().then(() => {
-
         }).catch(console.warn);
         return;
       case 'close':
@@ -190,21 +95,6 @@ function RoomPage({ children, roomType }: any) {
         return;
     }
   }
-
-  useEffect(() => {
-    if (rtmClient && screenSharing === false && sharedStream) {
-      dispatch({ type: ActionType.UPDATE_SCREEN_SHARING, sharing: true });
-    }
-    if (rtmClient && screenSharing && sharedStream) {
-      updateScreenSharedId()
-        .then(() => {
-          console.log('[refactor] screen sharing');
-        })
-        .catch(() => {
-          console.log('[refactor] screen sharing failured');
-        })
-    }
-  }, [rtmClient, screenSharing, sharedStream]);
 
   const { id, account, video, audio, chat, role } = useMemo(() => {
     return store.user;
@@ -239,10 +129,11 @@ function RoomPage({ children, roomType }: any) {
     </div>);
 }
 
-export default function () {
+function Classroom() {
   const { roomType } = useParams();
   return (
     <div className="flex-container">
+      <NativeSharedWindow />
       <Switch>
         <Route exact path="/classroom/one-to-one">
           <RoomPage roomType={roomType}>
@@ -266,3 +157,5 @@ export default function () {
     </div>
   )
 }
+
+export default React.memo(Classroom);

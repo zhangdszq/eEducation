@@ -10,6 +10,8 @@ import useNetlessSDK from '../hooks/use-netless-sdk';
 import { useAgoraSDK } from '../hooks/use-agora-sdk';
 import Tools from './whiteboard/tools';
 import { SketchPicker } from 'react-color';
+import { usePlatform } from '../containers/platform-container';
+import { AgoraElectronClient } from '../utils/agora-electron-client';
 
 interface MediaBoardProps {
   handleClick?: (type: string) => void
@@ -38,12 +40,17 @@ export default function MediaBoard ({
   } = useNetlessSDK({store, dispatch});
 
   const ref = useRef<any>(false);
+
   const {
-    initShareRTC,
-    exitShareRTC,
-    screenSharing,
-    removeLocalSharedStream
+    setShared,
+    removeLocalSharedStream,
+    setNativeWindowInfo,
+    rtcClient
   } = useAgoraSDK();
+
+  const {
+    platform
+  } = usePlatform();
 
   const [pageTool, setPageTool] = useState<string>('');
 
@@ -58,7 +65,6 @@ export default function MediaBoard ({
     }
   }, []);
 
-  // const [connect, setConnect] = useState<string>('disconnected');
   const connect = useRef<string>('disconnected');
 
   useEffect(() => {
@@ -108,19 +114,6 @@ export default function MediaBoard ({
     }
   }, []);
 
-  useEffect(() => {
-    if (share.current === null && screenSharing === false && store.global.shareClient) {
-      share.current = true
-      exitShareRTC().then(() => {
-      }).catch((err: any) => {
-        console.warn(err);
-      }).finally(() => {
-        share.current = null;
-        console.log('[rtc-client] share stop screen sharing');
-      })
-    }  
-  }, [screenSharing, store.global.shareClient]);
-
   const handlePageTool: any = (evt: any, type: string) => {
     setPageTool(type);
     if (type === 'first_page') {
@@ -140,33 +133,19 @@ export default function MediaBoard ({
     }
 
     if (type === 'screen_sharing') {
-      if (share.current === null) {
-        share.current = true;
-        initShareRTC().then(() => {
-          console.log('share screen success');
-        }).catch((err: any) => {
-          console.error(err);
-        }).finally(() => {
-          share.current = null;
-          console.log('[rtc-share] did screen sharing');
+      setShared(true);
+
+      if (platform === 'electron') {
+        setNativeWindowInfo({
+          visible: true,
+          items: (rtcClient as AgoraElectronClient).getScreenShareWindows()
         })
       }
     }
 
     if (type === 'quit_screen_sharing') {
       removeLocalSharedStream();
-      dispatch({type: ActionType.UPDATE_SCREEN_SHARING, sharing: false});
-      // if (share.current === null) {
-      //   share.current = true;
-      //   exitShareRTC().then(() => {
-      //   }).catch((err: any) => {
-      //     console.error(err);
-      //   }).finally(() => {
-      //     share.current = null;
-      //     dispatch({type: ActionType.UPDATE_SCREEN_SHARING, sharing: false});
-      //     console.log('[rtc-client] stopped screen sharing');
-      //   })
-      // }
+      setShared(false);
     }
 
     if (type === 'peer_hands_up') {
@@ -277,6 +256,7 @@ const items = [
           id={`${store.room.sharedId}`}
           domId={`shared-${store.room.sharedId}`}
           className={'screen-sharing'}
+          streamID={sharedStream.streamID}
           stream={sharedStream.stream}
           video={true}
           audio={true}
@@ -306,11 +286,11 @@ const items = [
       <Control
         notice={store.ui.notice}
         role={role}
-        sharing={!!store.global.sharedStream}
+        sharing={Boolean(sharedStream)}
         current={pageTool}
         currentPage={currentPage}
         totalPage={totalPage}
-        applyLive={isHost}
+        isHost={isHost}
         onClick={handlePageTool}/> : null }
     </div>
   )

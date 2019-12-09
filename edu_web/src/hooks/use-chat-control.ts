@@ -28,9 +28,9 @@ export default function useChatControl () {
   }, [store.user.chat]);
 
   const disableChat: boolean = useMemo(() => {
-    if (muteChat || !chat) return true;
+    if (store.user.role !== UserRole.teacher && (muteChat || !chat)) return true;
     return false;
-  }, [muteChat, chat]);
+  }, [muteChat, chat, store.user.role]);
 
   return {
     chat,

@@ -4,6 +4,10 @@ html, body, #root {
   overflow: hidden;
 }
 
+.draggable {
+  -webkit-app-region: drag;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -108,7 +112,7 @@ body {
 
 .internal-card {
   position: absolute;
-  z-index: 9;
+  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -116,7 +120,6 @@ body {
   height: 100%;
   top: 0;
   left: 0;
-  // z-index: -1;
   position: fixed;
   align-items: center;
   touch-action: none;
@@ -278,6 +281,7 @@ body {
     width: 100%;
     height: 100%;
     display: flex;
+    overflow: hidden;
     div {
       border-top-left-radius: 8px;
       border-bottom-left-radius: 8px;
@@ -293,4 +297,12 @@ body {
       }
     }
   }
+}
+
+.nav-container {
+  -webkit-app-region: drag
+}
+
+button {
+  -webkit-app-region: no-drag;
 }

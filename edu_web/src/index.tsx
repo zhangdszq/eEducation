@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './pages/index';
 import * as serviceWorker from './serviceWorker';
-import {GlobalStoreProvider} from './store';
+import {StoreContainer} from './store';
 
 ReactDOM.render(
-  <GlobalStoreProvider>
+  <StoreContainer>
     <App />
-  </GlobalStoreProvider>
+  </StoreContainer>
 , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

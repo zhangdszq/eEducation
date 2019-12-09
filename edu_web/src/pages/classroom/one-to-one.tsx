@@ -23,6 +23,7 @@ export default function OneToOne() {
           {teacher !== undefined ?
             <VideoPlayer
               role="teacher"
+              streamID={teacher.streamID}
               stream={teacher.stream}
               domId={teacher.id}
               id={teacher.id}
@@ -36,12 +37,14 @@ export default function OneToOne() {
               role="teacher"
               account={'teacher'}
               domId={'teacher'}
+              streamID={0}
               video
               audio
               />}
           {students[0] ?
             <VideoPlayer
               role="student"
+              streamID={students[0].streamID}
               stream={students[0].stream}
               domId={students[0].id}
               id={students[0].id}
@@ -55,6 +58,7 @@ export default function OneToOne() {
               role="student"
               account={"student"}
               domId={"student"}
+              streamID={0}
               video={false}
               audio={false}
             />}

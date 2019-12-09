@@ -26,10 +26,6 @@ export enum ActionType {
   REMOVE_LOCAL_STREAM,
   REMOVE_STREAM,
   CLEAR_STREAMS,
-  ADD_RTC_CLIENT,
-  REMOVE_RTC_CLIENT,
-  ADD_SHARE_RTC_CLIENT,
-  REMOVE_SHARE_RTC_CLIENT,
   ADD_RTM_CLIENT,
   REMOVE_RTM_CLIENT,
   UPDATE_CAN_PASS,
@@ -44,7 +40,6 @@ export enum ActionType {
   UPDATE_TEACHER_UID,
   UPDATE_WHITEBOARD_UID,
   UPDATE_SHARED_UID,
-  UPDATE_LINK_UID,
   UPDATE_WHITEBOARD_CONNECT_STATE,
   ADD_WHITEBOARD,
   REMOVE_WHITEBOARD,
@@ -145,21 +140,21 @@ type RoomAction =
   }
   | {
     type: ActionType.ADD_LOCAL_STREAM
-    stream: any
+    stream: AgoraStream
   }
   | {
     type: ActionType.REMOVE_LOCAL_STREAM
   }
   | {
     type: ActionType.ADD_SHARED_STREAM
-    stream: any
+    stream: AgoraStream
   }
   | {
     type: ActionType.REMOVE_SHARED_STREAM
   }
   | {
     type: ActionType.ADD_REMOTE_STREAM
-    stream: any
+    stream: AgoraStream
   }
   | {
     type: ActionType.REMOVE_REMOTE_STREAM
@@ -248,20 +243,6 @@ type ClientAction =
     type: ActionType.REMOVE_RTM_CLIENT
   }
   | {
-    type: ActionType.ADD_RTC_CLIENT
-    client: AgoraRTCClient
-  }
-  | {
-    type: ActionType.REMOVE_RTC_CLIENT
-  }
-  | {
-    type: ActionType.ADD_SHARE_RTC_CLIENT
-    client: AgoraRTCClient
-  }
-  | {
-    type: ActionType.REMOVE_SHARE_RTC_CLIENT
-  } | 
-  {
     type: ActionType.SAVE_MEDIA
     media: MediaInfo
   }
@@ -271,10 +252,6 @@ type ClientAction =
       key: string
       val: number
     }
-    peerId: string
-  }
-  | {
-    type: ActionType.UPDATE_LINK_UID
     peerId: string
   }
   | {
@@ -355,7 +332,7 @@ export enum ClassState {
   STARTED = 1
 }
 
-export interface AgoraStream {
+export interface AgoraMediaStream {
   id: string
   streamID: number
   local: boolean
@@ -364,6 +341,15 @@ export interface AgoraStream {
   video?: boolean
   audio?: boolean
   playing?: boolean
+}
+
+export class AgoraStream {
+  constructor(
+    public readonly stream: any = stream,
+    public readonly streamID: number = streamID,
+    public readonly local: boolean = local
+  ) {
+  }
 }
 
 export enum UserRole {

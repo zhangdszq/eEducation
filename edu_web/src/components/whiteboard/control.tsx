@@ -30,7 +30,7 @@ const ControlItem = (props: ControlItemProps) => {
 
 interface ControlProps {
   sharing: boolean
-  applyLive?: boolean
+  isHost?: boolean
   current: string
   currentPage: number
   totalPage: number
@@ -41,7 +41,7 @@ interface ControlProps {
 
 export default function Control({
   sharing,
-  applyLive,
+  isHost,
   current,
   currentPage,
   totalPage,
@@ -49,10 +49,7 @@ export default function Control({
   role,
   notice,
 }: ControlProps) {
-  // const {store, methods} = useStore();
-
   const [recording, setRecording] = useState<boolean>(false);
-  // const [applyLive, setApplyLive] = useState<boolean>(false);
 
   const handleRecording = (evt: any) => {
     setRecording(!recording);
@@ -105,10 +102,10 @@ export default function Control({
         {role === 'student' ?
           <>
             <ControlItem
-              name={applyLive ? 'hands_up_end' : 'hands_up'}
+              name={isHost ? 'hands_up_end' : 'hands_up'}
               onClick={onClick}
               active={false}
-              text={applyLive ? 'stop' : ''}
+              text={isHost ? 'stop' : ''}
             />
           </>
          :null}

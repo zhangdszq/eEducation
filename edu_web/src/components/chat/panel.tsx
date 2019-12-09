@@ -15,6 +15,10 @@ interface ChatPanelProps {
   handleChange: (evt: any) => void
 }
 
+const regexPattern = /^\s+/;
+
+const truncateBlank: (m: string) => string = (message: string) => message.replace(regexPattern, '');
+
 export default function ChatPanel ({
   messages,
   value,
@@ -57,14 +61,18 @@ export default function ChatPanel ({
           placeholder="Input Message"
           disableUnderline
           className={"message-input"}
-          onKeyPress={(evt: any) => {
+          onKeyPress={async (evt: any) => {
             if (evt.key === 'Enter') {
-              sendMessage(evt);
+              const val = truncateBlank(value)
+              val.length > 0 && await sendMessage(val);
             }
           }}
-          onChange={handleChange} />
+          onChange={handleChange}/>
         <Button className={'chat-panel-btn'} name={"send"}
-          onClick={sendMessage} />
+          onClick={async (evt: any) => {
+            const val = truncateBlank(value)
+            val.length > 0 && await sendMessage(val);
+          }} />
       </div>
     </>
   )

@@ -1,4 +1,8 @@
 const electron = require('electron');
+
+const ipcMain = electron.ipcMain;
+
+const process = require('process');
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -12,12 +16,15 @@ const url = require('url');
 let mainWindow;
 
 function createWindow() {
+  console.log("path : preload.js ", path.join(__dirname, './preload'));
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      frame: false,
+      width: 700,
+      height: 500,
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        preload: path.join(__dirname, './preload')
       }
     });
 
@@ -26,6 +33,7 @@ function createWindow() {
       protocol: 'file',
       slashes: true,
     })
+    mainWindow.center();
 
     // and load the index.html of the app.
     mainWindow.loadURL(startUrl);
@@ -39,6 +47,31 @@ function createWindow() {
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         mainWindow = null
+    })
+
+    mainWindow.setMenu(null)
+    let resizable = false;
+    let fullscreen = false;
+    mainWindow.setResizable(resizable);
+    ipcMain.on('resize-window', (event, reply) => {
+      mainWindow.center();
+      mainWindow.setContentSize(reply.width, reply.height, false);
+    })
+    ipcMain.on('resizable', () => {
+      mainWindow.setResizable(!resizable);
+      resizable = !resizable;
+    });
+    ipcMain.on('minimum', () => {
+      mainWindow.hide();
+      mainWindow.setFullScreen(false);
+      fullscreen = false;
+    })
+    ipcMain.on('maximum', () => {
+      mainWindow.setFullScreen(!fullscreen);
+      fullscreen = !fullscreen;
+    })
+    ipcMain.on('close', () => {
+      app.quit()
     })
 }
 
@@ -57,10 +90,15 @@ app.on('window-all-closed', function () {
 });
 
 app.on('activate', function () {
+    console.log("process activate");
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
         createWindow()
+    }
+
+    if (mainWindow) {
+      mainWindow.show();
     }
 });
 

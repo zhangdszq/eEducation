@@ -16,10 +16,9 @@ export default function useHomePage() {
   const {initRTM} = useAgoraSDK();
   const rtmClientLock = useRef<any>(false);
 
+  console.log("rtmClientLock.current", rtmClientLock.current);
+
   useEffect(() => {
-    window.onload = () => {
-      dispatch({type: ActionType.UPDATE_CAN_PASS, pass: false});
-    }
     return () => {
       rtmClientLock.current = false;
       ref.current = true;
@@ -38,6 +37,10 @@ export default function useHomePage() {
   const [join, setJoin] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log("rtmClient ", rtmClient);
+  }, [rtmClient]);
+
+  useEffect(() => {
     if (
       rtmClientLock.current === false
       && join
@@ -51,7 +54,7 @@ export default function useHomePage() {
         console.warn('login failured');
         console.warn(err)
       }).finally(() => {
-        rtmClientLock.current = false;
+        // rtmClientLock.current = false;
         console.log('[rtm-client] signin');
       })
     }
@@ -95,12 +98,13 @@ export default function useHomePage() {
     }
   }
 
-  const handleClose = (evt: any) => {
+  const handleSetting = (evt: any) => {
+    console.log('handle setting');
     history.push({pathname: `/device_test`});
   }
 
   return {
-    handleClose,
+    handleSetting,
     handleClick,
     roomName,
     yourName,

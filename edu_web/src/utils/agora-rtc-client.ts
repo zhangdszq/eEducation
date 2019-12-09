@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import AgoraRTC from 'agora-rtc-sdk';
-import { MediaInfo } from '../reducers/initialize-state';
 
 export interface AgoraStreamSpec {
   streamID: number
@@ -12,7 +11,7 @@ export interface AgoraStreamSpec {
   cameraId?: string
   audioOutput?: {
     volume: number
-    deviceId: string // speakerId
+    deviceId: string
   }
 }
 
@@ -42,59 +41,97 @@ export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 export const APP_TOKEN = process.env.REACT_APP_AGORA_APP_TOKEN as string;
 export const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG as string === "true";
 export const SHARE_ID = 7;
-export default class AgoraRTCClient {
 
-  private _bus: EventEmitter;
-  public _client: any;
-  private _localStream: any;
-  private _internalTimer: NodeJS.Timeout | any;
-  public _init: boolean;
+class AgoraRTCClient {
+
   private streamID: any;
-  public _published: boolean;
-  private _channelName: string;
+  public _init: boolean = false;
+  public _joined: boolean = false;
+  public _published: boolean = false;
+  private _internalTimer: NodeJS.Timeout | any;
+  public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'h264'});
+  public _bus: EventEmitter = new EventEmitter();
+  public _localStream: any = null;
 
   constructor () {
-    this._bus = new EventEmitter();
-    this._init = false;
-    this._internalTimer = null;
-    this._client = AgoraRTC.createClient({mode: 'live', codec: 'h264'});
     this.streamID = null;
-    this._published = false;
-    this._channelName = '';
   }
 
-  initClient (appId: string) {
-    return new Promise((resolve, reject) => {
+  // init rtc client when _init flag is false;
+  async initClient(appId: string) {
+    if (this._init) return;
+    let prepareInit = new Promise((resolve, reject) => {
       this._init === false && this._client.init(appId, () => {
         this._init = true;
-        console.log('[rtc-client] init Client', this._init);
-        this._internalTimer = setInterval(() => {
-          this._client.getTransportStats((stats: any) => {
-            const RTT = stats.RTT ? stats.RTT : 0;
-            this._bus.emit('watch-rtt', RTT);
-          });
-        }, 100);
         resolve()
       }, reject);
-      for (let evtName of clientEvents) {
-        this._client.on(evtName, (evt: any) => {
-          this._bus.emit(evtName, evt);
-        })
-      }
     })
+    await prepareInit;
+    console.log("[smart-client] init client");
   }
 
+  // create rtc client;
+  async createClient(appId: string, enableRtt?: boolean) {
+    await this.initClient(appId);
+    this.subscribeClientEvents();
+    if (enableRtt) {
+      this._internalTimer = setInterval(() => {
+        this._client.getTransportStats((stats: any) => {
+          const RTT = stats.RTT ? stats.RTT : 0;
+          this._bus.emit('watch-rtt', RTT);
+        });
+      }, 100);
+    }
+  }
+
+  // destroy rtc client (only unsubscribe client events)
+  destroyClient(): void {
+    this.unsubscribeClientEvents();
+  }
+
+  subscribeClientEvents() {
+    for (let evtName of clientEvents) {
+      this._client.on(evtName, (args: any) => {
+        this._bus.emit(evtName, args);
+      });
+    }
+  }
+
+  unsubscribeClientEvents() {
+    for (let evtName of clientEvents) {
+      this._client.off(evtName, () => {});
+    }
+  }
+
+  subscribeLocalStreamEvents() {
+    for (let evtName of streamEvents) {
+      this._localStream.on(evtName, (args: any) => {
+        this._bus.emit(evtName, args);
+      });
+    }
+  }
+
+  unsubscribeLocalStreamEvents() {
+    if (this._localStream) {
+      for (let evtName of streamEvents) {
+        this._localStream.removeEventListener(evtName, (args: any[]) => {});
+      }
+    }
+  }
+
+  removeAllListeners() {
+    this.unsubscribeClientEvents();
+    this._bus.removeAllListeners();
+  }
+
+  // subscribe
   on(evtName: string, cb: (args: any) => void) {
     this._bus.on(evtName, cb);
   }
 
-  removeAllListeners() {
-    if (this._client) {
-      for (let evtName of clientEvents) {
-        this._client.off(evtName, () => {});
-      }
-    }
-    this._bus.removeAllListeners();
+  // unsubscribe
+  off(evtName: string, cb: (args: any) => void) {
+    this._bus.off(evtName, cb);
   }
 
   async publish() {
@@ -114,7 +151,7 @@ export default class AgoraRTCClient {
 
   async unpublish() {
     return new Promise((resolve, reject) => {
-      if (!this._published) {
+      if (!this._published || !this._localStream) {
         return resolve();
       }
       this._client.unpublish(this._localStream, (err: any) => {
@@ -122,6 +159,7 @@ export default class AgoraRTCClient {
       })
       setTimeout(() => {
         resolve();
+        this.destroyLocalStream();
         this._published = false;
       }, 300);
     })
@@ -137,71 +175,51 @@ export default class AgoraRTCClient {
     });
   }
 
-  async joinChannel(streamID: number, channel: string, dualStream: boolean) {
-    await this.join(streamID, channel);
-    dualStream && await this.enableDualStream();
-    this._channelName = channel;
-    this.streamID = streamID;
-  }
-
-  async publishStream(data: any) {
-    const streamID = this.streamID;
-    await this.createStream({
-      ...data,
-      streamID
+  createLocalStream(data: AgoraStreamSpec): Promise<any> {
+    this._localStream = AgoraRTC.createStream({...data, mirror: false});
+    console.log("[smart-client] _localStream ", this._localStream);
+    return new Promise((resolve, reject) => {
+      this._localStream.init(() => {
+        this.streamID = data.streamID;
+        this.subscribeLocalStreamEvents();
+        if (data.audioOutput && data.audioOutput.deviceId) {
+          this.setAudioOutput(data.audioOutput.deviceId).then(() => {
+            resolve();
+          }).catch((err: any) => {
+            reject(err);
+          })
+        }
+        resolve();
+      }, (err: any) => {
+        reject(err);
+      })
     });
-    await this.publish();
   }
 
-  async unpublishStream() {
-    await this.unpublish();
-    this.clearLocalStream();
-  }
-
-  clearLocalStream () {
+  destroyLocalStream () {
+    this.unsubscribeLocalStreamEvents();
     if(this._localStream) {
-      // for (let stream of streamEvents) {
-      //   this._localStream.off(stream, () => {});
-      // }
       if (this._localStream.isPlaying()) {
         this._localStream.stop();
       }
       this._localStream.close();
     }
     this._localStream = null;
+    this.streamID = 0;
   }
 
-  async republishStream(data: any) {
-    console.log("republishStream start ", data);
-    await this.unpublish();
-    this.clearLocalStream();
-    await this.createStream({
-      ...data,
-      streamID: this.streamID,
-      video: true,
-      audio: true,
-    });
-    await this.publish();
-    console.log("republishStream success", data);
-  }
-
-  async publishScreenShare(channel: string) {
-    await this.initClient(APP_ID);
-    console.log("do init rtc screen sharing client");
-    await this.createStream({
-      streamID: SHARE_ID,
-      video: false,
-      audio: true,
-      screen: true
-    });
-    await this.join(SHARE_ID, channel);
-    await this.publish();
-  }
-
-  join (uid: number, channel: string) {
+  async join (uid: number, channel: string) {
     return new Promise((resolve, reject) => {
       this._client.join(null, channel, +uid, resolve, reject);
     })
+  }
+
+  async leave () {
+    if (this._client) {
+      return new Promise((resolve, reject) => {
+        this._client.leave(resolve, reject);
+      })
+    }
   }
 
   setAudioOutput(speakerId: string) {
@@ -211,38 +229,7 @@ export default class AgoraRTCClient {
   }
 
   setAudioVolume(volume: number) {
-    return new Promise((resolve, reject) => {
-      this._client.setAudioVolume(volume);
-    })
-  }
-
-  createStream(data: AgoraStreamSpec): Promise<any> {
-    this._localStream = AgoraRTC.createStream({...data, mirror: false});
-    return new Promise((resolve, reject) => {
-      this._localStream.init(() => {
-        for (let event of streamEvents) {
-          this._localStream.on(event, (args: any[]) => {
-            this._bus.emit(event, args);
-          });
-        }
-        if (data.audioOutput && data.audioOutput.deviceId) {
-          this.setAudioOutput(data.audioOutput.deviceId).then(() => {
-            resolve(this._localStream);
-          }).catch((err: any) => {
-            reject(err);
-          })
-        }
-        resolve(this._localStream);
-      }, (err: any) => {
-        reject(err);
-      })
-    });
-  }
-
-  leave () {
-    return new Promise((resolve, reject) => {
-      this._client.leave(resolve, reject);
-    })
+    this._client.setAudioVolume(volume);
   }
 
   subscribe(stream: any) {
@@ -252,55 +239,14 @@ export default class AgoraRTCClient {
   }
 
   destroy (): void {
-    console.log('[rtc-client] destroy Client', this.streamID);
     this._internalTimer && clearInterval(this._internalTimer);
     this._internalTimer = null;
-    this.removeAllListeners();
-    if (this._localStream && this._localStream.isPlaying()) {
-      this._localStream.stop();
-    }
-    this._localStream && this._localStream.close();
-    this._localStream = null;
-    this._init = false;
-    this._channelName = '';
-    this.streamID = 0;
-
-  }
-
-  destroyClient(): void {
-    if (!this._client) {
-      return 
-    }
-    for (let evtName of clientEvents) {
-      this._client.off(evtName, () => {});
-    }
-    this._client = null;
+    this.destroyLocalStream();
   }
 
   async exit () {
     await this.leave();
-  }
-
-  async refreshInternal () {
-    this._internalTimer && clearInterval(this._internalTimer);
-    this._internalTimer = null;
-    for (let evtName of clientEvents) {
-      this._client.off(evtName, () => {});
-    }
-    if (this._localStream && this._localStream.isPlaying()) {
-      this._localStream.stop();
-    }
-    this._localStream && this._localStream.close();
-    this._localStream = null;
-    this._init = false;
-  }
-
-  async refresh(data: MediaInfo, published: boolean) {
-    const streamID = this.streamID;
-    this.refreshInternal();
-    await this.leave();
-    // await this.prepareStream(data, this._channelName, published, false);
-    published && await this.publish();
+    await this.destroy();
   }
 
   getDevices (): Promise<Device[]> {
@@ -316,32 +262,145 @@ export default class AgoraRTCClient {
       });
     })
   }
+}
 
-  static async initClient (): Promise<any> {
-    const instance = new AgoraRTCClient();
-    await instance.initClient(APP_ID);
-    return instance;
+export default class AgoraWebClient {
+
+  public readonly rtc: AgoraRTCClient;
+  public shareClient: AgoraRTCClient | any;
+  public localUid: number;
+  public channel: string;
+  public readonly bus: EventEmitter;
+  public shared: boolean;
+  public joined: boolean;
+  public published: boolean;
+
+  constructor() {
+    this.localUid = 0;
+    this.channel = '';
+    this.rtc = new AgoraRTCClient();
+    this.bus = new EventEmitter();
+    this.shared = false;
+    this.shareClient = null;
+    this.joined = false;
+    this.published = false;
   }
 
-  static async createShareScreen(channel: string): Promise<any> {
-    const instance = new AgoraRTCClient();
-    await instance.initClient(APP_ID);
-    return instance;
-  }
-
-  static async getDevices (): Promise<Device[]> {
-    const engine = await this.initClient();
-    await engine.createStream({
-      streamID: 1,
+  async getDevices () {
+    const client = new AgoraRTCClient();
+    await client.initClient(APP_ID);
+    await client.createLocalStream({
+      streamID: 0,
       audio: true,
       video: true,
       microphoneId: '',
       cameraId: ''
     });
     setTimeout(() => {
-      engine._localStream.close();
+      client.destroyLocalStream();
     }, 80);
+    return client.getDevices();
+  }
 
-    return engine.getDevices();
+  async joinChannel(uid: number, channel: string, dual: boolean) {
+    this.localUid = uid;
+    this.channel = channel;
+    await this.rtc.createClient(APP_ID, true);
+    await this.rtc.join(this.localUid, channel);
+    dual && await this.rtc.enableDualStream();
+    this.joined = true;
+  }
+
+  async leaveChannel() {
+    this.localUid = 0;
+    this.channel = '';
+    await this.unpublishLocalStream();
+    await this.rtc.leave();
+    this.rtc.destroy();
+    this.rtc.destroyClient();
+    this.joined = false;
+  }
+
+  async enableDualStream() {
+    return this.rtc.enableDualStream();
+  }
+
+  async publishLocalStream(data: AgoraStreamSpec) {
+    console.log(" publish local stream ", this.published);
+    if (this.published) {
+      await this.unpublishLocalStream();
+      console.log("[smart-client] unpublished", this.published);
+    }
+    await this.rtc.createLocalStream(data);
+    await this.rtc.publish();
+    this.published = true;
+  }
+
+  async unpublishLocalStream() {
+    console.log("[smart-client] unpublishStream");
+    await this.rtc.unpublish();
+    this.published = false;
+  }
+
+  async startScreenShare () {
+    this.shareClient = new AgoraRTCClient();
+    await this.shareClient.createLocalStream({
+      video: false,
+      audio: true,
+      screen: true,
+      streamID: SHARE_ID,
+      microphoneId: '',
+      cameraId: ''
+    })
+    await this.shareClient.createClient(APP_ID);
+    await this.shareClient.join(SHARE_ID, this.channel);
+    await this.shareClient.publish();
+    this.shared = true;
+  }
+
+  async stopScreenShare () {
+    await this.shareClient.unpublish();
+    await this.shareClient.leave();
+    await this.shareClient.destroy();
+    await this.shareClient.destroyClient();
+    this.shared = false;
+  }
+
+  async exit () {
+    await this.leaveChannel();
+    if (this.shared === true) {
+      await this.shareClient.unpublish();
+      await this.shareClient.leave();
+    }
+    if (this.shareClient) {
+      await this.shareClient.destroy();
+      await this.shareClient.destroyClient();
+    }
+  }
+
+  async createPreviewStream({cameraId, microphoneId, speakerId}: any) {
+    const tmpStream = AgoraRTC.createStream({
+      video: true,
+      audio: true,
+      screen: false,
+      cameraId,
+      microphoneId,
+      speakerId
+    })
+    return new Promise((resolve, reject) => {
+      tmpStream.init(() => {
+        resolve(tmpStream);
+      }, (err: any) => {
+        reject(err);
+      })
+    });
+  }
+
+  subscribe(stream: any) {
+    this.rtc.subscribe(stream);
+  }
+
+  setRemoteVideoStreamType(stream: any, type: number) {
+    this.rtc.setRemoteVideoStreamType(stream, type);
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useRootContext } from '../store';
-import { ActionType, User } from '../reducers/types';
+import { ActionType, User, UserRole } from '../reducers/types';
 
 export default function useChatText () {
   const {store, dispatch} = useRootContext();
@@ -18,17 +18,18 @@ export default function useChatText () {
     return store.global.messages;
   }, [store.global.messages]);
 
-  const sendMessage = async (evt: any) => {
+  const sendMessage = async (content: string) => {
     if (store.global.rtmClient && store.user.id) {
-      if (!store.user.chat || Boolean(store.room.muteChat)) return console.warn("chat already muted");
+      if (store.user.role !== UserRole.teacher && (!store.user.chat || Boolean(store.room.muteChat))) return console.warn("chat already muted");
+      if (store.user.role === UserRole.teacher && !store.user.chat) return console.warn("chat already teacher");
       await store.global.rtmClient.sendChannelMessage(JSON.stringify({
         account: store.user.account,
-        content: value
+        content
       }));
       const message = {
         account: store.user.account,
         id: store.user.id,
-        text: value,
+        text: content,
         ts: +Date.now()
       }
       dispatch({type: ActionType.ADD_MESSAGE, message});
