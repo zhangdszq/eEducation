@@ -3,6 +3,7 @@ package io.agora.rtc.lib.net;
 import android.net.Uri;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -13,15 +14,18 @@ import java.util.concurrent.TimeUnit;
 import io.agora.rtc.lib.util.LogUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
 
 public class NetManager {
 
     private static NetManager netManager = new NetManager();
-    private static final LogUtil log = new LogUtil("NetManager");
+//    private static final LogUtil log = new LogUtil("NetManager");
 
     private OkHttpClient client;
 
@@ -71,20 +75,53 @@ public class NetManager {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 try {
                     ResponseBody body = response.body();
-                    if (body == null)
-                        throw new Throwable("response body is null.");
+                    if (body == null) {
+                        onFailure(call, new IOException("onResponse error:" + "response body is null."));
+                    }
 
                     if (response.code() == 200) {
                         if (callBack != null)
                             callBack.onSuccess(body.string());
                     } else {
-                        onFailure(call, new IOException(body.string()));
+                        onFailure(call, new IOException("onResponse error:" + body.string()));
                     }
                 } catch (Throwable e) {
-                    onFailure(call, new IOException(e.toString()));
+                    onFailure(call, new IOException("onResponse error:" + e.toString()));
+                }
+            }
+        });
+        return call;
+    }
+
+    public Call postRequest(String url, RequestBody body, final CallBack callBack) {
+        Request request = new Request.Builder().url(url).post(body).build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                if (callBack != null)
+                    callBack.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try {
+                    ResponseBody body = response.body();
+                    if (body == null) {
+                        onFailure(call, new IOException("onResponse error:" + "response body is null."));
+                    }
+
+                    if (response.code() == 200) {
+                        if (callBack != null)
+                            callBack.onSuccess(body.string());
+                    } else {
+                        onFailure(call, new IOException("onResponse error:" + body.string()));
+                    }
+                } catch (Throwable e) {
+                    onFailure(call, new IOException("onResponse error:" + e.toString()));
                 }
             }
         });

@@ -46,22 +46,30 @@ public class SpeakerView extends AppCompatImageView {
             R.drawable.icon_speaker3
     };
     private int showIndex = 0;
+
+    public static final int STATE_CLOSED = 0; //关闭
+    public static final int STATE_OPENED = 1; //开启
+    public static final int STATE_SPEAKING = 2; //正在说话
     private int speakingState = 0;
 
     /**
-     * @param speakingState// 0为开启，1为关闭，2为正在说话
+     * @param speakingState STATE_CLOSED, STATE_OPENED, STATE_SPEAKING
      */
     public void setSpeakingState(int speakingState) {
         if (this.speakingState != speakingState) {
             this.speakingState = speakingState;
-            if (speakingState == 0) {
+            if (speakingState == STATE_OPENED) {
                 showIndex = 3;
-            } else if (speakingState == 1) {
+            } else if (speakingState == STATE_CLOSED) {
                 showIndex = 0;
-            } else if (speakingState == 2) {
+            } else if (speakingState == STATE_SPEAKING) {
                 showIndex = 0;
             }
             runnable.run();
         }
+    }
+
+    public int getSpeakingState() {
+        return speakingState;
     }
 }
