@@ -18,6 +18,7 @@ import io.agora.rtm.RtmClient;
 import io.agora.rtm.RtmClientListener;
 import io.agora.rtm.RtmMessage;
 import io.agora.rtm.RtmStatusCode;
+import io.agora.rtm.SendMessageOptions;
 
 public class RtmManager {
     private final LogUtil log = new LogUtil("RtmManager");
@@ -227,12 +228,12 @@ public class RtmManager {
         mListenerList.remove(listener);
     }
 
-    public void sendP2PMsg(String peerId, String msg, ResultCallback<Void> callback) {
+    public void sendP2PMsg(String peerId, String msg, SendMessageOptions options, ResultCallback<Void> callback) {
         if (TextUtils.isEmpty(peerId))
             return;
         RtmMessage rtmMessage = mRtmClient.createMessage();
         rtmMessage.setText(msg);
-        mRtmClient.sendMessageToPeer(peerId, rtmMessage, callback);
+        mRtmClient.sendMessageToPeer(peerId, rtmMessage, options, callback);
         log.d("send:" + msg);
     }
 

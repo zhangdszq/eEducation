@@ -76,10 +76,10 @@
         app:layout_constraintTop_toBottomOf="@id/layout_title" />
 
     <ImageView
-        android:id="@+id/ic_show_im"
         android:layout_width="@dimen/dp_30"
         android:layout_height="@dimen/dp_30"
         android:layout_marginTop="@dimen/dp_5"
+        android:onClick="onClickShowChat"
         android:src="@drawable/ic_slt_show_im"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_title" />

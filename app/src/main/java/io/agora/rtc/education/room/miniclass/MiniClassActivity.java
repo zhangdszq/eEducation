@@ -1,10 +1,10 @@
 package io.agora.rtc.education.room.miniclass;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -12,33 +12,166 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
+
+import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
+import io.agora.rtc.education.constant.Constant;
+import io.agora.rtc.education.constant.IntentKey;
+import io.agora.rtc.education.room.bean.Student;
+import io.agora.rtc.education.room.bean.Teacher;
+import io.agora.rtc.education.room.bean.User;
 import io.agora.rtc.education.room.fragment.ChatroomFragment;
 import io.agora.rtc.education.room.fragment.StudentListFrament;
 import io.agora.rtc.education.room.fragment.WhiteboardFragment;
+import io.agora.rtc.education.room.rtm.ChannelMsg;
+import io.agora.rtc.education.room.rtm.MyRtmMessage;
+import io.agora.rtc.education.room.rtm.RtmCmd;
+import io.agora.rtc.education.room.rtm.RtmRepository;
+import io.agora.rtc.education.room.view.TimeView;
 import io.agora.rtc.education.widget.dialog.ConfirmDialogFragment;
+import io.agora.rtc.lib.util.LogUtil;
+import io.agora.rtc.lib.util.ToastUtil;
+import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.RtmChannelMember;
 
-public class MiniClassActivity extends BaseActivity implements View.OnClickListener {
+public class MiniClassActivity extends BaseActivity {
 
+    private LogUtil log = new LogUtil("MiniClassActivity");
     private ImageView mIcWifi;
     private ImageView mIcClose;
     private TextView mTvRoomName;
-    private TextView mTvTime;
-    private LinearLayout mLayoutTime;
+    private TimeView mTimeView;
     private ListView mLvVideos;
     private View mLine1;
     private View mLine2;
     private FrameLayout mFlChatRoom;
     private ConstraintLayout mLayoutIm;
     private FrameLayout mLayoutWhiteboard;
-    private ImageView mIcShowIm;
     private TextView mTvBtnChatRoom;
     private TextView mTvBtnStudent;
 
-    private WhiteboardFragment whiteboardFragment;
-    private ChatroomFragment chatroomFragment;
-    private StudentListFrament studentListFrament;
+    private WhiteboardFragment mWhiteboardFragment;
+    private ChatroomFragment mChatroomFragment;
+    private StudentListFrament mStudentListFrament;
+
+    private VideoItemAdapter mAdapter;
+    private RtmRepository mRtmRepository;
+    private RtcDelegate mRtcDelegate;
+
+    private IRtcEngineEventHandler mRtcHandler = new IRtcEngineEventHandler() {
+        @Override
+        public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
+            log.d("onFirstLocalVideoFrame");
+
+        }
+
+        @Override
+        public void onRtcStats(RtcStats stats) {
+            if (stats.rxPacketLossRate > 30 || stats.txPacketLossRate > 30) {
+                mIcWifi.setColorFilter(getResources().getColor(R.color.red_FF0D19));
+            } else {
+                mIcWifi.clearColorFilter();
+            }
+        }
+
+        @Override
+        public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+            log.i("join rtc success.");
+        }
+    };
+
+    private RtmRepository.EventListener mRtmEventListener = new RtmRepository.EventListener() {
+        @Override
+        public void onJoinRtmChannelFailure(ErrorInfo errorInfo) {
+            log.e("join rtm failed" + errorInfo);
+        }
+
+        @Override
+        public void onJoinRtmChannelSuccess() {
+            log.i("join rtm success");
+        }
+
+        @Override
+        public void onAttributesUpdated() {
+            final ArrayList<User> users = new ArrayList<>();
+
+            Teacher teacher = mRtmRepository.getTeacher();
+            if (teacher != null) {
+                users.add(teacher);
+            }
+            ArrayList<Student> students = mRtmRepository.getStudents();
+            if (students != null && !students.isEmpty()) {
+                users.addAll(students);
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (users.isEmpty() || !(users.get(0) instanceof Teacher)) {
+                        ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
+                        mChatroomFragment.setEditTextEnable(true);
+                    } else {
+                        Teacher teacher = (Teacher) users.get(0);
+                        if (mWhiteboardFragment.getUuid() == null) {
+                            mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
+                                @Override
+                                public void onSuccess() {
+                                    ToastUtil.showShort("join whiteboard room success.");
+                                }
+
+                                @Override
+                                public void onFailure(String err) {
+                                    ToastUtil.showShort("join whiteboard room fail: " + err);
+                                    finish();
+                                }
+                            });
+                        }
+
+                        if (!mTimeView.isStarted() && teacher.class_state == 1) {
+                            mTimeView.start();
+                        } else if (mTimeView.isStarted() && teacher.class_state == 0) {
+                            mTimeView.stop();
+                        }
+
+                        mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1);
+                    }
+
+                    mAdapter.setList(users);
+                    mAdapter.notifyDataSetChanged();
+                    mStudentListFrament.setList(users);
+                }
+            });
+        }
+
+        @Override
+        public void onMessageReceived(MyRtmMessage myRtmMessage, String peerId) {
+            switch (myRtmMessage.cmd) {
+                case RtmCmd.MUTE_AUDIO:
+                    muteLocalAudio(true);
+                    break;
+                case RtmCmd.UNMUTE_AUDIO:
+                    muteLocalAudio(false);
+                    break;
+                case RtmCmd.MUTE_VIDEO:
+                    muteLocalVideo(true);
+                    break;
+                case RtmCmd.UNMUTE_VIDEO:
+                    muteLocalVideo(false);
+                    break;
+            }
+        }
+
+        @Override
+        public void onChannelMessageReceived(final ChannelMsg channelMsg, RtmChannelMember channelMember) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mChatroomFragment.addMessage(channelMsg);
+                }
+            });
+        }
+    };
 
     @Override
     protected void initUI(@Nullable Bundle savedInstanceState) {
@@ -46,72 +179,58 @@ public class MiniClassActivity extends BaseActivity implements View.OnClickListe
         mIcWifi = findViewById(R.id.ic_wifi);
         mIcClose = findViewById(R.id.ic_close);
         mTvRoomName = findViewById(R.id.tv_room_name);
-        mTvTime = findViewById(R.id.tv_time);
-        mLayoutTime = findViewById(R.id.layout_time);
+        mTimeView = findViewById(R.id.time_view);
         mLvVideos = findViewById(R.id.lv_videos);
         mLine1 = findViewById(R.id.line_1);
         mLine2 = findViewById(R.id.line_2);
         mFlChatRoom = findViewById(R.id.fl_chat_room);
         mLayoutIm = findViewById(R.id.layout_im);
         mLayoutWhiteboard = findViewById(R.id.layout_whiteboard);
-        mIcShowIm = findViewById(R.id.ic_show_im);
         mTvBtnChatRoom = findViewById(R.id.tv_btn_chat_room);
         mTvBtnStudent = findViewById(R.id.tv_btn_student);
 
-        mIcClose.setOnClickListener(this);
-        mIcShowIm.setOnClickListener(this);
-        mTvBtnChatRoom.setOnClickListener(this);
-        mTvBtnStudent.setOnClickListener(this);
+        mTvRoomName.setText(getIntent().getStringExtra(IntentKey.ROOM_NAME));
+        mIcClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLeaveDialog();
+            }
+        });
     }
 
     @Override
     protected void initData() {
-        whiteboardFragment = WhiteboardFragment.newInstance(false);
-        studentListFrament = StudentListFrament.newInstance();
-        chatroomFragment = ChatroomFragment.newInstance();
+        mWhiteboardFragment = WhiteboardFragment.newInstance(false);
+        mStudentListFrament = StudentListFrament.newInstance();
+        mChatroomFragment = ChatroomFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.layout_whiteboard, whiteboardFragment)
-                .add(R.id.fl_chat_room, chatroomFragment)
-                .add(R.id.fl_chat_room, studentListFrament)
-                .hide(studentListFrament)
-                .show(chatroomFragment)
+                .add(R.id.layout_whiteboard, mWhiteboardFragment)
+                .add(R.id.fl_chat_room, mChatroomFragment)
+                .add(R.id.fl_chat_room, mStudentListFrament)
+                .hide(mStudentListFrament)
+                .show(mChatroomFragment)
                 .commit();
-    }
 
-    @Override
-    public void onClick(View v) {
-        if (v == null) {
-            return;
-        }
-        switch (v.getId()) {
-            case R.id.ic_close:
-                ConfirmDialogFragment.newInstance(new ConfirmDialogFragment.DialogClickListener() {
-                    @Override
-                    public void clickConfirm() {
-                        finish();
-                    }
 
-                    @Override
-                    public void clickCancel() {
-                    }
-                }, getString(R.string.confirm_leave_room_content))
-                        .show(getSupportFragmentManager(), "leave");
-                break;
-            case R.id.ic_show_im:
-                mIcShowIm.setSelected(!mIcShowIm.isSelected());
-                if (mIcShowIm.isSelected()) {
-                    mLayoutIm.setVisibility(View.GONE);
-                } else {
-                    mLayoutIm.setVisibility(View.VISIBLE);
-                }
-                break;
-            case R.id.tv_btn_chat_room:
-                showChatRoom(true);
-                break;
-            case R.id.tv_btn_student:
-                showChatRoom(false);
-                break;
-        }
+        Intent intent = getIntent();
+        Student myAttr = new Student();
+        myAttr.audio = 1;
+        myAttr.video = 1;
+        myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
+        myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
+
+        mRtmRepository = new RtmRepository(rtmManager(), mRtmEventListener, myAttr);
+        mRtcDelegate = new RtcDelegate(rtcWorker(), mRtcHandler);
+
+        mChatroomFragment.setRtmRepository(mRtmRepository);
+        mStudentListFrament.setRtmRepository(mRtmRepository);
+
+        String room = intent.getStringExtra(IntentKey.ROOM_NAME_REAL);
+        mRtmRepository.joinChannel(room);
+        mRtcDelegate.joinChannel(room, myAttr);
+
+        this.mAdapter = new VideoItemAdapter(myAttr.uid);
+        mLvVideos.setAdapter(mAdapter);
     }
 
     private void showChatRoom(boolean isShow) {
@@ -120,7 +239,58 @@ public class MiniClassActivity extends BaseActivity implements View.OnClickListe
         mTvBtnChatRoom.setSelected(isShow);
         mTvBtnStudent.setSelected(!isShow);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.hide(studentListFrament).hide(chatroomFragment)
-                .show(isShow ? chatroomFragment : studentListFrament).commit();
+        transaction.hide(mStudentListFrament).hide(mChatroomFragment)
+                .show(isShow ? mChatroomFragment : mStudentListFrament).commit();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        showLeaveDialog();
+    }
+
+    private void showLeaveDialog() {
+        ConfirmDialogFragment.newInstance(new ConfirmDialogFragment.DialogClickListener() {
+            @Override
+            public void clickConfirm() {
+                finish();
+            }
+
+            @Override
+            public void clickCancel() {
+            }
+        }, getString(R.string.confirm_leave_room_content))
+                .show(getSupportFragmentManager(), "leave");
+    }
+
+    @Override
+    public void finish() {
+        mWhiteboardFragment.finishRoomPage();
+        mRtmRepository.leaveChannel();
+        mRtcDelegate.leaveChannel();
+        super.finish();
+    }
+
+    private void muteLocalAudio(boolean isMute) {
+        mRtcDelegate.muteLocalAudio(true);
+        mRtmRepository.muteLocalAudio(true);
+    }
+
+    private void muteLocalVideo(boolean isMute) {
+        mRtcDelegate.muteLocalVideo(true);
+        mRtmRepository.muteLocalVideo(true);
+    }
+
+    public void onClickShowChat(View view) {
+        view.setSelected(!view.isSelected());
+        mLayoutIm.setVisibility(view.isSelected() ? View.GONE : View.VISIBLE);
+    }
+
+    public void onClickTabChatRoom(View view) {
+        showChatRoom(true);
+    }
+
+    public void onClickTabStudent(View view) {
+        showChatRoom(false);
     }
 }

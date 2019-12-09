@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.agora.rtc.education">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <application
         android:name=".AGApplication"
         android:allowBackup="true"
@@ -12,17 +21,21 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".room.onetoone.OneToOneActivity"
-            android:theme="@style/AppThemeFullScreen"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".room.largeclass.LargeClassActivity"
             android:configChanges="keyboardHidden|screenSize|orientation" />
         <activity
             android:name=".room.miniclass.MiniClassActivity"
-            android:theme="@style/AppThemeFullScreen"
-            android:screenOrientation="landscape" />
-        <activity android:name=".setting.SettingActivity" />
-        <activity android:name=".main.MainActivity">
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeFullScreen" />
+        <activity
+            android:name=".setting.SettingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

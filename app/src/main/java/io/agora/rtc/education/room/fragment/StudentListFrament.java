@@ -1,37 +1,30 @@
 package io.agora.rtc.education.room.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import io.agora.rtc.education.AGApplication;
+import java.util.ArrayList;
+
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
-import io.agora.rtc.education.base.RcvBaseAdapter;
-import io.agora.rtc.education.constant.Constant;
-import io.agora.rtc.education.constant.Role;
-import io.agora.rtc.education.room.bean.RtmRoomControl;
-import io.agora.rtc.lib.rtm.RtmManager;
-import io.agora.rtc.lib.util.ToastUtil;
-import io.agora.rtm.ErrorInfo;
-import io.agora.rtm.ResultCallback;
+import io.agora.rtc.education.base.BaseListAdapter;
+import io.agora.rtc.education.room.bean.User;
+import io.agora.rtc.education.room.rtm.RtmRepository;
 
 
 public class StudentListFrament extends BaseFragment {
 
-    private RecyclerView mRcvMsg;
-    private RcvStudentListAdapter mRcvAdapter;
-
-    private TextView mTvBtnMuteAll, mTvBtnUnMuteAll;
+    private ListView mLvStudents;
+    private StudentListAdapter mAdapter;
+    private RtmRepository mRepository;
+    private int myUid;
 
     public StudentListFrament() {
     }
@@ -45,163 +38,62 @@ public class StudentListFrament extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_student_list, container, false);
-        if (isNeedShowMuteButton)
-            showMuteUI();
 
-        mRcvMsg = root.findViewById(R.id.rcv_student_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mRcvMsg.setLayoutManager(linearLayoutManager);
-        if (mRcvAdapter == null)
-            mRcvAdapter = new RcvStudentListAdapter();
-        mRcvMsg.setAdapter(mRcvAdapter);
-
+        mLvStudents = root.findViewById(R.id.lv_students);
+        mAdapter = new StudentListAdapter();
+        mLvStudents.setAdapter(mAdapter);
         return root;
     }
 
-//    public void onActivityMainThreadEvent(BaseEvent event) {
-//        if (event instanceof UpdateMembersEvent) {
-//            UpdateMembersEvent myEvent = (UpdateMembersEvent) event;
-//            if (myEvent.getTeacherAttr() != null && UserConfig.getRtmUserId().equals(myEvent.getTeacherAttr().streamId)) {
-//                showMuteUI();
-//            }
-//
-//            if (mRcvAdapter == null) {
-//                mRcvAdapter = new RcvStudentListAdapter();
-//                mRcvAdapter.setList(myEvent.getUserAttrList());
-//            } else {
-//                mRcvAdapter.setList(myEvent.getUserAttrList());
-//                mRcvAdapter.notifyDataSetChanged();
-//            }
-//        } else if (event instanceof MuteEvent) {
-//            MuteEvent muteEvent = (MuteEvent) event;
-//            RtmRoomControl.UserAttr attr = muteEvent.getUserAttr();
-//            if (attr != null) {
-//                mRcvAdapter.updateItemById(attr.streamId, attr);
-//            }
-//        }
-//    }
+    public void setList(ArrayList<User> users) {
+        mAdapter.setList(users);
+        mAdapter.notifyDataSetChanged();
+    }
 
-    private boolean isNeedShowMuteButton = false;
+    public void setRtmRepository(RtmRepository repository) {
+        mRepository = repository;
+        myUid = mRepository.myAttr().uid;
+    }
 
-    private void showMuteUI() {
-        if (mTvBtnUnMuteAll == null) {
-            isNeedShowMuteButton = true;
-            return;
-        }
-        mTvBtnUnMuteAll.setVisibility(View.VISIBLE);
-        mTvBtnMuteAll.setVisibility(View.VISIBLE);
-        mTvBtnMuteAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                muteAll(true);
+    private class StudentListAdapter extends BaseListAdapter<User> {
+
+        @Override
+        protected void onBindViewHolder(BaseViewHolder viewHolder, User user, int position) {
+            final MyViewHolder vH = (MyViewHolder) viewHolder;
+            vH.tvName.setText(user.account);
+            if (myUid == user.getUid()) {
+                vH.ivBtnMuteAudio.setVisibility(View.VISIBLE);
+                vH.ivBtnMuteVideo.setVisibility(View.VISIBLE);
+                vH.ivBtnMuteAudio.setSelected(user.audio == 1);
+                vH.ivBtnMuteVideo.setSelected(user.video == 1);
+                vH.ivBtnMuteAudio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mRepository.muteLocalAudio(v.isSelected());
+                    }
+                });
+                vH.ivBtnMuteVideo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mRepository.muteLocalVideo(v.isSelected());
+                    }
+                });
+            } else {
+                vH.ivBtnMuteVideo.setVisibility(View.GONE);
+                vH.ivBtnMuteAudio.setVisibility(View.GONE);
             }
-        });
+        }
 
-        mTvBtnUnMuteAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                muteAll(false);
-            }
-        });
+        @Override
+        protected BaseViewHolder onCreateViewHolder(int itemViewType, ViewGroup parent) {
+            return new MyViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.item_student_list, parent, false)
+            );
+        }
     }
 
-    ResultCallback<Void> resultCallback = new ResultCallback<Void>() {
-        @Override
-        public void onSuccess(Void aVoid) {
-
-        }
-
-        @Override
-        public void onFailure(ErrorInfo errorInfo) {
-//            ToastUtil.showErrorShortFromSubThread(mContext, R.string.send_message_failed);
-        }
-    };
-
-    private void muteAll(boolean isMute) {
-    }
-
-
-    public static class RcvStudentListAdapter extends RcvBaseAdapter<RtmRoomControl.UserAttr, MyViewHolder> {
-        private Context mContext;
-
-        private RtmManager rtmManager() {
-            return AGApplication.the().getRtmManager();
-        }
-
-        @NonNull
-        @Override
-        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            mContext = viewGroup.getContext();
-            View itemView = View.inflate(mContext, R.layout.rcv_item_student_list, null);
-            return new MyViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
-            final RtmRoomControl.UserAttr student = getItem(i);
-            myViewHolder.tvName.setText(student.name);
-            myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
-            myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
-
-            myViewHolder.ivBtnMuteAudio.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-//                    if (UserConfig.getRole() == Constant.Role.TEACHER) {
-//                        student.isMuteAudio = !student.isMuteAudio;
-//                        myViewHolder.ivBtnMuteAudio.setSelected(student.isMuteAudio);
-//                        rtmManager().mute(student.isMuteAudio, Mute.AUDIO, student.streamId, new ResultCallback<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                            }
-//
-//                            @Override
-//                            public void onFailure(ErrorInfo errorInfo) {
-//                                if (mContext instanceof Activity) {
-//                                    ToastUtil.showErrorShortFromSubThread((Activity) mContext, R.string.send_message_failed);
-//                                }
-//                            }
-//                        });
-//                    } else {
-//                        ToastUtil.showShort("Sorry, only the teacher can mute someone.");
-//                    }
-                }
-            });
-
-            myViewHolder.ivBtnMuteVideo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//
-//                    if (UserConfig.getRole() == Role.TEACHER) {
-//                        student.isMuteVideo = !student.isMuteVideo;
-//                        myViewHolder.ivBtnMuteVideo.setSelected(student.isMuteVideo);
-//                        rtmManager().mute(student.isMuteVideo, Mute.VIDEO, student.streamId, new ResultCallback<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                            }
-//
-//                            @Override
-//                            public void onFailure(ErrorInfo errorInfo) {
-//                                if (mContext instanceof Activity) {
-//                                    ToastUtil.showErrorShortFromSubThread((Activity) mContext, R.string.send_message_failed);
-//                                }
-//                            }
-//                        });
-//                    } else {
-//                        ToastUtil.showShort("Sorry, only the teacher can mute someone.");
-//                    }
-                }
-            });
-        }
-
-        @Override
-        protected String getItemStringId(int position) {
-            return getItem(position) == null ? null : getItem(position).streamId;
-        }
-
-    }
-
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends BaseListAdapter.BaseViewHolder {
         TextView tvName;
         ImageView ivBtnMuteAudio;
         ImageView ivBtnMuteVideo;

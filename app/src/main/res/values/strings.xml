@@ -31,4 +31,6 @@
     <string name="Room_type_should_not_be_empty">Room type should not be empty.</string>
     <string name="color_picker">Color Picker</string>
     <string name="send_message_failed">Send message failed.</string>
+    <string name="No_enough_permissions">没有足够的权限</string>
+    <string name="There_is_no_teacher_in_this_classroom">There is no teacher in this classroom, cannot use the whiteboard.</string>
 </resources>

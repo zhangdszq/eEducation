@@ -4,22 +4,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseListAdapter<T> extends BaseAdapter {
-    private List<T> mList;
+    private List<T> mList = new ArrayList<>();
 
     public List<T> getList() {
         return mList;
     }
 
-    public void setList(List<T> mList) {
+    public void setList(@NonNull List<T> mList) {
         this.mList = mList;
+    }
+
+    public void addItem(T item) {
+        this.mList.add(item);
     }
 
     @Override
     public int getCount() {
-        return mList == null ? 0 : mList.size();
+        return mList.size();
     }
 
     @Override
