@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)studentApplyLink;
 + (NSString *)studentCancelLink;
 + (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio;
++ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio chat:(BOOL)chat;
 + (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio;
 + (NSString *)MD5WithString:(NSString *)str;
 + (BOOL)judgeClassRoomText:(NSString *)text;

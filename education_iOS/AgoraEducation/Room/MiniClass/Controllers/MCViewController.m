@@ -24,11 +24,11 @@
 #import "AERTMMessageBody.h"
 #import "AgoraHttpRequest.h"
 
-#import "MessageManager.h"
+#import "SignalManager.h"
 #import "AEP2pMessageModel.h"
 
 #define kLandscapeViewWidth    222
-@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,MessageDataSourceDelegate>
+@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,SignalDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoManagerViewRightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledBottomCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledWidthCon;
@@ -70,10 +70,11 @@
 
     
     WEAK(self)
-    MessageManager.shareManager.messageDelegate = self;
-    [MessageManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:^{
-
-        [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:YES audioVisble:YES completeSuccessBlock:^{
+    SignalManager.shareManager.messageDelegate = self;
+    [SignalManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:^{
+        
+        NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:weakself.userName video:YES audio:YES chat:YES];
+        [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
             
             [weakself getRtmChannelAttrs];
             
@@ -84,7 +85,7 @@
 
 - (void)getRtmChannelAttrs{
     WEAK(self)
-    [MessageManager.shareManager queryRolesInfoWithChannelName:self.rtmChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+    [SignalManager.shareManager queryGlobalStateWithChannelName:self.rtmChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
         
         [weakself updateTeacherStatusWithModel: rolesInfoModel.teactherModel];
 
@@ -227,29 +228,34 @@
 - (void)onSignalReceived:(NSNotification *)notification{
     AEP2pMessageModel *messageModel = [notification object];
     
-    BOOL audio = MessageManager.shareManager.currentStuModel.audio;
-    BOOL video = MessageManager.shareManager.currentStuModel.video;
+    BOOL audio = SignalManager.shareManager.currentStuModel.audio;
+    BOOL video = SignalManager.shareManager.currentStuModel.video;
 
     switch (messageModel.cmd) {
         case RTMp2pTypeMuteAudio:
         {
-            [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:video audioVisble:NO completeSuccessBlock:nil completeFailBlock:nil];
+            
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:NO];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
             
         }
             break;
         case RTMp2pTypeUnMuteAudio:
         {
-            [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:video audioVisble:YES completeSuccessBlock:nil completeFailBlock:nil];
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:YES];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
         }
             break;
         case RTMp2pTypeMuteVideo:
         {
-            [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:NO audioVisble:audio completeSuccessBlock:nil completeFailBlock:nil];
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:NO audio:audio];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
         }
             break;
         case RTMp2pTypeUnMuteVideo:
         {
-            [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:YES audioVisble:audio completeSuccessBlock:nil completeFailBlock:nil];
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:YES audio:audio];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
         }
             break;
         case RTMp2pTypeApply:
@@ -258,12 +264,22 @@
         case RTMp2pTypeCancel:
             break;
         case RTMp2pTypeMuteChat:
+        {
             self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
             self.chatTextFiled.contentTextFiled.enabled = NO;
+            
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio chat:NO];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
             break;
         case RTMp2pTypeUnMuteChat:
+        {
             self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
             self.chatTextFiled.contentTextFiled.enabled = YES;
+            
+            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio chat:YES];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
             break;
         default:
             break;
@@ -309,7 +325,7 @@
     
     NSString *content = textField.text;
     if (content.length > 0) {
-        [MessageManager.shareManager sendMessageWithText:content];
+        [SignalManager.shareManager sendMessageWithValue:content];
     }
     textField.text = nil;
     [textField resignFirstResponder];
@@ -319,6 +335,15 @@
 - (void)closeRoom {
     WEAK(self)
     [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+        
+        [weakself.navigationView stopTimer];
+        [weakself.rtcEngineKit leaveChannel:nil];
+        [weakself.room disconnect:^{
+        }];
+        [weakself removeTeacherObserver];
+
+        [SignalManager.shareManager leaveChannel];
+        
         [weakself dismissViewControllerAnimated:YES completion:nil];
     }];
 }
@@ -375,14 +400,16 @@
 - (void)muteAudioStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalAudioStream:stream];
 
-    BOOL video = MessageManager.shareManager.currentStuModel.video;
-    [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:video audioVisble:!stream completeSuccessBlock:nil completeFailBlock:nil];
+    BOOL video = SignalManager.shareManager.currentStuModel.video;
+    NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:!stream];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 - (void)muteVideoStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalVideoStream:stream];
     
-    BOOL audio = MessageManager.shareManager.currentStuModel.audio;
-    [MessageManager.shareManager updateStudentChannelAttrsWithVideoVisble:!stream audioVisble:audio completeSuccessBlock:nil completeFailBlock:nil];
+    BOOL audio = SignalManager.shareManager.currentStuModel.audio;
+    NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:!stream audio:audio];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 #pragma mark  --------  Mandatory landscape -------
@@ -411,17 +438,9 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"MCViewController dealloc");
-    
-    [self.navigationView stopTimer];
-    [self.rtcEngineKit leaveChannel:nil];
-    [self.room disconnect:^{
-    }];
-    [self removeTeacherObserver];
-
-    [MessageManager.shareManager leaveChannel];
 }
 
-#pragma mark MessageDataSourceDelegate
+#pragma mark SignalDelegate
 - (void)onUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel {
     [self.messageView addMessageModel:roomMessageModel];
 }
