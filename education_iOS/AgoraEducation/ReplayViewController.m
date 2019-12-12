@@ -53,7 +53,7 @@
     self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:boardView config:config commonCallbackDelegate:self];
     
     //初始化回放配置类
-    WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:@"ed4071b95ca94a339f69bf74077a98f9" roomToken:@"WHITEcGFydG5lcl9pZD0zZHlaZ1BwWUtwWVN2VDVmNGQ4UGI2M2djVGhncENIOXBBeTcmc2lnPWI3NTEyNmVkNzIzNDgxZDViMDk2Nzc2MWM5YTA3MzUyMGFmNDU4YzE6YWRtaW5JZD0xNTgmcm9vbUlkPWVkNDA3MWI5NWNhOTRhMzM5ZjY5YmY3NDA3N2E5OGY5JnRlYW1JZD0yODMmcm9sZT1yb29tJmV4cGlyZV90aW1lPTE2MDc1MTg4MDQmYWs9M2R5WmdQcFlLcFlTdlQ1ZjRkOFBiNjNnY1RoZ3BDSDlwQXk3JmNyZWF0ZV90aW1lPTE1NzU5NjE4NTImbm9uY2U9MTU3NTk2MTg1MjQ3MjAw"];
+    WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:@"" roomToken:@""];
     //回放房间，支持播放m3u8地址。可以播放 rtc 录制的声音内容。
     playerConfig.audioUrl = @"";
     //创建 whitePlayer 实例，进行回放
