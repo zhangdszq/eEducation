@@ -20,7 +20,7 @@
 #import "OTOStudentView.h"
 #import "AERTMMessageBody.h"
 #import "AEStudentModel.h"
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "EEColorShowView.h"
 #import "AgoraHttpRequest.h"
 

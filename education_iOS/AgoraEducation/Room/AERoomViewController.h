@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AEStudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN

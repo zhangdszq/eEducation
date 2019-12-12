@@ -12,7 +12,7 @@
 #import "EEWhiteboardTool.h"
 #import "EEChatTextFiled.h"
 #import "BCStudentVideoView.h"
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AgoraHttpRequest.h"
 #import "MainViewController.h"
 #import "AERTMMessageBody.h"
