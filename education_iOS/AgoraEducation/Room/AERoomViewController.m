@@ -17,9 +17,9 @@
 #import "AERTMMessageBody.h"
 #import "EEChatTextFiled.h"
 
-#import "MessageManager.h"
+#import "SignalManager.h"
 
-@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate, MessageDataSourceDelegate>
+@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;

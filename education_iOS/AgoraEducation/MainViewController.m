@@ -19,7 +19,9 @@
 #import "AERoomViewController.h"
 #import "AEStudentModel.h"
 
-#import "MessageManager.h"
+#import "SignalManager.h"
+
+#import "ReplayViewController.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -101,7 +103,7 @@
     model.appId = kAgoraAppid;
     model.uid = self.uid;
     model.userName = self.userNameTextFiled.text;
-    [MessageManager.shareManager initWithMessageModel:model completeSuccessBlock:nil completeFailBlock:nil];
+    [SignalManager.shareManager initWithMessageModel:model completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (void)keyboardWasShow:(NSNotification *)notification {
@@ -147,7 +149,12 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     
-    self.classNameTextFiled.text = @"test14";
+    ReplayViewController * vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
+    vc.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:vc animated:YES completion:nil];
+    return;
+    
+    self.classNameTextFiled.text = @"agoraadc";
     self.userNameTextFiled.text = @"jerry";
     
     [self.activityIndicator startAnimating];
@@ -192,7 +199,7 @@
 - (void)presentMiniClassViewController {
     WEAK(self)
     NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
-    [MessageManager.shareManager queryRolesInfoWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
 
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
@@ -210,18 +217,18 @@
 - (void)presentOneToOneViewController {
     NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
     WEAK(self)
-    [MessageManager.shareManager queryRolesInfoWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
         
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
         NSInteger studentCount = rolesInfoModel.studentModels.count;
         NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
 
-        if (studentCount < 1) {
+//        if (studentCount < 1) {
             [weakself joinClassRoomWithIdentifier:@"oneToOneRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
-        } else {
-            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
-        }
+//        } else {
+//            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
+//        }
     }];
 }
 

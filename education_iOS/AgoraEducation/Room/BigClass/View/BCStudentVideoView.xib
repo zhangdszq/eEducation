@@ -11,7 +11,7 @@
             <connections>
                 <outlet property="audioMuteButton" destination="bZs-yj-gqt" id="5Xn-AW-hqa"/>
                 <outlet property="defaultImageView" destination="xvm-Hu-ltZ" id="U7F-A6-doy"/>
-                <outlet property="studentRenderView" destination="pmL-xj-wxG" id="UDw-jn-YUA"/>
+                <outlet property="studentRenderView" destination="pmL-xj-wxG" id="g3Y-CD-f3j"/>
                 <outlet property="studentVideoView" destination="iN0-l3-epB" id="UBO-Et-ahb"/>
                 <outlet property="videoMuteButton" destination="bRz-3Z-xUZ" id="N1u-8O-2bx"/>
             </connections>

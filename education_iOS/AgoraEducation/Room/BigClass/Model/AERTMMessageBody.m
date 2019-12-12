@@ -53,6 +53,12 @@
     return attrString;
 }
 
++ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio chat:(BOOL)chat {
+    NSDictionary *dict = @{@"account":name,@"video":@(video),@"audio":@(audio),@"chat":@(chat)};
+    NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
+    return attrString;
+}
+
 + (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
     NSDictionary *dict = @{@"account":name,@"userId": userId,@"video":@(video),@"audio":@(audio)};
     return dict;
