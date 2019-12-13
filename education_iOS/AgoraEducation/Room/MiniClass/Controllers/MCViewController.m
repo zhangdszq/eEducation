@@ -20,7 +20,7 @@
 #import "EEMessageView.h"
 #import "MCStudentListView.h"
 #import "MCSegmentedView.h"
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AERTMMessageBody.h"
 #import "AgoraHttpRequest.h"
 
