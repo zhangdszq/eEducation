@@ -8,15 +8,16 @@
 
 #import "ReplayViewController.h"
 #import <AVKit/AVKit.h>
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "OTOTeacherView.h"
 #import "ReplayControlView.h"
 
-@interface ReplayViewController ()<WhiteCommonCallbackDelegate, WhitePlayerEventDelegate, ReplayControlViewDelegate>
+@interface ReplayViewController ()<WhiteCombineDelegate, WhiteCommonCallbackDelegate, WhitePlayerEventDelegate, ReplayControlViewDelegate>
 
 //@property (nonatomic, strong)AVPlayerViewController *playerVC;
 @property (nonatomic, strong) WhiteSDK *sdk;
 @property (nonatomic, strong) WhitePlayer *player;
+@property (nonatomic, strong) WhiteCombinePlayer *combinePlayer;
 
 @property (weak, nonatomic) IBOutlet UIView *whiteboardBaseView;
 
@@ -36,6 +37,9 @@
     [super viewDidLoad];
 
     self.controlView.delegate = self;
+    WhiteVideoView *videoView = [[WhiteVideoView alloc] initWithFrame:self.teacherView.bounds];
+    videoView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.teacherView addSubview:videoView];
     
     WhiteBoardView *boardView = [[WhiteBoardView alloc] init];
     boardView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -54,8 +58,6 @@
     
     //初始化回放配置类
     WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:@"" roomToken:@""];
-    //回放房间，支持播放m3u8地址。可以播放 rtc 录制的声音内容。
-    playerConfig.audioUrl = @"";
     //创建 whitePlayer 实例，进行回放
 
     WEAK(self)
@@ -64,8 +66,13 @@
             NSLog(@"创建回放房间失败 error:%@", [error localizedDescription]);
         } else {
             weakself.player = player;
+            //TODO: 音视频的url
+            self.combinePlayer = [[WhiteCombinePlayer alloc] initWithMediaUrl:[NSURL URLWithString:@""] whitePlayer:player];
+            //TODO: 把视频 Player 显示在这里
+            [videoView setAVPlayer:self.combinePlayer.nativePlayer];
+            self.combinePlayer.delegate = self;
+            [self.combinePlayer play];
             NSLog(@"创建回放房间成功，开始回放");
-            [weakself.player seekToScheduleTime:0];
         }
     }];
 }
@@ -86,6 +93,17 @@
 /** 当sdk出现未捕获的全局错误时，会在此处对抛出 NSError 对象 */
 - (void)throwError:(NSError *)error {
     NSLog(@"创建白板信息==》%@", [error localizedDescription]);
+}
+
+#pragma mark WhiteCombineDelegate
+- (void)combinePlayerStartBuffering
+{
+    NSLog(@"combinePlayerStartBuffering");
+}
+
+- (void)combinePlayerEndBuffering
+{
+    NSLog(@"combinePlayerEndBuffering");
 }
 
 #pragma mark WhitePlayerEventDelegate
