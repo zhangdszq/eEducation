@@ -14,6 +14,8 @@ import { useAgoraSDK } from '../../hooks/use-agora-sdk';
 import useRoomControl from '../../hooks/use-room-control';
 import { useGlobalContext } from '../../containers/global-container';
 import NativeSharedWindow from '../../components/native-shared-window';
+import { NetlessProvider } from '../../hooks/use-netless-sdk';
+import { RecordingProvider } from '../../hooks/use-recording';
 
 function RoomPage({ children, roomType }: any) {
   const history = useHistory();
@@ -133,27 +135,31 @@ function Classroom() {
   const { roomType } = useParams();
   return (
     <div className="flex-container">
-      <NativeSharedWindow />
-      <Switch>
-        <Route exact path="/classroom/one-to-one">
-          <RoomPage roomType={roomType}>
-            <OneToOne />
-          </RoomPage>
-        </Route>
-        <Route exact path="/classroom/small-class">
-          <RoomPage roomType={roomType}>
-            <SmallClass />
-          </RoomPage>
-        </Route>
-        <Route exact path="/classroom/big-class">
-          <RoomPage roomType={roomType}>
-            <BigClass />
-          </RoomPage>
-        </Route>
-        <Route path="*">
-          <Redirect to="/" />
-        </Route>
-      </Switch>
+      <NetlessProvider>
+        <RecordingProvider>
+          <NativeSharedWindow />
+          <Switch>
+            <Route exact path="/classroom/one-to-one">
+              <RoomPage roomType={roomType}>
+                <OneToOne />
+              </RoomPage>
+            </Route>
+            <Route exact path="/classroom/small-class">
+              <RoomPage roomType={roomType}>
+                <SmallClass />
+              </RoomPage>
+            </Route>
+            <Route exact path="/classroom/big-class">
+              <RoomPage roomType={roomType}>
+                <BigClass />
+              </RoomPage>
+            </Route>
+            <Route path="*">
+              <Redirect to="/" />
+            </Route>
+          </Switch>
+        </RecordingProvider>
+      </NetlessProvider>
     </div>
   )
 }

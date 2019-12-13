@@ -88,6 +88,7 @@ export type ChannelMessage = {
 export interface ChatMessage {
   account: string
   text: string
+  link?: string
   ts: number
   id: string
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react';
 import Whiteboard from './whiteboard';
 import VideoPlayer from '../components/video-player';
 import Control from './whiteboard/control';
@@ -6,12 +6,16 @@ import { useRootContext } from '../store';
 import { ActionType, UserRole } from '../reducers/types';
 import useStream from '../hooks/use-streams';
 import { useLocation } from 'react-router';
-import useNetlessSDK from '../hooks/use-netless-sdk';
+import useNetlessSDK, { stateManager } from '../hooks/use-netless-sdk';
 import { useAgoraSDK } from '../hooks/use-agora-sdk';
 import Tools from './whiteboard/tools';
 import { SketchPicker } from 'react-color';
 import { usePlatform } from '../containers/platform-container';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
+import { UploadBtn } from './whiteboard/upload/upload-btn';
+import { ResourcesMenu } from './whiteboard/resources-menu';
+import ScaleController from './whiteboard/scale-controller';
+import _ from 'lodash';
 
 interface MediaBoardProps {
   handleClick?: (type: string) => void
@@ -37,6 +41,7 @@ export default function MediaBoard ({
     addNewPage,
     changePage,
     room,
+    netlessContext,
   } = useNetlessSDK({store, dispatch});
 
   const ref = useRef<any>(false);
@@ -105,23 +110,14 @@ export default function MediaBoard ({
 
   const {sharedStream} = useStream();
 
-  const share = useRef<any>(null);
-
-  useEffect(() => {
-    share.current = null;
-    return () => {
-      share.current = true;
-    }
-  }, []);
-
   const handlePageTool: any = (evt: any, type: string) => {
     setPageTool(type);
     if (type === 'first_page') {
-      changePage(1);
+      changePage(1, true);
     }
 
     if (type === 'last_page') {
-      changePage(totalPage);
+      changePage(totalPage, true);
     }
 
     if (type === 'prev_page') {
@@ -196,6 +192,12 @@ const items = [
     name: 'pencil'
   },
   {
+    name: 'rectangle',
+  },
+  {
+    name: 'ellipse'
+  },
+  {
     name: 'text'
   },
   {
@@ -204,18 +206,21 @@ const items = [
   {
     name: 'color_picker'
   },
-  // {
-  //   name: 'extra_file'
-  // },
   {
     name: 'add'
-  }
+  },
+  {
+    name: 'upload'
+  },
+  // {
+  //   name: 'folder'
+  // }
 ];
 
   const toolItems = useMemo(() => {
     return items.filter((item: any) => {
       if (role === 'teacher') return item;
-      if (['add'].indexOf(item.name) === -1) {
+      if (['add', 'folder', 'upload'].indexOf(item.name) === -1) {
         return item;
       }
     })
@@ -223,20 +228,29 @@ const items = [
 
   const [tool, setTool] = useState<string | any>('pencil');
 
-  const [visible, toggleVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const handleToolClick = (evt: any, name: string) => {
     if (!room) return;
-    setTool(name);
-    if (name === 'color_picker') {
-      toggleVisible(!visible);
+    if (['upload', 'color_picker'].indexOf(name) !== -1 && name === tool) {
+      setTool('');
       return;
     }
-    visible && toggleVisible(false);
+    setTool(name);
+    if (name === 'color_picker') {
+      return;
+    }
     if (name === 'add' && addNewPage) {
       addNewPage();
       return;
     }
+    if (name === 'upload') {
+      return;
+    }
+    if (name === 'folder') {
+      return
+    }
+    if (!room)return;
     room.setMemberState({currentApplianceName: name});
   }
 
@@ -248,6 +262,18 @@ const items = [
       strokeColor: [r, g, b]
     });
   }
+
+  const UploadPanel = useCallback(() => {
+    if (tool !== 'upload' || !room) return null;
+    return (<UploadBtn 
+      room={room}
+      uuid={room.uuid}
+      roomToken={room.roomToken}
+    />)
+  }, [tool, room]);
+
+
+  const [scale, setScale] = useState<number>(_.get(room, 'state.zoomScale', 1));
   
   return (
     <div className="media-board">
@@ -274,14 +300,29 @@ const items = [
           items={toolItems}
           currentTool={tool}
           handleToolClick={handleToolClick} />
-          {visible ?
+          {tool === 'color_picker' && room && room.state ?
             <SketchPicker
               color={room.state.memberState.strokeColor}
               onChangeComplete={onColorChanged} />
           : null}
         </> : null}
+        <UploadPanel />
         {children ? children : null}
       </div>
+      {store.user.role === UserRole.teacher && room ?
+        <ScaleController
+          zoomScale={scale}
+          onClick={() => {
+            setTool('folder');
+          }}
+          zoomChange={(scale: number) => {
+            room.moveCamera({scale});
+            setScale(room.state.zoomScale);
+          }}
+        />
+        :
+        null
+      }
       { showControl ?
       <Control
         notice={store.ui.notice}
@@ -292,6 +333,23 @@ const items = [
         totalPage={totalPage}
         isHost={isHost}
         onClick={handlePageTool}/> : null }
+        {tool === 'folder' && netlessContext ? 
+          <ResourcesMenu
+            active={netlessContext.activeDir}
+            items={netlessContext.dirs}
+            onClick={(rootPath: string) => {
+              if (room) {
+                room.setScenePath(rootPath);
+                room.setSceneIndex(0);
+                stateManager.updateState(room.state);
+              }
+            }}
+            onClose={(evt: any) => {
+              setMenuVisible(false)
+              setTool('')
+            }}
+          />
+        : null}
     </div>
   )
 }

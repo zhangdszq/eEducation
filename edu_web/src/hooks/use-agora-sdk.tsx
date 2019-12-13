@@ -1,4 +1,3 @@
-
 import React, { useMemo, createContext, useRef, useEffect, useContext, useState } from 'react';
 import { useRootContext } from './../store';
 import { UserState, GlobalState } from './../reducers/initialize-state';
@@ -14,6 +13,7 @@ import { useGlobalContext } from '../containers/global-container';
 import AgoraWebClient from '../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import { usePlatform } from '../containers/platform-container';
+import { recording } from './use-recording';
 
 export interface InitRTCProps {
   media: MediaInfo
@@ -523,6 +523,13 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
   const [applyId, updateApplyId] = useState<number>(0);
 
   useEffect(() => {
+    linkUid.current = applyId;
+    if (linkUid.current) {
+      msgLock.current = 'processing'
+    }
+  }, [applyId]);
+
+  useEffect(() => {
     if (!isLargeClass ||
       store.user.role !== UserRole.teacher ||
       store.ui.notice.reason ||
@@ -550,13 +557,13 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
     }
   }, []);
 
-  // @ts-ignore
-  window.locks = {
-    msgLock,
-    linkUid,
-    rtmLock,
-    rtcLock,
-  }
+  // // @ts-ignore
+  // window.locks = {
+  //   msgLock,
+  //   linkUid,
+  //   rtmLock,
+  //   rtcLock,
+  // }
 
   useEffect(() => {
     if (!store.room.linkId) {
@@ -635,9 +642,27 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
   const initRTM = async () => {
     try {
       dispatch({ type: ActionType.LOADING, payload: true });
+
       const rtmClient = new AgoraRTMClient(APP_ID);
       rtmClient.on('ConnectionStateChanged', ({ newState, reason }: { newState: string, reason: string }) => {
         console.log(`newState: ${newState} reason: ${reason}`);
+        if (reason === 'LOGIN_FAILURE') {
+          dispatch({
+            type: ActionType.ADD_TOAST, toast: {
+              message: "login failure",
+              type: "rtmClient"
+            }
+          });
+          exitAll().then(() => {
+            console.log("[exit rtm] success");
+          }).catch((err: any) => {
+            console.warn('[exit rtm]', err);
+          }).finally(() => {
+            history.push('/');
+            console.log("[rtc-client] exit all");
+          })
+          return;
+        }
         if (reason === 'REMOTE_LOGIN' || newState === 'ABORTED') {
           dispatch({
             type: ActionType.ADD_TOAST, toast: {
@@ -697,9 +722,9 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
           if (store.user.role === UserRole.teacher) {
             if (cmd === RoomMessage.applyCoVideo && !linkUid.current) {
               //@ts-ignore
-              linkUid.current = peerId;
+              // linkUid.current = peerId;
               updateApplyId(+peerId as number);
-              msgLock.current = 'processing'
+              // msgLock.current = 'processing'
               return;
             }
             if (cmd === RoomMessage.cancelCoVideo) {
@@ -737,7 +762,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
               user && console.warn(`[rtm-message] cancel you interactive apply, By Peer User: ${user.account}, reject your apply`);
               rtcLock.current = true;
             }
-            msgLock.current = 'processing'
+            // msgLock.current = 'processing'
           }
         }
       });
@@ -759,6 +784,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
         const chatMessage = {
           account: msg.account,
           text: msg.content,
+          link: msg.link,
           ts: +Date.now(),
           id: memberId,
         }

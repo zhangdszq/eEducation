@@ -1,10 +1,115 @@
 import { EventEmitter } from 'events';
 import "white-web-sdk/style/index.css";
 import { WhiteWebSdk, Room } from 'white-web-sdk';
+import {get} from 'lodash';
+// import {AgoraFetch as fetch} from './fetch';
 
 const whiteboardSdkToken = process.env.REACT_APP_NETLESS_APP_TOKEN;
 const url = `${process.env.REACT_APP_NETLESS_APP_API_ENTRY}${whiteboardSdkToken}`;
 const joinUrl = `${process.env.REACT_APP_NETLESS_APP_JOIN_API}${whiteboardSdkToken}`;
+
+type NetlessRoomArgs = {
+  name: string
+  limit: number
+  mode: string
+}
+
+export class NetlessApi {
+
+  public readonly client: WhiteWebSdk = new WhiteWebSdk();
+
+  constructor () {}
+
+  async applyRoom (uuid?: string, rid?: string) {
+    if (uuid) {
+      let res = await this.sendJoinRoom(uuid, rid);
+      console.log("[white] send join request", res, uuid);
+      return res;
+    }
+    let res = await this.sendCreateRoom({name: rid ? rid : `${+Date.now()}`, limit: 100, mode: 'historied'});
+    console.log("[white] send create request", res);
+    return res;
+  }
+
+  async join (_uuid: string, _rid?: string): Promise<Room> {
+    let {uuid, roomToken} = await this.applyRoom(_uuid, _rid);
+    console.log("[white] send join websocket with uuid", uuid, _uuid, roomToken);
+    return await this.client.joinRoom({
+      uuid,
+      roomToken,
+      disableBezier: true,
+    }, {
+      onPhaseChanged: phase => {
+
+      },
+      onRoomStateChanged: modifyState => {
+
+      },
+      onDisconnectWithError: error => {
+
+      },
+      onKickedWithReason: reason => {
+
+      },
+      onKeyDown: event => {
+
+      },
+      onKeyUp: event => {
+
+      },
+      onHandToolActive: active => {
+
+      },
+      onPPTLoadProgress: (uuid: string, progress: number) => {
+
+      }
+    });
+  }
+
+  async sendCreateRoom ({name, limit, mode}: NetlessRoomArgs) {
+    let response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        limit,
+        mode
+      })
+    });
+    let json = await response.json();
+    console.log('[White] sendCreateRoom: create room', json);
+    return {
+      uuid: get(json, 'msg.room.uuid'),
+      roomToken: get(json, 'msg.roomToken')
+    }
+  }
+
+  async sendJoinRoom (uuid: string, rid?: string): Promise<any> {
+    let response = await fetch(
+      `${joinUrl}&uuid=${uuid}`, {
+        method: 'POST',
+        headers: {
+          "content-type": "application/json",
+        },
+        // body: JSON.stringify({
+        //   name: `${Date.now()}`,
+        //   limit: 100,
+        //   // mode: 'historied'
+        // })
+      }
+    );
+    let json = await response.json();
+    console.log('[White] sendJoinRoom: send join room', json);
+    return {
+      uuid: uuid,
+      roomToken: get(json, 'msg.roomToken')
+    }
+  }
+}
+
+export const apiClient = new NetlessApi();
 
 export default class NetlessWhiteboardClient {
 
@@ -15,74 +120,55 @@ export default class NetlessWhiteboardClient {
 
   constructor() {
     this._bus = new EventEmitter();
+    this.room = null;
   }
 
   public on(evt: string, cb: (evt: any) => void) {
     this._bus.on(evt, cb);
   }
 
-  async init(params: any) {
-    const whiteWebSdk = new WhiteWebSdk({
-      urlInterrupter: url => url,
-    });
-    let uuid = '';
-    let roomToken = '';
-    let api = url;
-    const body: any = {
-      method: 'POST',
-      headers: {
-        "content-type": "application/json",
-      }
-    }
-    if (params.whiteboard_uid) {
-      uuid = params.whiteboard_uid;
-      api = `${joinUrl}&uuid=${uuid}`
-    } else {
-      body.body = JSON.stringify({
-        name: params.rid,
-        limit: 100
-      })
-    }
-    let response = await fetch(api, body);
-    let json = await response.json();
-    if (!uuid) uuid = json.msg.room.uuid;
-    roomToken = json.msg.roomToken;
-    this.room = await whiteWebSdk.joinRoom({
+  async init({whiteboard_uid, rid}: {whiteboard_uid: string, rid: string}) {
+    let { uuid, roomToken } = await apiClient.applyRoom(whiteboard_uid, rid);
+    this.room = await apiClient.client.joinRoom({
       uuid,
       roomToken,
-      disableBezier: true
+      disableBezier: true,
     }, {
-      onRoomStateChanged: (modifyState) => {
-        // 只有发生改变的字段，才存在
-        // if (modifyRoomState.globalState) {
-        //   // 完整的 globalState 
-        //   const newGlobalState = modifyRoomState.globalState;
-        // }
-        // if (modifyRoomState.memberState) {
-        //   const newMemberState = modifyRoomState.memberState;
-        // }
+      onPhaseChanged: phase => {
+
+      },
+      onRoomStateChanged: modifyState => {
         if (modifyState.sceneState) {
           const newSceneState = modifyState.sceneState;
           this._bus.emit("sceneChanged", newSceneState);
         }
-        // if (modifyRoomState.broadcastState) {
-        //   const broadcastState = modifyRoomState.broadcastState;
-        // }
       },
-      // 白板连接状态改变, 具体状态如下:
-      onPhaseChanged: function (phase) {
-        // "connecting",
-        // "connected",
-        // "reconnecting",
-        // "disconnecting",
-        // "disconnected",
+      onDisconnectWithError: error => {
+
       },
+      onKickedWithReason: reason => {
+
+      },
+      onKeyDown: event => {
+
+      },
+      onKeyUp: event => {
+
+      },
+      onHandToolActive: active => {
+
+      },
+      onPPTLoadProgress: (uuid: string, progress: number) => {
+
+      }
     });
     return this.room;
   }
 
   async destroy() {
-    await this.room.disconnect();
+    if (this.room) {
+      await this.room.disconnect();
+    }
     this._bus.removeAllListeners();
   }
 
