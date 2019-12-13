@@ -6,7 +6,7 @@ target 'AgoraEducation' do
   use_frameworks!
   pod 'AFNetworking', '~> 3.2.1'
   pod 'MJExtension', '~> 3.0.16'
-  pod 'White-SDK-iOS'
+  pod 'Whiteboard'
   pod 'AgoraRtcEngine_iOS', '<=2.9.0'
 end
 
