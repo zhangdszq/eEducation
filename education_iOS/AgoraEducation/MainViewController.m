@@ -149,12 +149,12 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     
-    ReplayViewController * vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
-    vc.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:vc animated:YES completion:nil];
-    return;
+//    ReplayViewController * vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
+//    vc.modalPresentationStyle = UIModalPresentationFullScreen;
+//    [self presentViewController:vc animated:YES completion:nil];
+//    return;
     
-    self.classNameTextFiled.text = @"agoraadc";
+    self.classNameTextFiled.text = @"test01";
     self.userNameTextFiled.text = @"jerry";
     
     [self.activityIndicator startAnimating];
