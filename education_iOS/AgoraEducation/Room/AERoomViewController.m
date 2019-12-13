@@ -48,7 +48,7 @@
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
-    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
+    WhiteSDK *whiteSDK = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
     if (self.room) {
         [self.room disconnect:^{
         }];
@@ -56,26 +56,30 @@
     WEAK(self)
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-        [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
+        [whiteSDK joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
             weakself.room = room;
-            [weakself getWhiteboardSceneInfo];
+            
+//            [weakself.room setViewMode:WhiteViewModeFollower];
+
             [room refreshViewSize];
-            [room disableCameraTransform:NO];
+            
             [weakself.room disableDeviceInputs:disableDevice];
-            [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:720 height:720]];
+            
+            NSArray<WhiteScene *> *scenes = room.state.sceneState.scenes;
+            NSInteger sceneIndex = room.state.sceneState.index;
+            weakself.sceneCount = scenes.count;
+            weakself.sceneIndex = sceneIndex;
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+            
+            WhiteScene *scene = scenes[sceneIndex];
+            if (scene.ppt) {
+                [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
+            }
+            
+//            [room disableCameraTransform:NO];
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
-    }];
-}
-
-- (void)getWhiteboardSceneInfo {
-    WEAK(self)
-    [self.room getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {
-        weakself.scenes = [NSArray arrayWithArray:state.scenes];
-        weakself.sceneDirectory = @"/";
-        weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)weakself.sceneIndex+1,weakself.scenes.count]];
     }];
 }
 
@@ -137,41 +141,68 @@
 }
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
-    self.sceneIndex = modifyState.sceneState.index;
-    if (modifyState.sceneState && modifyState.sceneState.scenes.count > self.scenes.count) {
-        self.scenes = [NSArray arrayWithArray:modifyState.sceneState.scenes];
-        self.sceneDirectory = @"/";
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
+    if (modifyState.sceneState) {
+        self.sceneIndex = modifyState.sceneState.index;
+        self.sceneCount = modifyState.sceneState.scenes.count;
+        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", self.sceneIndex + 1, self.sceneCount]];
+        
+        WhiteScene *scene = modifyState.sceneState.scenes[self.sceneIndex];
+        if (scene.ppt) {
+            [self.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
+        }
     }
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
 }
 
 - (void)previousPage {
     if (self.sceneIndex > 0) {
         self.sceneIndex--;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        WEAK(self);
+        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        }];
     }
 }
 
 - (void)nextPage {
-    if (self.sceneIndex < self.scenes.count - 1  && self.scenes.count > 0) {
+    if (self.sceneIndex < self.sceneCount - 1  && self.sceneCount > 0) {
         self.sceneIndex ++;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        
+        WEAK(self);
+        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        }];
     }
 }
 
 - (void)lastPage {
-    self.sceneIndex = self.scenes.count;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex - 1].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%zd/%zd",self.scenes.count,self.scenes.count]];
+    self.sceneIndex = self.sceneCount - 1;
+    
+    WEAK(self);
+    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, (long)weakself.sceneCount]];
+    }];
+}
+
+-(void)setWhiteSceneIndex:(NSInteger)sceneIndex completionSuccessBlock:(void (^ _Nullable)(void ))successBlock {
+    
+    [self.room setSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
+        
+        if(success) {
+            if(successBlock != nil){
+                successBlock();
+            }
+        } else {
+            NSLog(@"设置场景Index失败：%@", error);
+        }
+    }];
 }
 
 - (void)firstPage {
     self.sceneIndex = 0;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[0].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"1/%zd",self.scenes.count]];
+    WEAK(self);
+    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+    }];
 }
 
 - (void)selectWhiteboardToolIndex:(NSInteger)index {

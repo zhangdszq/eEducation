@@ -20,11 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *rtmChannelName;
 
 @property (nonatomic, strong) WhiteBoardView *boardView;
-@property (nonatomic, strong) WhiteSDK *sdk;
 @property (nonatomic, strong) WhiteRoom *room;
 @property (nonatomic, assign) NSInteger sceneIndex;
-@property (nonatomic, copy) NSString *sceneDirectory;
-@property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
+@property (nonatomic, assign) NSInteger sceneCount;
+
 @property (nonatomic, strong) WhiteMemberState *memberState;
 @property (nonatomic, strong) UIColor *pencilColor;
 
@@ -35,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic, assign)NSInteger teacherUid;
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
-- (void)getWhiteboardSceneInfo;
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;

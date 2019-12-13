@@ -74,4 +74,11 @@
     CGSize labelSize = [messageModel.content boundingRectWithSize:CGSizeMake(self.messageTableView.frame.size.width - 38, 1000) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
     return labelSize.height + 60;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    AERoomMessageModel *messageModel = self.messageArray[indexPath.row];
+//    messageModel.content
+//    [UIApplication.sharedApplication.keyWindow.rootViewController presentViewController:nil animated:YES completion:nil];
+}
 @end
