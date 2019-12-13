@@ -40,6 +40,7 @@ public class UserVideoItem extends ConstraintLayout {
         tvName = findViewById(R.id.tv_name);
         if (isShowVideoIcon) {
             icVideo = findViewById(R.id.ic_video);
+            icVideo.setVisibility(VISIBLE);
         }
         icAudio = findViewById(R.id.ic_audio);
         layoutPlaceHolder = findViewById(R.id.layout_place_holder);
@@ -48,7 +49,9 @@ public class UserVideoItem extends ConstraintLayout {
 
     public void setVideoView(SurfaceView surfaceView) {
         layoutVideo.removeAllViews();
-        layoutVideo.addView(surfaceView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        if (surfaceView != null) {
+            layoutVideo.addView(surfaceView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        }
     }
 
     public SurfaceView getSurfaceView() {

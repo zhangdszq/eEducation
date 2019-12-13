@@ -13,8 +13,8 @@ import android.widget.TextView;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
 import io.agora.rtc.education.base.BaseListAdapter;
-import io.agora.rtc.education.room.rtm.ChannelMsg;
-import io.agora.rtc.education.room.rtm.RtmRepository;
+import io.agora.rtc.education.im.ChannelMsg;
+import io.agora.rtc.education.im.IMStrategy;
 
 public class ChatroomFragment extends BaseFragment {
 
@@ -22,7 +22,7 @@ public class ChatroomFragment extends BaseFragment {
     private MsgListAdapter mAdapter;
     private EditText mEdtSendMsg;
     private View mViewRoot;
-    private RtmRepository mRtmRepository;
+    private IMStrategy mImStrategy;
 
     public static ChatroomFragment newInstance() {
         ChatroomFragment fragment = new ChatroomFragment();
@@ -50,12 +50,12 @@ public class ChatroomFragment extends BaseFragment {
         mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (!mEdtSendMsg.isEnabled() || mRtmRepository == null) {
+                if (!mEdtSendMsg.isEnabled() || mImStrategy == null) {
                     return false;
                 }
                 String text = mEdtSendMsg.getText().toString();
                 if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && !TextUtils.isEmpty(text)) {
-                    ChannelMsg msg = mRtmRepository.sendChannelMessage(text);
+                    ChannelMsg msg = mImStrategy.sendChannelMessage(text);
                     mEdtSendMsg.setText("");
                     addMessage(msg);
                     return true;
@@ -79,8 +79,8 @@ public class ChatroomFragment extends BaseFragment {
         }
     }
 
-    public void setRtmRepository(RtmRepository repository) {
-        this.mRtmRepository = repository;
+    public void setImStrategy(IMStrategy imStrategy) {
+        this.mImStrategy = imStrategy;
     }
 
     static class MsgListAdapter extends BaseListAdapter<ChannelMsg> {

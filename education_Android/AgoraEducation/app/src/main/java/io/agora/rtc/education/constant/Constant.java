@@ -13,4 +13,6 @@ public class Constant {
     }
 
     public static String RTM_CHANNEL_KEY_TEACHER = "teacher";
+
+    public static int SHARE_UID = 7;
 }
