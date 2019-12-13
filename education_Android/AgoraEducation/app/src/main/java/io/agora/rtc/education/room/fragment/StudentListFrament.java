@@ -15,16 +15,24 @@ import java.util.ArrayList;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
 import io.agora.rtc.education.base.BaseListAdapter;
-import io.agora.rtc.education.room.bean.User;
-import io.agora.rtc.education.room.rtm.RtmRepository;
+import io.agora.rtc.education.data.bean.User;
+import io.agora.rtc.education.im.IMStrategy;
 
 
 public class StudentListFrament extends BaseFragment {
 
     private ListView mLvStudents;
     private StudentListAdapter mAdapter;
-    private RtmRepository mRepository;
     private int myUid;
+    private IMStrategy mImStrategy;
+
+    public void setMyUid(int myUid) {
+        this.myUid = myUid;
+    }
+
+    public void setImStrategy(IMStrategy imStrategy) {
+        this.mImStrategy = imStrategy;
+    }
 
     public StudentListFrament() {
     }
@@ -50,11 +58,6 @@ public class StudentListFrament extends BaseFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    public void setRtmRepository(RtmRepository repository) {
-        mRepository = repository;
-        myUid = mRepository.myAttr().uid;
-    }
-
     private class StudentListAdapter extends BaseListAdapter<User> {
 
         @Override
@@ -69,13 +72,13 @@ public class StudentListFrament extends BaseFragment {
                 vH.ivBtnMuteAudio.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mRepository.muteLocalAudio(v.isSelected());
+                        mImStrategy.muteLocalAudio(v.isSelected());
                     }
                 });
                 vH.ivBtnMuteVideo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mRepository.muteLocalVideo(v.isSelected());
+                        mImStrategy.muteLocalVideo(v.isSelected());
                     }
                 });
             } else {

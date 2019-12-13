@@ -5,7 +5,7 @@ import android.view.SurfaceView;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
-import io.agora.rtc.education.room.bean.Student;
+import io.agora.rtc.education.data.bean.Student;
 import io.agora.rtc.lib.rtc.RtcWorkerThread;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
@@ -24,8 +24,7 @@ public class RtcDelegate {
         rtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
         rtcEngine.enableAudio();
         rtcEngine.enableVideo();
-        rtcEngine.muteLocalAudioStream(myAttr.audio == 0);
-        rtcEngine.muteLocalVideoStream(myAttr.video == 0);
+        changeRoleToAudience();
         VideoEncoderConfiguration config = new VideoEncoderConfiguration(
                 VideoEncoderConfiguration.VD_360x360,
                 VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
@@ -54,5 +53,13 @@ public class RtcDelegate {
 
     public void bindRemoteRtcVideo(int uid, SurfaceView surfaceView) {
         rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+    }
+
+    public void changeRoleToBroadcaster() {
+        rtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
+    }
+
+    public void changeRoleToAudience() {
+        rtcEngine.setClientRole(Constants.CLIENT_ROLE_AUDIENCE);
     }
 }

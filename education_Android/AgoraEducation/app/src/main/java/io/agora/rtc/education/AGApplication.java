@@ -2,6 +2,8 @@ package io.agora.rtc.education;
 
 import android.app.Application;
 
+import io.agora.rtc.education.im.rtm.RtmStrategy;
+import io.agora.rtc.education.im.IMContext;
 import io.agora.rtc.education.room.whiteboard.WhiteboardAPI;
 import io.agora.rtc.lib.rtc.RtcWorkerThread;
 import io.agora.rtc.lib.rtm.RtmManager;
@@ -15,6 +17,7 @@ public class AGApplication extends Application {
     private static AGApplication instance;
     private RtmManager rtmManager;
     private RtcWorkerThread rtcWorker;
+    private IMContext imContext;
 
     public static AGApplication the() {
         return instance;

@@ -5,7 +5,7 @@ import android.view.SurfaceView;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
-import io.agora.rtc.education.room.bean.Student;
+import io.agora.rtc.education.data.bean.Student;
 import io.agora.rtc.lib.rtc.RtcWorkerThread;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;

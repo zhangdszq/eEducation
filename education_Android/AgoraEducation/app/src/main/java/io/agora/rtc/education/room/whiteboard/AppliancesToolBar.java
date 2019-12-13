@@ -40,7 +40,8 @@ public class AppliancesToolBar {
         if (mCurrentApplianceName != null) {
             ImageView originalView = mAppliances.get(mCurrentApplianceName);
             if (originalView != null) {
-                originalView.clearColorFilter();
+//                originalView.clearColorFilter();
+                originalView.setSelected(false);
             }
         }
 
@@ -48,7 +49,8 @@ public class AppliancesToolBar {
         mColor = color;
         ImageView currentView = mAppliances.get(mCurrentApplianceName);
         if (currentView != null) {
-            currentView.setColorFilter(getColorInt(color));
+//            currentView.setColorFilter(getColorInt(color));
+            currentView.setSelected(true);
         }
     }
 
@@ -71,10 +73,10 @@ public class AppliancesToolBar {
             memberState.setStrokeColor(mColor);
             mRoom.setMemberState(memberState);
         }
-        ImageView v = mAppliances.get(mCurrentApplianceName);
-        if (v != null) {
-            v.setColorFilter(color);
-        }
+//        ImageView v = mAppliances.get(mCurrentApplianceName);
+//        if (v != null) {
+//            v.setColorFilter(color);
+//        }
     }
 
     public void setColor(int[] color) {
@@ -84,10 +86,10 @@ public class AppliancesToolBar {
             memberState.setStrokeColor(mColor);
             mRoom.setMemberState(memberState);
         }
-        ImageView v = mAppliances.get(mCurrentApplianceName);
-        if (v != null) {
-            v.setColorFilter(getColorInt(color));
-        }
+//        ImageView v = mAppliances.get(mCurrentApplianceName);
+//        if (v != null) {
+//            v.setColorFilter(getColorInt(color));
+//        }
     }
 
     public void setRoom(Room room) {

@@ -34,55 +34,91 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/MiniClassActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
-            </state>
-          </provider>
-          <provider editor-type-id="android-manifest" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/AppUtil.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="22" column="33" selection-start-line="22" selection-start-column="33" selection-end-line="22" selection-end-column="33" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/main/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="24" column="53" selection-start-line="24" selection-start-column="53" selection-end-line="24" selection-end-column="53" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/CryptoUtil.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
+            <state relative-caret-position="117">
+              <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#4075#4400#0" expanded="true" />
+                <element signature="e#4399#4400#0" expanded="true" />
+                <element signature="e#4891#4892#0" expanded="true" />
+                <element signature="e#4940#4941#0" expanded="true" />
+                <element signature="e#5429#7189#0" expanded="true" />
+                <element signature="e#5633#5679#0" expanded="true" />
+                <element signature="e#7188#7189#0" expanded="true" />
+                <element signature="e#7952#8124#0" expanded="true" />
+                <element signature="e#8123#8124#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/build.gradle">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmStrategy.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="282">
+              <caret line="209" column="20" selection-start-line="209" selection-start-column="20" selection-end-line="209" selection-end-column="20" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2834#3345#0" expanded="true" />
+                <element signature="e#3344#3345#0" expanded="true" />
+                <element signature="e#5405#5406#0" expanded="true" />
+                <element signature="e#5456#5457#0" expanded="true" />
+                <element signature="e#5962#5963#0" expanded="true" />
+                <element signature="e#6012#6013#0" expanded="true" />
+                <element signature="e#6854#6855#0" expanded="true" />
+                <element signature="e#6891#6892#0" expanded="true" />
+                <element signature="e#8928#8929#0" expanded="true" />
+                <element signature="e#8975#8976#0" expanded="true" />
+                <element signature="e#9022#9023#0" expanded="true" />
+                <element signature="e#9070#9071#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/base/BaseActivity.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="-1840">
+              <caret line="19" column="34" selection-start-line="19" selection-start-column="34" selection-end-line="19" selection-end-column="34" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#758#759#0" expanded="true" />
+                <element signature="e#787#788#0" expanded="true" />
+                <element signature="e#1103#1104#0" expanded="true" />
+                <element signature="e#1133#1134#0" expanded="true" />
+                <element signature="e#1265#1266#0" expanded="true" />
+                <element signature="e#1296#1297#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/LargeClassActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="714">
+              <caret line="155" selection-start-line="155" selection-end-line="155" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#4556#4557#0" expanded="true" />
+                <element signature="e#4605#4606#0" expanded="true" />
+                <element signature="e#4975#5123#0" expanded="true" />
+                <element signature="e#5122#5123#0" expanded="true" />
+                <element signature="e#5646#9743#0" expanded="true" />
+                <element signature="e#5877#5923#0" expanded="true" />
+                <element signature="e#9742#9743#0" expanded="true" />
+                <element signature="e#10398#10776#0" expanded="true" />
+                <element signature="e#10775#10776#0" expanded="true" />
+                <element signature="e#10875#11084#0" expanded="true" />
+                <element signature="e#11083#11084#0" expanded="true" />
+                <element signature="e#11291#11463#0" expanded="true" />
+                <element signature="e#11462#11463#0" expanded="true" />
+                <element signature="e#17211#17506#0" expanded="true" />
+                <element signature="e#17505#17506#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -90,10 +126,101 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="48" column="37" selection-start-line="48" selection-start-column="37" selection-end-line="48" selection-end-column="37" />
+            <state relative-caret-position="282">
+              <caret line="222" column="17" selection-start-line="222" selection-start-column="17" selection-end-line="222" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#7985#8694#0" expanded="true" />
+                <element signature="e#8693#8694#0" expanded="true" />
+                <element signature="e#9089#9261#0" expanded="true" />
+                <element signature="e#9260#9261#0" expanded="true" />
+                <element signature="e#10766#10917#0" expanded="true" />
+                <element signature="e#10916#10917#0" expanded="true" />
+                <element signature="e#11050#11263#0" expanded="true" />
+                <element signature="e#11262#11263#0" expanded="true" />
+                <element signature="e#11317#11504#0" expanded="true" />
+                <element signature="e#11503#11504#0" expanded="true" />
+                <element signature="e#13002#13003#0" expanded="true" />
+                <element signature="e#13035#13036#0" expanded="true" />
+                <element signature="e#13228#13229#0" expanded="true" />
+                <element signature="e#13268#13269#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/UserVideoItem.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="282">
+              <caret line="92" column="28" lean-forward="true" selection-start-line="92" selection-start-column="28" selection-end-line="92" selection-end-column="28" />
+              <folding>
+                <element signature="e#2973#2974#0" expanded="true" />
+                <element signature="e#3009#3010#0" expanded="true" />
+                <element signature="e#3351#3352#0" expanded="true" />
+                <element signature="e#3398#3399#0" expanded="true" />
+                <element signature="e#3434#3435#0" expanded="true" />
+                <element signature="e#3483#3484#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/SpeakerView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="346">
+              <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="189" selection-start-line="189" selection-end-line="189" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#5184#5403#0" expanded="true" />
+                <element signature="e#5402#5403#0" expanded="true" />
+                <element signature="e#6153#6154#0" expanded="true" />
+                <element signature="e#6181#6182#0" expanded="true" />
+                <element signature="e#8046#8365#0" expanded="true" />
+                <element signature="e#8364#8365#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1070">
+              <caret line="190" selection-start-line="190" selection-end-line="190" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#4097#4361#0" expanded="true" />
+                <element signature="e#4360#4361#0" expanded="true" />
+                <element signature="e#4773#5023#0" expanded="true" />
+                <element signature="e#5022#5023#0" expanded="true" />
+                <element signature="e#5292#5611#0" expanded="true" />
+                <element signature="e#5610#5611#0" expanded="true" />
+                <element signature="e#5832#6123#0" expanded="true" />
+                <element signature="e#6122#6123#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/e04689b0e289cfa0d650e161eaed7a43/jetified-white-sdk-android-2.4.21/jars/classes.jar!/com/herewhite/sdk/Room.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="291">
+              <caret line="78" column="16" selection-start-line="78" selection-start-column="16" selection-end-line="78" selection-end-column="16" />
+              <folding>
+                <element signature="e#2692#2693#0" expanded="true" />
+                <element signature="e#2765#2766#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -110,6 +237,7 @@
         <option value="layoutResourceFile_vertical" />
         <option value="valueResourceFile" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -138,6 +266,13 @@
       <find>onUserMuteVideo</find>
       <find>line</find>
       <find>getid</find>
+      <find>onsu</find>
+      <find>onroompha</find>
+      <find>clearco</find>
+      <find>parseChannelAttributes</find>
+      <find>login</find>
+      <find>mRtmRepository</find>
+      <find>mute</find>
     </findStrings>
     <replaceStrings>
       <replace>visible</replace>
@@ -147,73 +282,71 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_white_board.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_one_to_one.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/title_lanscape.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/RtcAgency.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/RtcAgency.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/TimeView.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/view_time.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/styles.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/setting/SettingActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/base/BaseActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_setting.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/StatusBarUtil.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/item_user_video.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_mini_class.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/rtc/RtcWorkerThread.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/AppliancesTooBar.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/rcv_item_student_list.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/drawable/slt_icon_mute_audio.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/drawable/slt_icon_mute_video.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_student_list.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/StudentListFrament.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/base/BaseListAdapter.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/item_msg_me.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_chatroom.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/drawable/btn_radius_4_stroke_1_dbe2e5_solid_trasparent.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/item_msg_other.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/item_user_video_large_class_teacher.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/UserVideoItem.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/VideoItemAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/item_user_video_mini_class.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_portrait.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/RtcAgency.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/RtcProxy.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ResultCallBack.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardDelegate.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/RtmRepository.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/DataRepository.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_lanscape.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/id.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/ids.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ChatroomFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/CryptoUtil.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/constant/IntentKey.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/main/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/LargeClassActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/MyRtmMessage.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/SceneHelper.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_one_to_one.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/constant/Constant.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_mini_class.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/RtmRepository.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/ChannelMember.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/ErrorInfo.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RTMErrorInfo.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ReadOnlyData.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/DataRepository.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ReadWriteData.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/bean/Teacher.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/bean/User.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/RtmRepository.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMEventListener.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/RtmStrategy.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmManager.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/AGApplication.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataRepository.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataReadOnly.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ChatroomFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/StudentListFrament.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMStrategy.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmRepository.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMContext.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/AppliancesToolBar.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_lanscape.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_portrait.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/UserVideoItem.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/RtcDelegate.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/item_user_video_large_class_teacher.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmStrategy.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/MiniClassActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/LargeClassActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="240" />
-    <option name="y" value="130" />
-    <option name="width" value="1440" />
-    <option name="height" value="785" />
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1066" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -300,7 +433,7 @@
               <item name="agora" type="462c0819:PsiDirectoryNode" />
               <item name="rtc" type="462c0819:PsiDirectoryNode" />
               <item name="education" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="im" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
@@ -314,6 +447,48 @@
               <item name="rtc" type="462c0819:PsiDirectoryNode" />
               <item name="education" type="462c0819:PsiDirectoryNode" />
               <item name="room" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AgoraEducation" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="io" type="462c0819:PsiDirectoryNode" />
+              <item name="agora" type="462c0819:PsiDirectoryNode" />
+              <item name="rtc" type="462c0819:PsiDirectoryNode" />
+              <item name="education" type="462c0819:PsiDirectoryNode" />
+              <item name="room" type="462c0819:PsiDirectoryNode" />
+              <item name="fragment" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AgoraEducation" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="io" type="462c0819:PsiDirectoryNode" />
+              <item name="agora" type="462c0819:PsiDirectoryNode" />
+              <item name="rtc" type="462c0819:PsiDirectoryNode" />
+              <item name="education" type="462c0819:PsiDirectoryNode" />
+              <item name="room" type="462c0819:PsiDirectoryNode" />
+              <item name="largeclass" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AgoraEducation" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="io" type="462c0819:PsiDirectoryNode" />
+              <item name="agora" type="462c0819:PsiDirectoryNode" />
+              <item name="rtc" type="462c0819:PsiDirectoryNode" />
+              <item name="education" type="462c0819:PsiDirectoryNode" />
+              <item name="room" type="462c0819:PsiDirectoryNode" />
+              <item name="miniclass" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
@@ -335,13 +510,7 @@
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-              <item name="agora" type="462c0819:PsiDirectoryNode" />
-              <item name="rtc" type="462c0819:PsiDirectoryNode" />
-              <item name="education" type="462c0819:PsiDirectoryNode" />
-              <item name="room" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
@@ -349,11 +518,8 @@
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-              <item name="agora" type="462c0819:PsiDirectoryNode" />
-              <item name="rtc" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="layout" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
@@ -361,31 +527,27 @@
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-              <item name="agora" type="462c0819:PsiDirectoryNode" />
-              <item name="rtc" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="rtm" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="values" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
               <item name="AgoraEducation" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-              <item name="agora" type="462c0819:PsiDirectoryNode" />
-              <item name="rtc" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="gradle" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AgoraEducation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AgoraEducation" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="gradle" type="462c0819:PsiDirectoryNode" />
+              <item name="wrapper" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -396,7 +558,7 @@
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/layout" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/chrome/FFmpegAndroid-master" />
     <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -407,6 +569,9 @@
     <option name="MODULE_TAB" value="Signing Configs" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="io.agora.rtc.education" />
+    </key>
     <key name="android.template.packageName">
       <recent name="io.agora.rtc.education.room.onetoone" />
       <recent name="io.agora.rtc.education.room.largeclass" />
@@ -414,11 +579,11 @@
       <recent name="io.agora.rtc.education.setting" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="io.agora.rtc.education.im.rtm" />
+      <recent name="io.agora.rtc.education.data" />
       <recent name="io.agora.rtc.education.room.largeclass" />
       <recent name="io.agora.rtc.education.room.miniclass" />
       <recent name="io.agora.rtc.education.room.bean" />
-      <recent name="io.agora.rtc.education.base" />
-      <recent name="io.agora.rtc.education.room.fragment" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\_dev\_git\agora_io_usecase\eEducation\education_Android\AgoraEducation\app\src\main\res\layout" />
@@ -514,10 +679,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="848" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1066" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.26923078" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.25375536" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Build Variants" order="3" side_tool="true" />
       <window_info id="Image Layers" order="4" />
@@ -525,14 +691,14 @@
       <window_info id="Resources Explorer" order="6" />
       <window_info id="Capture Tool" order="7" />
       <window_info id="Favorites" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Build" order="0" weight="0.48345324" />
+      <window_info anchor="bottom" id="Build" order="0" weight="0.16153847" />
       <window_info anchor="bottom" id="Run" order="1" weight="0.32857144" />
-      <window_info anchor="bottom" id="Logcat" order="2" weight="0.44505495" />
+      <window_info anchor="bottom" id="Logcat" order="2" weight="0.60659343" />
       <window_info anchor="bottom" id="TODO" order="3" />
       <window_info anchor="bottom" id="Android Profiler" order="4" />
       <window_info anchor="bottom" id="Find" order="5" weight="0.32747254" />
       <window_info anchor="bottom" id="Terminal" order="6" weight="0.32857144" />
-      <window_info anchor="bottom" id="Debug" order="7" weight="0.5065934" />
+      <window_info active="true" anchor="bottom" id="Debug" order="7" visible="true" weight="0.46593407" />
       <window_info anchor="bottom" id="Flutter Performance" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
@@ -543,507 +709,601 @@
       <window_info anchor="right" id="Flutter Outline" order="4" sideWeight="0.1294964" weight="0.527897" />
       <window_info anchor="right" id="Gradle" order="5" />
       <window_info anchor="right" id="Palette&#9;" order="6" />
-      <window_info anchor="right" id="Preview" order="7" weight="0.34066522" />
+      <window_info anchor="right" id="Preview" order="7" weight="0.33959228" />
       <window_info anchor="right" id="Hierarchy" order="8" weight="0.3299356" />
     </layout>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/rtm/RtmManager.java</url>
           <line>244</line>
           <properties />
           <option name="timeStamp" value="10" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/main/MainActivity.java</url>
-          <line>97</line>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java</url>
+          <line>190</line>
           <properties />
-          <option name="timeStamp" value="14" />
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java</url>
+          <line>205</line>
+          <properties />
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java</url>
+          <line>189</line>
+          <properties />
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java</url>
+          <line>193</line>
+          <properties />
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java</url>
+          <line>197</line>
+          <properties />
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java</url>
+          <line>229</line>
+          <properties />
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java</url>
+          <line>223</line>
+          <properties />
+          <option name="timeStamp" value="36" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Remote">
         <watch expression="isChecked" />
+        <watch expression="rtcEngine.muteLocalAudioStream(isMute)" />
       </configuration>
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_msg_me.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/ChannelMsg.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="7" column="38" selection-start-line="7" selection-start-column="38" selection-end-line="7" selection-end-column="38" />
-          <folding>
-            <element signature="e#242#255#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_chatroom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="14" column="43" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/btn_radius_4_stroke_1_dbe2e5_solid_transparent.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="3" column="44" selection-start-line="3" selection-start-column="44" selection-end-line="3" selection-end-column="44" />
+        <state relative-caret-position="48">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/btn_radius_4_stroke_1_dbe2e5_solid_e7f6ff.xml">
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f000b71ac7a4b4444c52efb9cadf4269/rtm-sdk-1.2.0/jars/libs/agora-rtm-sdk.jar!/io/agora/rtm/internal/RtmChannelMemberImpl.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="19" column="51" lean-forward="true" selection-start-line="19" selection-start-column="51" selection-end-line="19" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f000b71ac7a4b4444c52efb9cadf4269/rtm-sdk-1.2.0/jars/libs/agora-rtm-sdk.jar!/io/agora/rtm/ErrorInfo.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
-          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+          <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="30" selection-end-column="5" />
           <folding>
-            <element signature="e#134#147#0" expanded="true" />
-            <element signature="e#234#247#0" expanded="true" />
+            <element signature="e#253#254#0" expanded="true" />
+            <element signature="e#295#296#0" expanded="true" />
+            <element signature="e#463#464#0" expanded="true" />
+            <element signature="e#500#501#0" expanded="true" />
+            <element signature="e#612#613#0" expanded="true" />
+            <element signature="e#687#688#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_msg_other.xml">
+    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/java/lang/Object.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="25" column="46" lean-forward="true" selection-start-line="25" selection-start-column="46" selection-end-line="25" selection-end-column="46" />
+        <state relative-caret-position="579">
+          <caret line="271" column="18" selection-start-line="271" selection-start-column="18" selection-end-line="271" selection-end-column="18" />
         </state>
       </provider>
-      <provider editor-type-id="android-designer2" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/title_lanscape.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RTMErrorInfo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="439">
-          <caret line="37" column="49" lean-forward="true" selection-start-line="37" selection-start-column="49" selection-end-line="37" selection-end-column="49" />
+        <state relative-caret-position="408">
+          <caret line="17" column="31" lean-forward="true" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
         </state>
       </provider>
-      <provider editor-type-id="android-designer2" />
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/libs/agora-rtc-sdk.jar!/io/agora/rtc/gl/EglRenderer.class">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/ErrorInfo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="67" column="14" selection-start-line="67" selection-start-column="14" selection-end-line="67" selection-end-column="14" />
+        <state relative-caret-position="48">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataReadWrite.java" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/bean/User.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
           <folding>
-            <element signature="e#2614#2615#0" expanded="true" />
-            <element signature="e#2646#2647#0" expanded="true" />
+            <element signature="e#209#210#0" expanded="true" />
+            <element signature="e#233#234#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/libs/agora-rtc-sdk.jar!/io/agora/rtc/mediaio/BaseVideoRenderer.class">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/bean/Teacher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="50" column="39" lean-forward="true" selection-start-line="50" selection-start-column="39" selection-end-line="50" selection-end-column="39" />
+        <state relative-caret-position="120">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
           <folding>
-            <element signature="e#1881#1882#0" expanded="true" />
-            <element signature="e#1937#1938#0" expanded="true" />
-            <element signature="e#1978#1979#0" expanded="true" />
-            <element signature="e#2017#2018#0" expanded="true" />
-            <element signature="e#4072#4073#0" expanded="true" />
-            <element signature="e#4122#4123#0" expanded="true" />
-            <element signature="e#4173#4174#0" expanded="true" />
-            <element signature="e#4223#4224#0" expanded="true" />
-            <element signature="e#4252#4253#0" expanded="true" />
-            <element signature="e#4294#4295#0" expanded="true" />
-            <element signature="e#4324#4325#0" expanded="true" />
-            <element signature="e#4367#4368#0" expanded="true" />
-            <element signature="e#4393#4394#0" expanded="true" />
-            <element signature="e#4430#4431#0" expanded="true" />
+            <element signature="e#137#138#0" expanded="true" />
+            <element signature="e#163#164#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_user_video_large_class_teacher.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/bean/Student.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="17" column="33" lean-forward="true" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
+        <state relative-caret-position="48">
+          <caret line="2" column="20" lean-forward="true" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="33" />
           <folding>
-            <element signature="e#597#611#0" expanded="true" />
-            <element signature="e#1037#1051#0" expanded="true" />
-            <element signature="e#1229#1243#0" expanded="true" />
-            <element signature="e#1366#1380#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/UserVideoItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="114" column="31" selection-start-line="114" selection-start-column="31" selection-end-line="114" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#528#529#0" expanded="true" />
-            <element signature="e#558#559#0" expanded="true" />
-            <element signature="e#623#624#0" expanded="true" />
-            <element signature="e#660#661#0" expanded="true" />
-            <element signature="e#2916#2917#0" expanded="true" />
-            <element signature="e#3305#3306#0" expanded="true" />
-            <element signature="e#3390#3391#0" expanded="true" />
+            <element signature="e#148#149#0" expanded="true" />
+            <element signature="e#174#175#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/VideoItemAdapter.java">
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f000b71ac7a4b4444c52efb9cadf4269/rtm-sdk-1.2.0/jars/libs/agora-rtm-sdk.jar!/io/agora/rtm/SendMessageOptions.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="586">
-          <caret line="49" column="43" selection-start-line="49" selection-start-column="43" selection-end-line="49" selection-end-column="43" />
+        <state relative-caret-position="96">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_user_video_mini_class.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/main/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="52" column="59" lean-forward="true" selection-start-line="52" selection-start-column="59" selection-end-line="52" selection-end-column="59" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/bean/Teacher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="12" column="15" selection-start-line="12" selection-start-column="15" selection-end-line="12" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/RtcDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/rtc/RtcWorkerThread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="709">
-          <caret line="169" column="22" selection-start-line="169" selection-start-column="22" selection-end-line="169" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/RtcDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="12" column="24" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1580#1581#0" expanded="true" />
-            <element signature="e#1620#1621#0" expanded="true" />
-            <element signature="e#1670#1671#0" expanded="true" />
-            <element signature="e#1724#1725#0" expanded="true" />
-            <element signature="e#1774#1775#0" expanded="true" />
-            <element signature="e#1828#1829#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/AppliancesToolBar.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="309">
-          <caret line="23" column="33" lean-forward="true" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/StudentListFrament.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="69" column="29" lean-forward="true" selection-start-line="69" selection-start-column="29" selection-end-line="69" selection-end-column="29" />
-          <folding>
-            <element signature="e#2488#2489#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0cb92180a49ea01491835474689189c2/jetified-white-sdk-android-2.4.12/jars/classes.jar!/com/herewhite/sdk/Room.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="86" column="16" selection-start-line="86" selection-start-column="16" selection-end-line="86" selection-end-column="16" />
-          <folding>
-            <element signature="e#3028#3029#0" expanded="true" />
-            <element signature="e#3101#3102#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/SceneHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="63" column="16" selection-start-line="63" selection-start-column="16" selection-end-line="63" selection-end-column="16" />
-          <folding>
-            <element signature="e#1848#1849#0" expanded="true" />
-            <element signature="e#1882#1883#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="75">
+          <caret line="48" column="12" selection-start-line="48" selection-start-column="12" selection-end-line="48" selection-end-column="12" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/rtm/RtmManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2823">
-          <caret line="236" column="29" lean-forward="true" selection-start-line="236" selection-start-column="29" selection-end-line="236" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ResultCallBack.java" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3997">
-          <caret line="200" column="5" lean-forward="true" selection-start-line="200" selection-start-column="5" selection-end-line="200" selection-end-column="5" />
+        <state relative-caret-position="120">
+          <caret line="23" column="45" selection-start-line="23" selection-start-column="45" selection-end-line="23" selection-end-column="45" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3084#3309#0" expanded="true" />
-            <element signature="e#3308#3309#0" expanded="true" />
-            <element signature="e#3965#4229#0" expanded="true" />
-            <element signature="e#4228#4229#0" expanded="true" />
-            <element signature="e#4641#4891#0" expanded="true" />
-            <element signature="e#4890#4891#0" expanded="true" />
-            <element signature="e#5160#5479#0" expanded="true" />
-            <element signature="e#5478#5479#0" expanded="true" />
-            <element signature="e#5689#5980#0" expanded="true" />
-            <element signature="e#5979#5980#0" expanded="true" />
-            <element signature="e#6190#6424#0" expanded="true" />
-            <element signature="e#6423#6424#0" expanded="true" />
+            <element signature="e#3007#3008#0" expanded="true" />
+            <element signature="e#3041#3042#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardAPI.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/AGApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="618">
+          <caret line="44" column="25" lean-forward="true" selection-start-line="44" selection-start-column="25" selection-end-line="44" selection-end-column="25" />
+          <folding>
+            <element signature="e#535#536#0" expanded="true" />
+            <element signature="e#566#567#0" expanded="true" />
+            <element signature="e#806#807#0" expanded="true" />
+            <element signature="e#853#854#0" expanded="true" />
+            <element signature="e#1004#1044#0" expanded="true" />
+            <element signature="e#1142#1174#0" expanded="true" />
+            <element signature="e#1365#1366#0" expanded="true" />
+            <element signature="e#1398#1399#0" expanded="true" />
+            <element signature="e#1434#1435#0" expanded="true" />
+            <element signature="e#1470#1471#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ChatroomFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2830#2831#0" expanded="true" />
+            <element signature="e#2874#2875#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/widget/dialog/ConfirmDialogFragment.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/DataRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="541">
-          <caret line="121" column="24" lean-forward="true" selection-start-line="121" selection-start-column="24" selection-end-line="121" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1048#1049#0" expanded="true" />
-            <element signature="e#1078#1079#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/rtm/RtmRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4224">
-          <caret line="204" column="27" selection-start-line="204" selection-start-column="27" selection-end-line="204" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/RtcDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
-          <caret line="54" column="16" selection-start-line="54" selection-start-column="16" selection-end-line="54" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/modules-2/files-2.1/androidx.fragment/fragment/1.1.0/b9ebb04df2cb0cad4419af3c658690bc82aa5706/fragment-1.1.0-sources.jar!/androidx/fragment/app/FragmentTransaction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1415">
-          <caret line="132" column="31" selection-start-line="132" selection-start-column="31" selection-end-line="132" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_lanscape.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_one_to_one.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/setting/SettingActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
-          <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/widget/FrameLayout.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="56" column="37" selection-start-line="56" selection-start-column="37" selection-end-line="56" selection-end-column="37" />
+          <caret line="25" column="43" lean-forward="true" selection-start-line="25" selection-start-column="43" selection-end-line="25" selection-end-column="43" />
           <folding>
-            <element signature="e#3059#3060#0" expanded="true" />
-            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#848#1234#0" expanded="true" />
+            <element signature="e#1233#1234#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/view/ViewGroup.java">
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/4.2.0/446acd5a6fc0cf117c5df424af09b38f461d29e6/okhttp-4.2.0.jar!/okhttp3/RequestBody.class">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardAPI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="119" column="43" selection-start-line="119" selection-start-column="43" selection-end-line="119" selection-end-column="43" />
+        <state relative-caret-position="984">
+          <caret line="58" column="43" selection-start-line="58" selection-start-column="43" selection-end-line="58" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/ChannelMember.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="9" column="5" lean-forward="true" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#6386#6387#0" expanded="true" />
+            <element signature="e#6433#6434#0" expanded="true" />
+            <element signature="e#6480#6481#0" expanded="true" />
+            <element signature="e#6528#6529#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMEventListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="2" column="25" lean-forward="true" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/P2PMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+          <folding>
+            <element signature="e#126#127#0" expanded="true" />
+            <element signature="e#156#157#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/AppliancesToolBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="39" column="44" lean-forward="true" selection-start-line="39" selection-start-column="44" selection-end-line="39" selection-end-column="44" />
+          <folding>
+            <element signature="e#895#1087#0" expanded="true" />
+            <element signature="e#1086#1087#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="10" column="15" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/view/View.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="25298" column="32" selection-start-line="25298" selection-start-column="16" selection-end-line="25298" selection-end-column="32" />
+        <state relative-caret-position="168">
+          <caret line="22852" column="18" selection-start-line="22852" selection-start-column="18" selection-end-line="22852" selection-end-column="18" />
           <folding>
-            <element signature="e#588397#588398#0" expanded="true" />
-            <element signature="e#588427#588428#0" expanded="true" />
+            <element signature="e#915229#915230#0" expanded="true" />
+            <element signature="e#915256#915257#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/ids.xml" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/ChatroomFragment.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_lanscape.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="83" column="5" lean-forward="true" selection-start-line="83" selection-start-column="5" selection-end-line="83" selection-end-column="5" />
-          <folding>
-            <element signature="e#1671#2375#0" expanded="true" />
-            <element signature="e#2374#2375#0" expanded="true" />
-            <element signature="e#2808#2809#0" expanded="true" />
-            <element signature="e#2856#2857#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="553">
+          <caret line="57" column="20" selection-start-line="57" selection-start-column="20" selection-end-line="57" selection-end-column="20" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/java/security/MessageDigest.java">
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/libs/agora-rtc-sdk.jar!/io/agora/rtc/internal/RtcEngineImpl.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="291">
-          <caret line="192" column="32" selection-start-line="192" selection-start-column="32" selection-end-line="192" selection-end-column="32" />
+          <caret line="703" column="15" selection-start-line="703" selection-start-column="15" selection-end-line="703" selection-end-column="15" />
         </state>
       </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b29d458dcc0f9179fa532d6d2fcc2b2/full-sdk-2.9.2/jars/libs/agora-rtc-sdk.jar!/io/agora/rtc/RtcEngine.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="109" column="24" selection-start-line="109" selection-start-column="24" selection-end-line="109" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_user_video_mini_class.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_large_class_portrait.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="625">
-          <caret line="90" column="53" selection-start-line="90" selection-start-column="53" selection-end-line="90" selection-end-column="53" />
+        <state relative-caret-position="272">
+          <caret line="35" column="20" selection-start-line="35" selection-start-column="20" selection-end-line="35" selection-end-column="20" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMCmd.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="10" column="12" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/IMStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="20" column="9" selection-start-line="20" selection-start-column="9" selection-end-line="20" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/RtcDelegate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="608">
+          <caret line="61" column="16" selection-start-line="61" selection-start-column="16" selection-end-line="61" selection-end-column="16" />
+          <folding>
+            <element signature="e#1539#1540#0" expanded="true" />
+            <element signature="e#1579#1580#0" expanded="true" />
+            <element signature="e#1629#1630#0" expanded="true" />
+            <element signature="e#1683#1684#0" expanded="true" />
+            <element signature="e#2262#2263#0" expanded="true" />
+            <element signature="e#2280#2281#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/StudentListFrament.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/item_user_video_large_class_teacher.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="31" column="43" lean-forward="true" selection-start-line="31" selection-start-column="43" selection-end-line="31" selection-end-column="43" />
+          <folding>
+            <element signature="e#1037#1051#0" expanded="true" />
+          </folding>
         </state>
       </provider>
       <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="30" column="18" selection-start-line="30" selection-start-column="18" selection-end-line="30" selection-end-column="18" />
+        <state relative-caret-position="664">
+          <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/constant/Constant.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataReadOnly.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/StatusBarUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/LargeClassActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="426">
-          <caret line="232" column="64" selection-start-line="232" selection-start-column="64" selection-end-line="232" selection-end-column="64" />
+        <state relative-caret-position="150">
+          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3145#6200#0" expanded="true" />
-            <element signature="e#3378#3424#0" expanded="true" />
-            <element signature="e#6199#6200#0" expanded="true" />
-            <element signature="e#7187#7359#0" expanded="true" />
-            <element signature="e#7358#7359#0" expanded="true" />
-            <element signature="e#8633#8784#0" expanded="true" />
-            <element signature="e#8783#8784#0" expanded="true" />
-            <element signature="e#8838#9211#0" expanded="true" />
-            <element signature="e#9210#9211#0" expanded="true" />
-            <element signature="e#9265#9560#0" expanded="true" />
-            <element signature="e#9559#9560#0" expanded="true" />
-            <element signature="e#12544#12975#0" expanded="true" />
-            <element signature="e#12974#12975#0" expanded="true" />
-            <element signature="e#13020#13451#0" expanded="true" />
-            <element signature="e#13450#13451#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/constant/IntentKey.java">
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/e04689b0e289cfa0d650e161eaed7a43/jetified-white-sdk-android-2.4.21/jars/classes.jar!/com/herewhite/sdk/WhiteSdk.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" column="39" lean-forward="true" selection-start-line="4" selection-start-column="39" selection-end-line="4" selection-end-column="39" />
+        <state relative-caret-position="291">
+          <caret line="60" column="16" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/e04689b0e289cfa0d650e161eaed7a43/jetified-white-sdk-android-2.4.21/jars/classes.jar!/com/herewhite/sdk/Room.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="78" column="16" selection-start-line="78" selection-start-column="16" selection-end-line="78" selection-end-column="16" />
+          <folding>
+            <element signature="e#2692#2693#0" expanded="true" />
+            <element signature="e#2765#2766#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/im/rtm/RtmStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="209" column="20" selection-start-line="209" selection-start-column="20" selection-end-line="209" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2834#3345#0" expanded="true" />
+            <element signature="e#3344#3345#0" expanded="true" />
+            <element signature="e#5405#5406#0" expanded="true" />
+            <element signature="e#5456#5457#0" expanded="true" />
+            <element signature="e#5962#5963#0" expanded="true" />
+            <element signature="e#6012#6013#0" expanded="true" />
+            <element signature="e#6854#6855#0" expanded="true" />
+            <element signature="e#6891#6892#0" expanded="true" />
+            <element signature="e#8928#8929#0" expanded="true" />
+            <element signature="e#8975#8976#0" expanded="true" />
+            <element signature="e#9022#9023#0" expanded="true" />
+            <element signature="e#9070#9071#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f000b71ac7a4b4444c52efb9cadf4269/rtm-sdk-1.2.0/jars/libs/agora-rtm-sdk.jar!/io/agora/rtm/RtmChannelMember.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/miniclass/MiniClassActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="221" column="84" selection-start-line="221" selection-start-column="84" selection-end-line="221" selection-end-column="84" />
+        <state relative-caret-position="117">
+          <caret line="169" column="52" selection-start-line="169" selection-start-column="52" selection-end-line="169" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6295#6467#0" expanded="true" />
-            <element signature="e#6466#6467#0" expanded="true" />
+            <element signature="e#4075#4400#0" expanded="true" />
+            <element signature="e#4399#4400#0" expanded="true" />
+            <element signature="e#4891#4892#0" expanded="true" />
+            <element signature="e#4940#4941#0" expanded="true" />
+            <element signature="e#5429#7189#0" expanded="true" />
+            <element signature="e#5633#5679#0" expanded="true" />
+            <element signature="e#7188#7189#0" expanded="true" />
+            <element signature="e#7952#8124#0" expanded="true" />
+            <element signature="e#8123#8124#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/whiteboard/WhiteboardDelegate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-manifest" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/AppUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="22" column="33" selection-start-line="22" selection-start-column="33" selection-end-line="22" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/main/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="24" column="53" selection-start-line="24" selection-start-column="53" selection-end-line="24" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/lib/util/CryptoUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
+        <state relative-caret-position="1070">
+          <caret line="190" selection-start-line="190" selection-end-line="190" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#4097#4361#0" expanded="true" />
+            <element signature="e#4360#4361#0" expanded="true" />
+            <element signature="e#4773#5023#0" expanded="true" />
+            <element signature="e#5022#5023#0" expanded="true" />
+            <element signature="e#5292#5611#0" expanded="true" />
+            <element signature="e#5610#5611#0" expanded="true" />
+            <element signature="e#5832#6123#0" expanded="true" />
+            <element signature="e#6122#6123#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/base/BaseActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/fragment/WhiteboardFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="45">
+          <caret line="189" selection-start-line="189" selection-end-line="189" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5184#5403#0" expanded="true" />
+            <element signature="e#5402#5403#0" expanded="true" />
+            <element signature="e#6153#6154#0" expanded="true" />
+            <element signature="e#6181#6182#0" expanded="true" />
+            <element signature="e#8046#8365#0" expanded="true" />
+            <element signature="e#8364#8365#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/SpeakerView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/view/UserVideoItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="92" column="28" lean-forward="true" selection-start-line="92" selection-start-column="28" selection-end-line="92" selection-end-column="28" />
+          <folding>
+            <element signature="e#2973#2974#0" expanded="true" />
+            <element signature="e#3009#3010#0" expanded="true" />
+            <element signature="e#3351#3352#0" expanded="true" />
+            <element signature="e#3398#3399#0" expanded="true" />
+            <element signature="e#3434#3435#0" expanded="true" />
+            <element signature="e#3483#3484#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/largeclass/LargeClassActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="714">
+          <caret line="155" selection-start-line="155" selection-end-line="155" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4556#4557#0" expanded="true" />
+            <element signature="e#4605#4606#0" expanded="true" />
+            <element signature="e#4975#5123#0" expanded="true" />
+            <element signature="e#5122#5123#0" expanded="true" />
+            <element signature="e#5646#9743#0" expanded="true" />
+            <element signature="e#5877#5923#0" expanded="true" />
+            <element signature="e#9742#9743#0" expanded="true" />
+            <element signature="e#10398#10776#0" expanded="true" />
+            <element signature="e#10775#10776#0" expanded="true" />
+            <element signature="e#10875#11084#0" expanded="true" />
+            <element signature="e#11083#11084#0" expanded="true" />
+            <element signature="e#11291#11463#0" expanded="true" />
+            <element signature="e#11462#11463#0" expanded="true" />
+            <element signature="e#17211#17506#0" expanded="true" />
+            <element signature="e#17505#17506#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/data/ChannelDataRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1840">
+          <caret line="19" column="34" selection-start-line="19" selection-start-column="34" selection-end-line="19" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#758#759#0" expanded="true" />
+            <element signature="e#787#788#0" expanded="true" />
+            <element signature="e#1103#1104#0" expanded="true" />
+            <element signature="e#1133#1134#0" expanded="true" />
+            <element signature="e#1265#1266#0" expanded="true" />
+            <element signature="e#1296#1297#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/io/agora/rtc/education/room/onetoone/OneToOneActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="48" column="37" selection-start-line="48" selection-start-column="37" selection-end-line="48" selection-end-column="37" />
+        <state relative-caret-position="282">
+          <caret line="222" column="17" selection-start-line="222" selection-start-column="17" selection-end-line="222" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#7985#8694#0" expanded="true" />
+            <element signature="e#8693#8694#0" expanded="true" />
+            <element signature="e#9089#9261#0" expanded="true" />
+            <element signature="e#9260#9261#0" expanded="true" />
+            <element signature="e#10766#10917#0" expanded="true" />
+            <element signature="e#10916#10917#0" expanded="true" />
+            <element signature="e#11050#11263#0" expanded="true" />
+            <element signature="e#11262#11263#0" expanded="true" />
+            <element signature="e#11317#11504#0" expanded="true" />
+            <element signature="e#11503#11504#0" expanded="true" />
+            <element signature="e#13002#13003#0" expanded="true" />
+            <element signature="e#13035#13036#0" expanded="true" />
+            <element signature="e#13228#13229#0" expanded="true" />
+            <element signature="e#13268#13269#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -107,6 +107,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lv_videos" />
 
+    <FrameLayout
+        android:id="@+id/layout_share_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/layout_whiteboard"
+        app:layout_constraintEnd_toEndOf="@id/layout_whiteboard"
+        app:layout_constraintStart_toStartOf="@id/layout_whiteboard"
+        app:layout_constraintTop_toTopOf="@id/layout_whiteboard" />
+
     <ImageView
         android:layout_width="@dimen/dp_30"
         android:layout_height="@dimen/dp_30"

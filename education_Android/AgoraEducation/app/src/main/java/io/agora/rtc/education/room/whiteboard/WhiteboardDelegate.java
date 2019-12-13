@@ -6,15 +6,18 @@ import android.os.Looper;
 import android.widget.ImageView;
 
 import com.herewhite.sdk.AbstractRoomCallbacks;
+import com.herewhite.sdk.Displayer;
 import com.herewhite.sdk.Room;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
+import com.herewhite.sdk.domain.AnimationMode;
 import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.DeviceType;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.Promise;
+import com.herewhite.sdk.domain.RectangleConfig;
 import com.herewhite.sdk.domain.RoomPhase;
 import com.herewhite.sdk.domain.RoomState;
 import com.herewhite.sdk.domain.SDKError;
@@ -85,6 +88,7 @@ public class WhiteboardDelegate {
 
     public void joinRoom(String uuid, final OnRoomStateChangedListener callBack) {
 
+        mDidLeave = false;
         WhiteboardAPI.getRoom(uuid, new WhiteboardAPI.Callback() {
             @Override
             public void success(String uuid, String roomToken) {
@@ -149,7 +153,7 @@ public class WhiteboardDelegate {
 
                     @Override
                     public void catchEx(final SDKError sdkError) {
-                        log.i("join room fail");
+                        log.i("join room fail" + sdkError);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -163,7 +167,7 @@ public class WhiteboardDelegate {
 
             @Override
             public void fail(final String errorMessage) {
-                log.i("get room fail");
+                log.i("get room fail:" + errorMessage);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -175,6 +179,9 @@ public class WhiteboardDelegate {
         });
     }
 
+    public void moveCameraToContainer(Double width, Double height) {
+        mRoom.moveCameraToContainer(new RectangleConfig(width, height, AnimationMode.Immediately));
+    }
 
     private void setupRoom(Room room) {
         mRoom = room;
@@ -188,6 +195,8 @@ public class WhiteboardDelegate {
             String applianceName = memberState.getCurrentApplianceName();
             int[] sdkColor = memberState.getStrokeColor();
             mAppliancesToolBar.setState(applianceName, sdkColor);
+
+            mSceneHelper.setSceneState(room.getSceneState());
         }
     }
 

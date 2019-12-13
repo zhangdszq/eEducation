@@ -2,7 +2,10 @@ package io.agora.rtc.education.room.miniclass;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -15,20 +18,24 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.ArrayList;
 
 import io.agora.rtc.IRtcEngineEventHandler;
+import io.agora.rtc.RtcEngine;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
 import io.agora.rtc.education.constant.Constant;
 import io.agora.rtc.education.constant.IntentKey;
-import io.agora.rtc.education.room.bean.Student;
-import io.agora.rtc.education.room.bean.Teacher;
-import io.agora.rtc.education.room.bean.User;
+import io.agora.rtc.education.data.ChannelDataReadOnly;
+import io.agora.rtc.education.data.ChannelDataRepository;
+import io.agora.rtc.education.data.bean.Student;
+import io.agora.rtc.education.data.bean.Teacher;
+import io.agora.rtc.education.data.bean.User;
+import io.agora.rtc.education.im.ChannelMsg;
+import io.agora.rtc.education.im.IMCmd;
+import io.agora.rtc.education.im.IMStrategy;
+import io.agora.rtc.education.im.P2PMessage;
+import io.agora.rtc.education.im.rtm.RtmStrategy;
 import io.agora.rtc.education.room.fragment.ChatroomFragment;
 import io.agora.rtc.education.room.fragment.StudentListFrament;
 import io.agora.rtc.education.room.fragment.WhiteboardFragment;
-import io.agora.rtc.education.room.rtm.ChannelMsg;
-import io.agora.rtc.education.room.rtm.MyRtmMessage;
-import io.agora.rtc.education.room.rtm.RtmCmd;
-import io.agora.rtc.education.room.rtm.RtmRepository;
 import io.agora.rtc.education.room.view.TimeView;
 import io.agora.rtc.education.widget.dialog.ConfirmDialogFragment;
 import io.agora.rtc.lib.util.LogUtil;
@@ -51,14 +58,16 @@ public class MiniClassActivity extends BaseActivity {
     private FrameLayout mLayoutWhiteboard;
     private TextView mTvBtnChatRoom;
     private TextView mTvBtnStudent;
+    private FrameLayout mLayoutShareVideo;
 
     private WhiteboardFragment mWhiteboardFragment;
     private ChatroomFragment mChatroomFragment;
     private StudentListFrament mStudentListFrament;
 
     private VideoItemAdapter mAdapter;
-    private RtmRepository mRtmRepository;
     private RtcDelegate mRtcDelegate;
+    private IMStrategy mImStrategy;
+    private ChannelDataReadOnly mChannelData;
 
     private IRtcEngineEventHandler mRtcHandler = new IRtcEngineEventHandler() {
         @Override
@@ -77,12 +86,47 @@ public class MiniClassActivity extends BaseActivity {
         }
 
         @Override
+        public void onUserJoined(int uid, int elapsed) {
+            if (uid == Constant.SHARE_UID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int uid = Constant.SHARE_UID;
+                        mLayoutWhiteboard.setVisibility(View.INVISIBLE);
+                        if (mLayoutShareVideo.getVisibility() != View.VISIBLE) {
+                            mLayoutShareVideo.setVisibility(View.VISIBLE);
+                        }
+
+                        mLayoutShareVideo.removeAllViews();
+                        SurfaceView surfaceView = RtcEngine.CreateRendererView(MiniClassActivity.this);
+                        mLayoutShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        mRtcDelegate.bindRemoteRtcVideo(uid, surfaceView);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onUserOffline(int uid, int reason) {
+            if (uid == Constant.SHARE_UID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLayoutShareVideo.removeAllViews();
+                        mLayoutShareVideo.setVisibility(View.GONE);
+                        mLayoutWhiteboard.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }
+
+        @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             log.i("join rtc success.");
         }
     };
 
-    private RtmRepository.EventListener mRtmEventListener = new RtmRepository.EventListener() {
+    private RtmStrategy.EventListener mRtmEventListener = new RtmStrategy.EventListener() {
         @Override
         public void onJoinRtmChannelFailure(ErrorInfo errorInfo) {
             log.e("join rtm failed" + errorInfo);
@@ -94,14 +138,23 @@ public class MiniClassActivity extends BaseActivity {
         }
 
         @Override
-        public void onAttributesUpdated() {
+        public void onMemberLeft(RtmChannelMember rtmChannelMember) {
+            if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
+                    && mChannelData.getTeacher() != null
+                    && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
+                mWhiteboardFragment.finishRoomPage();
+            }
+        }
+
+        @Override
+        public void onChannelAttributesUpdated() {
             final ArrayList<User> users = new ArrayList<>();
 
-            Teacher teacher = mRtmRepository.getTeacher();
+            Teacher teacher = mChannelData.getTeacher();
             if (teacher != null) {
                 users.add(teacher);
             }
-            ArrayList<Student> students = mRtmRepository.getStudents();
+            ArrayList<Student> students = mChannelData.getStudents();
             if (students != null && !students.isEmpty()) {
                 users.addAll(students);
             }
@@ -113,7 +166,7 @@ public class MiniClassActivity extends BaseActivity {
                         mChatroomFragment.setEditTextEnable(true);
                     } else {
                         Teacher teacher = (Teacher) users.get(0);
-                        if (mWhiteboardFragment.getUuid() == null) {
+                        if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
                             mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
                                 @Override
                                 public void onSuccess() {
@@ -145,18 +198,18 @@ public class MiniClassActivity extends BaseActivity {
         }
 
         @Override
-        public void onMessageReceived(MyRtmMessage myRtmMessage, String peerId) {
-            switch (myRtmMessage.cmd) {
-                case RtmCmd.MUTE_AUDIO:
+        public void onMessageReceived(P2PMessage p2PMessage, String peerId) {
+            switch (p2PMessage.cmd) {
+                case IMCmd.MUTE_AUDIO:
                     muteLocalAudio(true);
                     break;
-                case RtmCmd.UNMUTE_AUDIO:
+                case IMCmd.UNMUTE_AUDIO:
                     muteLocalAudio(false);
                     break;
-                case RtmCmd.MUTE_VIDEO:
+                case IMCmd.MUTE_VIDEO:
                     muteLocalVideo(true);
                     break;
-                case RtmCmd.UNMUTE_VIDEO:
+                case IMCmd.UNMUTE_VIDEO:
                     muteLocalVideo(false);
                     break;
             }
@@ -188,6 +241,7 @@ public class MiniClassActivity extends BaseActivity {
         mLayoutWhiteboard = findViewById(R.id.layout_whiteboard);
         mTvBtnChatRoom = findViewById(R.id.tv_btn_chat_room);
         mTvBtnStudent = findViewById(R.id.tv_btn_student);
+        mLayoutShareVideo = findViewById(R.id.layout_share_video);
 
         mTvRoomName.setText(getIntent().getStringExtra(IntentKey.ROOM_NAME));
         mIcClose.setOnClickListener(new View.OnClickListener() {
@@ -219,14 +273,20 @@ public class MiniClassActivity extends BaseActivity {
         myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
         myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
 
-        mRtmRepository = new RtmRepository(rtmManager(), mRtmEventListener, myAttr);
+        ChannelDataRepository repository = new ChannelDataRepository();
+        repository.setMyAttr(myAttr);
+        mImStrategy = new RtmStrategy(rtmManager(), mRtmEventListener);
+        mImStrategy.setChannelDataRepository(repository);
+        mChannelData = repository;
+
         mRtcDelegate = new RtcDelegate(rtcWorker(), mRtcHandler);
 
-        mChatroomFragment.setRtmRepository(mRtmRepository);
-        mStudentListFrament.setRtmRepository(mRtmRepository);
+        mChatroomFragment.setImStrategy(mImStrategy);
+        mStudentListFrament.setImStrategy(mImStrategy);
+        mStudentListFrament.setMyUid(mChannelData.getMyAttr().uid);
 
         String room = intent.getStringExtra(IntentKey.ROOM_NAME_REAL);
-        mRtmRepository.joinChannel(room);
+        mImStrategy.joinChannel(room);
         mRtcDelegate.joinChannel(room, myAttr);
 
         this.mAdapter = new VideoItemAdapter(myAttr.uid);
@@ -266,19 +326,19 @@ public class MiniClassActivity extends BaseActivity {
     @Override
     public void finish() {
         mWhiteboardFragment.finishRoomPage();
-        mRtmRepository.leaveChannel();
+        mImStrategy.leaveChannel();
         mRtcDelegate.leaveChannel();
         super.finish();
     }
 
     private void muteLocalAudio(boolean isMute) {
-        mRtcDelegate.muteLocalAudio(true);
-        mRtmRepository.muteLocalAudio(true);
+        mRtcDelegate.muteLocalAudio(isMute);
+        mImStrategy.muteLocalAudio(isMute);
     }
 
     private void muteLocalVideo(boolean isMute) {
-        mRtcDelegate.muteLocalVideo(true);
-        mRtmRepository.muteLocalVideo(true);
+        mRtcDelegate.muteLocalVideo(isMute);
+        mImStrategy.muteLocalVideo(isMute);
     }
 
     public void onClickShowChat(View view) {
