@@ -233,7 +233,7 @@ const onClose = (evt: any) => {
 }
 
 return (
-  <div id={`${domId}`} className={`${className ? className : (preview ? 'preview-video' : `agora-video-view ${!!video ? '' : 'show-placeholder'}`)}`}>
+  <div id={`${domId}`} className={`${className ? className : (preview ? 'preview-video' : `agora-video-view ${Boolean(video) === false && stream ? 'show-placeholder' : ''}`)}`}>
     {close ? <div className="icon-close" onClick={onClose}></div> : null}
     <div className={role === 'teacher' ? 'teacher-placeholder' : 'student-placeholder'}></div>
     {preview ? null :

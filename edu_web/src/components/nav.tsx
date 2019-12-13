@@ -8,7 +8,7 @@ import { useRootContext } from '../store';
 import { useAgoraSDK } from '../hooks/use-agora-sdk';
 import { ClassState } from '../reducers/types';
 import { useHistory } from 'react-router';
-import { NetworkQualityEvaluation, ResolveNetworkQuality } from '../utils/helper';
+import { NetworkQualityEvaluation } from '../utils/helper';
 import { useGlobalContext } from '../containers/global-container';
 import { usePlatform } from '../containers/platform-container';
 import AgoraWebClient from '../utils/agora-rtc-client';
@@ -68,10 +68,10 @@ export function Nav ({
           <span className="time">{moment.utc(time).format('HH:mm:ss')}</span>
         </div>
         <span className="menu-split" />
-        <div className="btn-group">
-          <Icon className="icon-setting" onClick={(evt: any) => {
+        <div className={platform === 'web' ? "btn-group" : 'electron-btn-group' }>
+          {platform  === 'web' ? <Icon className="icon-setting" onClick={(evt: any) => {
             handleClick("setting");
-          }}/>
+          }}/> : null}
           <Icon className="icon-exit" onClick={(evt: any) => {
             handleClick("exit");
           }} />
@@ -91,7 +91,6 @@ export function Nav ({
 export default function NavContainer() {
   const history = useHistory();
   const {store} = useRootContext();
-  const cpu = 0;
   const {
     showDialog,
     removeDialog,

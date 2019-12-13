@@ -4,6 +4,26 @@ import { RoomType, StudentInfo, TeacherInfo, User, UserRole } from './../reducer
 import { Map } from 'immutable';
 import * as _ from 'lodash';
 import { RoomState, UserState } from '../reducers/initialize-state';
+import OSS from 'ali-oss';
+import { get } from 'lodash';
+
+export interface OSSConfig {
+  accessKeyId: string,
+  accessKeySecret: string,
+  region: string,
+  bucket: string,
+  folder: string,
+}
+
+export const ossConfig: OSSConfig = {
+  "accessKeyId": process.env.REACT_APP_AGORA_OSS_BUCKET_KEY as string,
+  "accessKeySecret": process.env.REACT_APP_AGORA_OSS_BUCKET_SECRET as string,
+  "bucket": process.env.REACT_APP_AGORA_OSS_BUCKET_NAME as string,
+  "region": process.env.REACT_APP_AGORA_OSS_BUCKET_REGION as string,
+  "folder": process.env.REACT_APP_AGORA_OSS_BUCKET_FOLDER as string
+}
+
+export const ossClient = new OSS(ossConfig);
 
 export function resolveMessage(peerId: string, { cmd, text }: { cmd: number, text?: string }) {
   let type = '';

@@ -262,6 +262,26 @@
     background-image: url('./assets/Rectangle-6-Copy@2x.png');
   }
 
+  .rectangle::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/tool-square@2x.png');
+  }
+
+  .ellipse::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/tool-circle@2x.png');
+  }
+
   .text::after {
     width: 100%;
     height: 100%;
@@ -292,7 +312,7 @@
     background-image: url('./assets/Rectangle-6-Copy-8@2x.png');
   }
 
-  .extra_file::after {
+  .folder::after {
     width: 100%;
     height: 100%;
     background-position: center;
@@ -311,6 +331,26 @@
     content: ' ';
     background-image: url('./assets/Rectangle-6-Copy-9@2x.png');
   }
+
+  .upload::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/icon-upload-file@2x.png');
+  }
+
+  // .folder::after {
+  //   width: 100%;
+  //   height: 100%;
+  //   background-position: center;
+  //   background-repeat: no-repeat;
+  //   background-size: contain;
+  //   content: ' ';
+  //   background-image: url('./assets/icon-folder@2x.png');
+  // }
 }
 
 .media-board {

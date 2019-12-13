@@ -12,6 +12,7 @@ import { AgoraSDKProvider } from '../hooks/use-agora-sdk';
 import {GlobalContainer} from '../containers/global-container';
 import '../icons.scss';
 import { PlatformContainer } from '../containers/platform-container';
+import ReplayContainer from './replay';
 
 export default function () {
   const { store } = useRootContext();
@@ -33,6 +34,9 @@ export default function () {
               </Route>
               <Route exact path="/classroom/:roomType">
                 <ClassRoom />
+              </Route>
+              <Route exact path="/replay/:uuid/:startTime/:endTime">
+                <ReplayContainer />
               </Route>
             </AgoraSDKProvider>
           </PlatformContainer>

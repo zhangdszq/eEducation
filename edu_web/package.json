@@ -1,17 +1,63 @@
 {
   "name": "agora-edu-web",
-  "version": "2.9.0",
+  "productName": "AgoraEduElectron",
+  "version": "3.0.0",
   "private": true,
-  "homepage": "https://webdemo.agora.io/agora-web-showcase/examples/agora-edu-web",
-  "main": "src/index.tsx",
+  "homepage": ".",
+  "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
     "prebuilt": true,
     "platform": "darwin"
   },
+  "build": {
+    "extends": "null",
+    "productName": "AgoraEducation",
+    "appId": "io.agora.education",
+    "files": [
+      "./node_modules/**/*",
+      "./build/**/*",
+      "./src/**/*",
+      "package.json"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "snap",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    }
+  },
   "dependencies": {
     "@material-ui/core": "^4.5.1",
     "@material-ui/icons": "^4.5.1",
+    "@netless/react-seek-slider": "^1.0.4",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.145",
     "@types/node": "^12.11.1",
@@ -33,8 +79,10 @@
     "react": "^16.10.2",
     "react-color": "^2.17.3",
     "react-dom": "^16.10.2",
+    "react-draggable": "^4.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
+    "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "wait-on": "^3.3.0"
   },
@@ -43,11 +91,12 @@
     "electron:client": "electron ./src/main/index.js",
     "electron:web": "BROWSER=none react-app-rewired start",
     "dev:electron": "node scripts/electron.dev",
+    "electron:build": "REACT_APP_RUNTIME_PLATFORM=electron react-app-rewired build",
     "dev": "REACT_APP_RUNTIME_PLATFORM=web react-app-rewired start",
     "build": "REACT_APP_RUNTIME_PLATFORM=web react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
-    "pack": "electron-builder --dir"
+    "pack": "electron-builder --dir -m"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -65,11 +114,15 @@
     ]
   },
   "devDependencies": {
+    "@types/ali-oss": "^6.0.4",
     "@types/react-color": "^3.0.1",
+    "@types/uuid": "^3.4.6",
+    "ali-oss": "^6.3.1",
     "customize-cra": "^0.8.0",
     "electron": "5.0.8",
     "electron-builder": "^21.2.0",
     "react-app-rewired": "^2.1.4",
-    "white-web-sdk": "^2.3.10"
+    "uuid": "^3.3.3",
+    "white-web-sdk": "2.3.17"
   }
 }

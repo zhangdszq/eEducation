@@ -77,6 +77,10 @@ export function RootReducer(state: RootState, action: RootAction): RootState {
       }
     case ActionType.ADD_ME:
       const { roomName, userName, role, roomType, id } = action.payload;
+
+      // DEBUG
+      // console.log(`addme: ${roomType}${roomName} ${roomType}${MD5(roomName)}`);
+
       return {
         ...state,
         user: {

@@ -261,7 +261,6 @@ export default class AgoraRTMClient {
         console.warn(`accounts: ${ids}, cannot get peers online status from [queryPeersOnlineStatus]`);
       }
     }
-    console.log(">>>>> results ", results);
     return results;
   }
 

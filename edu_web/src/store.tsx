@@ -23,18 +23,6 @@ export const useRootObserver = (store: RootState) => {
     console.log(' [mediaInfo] ', store.global.mediaInfo);
   }, [store.global.mediaInfo]);
 
-  // useEffect(() => {
-  //   if (isElectron) {
-  //     const ipcRenderer = window.require("electron").ipcRenderer;
-  //     if (['/', '/home', '/device_test'].indexOf(location.pathname) === -1) {
-  //       ipcRenderer.send("resize-window", {width: 990, height: 706});
-  //     } else {
-  //       ipcRenderer.send("resize-window", {width: 700, height: 500});
-  //     }
-  //   }
-  //   console.log("location.pathname ", location.pathname);
-  // }, [location.pathname]);
-
   useEffect(() => {
     GlobalStorage.save('room', store.room);
     // console.log('room ', store.room.users);

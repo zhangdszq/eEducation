@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from '../icon';
 import { NoticeProps } from '../../reducers/initialize-state';
+import { recording, useRecording } from '../../hooks/use-recording';
+import { useRootContext } from '../../store';
+import { useHistory } from 'react-router';
+import { ActionType } from '../../reducers/types';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void
@@ -49,10 +53,48 @@ export default function Control({
   role,
   notice,
 }: ControlProps) {
-  const [recording, setRecording] = useState<boolean>(false);
+
+  const history = useHistory();
+
+  const recordingState = useRecording();
+  const {store, dispatch} = useRootContext();
+
+  const lock = useRef<boolean>(false);
 
   const handleRecording = (evt: any) => {
-    setRecording(!recording);
+    if (lock.current
+      || !recording
+      || !recording.state 
+      || !store.room.rid
+      || !store.user.id) return;
+    evt.preventDefault();
+
+    if (recording.state.recording) {
+      recording.stopRecording();
+      if (recording.state.endTime 
+        && recording.state.startTime) {
+        const {endTime, startTime, roomUUID} = recording.clearRecording();
+        if (store.global.rtmClient) {
+          store.global.rtmClient.sendChannelMessage(JSON.stringify({
+            account: store.user.account,
+            link: `/replay/${roomUUID}/${startTime}/${endTime}`
+          })).then(() => {
+            const message = {
+              account: store.user.account,
+              id: store.user.id,
+              link: `/replay/${roomUUID}/${startTime}/${endTime}`,
+              text: '',
+              ts: +Date.now()
+            }
+            dispatch({type: ActionType.ADD_MESSAGE, message});
+            console.log('send replay link success');
+          }).catch(console.warn);
+        }
+        return;
+      }
+    } else {
+      recording.startRecording();
+    }
   }
 
   return (
@@ -87,11 +129,11 @@ export default function Control({
         }
         {role === 'teacher' ?
           <>
-            {/* <ControlItem
-          name={recording ? 'stop_recording' : 'recording'}
-          onClick={handleRecording}
-          active={false}
-        /> */}
+            <ControlItem
+              name={recordingState.recording ? 'stop_recording' : 'recording'}
+              onClick={handleRecording}
+              active={false}
+            />
             <ControlItem
               name={sharing ? 'quit_screen_sharing' : 'screen_sharing'}
               onClick={onClick}

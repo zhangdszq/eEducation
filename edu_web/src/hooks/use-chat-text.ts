@@ -21,7 +21,7 @@ export default function useChatText () {
   const sendMessage = async (content: string) => {
     if (store.global.rtmClient && store.user.id) {
       if (store.user.role !== UserRole.teacher && (!store.user.chat || Boolean(store.room.muteChat))) return console.warn("chat already muted");
-      if (store.user.role === UserRole.teacher && !store.user.chat) return console.warn("chat already teacher");
+      if (store.user.role === UserRole.teacher && !store.user.chat) return console.warn("chat already muted");
       await store.global.rtmClient.sendChannelMessage(JSON.stringify({
         account: store.user.account,
         content
