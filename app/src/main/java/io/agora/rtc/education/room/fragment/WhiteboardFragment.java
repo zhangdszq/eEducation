@@ -2,6 +2,7 @@ package io.agora.rtc.education.room.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ import io.agora.rtc.lib.util.ToastUtil;
 
 public class WhiteboardFragment extends BaseFragment implements View.OnClickListener {
 
-//    private LogUtil log = new LogUtil("WhiteboardFragment");
+    private LogUtil log = new LogUtil("WhiteboardFragment");
     private WhiteboardDelegate mWhiteboardDelegate = new WhiteboardDelegate();
     private WhiteboardView mWhiteboardView;
     private ImageView mIcToolColor;
@@ -48,6 +49,8 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
 
     private static final String KEY_IS_SHOW_HAND = "is_show_hand";
     private boolean isShowHand = false;
+
+    private Handler mHandler = new Handler();
 
     public static WhiteboardFragment newInstance(boolean isShowHandLayout) {
         WhiteboardFragment fragment = new WhiteboardFragment();
@@ -95,6 +98,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
 
         if (isShowHand) {
             mLayoutHandUp.setVisibility(View.VISIBLE);
+            mLayoutHandUp.setOnClickListener(this);
         }
 
         HashMap<String, ImageView> appliances = new HashMap<>();
@@ -128,6 +132,23 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         return root;
     }
 
+    private void initCameraToContainer() {
+
+        double width = (double) mWhiteboardView.getWidth();
+        double height = (double) mWhiteboardView.getHeight();
+        log.i("rectangle:" + width + ", " + height);
+        double ratio = 2d;
+        if (height != 0) {
+            ratio = width / height;
+        }
+        mWhiteboardDelegate.moveCameraToContainer(ratio * 720d, 720d);
+    }
+
+    public void acceptLink(boolean isAccept) {
+        mHandler.removeCallbacks(handUpTimeOutRunnable);
+        mLayoutHandUp.setSelected(isAccept);
+    }
+
     public interface JoinRoomCallBack {
         void onSuccess();
 
@@ -147,6 +168,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         mWhiteboardDelegate.joinRoom(uuid, new WhiteboardDelegate.OnRoomStateChangedListener() {
             @Override
             public void onSuccess() {
+                initCameraToContainer();
                 callBack.onSuccess();
             }
 
@@ -191,14 +213,36 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
     }
 
     private void setButtonsEnable(boolean enable) {
-        if (!this.mDidLeave) {
+//        if (!this.mDidLeave) {
             mIcFirst.setEnabled(enable);
             mIcPrevious.setEnabled(enable);
             mIcNext.setEnabled(enable);
             mIcEnd.setEnabled(enable);
             mPbLoading.setVisibility(enable ? View.GONE : View.VISIBLE);
             mWhiteboardDelegate.setApplianceBarEnable(enable);
+//        }
+    }
+
+    private Runnable handUpTimeOutRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mLayoutHandUp.setSelected(false);
+//            Teacher teacher = mChannelData.getTeacher();
+//            if (teacher != null) {
+//                mImStrategy.sendMessage(String.valueOf(teacher.getUid()), IMCmd.CANCEL);
+//            }
         }
+    };
+
+    public interface HandUpOperateListener {
+        void onApply();
+        void onCancel();
+    }
+
+    private HandUpOperateListener handUpOperateListener;
+
+    public void setHandUpOperateListener(HandUpOperateListener handUpOperateListener) {
+        this.handUpOperateListener = handUpOperateListener;
     }
 
     @Override
@@ -226,6 +270,21 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
                     mIcToolColor.setSelected(true);
                     mColorSelectView.setVisibility(View.VISIBLE);
                 }
+                break;
+            case R.id.layout_hand_up:
+                boolean isToSelect = !mLayoutHandUp.isSelected();
+                if (isToSelect) {
+                    if (handUpOperateListener != null) {
+                        handUpOperateListener.onApply();
+                    }
+                    mHandler.postDelayed(handUpTimeOutRunnable, 6000);
+                } else {
+                    if (handUpOperateListener != null) {
+                        handUpOperateListener.onCancel();
+                    }
+                    mHandler.removeCallbacks(handUpTimeOutRunnable);
+                }
+                mLayoutHandUp.setSelected(isToSelect);
                 break;
         }
     }

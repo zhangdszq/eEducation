@@ -3,10 +3,10 @@ package io.agora.rtc.education.room.largeclass;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,21 +14,24 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
+import io.agora.rtc.education.constant.Constant;
 import io.agora.rtc.education.constant.IntentKey;
-import io.agora.rtc.education.room.bean.Student;
-import io.agora.rtc.education.room.bean.Teacher;
+import io.agora.rtc.education.data.ChannelDataReadOnly;
+import io.agora.rtc.education.data.ChannelDataRepository;
+import io.agora.rtc.education.data.bean.Student;
+import io.agora.rtc.education.data.bean.Teacher;
+import io.agora.rtc.education.im.ChannelMsg;
+import io.agora.rtc.education.im.IMCmd;
+import io.agora.rtc.education.im.IMStrategy;
+import io.agora.rtc.education.im.P2PMessage;
+import io.agora.rtc.education.im.rtm.RtmStrategy;
 import io.agora.rtc.education.room.fragment.ChatroomFragment;
 import io.agora.rtc.education.room.fragment.WhiteboardFragment;
-import io.agora.rtc.education.room.rtm.ChannelMsg;
-import io.agora.rtc.education.room.rtm.MyRtmMessage;
-import io.agora.rtc.education.room.rtm.RtmCmd;
-import io.agora.rtc.education.room.rtm.RtmRepository;
 import io.agora.rtc.education.room.view.SpeakerView;
 import io.agora.rtc.education.room.view.UserVideoItem;
 import io.agora.rtc.education.widget.dialog.ConfirmDialogFragment;
@@ -41,10 +44,17 @@ public class LargeClassActivity extends BaseActivity {
 
     private final LogUtil log = new LogUtil("LargeClassActivity");
     // all
-    private UserVideoItem mVideoItemStudent;
-    private UserVideoItem mVideoItemTeacher;
     private ImageView mIcExit;
     private TextView mTvRoomName;
+    private FrameLayout mLayoutShareVideo;
+    private FrameLayout mLayoutItemTeacher;
+    private FrameLayout mLayoutItemStudent;
+
+    private FrameLayout mFlWhiteboard;
+    private FrameLayout mFlChatroom;
+    private FrameLayout mFlShareVideo;
+    private UserVideoItem mVideoItemStudent;
+    private UserVideoItem mVideoItemTeacher;
 
     //portrait
     private TextView mTvBtnWhiteboard;
@@ -57,17 +67,15 @@ public class LargeClassActivity extends BaseActivity {
     private ChatroomFragment mChatroomFragment;
 
     private boolean isLandscape;
-    private RtmRepository mRtmRepository;
     private RtcDelegate mRtcDelegate;
-
-    private FrameLayout mFlWhiteboard;
-    private FrameLayout mFlChatroom;
+    private IMStrategy mImStrategy;
+    private ChannelDataReadOnly mChannelData;
+    private volatile int roomUserCount = 0;
 
     private IRtcEngineEventHandler mRtcHandler = new IRtcEngineEventHandler() {
         @Override
         public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
             log.d("onFirstLocalVideoFrame");
-
         }
 
         @Override
@@ -80,12 +88,42 @@ public class LargeClassActivity extends BaseActivity {
         }
 
         @Override
+        public void onUserJoined(int uid, int elapsed) {
+            if (uid == Constant.SHARE_UID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int uid = Constant.SHARE_UID;
+                        mFlShareVideo.removeAllViews();
+                        SurfaceView surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                        mFlShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        mRtcDelegate.bindRemoteRtcVideo(uid, surfaceView);
+                        updateShareVideoUI();
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onUserOffline(int uid, int reason) {
+            if (uid == Constant.SHARE_UID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mFlShareVideo.removeAllViews();
+                        updateShareVideoUI();
+                    }
+                });
+            }
+        }
+
+        @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             log.i("join rtc success.");
         }
     };
 
-    private RtmRepository.EventListener mRtmEventListener = new RtmRepository.EventListener() {
+    private RtmStrategy.EventListener mRtmEventListener = new RtmStrategy.EventListener() {
         @Override
         public void onJoinRtmChannelFailure(ErrorInfo errorInfo) {
             log.e("join rtm failed" + errorInfo);
@@ -97,17 +135,37 @@ public class LargeClassActivity extends BaseActivity {
         }
 
         @Override
-        public void onAttributesUpdated() {
+        public void onChannelMemberCountUpdated(int i) {
+            roomUserCount = i;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Teacher teacher = mRtmRepository.getTeacher();
+                    updateRoomName();
+                }
+            });
+        }
+
+        @Override
+        public void onMemberLeft(RtmChannelMember rtmChannelMember) {
+            if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
+                    && mChannelData.getTeacher() != null
+                    && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
+                mWhiteboardFragment.finishRoomPage();
+            }
+        }
+
+        @Override
+        public void onChannelAttributesUpdated() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Teacher teacher = mChannelData.getTeacher();
                     if (teacher == null) {
                         ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
                         mChatroomFragment.setEditTextEnable(true);
                         return;
                     }
-                    if (mWhiteboardFragment.getUuid() == null) {
+                    if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
                         mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
                             @Override
                             public void onSuccess() {
@@ -123,11 +181,12 @@ public class LargeClassActivity extends BaseActivity {
                     }
 
                     SurfaceView surfaceView = mVideoItemTeacher.getSurfaceView();
-                    if (surfaceView == null) {
+                    if (surfaceView == null || surfaceView.getTag() == null || teacher.uid != (int)surfaceView.getTag()) {
                         surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                        surfaceView.setTag(teacher.uid);
+                        mVideoItemTeacher.setVideoView(surfaceView);
+                        mRtcDelegate.bindRemoteRtcVideo(teacher.uid, surfaceView);
                     }
-                    mVideoItemTeacher.setVideoView(surfaceView);
-                    mRtcDelegate.bindRemoteRtcVideo(teacher.uid, surfaceView);
                     mVideoItemTeacher.showVideo(teacher.video == 1);
                     mVideoItemTeacher.setIcVideoSelect(teacher.video == 1);
                     mVideoItemTeacher.setIcAudioState(teacher.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
@@ -137,40 +196,69 @@ public class LargeClassActivity extends BaseActivity {
 
                     if (teacher.link_uid != 0) {
                         int linkUid = teacher.link_uid;
-                        Student student = mRtmRepository.getStudent(linkUid);
+                        Student student = mChannelData.getStudent(linkUid);
                         if (student != null) {
                             mVideoItemStudent.setVisibility(View.VISIBLE);
 
-                            mVideoItemStudent.setVideoView(surfaceView);
-                            if (mRtmRepository.myAttr().uid == linkUid) {
-                                mRtcDelegate.bindLocalRtcVideo(surfaceView);
-                            } else {
-                                mRtcDelegate.bindRemoteRtcVideo(linkUid, surfaceView);
+                            SurfaceView surfaceViewStudent = mVideoItemStudent.getSurfaceView();
+                            if (surfaceViewStudent == null || surfaceViewStudent.getTag() == null || linkUid != (int)surfaceViewStudent.getTag()) {
+                                surfaceViewStudent = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                                surfaceViewStudent.setTag(linkUid);
+                                surfaceViewStudent.setZOrderMediaOverlay(true);
+                                mVideoItemStudent.setVideoView(surfaceViewStudent);
+                                if (mChannelData.getMyAttr().uid == linkUid) {
+                                    mRtcDelegate.bindLocalRtcVideo(surfaceViewStudent);
+                                } else {
+                                    mRtcDelegate.bindRemoteRtcVideo(linkUid, surfaceViewStudent);
+                                }
+                                mVideoItemStudent.setVideoView(surfaceViewStudent);
                             }
                             mVideoItemStudent.showVideo(student.video == 1);
                             mVideoItemStudent.setIcVideoSelect(student.video == 1);
                             mVideoItemStudent.setIcAudioState(student.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
                             mVideoItemStudent.setName(student.account);
                         }
+                    } else {
+                        mVideoItemStudent.setVideoView(null);
+                        mVideoItemStudent.setVisibility(View.GONE);
                     }
                 }
             });
         }
 
         @Override
-        public void onMessageReceived(MyRtmMessage myRtmMessage, String peerId) {
-            switch (myRtmMessage.cmd) {
-                case RtmCmd.MUTE_AUDIO:
+        public void onMessageReceived(P2PMessage p2PMessage, String peerId) {
+            switch (p2PMessage.cmd) {
+                case IMCmd.MUTE_AUDIO:
                     muteLocalAudio(true);
                     break;
-                case RtmCmd.UNMUTE_AUDIO:
+                case IMCmd.UNMUTE_AUDIO:
                     muteLocalAudio(false);
                     break;
-                case RtmCmd.MUTE_VIDEO:
+                case IMCmd.MUTE_VIDEO:
                     muteLocalVideo(true);
                     break;
-                case RtmCmd.UNMUTE_VIDEO:
+                case IMCmd.UNMUTE_VIDEO:
                     muteLocalVideo(false);
+                    break;
+                case IMCmd.ACCEPT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mWhiteboardFragment.acceptLink(true);
+                            mRtcDelegate.changeRoleToBroadcaster();
+                            muteLocalAudio(false);
+                            muteLocalVideo(false);
+                        }
+                    });
+                    break;
+                case IMCmd.REJECT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mWhiteboardFragment.acceptLink(false);
+                        }
+                    });
                     break;
             }
         }
@@ -184,6 +272,7 @@ public class LargeClassActivity extends BaseActivity {
                 }
             });
         }
+
     };
     private View mLineWhiteboard;
     private View mLineChatroom;
@@ -193,6 +282,13 @@ public class LargeClassActivity extends BaseActivity {
         initFragment();
         mFlChatroom = new FrameLayout(this);
         mFlWhiteboard = new FrameLayout(this);
+        mFlShareVideo = new FrameLayout(this);
+
+        mVideoItemStudent = new UserVideoItem(this);
+        mVideoItemStudent.setVisibility(View.GONE);
+        mVideoItemTeacher = new UserVideoItem(this);
+        mVideoItemStudent.init(R.layout.item_user_video_mini_class, true);
+        mVideoItemTeacher.init(R.layout.item_user_video_large_class_teacher, false);
 
         mFlChatroom.setId(View.generateViewId());
         mFlWhiteboard.setId(View.generateViewId());
@@ -215,23 +311,89 @@ public class LargeClassActivity extends BaseActivity {
         myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
         myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
 
-        mRtmRepository = new RtmRepository(rtmManager(), mRtmEventListener, myAttr);
+        ChannelDataRepository repository = new ChannelDataRepository();
+        repository.setMyAttr(myAttr);
+        mImStrategy = new RtmStrategy(rtmManager(), mRtmEventListener);
+        mImStrategy.setChannelDataRepository(repository);
+        mChannelData = repository;
+
         mRtcDelegate = new RtcDelegate(rtcWorker(), mRtcHandler);
-        mChatroomFragment.setRtmRepository(mRtmRepository);
+        mChatroomFragment.setImStrategy(mImStrategy);
+        mWhiteboardFragment.setHandUpOperateListener(new WhiteboardFragment.HandUpOperateListener() {
+            @Override
+            public void onApply() {
+                Teacher teacher = mChannelData.getTeacher();
+                if (teacher == null) {
+                    ToastUtil.showShort("老师不在房间，不能申请上麦！");
+                    return;
+                }
+                String teacherUid = String.valueOf(teacher.getUid());
+                mImStrategy.sendMessage(teacherUid, IMCmd.APPLY);
+            }
+
+            @Override
+            public void onCancel() {
+                Teacher teacher = mChannelData.getTeacher();
+                String teacherUid = String.valueOf(teacher.getUid());
+                mImStrategy.sendMessage(teacherUid, IMCmd.CANCEL);
+                mRtcDelegate.changeRoleToAudience();
+            }
+        });
 
         String room = intent.getStringExtra(IntentKey.ROOM_NAME_REAL);
-        mRtmRepository.joinChannel(room);
+        mImStrategy.joinChannel(room);
         mRtcDelegate.joinChannel(room, myAttr);
     }
 
-    private void initCommonUI() {
-        mVideoItemStudent = findViewById(R.id.video_item_student);
-        mVideoItemTeacher = findViewById(R.id.video_item_teacher);
-        mVideoItemStudent.init(R.layout.item_user_video_mini_class, true);
-        mVideoItemTeacher.init(R.layout.item_user_video_large_class_teacher, false);
+    private void updateShareVideoUI() {
+        if (mFlShareVideo.getChildCount() > 0 && (mLineWhiteboard == null || mLineWhiteboard.getVisibility() == View.VISIBLE)) {
+            mFlWhiteboard.setVisibility(View.INVISIBLE);
+            mFlShareVideo.setVisibility(View.VISIBLE);
+        } else if (mLineChatroom != null && mLineChatroom.getVisibility() == View.VISIBLE){
+            mFlShareVideo.setVisibility(View.INVISIBLE);
+            mFlWhiteboard.setVisibility(View.INVISIBLE);
+        } else {
+            mFlShareVideo.setVisibility(View.INVISIBLE);
+            mFlWhiteboard.setVisibility(View.VISIBLE);
+        }
+    }
 
-        String room = getIntent().getStringExtra(IntentKey.ROOM_NAME);
-        mTvRoomName.setText(room);
+    private void initCommonUI() {
+
+        ViewGroup parentChatRoom = (ViewGroup) mFlChatroom.getParent();
+        if (parentChatRoom != null) {
+            parentChatRoom.removeAllViews();
+        }
+        ViewGroup parentWhiteboard = (ViewGroup) mFlWhiteboard.getParent();
+        if (parentWhiteboard != null) {
+            parentWhiteboard.removeAllViews();
+        }
+
+        ViewGroup parentShareVideo = (ViewGroup) mFlShareVideo.getParent();
+        if (parentShareVideo != null) {
+            parentShareVideo.removeAllViews();
+        }
+
+        ViewGroup parentStudentVideo = (ViewGroup) mVideoItemStudent.getParent();
+        if (parentStudentVideo != null) {
+            parentStudentVideo.removeAllViews();
+        }
+
+        ViewGroup parentTeacherVideo = (ViewGroup) mVideoItemTeacher.getParent();
+        if (parentTeacherVideo != null) {
+            parentTeacherVideo.removeAllViews();
+        }
+
+        mLayoutItemStudent = findViewById(R.id.layout_item_student);
+        mLayoutItemTeacher = findViewById(R.id.layout_item_teacher);
+        mLayoutShareVideo = findViewById(R.id.layout_share_video);
+        mLayoutItemStudent.addView(mVideoItemStudent, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mLayoutItemTeacher.addView(mVideoItemTeacher, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mLayoutShareVideo.addView(mFlShareVideo, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        updateRoomName();
+
+        updateShareVideoUI();
 
         mIcExit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,6 +422,11 @@ public class LargeClassActivity extends BaseActivity {
 
     }
 
+    private void updateRoomName() {
+        String room = getIntent().getStringExtra(IntentKey.ROOM_NAME);
+        mTvRoomName.setText(room + "(" + roomUserCount + ")");
+    }
+
     private void initFragment() {
         mWhiteboardFragment = WhiteboardFragment.newInstance(true);
         mChatroomFragment = ChatroomFragment.newInstance();
@@ -283,21 +450,14 @@ public class LargeClassActivity extends BaseActivity {
         mIcExit = findViewById(R.id.ic_close);
         findViewById(R.id.time_view).setVisibility(View.GONE);
         mTvRoomName = findViewById(R.id.tv_room_name);
-        initCommonUI();
 
         mTvBtnChatroom = null;
         mTvBtnWhiteboard = null;
         mLineWhiteboard = null;
         mLineChatroom = null;
 
-        ViewGroup parentChatroom = (ViewGroup) mFlChatroom.getParent();
-        if (parentChatroom != null) {
-            parentChatroom.removeAllViews();
-        }
-        ViewGroup parentWhiteboard = (ViewGroup) mFlWhiteboard.getParent();
-        if (parentWhiteboard != null) {
-            parentWhiteboard.removeAllViews();
-        }
+        initCommonUI();
+
         FrameLayout layoutWhiteboard = findViewById(R.id.layout_whiteboard);
         FrameLayout layoutChatroom = findViewById(R.id.layout_chatroom);
         layoutWhiteboard.addView(mFlWhiteboard);
@@ -313,12 +473,12 @@ public class LargeClassActivity extends BaseActivity {
         mTvRoomName = findViewById(R.id.tv_title_room);
         mIcExit = findViewById(R.id.ic_exit);
 
-        initCommonUI();
-
         mTvBtnWhiteboard = findViewById(R.id.tv_btn_whiteboard);
         mTvBtnChatroom = findViewById(R.id.tv_btn_chatroom);
         mLineWhiteboard = findViewById(R.id.line_whiteboard);
         mLineChatroom = findViewById(R.id.line_chatroom);
+
+        initCommonUI();
 
         mTvBtnWhiteboard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,7 +486,7 @@ public class LargeClassActivity extends BaseActivity {
                 mLineWhiteboard.setVisibility(View.VISIBLE);
                 mLineChatroom.setVisibility(View.GONE);
                 mFlChatroom.setVisibility(View.INVISIBLE);
-                mFlWhiteboard.setVisibility(View.VISIBLE);
+                updateShareVideoUI();
             }
         });
         mTvBtnChatroom.setOnClickListener(new View.OnClickListener() {
@@ -336,18 +496,11 @@ public class LargeClassActivity extends BaseActivity {
                 mLineWhiteboard.setVisibility(View.GONE);
                 mFlChatroom.setVisibility(View.VISIBLE);
                 mFlWhiteboard.setVisibility(View.INVISIBLE);
+                mFlShareVideo.setVisibility(View.GONE);
             }
         });
         mIcWifi = null;
 
-        ViewGroup parentChatroom = (ViewGroup) mFlChatroom.getParent();
-        if (parentChatroom != null) {
-            parentChatroom.removeAllViews();
-        }
-        ViewGroup parentWhiteboard = (ViewGroup) mFlWhiteboard.getParent();
-        if (parentWhiteboard != null) {
-            parentWhiteboard.removeAllViews();
-        }
         FrameLayout layoutChatroomWhitboard = findViewById(R.id.layout_whiteboard_chatroom);
         layoutChatroomWhitboard.addView(mFlChatroom);
         layoutChatroomWhitboard.addView(mFlWhiteboard);
@@ -358,19 +511,19 @@ public class LargeClassActivity extends BaseActivity {
     @Override
     public void finish() {
         mWhiteboardFragment.finishRoomPage();
-        mRtmRepository.leaveChannel();
+        mImStrategy.leaveChannel();
         mRtcDelegate.leaveChannel();
         super.finish();
     }
 
     private void muteLocalAudio(boolean isMute) {
-        mRtcDelegate.muteLocalAudio(true);
-        mRtmRepository.muteLocalAudio(true);
+        mRtcDelegate.muteLocalAudio(isMute);
+        mImStrategy.muteLocalAudio(isMute);
     }
 
     private void muteLocalVideo(boolean isMute) {
-        mRtcDelegate.muteLocalVideo(true);
-        mRtmRepository.muteLocalVideo(true);
+        mRtcDelegate.muteLocalVideo(isMute);
+        mImStrategy.muteLocalVideo(isMute);
     }
 
     @Override

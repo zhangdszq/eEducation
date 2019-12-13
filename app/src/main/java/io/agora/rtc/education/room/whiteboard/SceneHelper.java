@@ -6,7 +6,7 @@ import com.herewhite.sdk.domain.SceneState;
 
 public class SceneHelper {
 
-    private Scene[] scenes = new Scene[] {};
+    private Scene[] scenes = new Scene[]{};
     private Room room;
     private String scenePath = "";
     private int sceneIndex = -1;
@@ -16,14 +16,14 @@ public class SceneHelper {
     }
 
     public void setSceneState(SceneState sceneState) {
-        if (this.sceneIndex != sceneState.getIndex()) {
-            this.sceneIndex = sceneState.getIndex();
-            if (onSceneChangeListener != null) {
-                onSceneChangeListener.onSceneIndexChanged(this.sceneIndex, this.scenes.length);
-            }
-        }
+//        if (this.sceneIndex != sceneState.getIndex()) {
+        this.sceneIndex = sceneState.getIndex();
         this.scenePath = sceneState.getScenePath();
         this.scenes = sceneState.getScenes();
+        if (onSceneChangeListener != null) {
+            onSceneChangeListener.onSceneIndexChanged(this.sceneIndex + 1, this.scenes.length);
+        }
+//        }
     }
 
     private OnSceneChangeListener onSceneChangeListener;
@@ -35,7 +35,7 @@ public class SceneHelper {
         }
     }
 
-    public interface OnSceneChangeListener{
+    public interface OnSceneChangeListener {
         void onSceneIndexChanged(int index, int totalCount);
     }
 

@@ -26,21 +26,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_title_room" />
 
-    <io.agora.rtc.education.room.view.UserVideoItem
-        android:id="@+id/video_item_teacher"
+    <FrameLayout
+        android:id="@+id/layout_item_teacher"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_204"
         app:layout_constraintTop_toBottomOf="@id/tv_title_room" />
 
-    <io.agora.rtc.education.room.view.UserVideoItem
-        android:id="@+id/video_item_student"
+    <FrameLayout
+        android:id="@+id/layout_item_student"
         android:layout_width="@dimen/dp_81"
         android:layout_height="@dimen/dp_114"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/video_item_teacher"
-        app:layout_constraintTop_toTopOf="@id/video_item_teacher" />
+        app:layout_constraintEnd_toEndOf="@id/layout_item_teacher"
+        app:layout_constraintTop_toTopOf="@id/layout_item_teacher" />
 
     <TextView
         android:id="@+id/tv_btn_whiteboard"
@@ -52,7 +51,7 @@
         app:layout_constraintEnd_toStartOf="@id/tv_btn_chatroom"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/video_item_teacher" />
+        app:layout_constraintTop_toBottomOf="@id/layout_item_teacher" />
 
     <TextView
         android:id="@+id/tv_btn_chatroom"
@@ -63,7 +62,7 @@
         android:textColor="@drawable/color_333333_44a2fc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_btn_whiteboard"
-        app:layout_constraintTop_toBottomOf="@id/video_item_teacher" />
+        app:layout_constraintTop_toBottomOf="@id/layout_item_teacher" />
 
     <View
         android:id="@+id/line_whiteboard"
@@ -90,4 +89,14 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_btn_whiteboard" />
+
+    <FrameLayout
+        android:id="@+id/layout_share_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/layout_whiteboard_chatroom"
+        app:layout_constraintEnd_toEndOf="@id/layout_whiteboard_chatroom"
+        app:layout_constraintStart_toStartOf="@id/layout_whiteboard_chatroom"
+        app:layout_constraintTop_toTopOf="@id/layout_whiteboard_chatroom" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
