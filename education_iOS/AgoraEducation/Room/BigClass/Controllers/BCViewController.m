@@ -201,11 +201,12 @@
     if (!self.studentCanvas || uid != self.studentCanvas.uid) {
         self.studentVideoView.defaultImageView.hidden = YES;
         self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        self.studentCanvas.uid = uid;
         self.studentCanvas.view = self.studentVideoView.studentRenderView;
         if (remote) {
+            self.studentCanvas.uid = uid;
             [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
         }else {
+            self.studentCanvas.uid = 0;
             [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
         }
     }
