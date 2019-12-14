@@ -77,3 +77,9 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
 
 # 部署方式
   npm run build
+
+
+# electron mac打包方式
+  npm run pack:mac
+  
+  等待成功运行结束时会产生一个release目录，可以直接运行里面的.app
