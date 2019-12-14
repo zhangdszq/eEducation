@@ -87,13 +87,13 @@
     "wait-on": "^3.3.0"
   },
   "scripts": {
-    "electron": "REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
-    "electron:client": "electron ./src/main/index.js",
-    "electron:web": "BROWSER=none react-app-rewired start",
+    "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
+    "electron:client": "cross-env electron ./src/main/index.js",
+    "electron:web": "cross-env BROWSER=none react-app-rewired start",
     "dev:electron": "node scripts/electron.dev",
-    "electron:build": "REACT_APP_RUNTIME_PLATFORM=electron react-app-rewired build",
-    "dev": "REACT_APP_RUNTIME_PLATFORM=web react-app-rewired start",
-    "build": "REACT_APP_RUNTIME_PLATFORM=web react-app-rewired build",
+    "electron:build": "cross-env REACT_APP_RUNTIME_PLATFORM=electron react-app-rewired build",
+    "dev": "cross-env REACT_APP_RUNTIME_PLATFORM=web react-app-rewired start",
+    "build": "cross-env REACT_APP_RUNTIME_PLATFORM=web react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
     "pack": "electron-builder --dir -m"

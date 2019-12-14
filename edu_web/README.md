@@ -1,7 +1,7 @@
 # Agora Edu
 
 ### 简介
-  Agora Edu是基于声网的音视频sdk和实时消息sdk，以及Netless的白板sdk构成
+  Agora Edu是基于声网的音视频sdk和实时消息sdk，以及Netless的白板sdk构成  
   主要功能如下:
   老师1v1教学授课
   小班课场景：老师1v17学生教学授课
@@ -14,6 +14,32 @@
   * agora-rtm-sdk
   * electron 5.0.8
   * electron-builder
+  * mac or windows
+
+### electron下载慢的解决方案
+  * mac
+  ```
+  export ELECTRON_MIRROR="https://cdn.npm.taobao.org/dist/electron/"
+  ```
+  * windows
+  ```
+  set ELECTRON_MIRROR=https://cdn.npm.taobao.org/dist/electron/
+  ```
+
+### electron环境注意事项
+  * mac 不需要修改package.json
+  * windows 需要找到package.json里的`agora_electron` 按照如下结构替换
+  ```
+    "agora_electron": {
+      "electron_version": "5.0.8",
+      "prebuilt": true,
+      "platform": "win32"
+    },
+  ```
+  (windows上推荐手动安装electron 5.0.8)
+  ```
+  npm install electron@5.0.8 --arch=ia32 --save-dev
+  ```
 
 ### 环境搭建
 

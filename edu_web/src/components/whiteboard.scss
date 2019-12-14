@@ -303,15 +303,11 @@
       display: flex;
       justify-content: flex-end;
       .items {
-        // cursor: pointer;
         display: flex;
         height: 42px;
         width: 42px;
         border-radius: 4px;
         box-sizing: border-box;
-        // .hands_up::hover {
-
-        // }
       }
       .peer_hands_up {
         width: 42px;
@@ -319,14 +315,11 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
-        // content: ' ';
         background-image: url('../assets/icon-handup-default@2x.png');
         &:hover {
-          // content: ' ';
           background-image: url('../assets/icon-handup-hover@2x.png');
         }
         &.active {
-          // content: ' ';
           background-image: url('../assets/icon-handup-active@2x.png');
         }
       }
