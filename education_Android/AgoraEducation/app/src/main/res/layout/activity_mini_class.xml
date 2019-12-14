@@ -10,13 +10,10 @@
         android:id="@+id/layout_title"
         layout="@layout/title_lanscape" />
 
-    <ListView
-        android:id="@+id/lv_videos"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_videos"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_68"
-        android:divider="@color/transparent"
-        android:dividerHeight="@dimen/dp_1"
-        android:orientation="horizontal"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/layout_title" />
 
@@ -26,7 +23,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lv_videos">
+        app:layout_constraintTop_toBottomOf="@id/rcv_videos">
 
         <View
             android:id="@+id/line_vertical"
@@ -105,7 +102,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/layout_im"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lv_videos" />
+        app:layout_constraintTop_toBottomOf="@id/rcv_videos" />
 
     <FrameLayout
         android:id="@+id/layout_share_video"
@@ -123,5 +120,5 @@
         android:onClick="onClickShowChat"
         android:src="@drawable/ic_slt_show_im"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lv_videos" />
+        app:layout_constraintTop_toBottomOf="@id/rcv_videos" />
 </androidx.constraintlayout.widget.ConstraintLayout>
