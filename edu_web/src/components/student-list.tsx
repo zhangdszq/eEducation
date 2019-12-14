@@ -67,7 +67,7 @@ export default function StudentList ({
             ref.current = true;
             rtmClient.updateChannelAttrs(store, {
               // @ts-ignore
-              [`${type}`]: !Boolean(targetUser[type])
+              [`${type}`]: +(!Boolean(targetUser[type])) as number
             }).then(() => {
               ref.current = null;
             }).catch((err: any) => {

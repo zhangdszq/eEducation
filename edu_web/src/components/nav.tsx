@@ -13,6 +13,7 @@ import { useGlobalContext } from '../containers/global-container';
 import { usePlatform } from '../containers/platform-container';
 import AgoraWebClient from '../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
+import { isElectron } from '../utils/platform';
 
 interface NavProps {
   delay: string
@@ -48,7 +49,7 @@ export function Nav ({
 
   return (
     <>
-    <div className="nav-container">
+    <div className={`nav-container ${isElectron ? 'draggable' : ''}`}>
       <div className="class-title">
         <span className="room-name">{roomName}</span>
         {role === 'teacher' ? 

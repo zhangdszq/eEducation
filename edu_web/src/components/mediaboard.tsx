@@ -164,6 +164,8 @@ export default function MediaBoard ({
     return false;
   }, [store.user.id, store.room.linkId]);
 
+  console.log("isHost ", isHost);
+  
   const location = useLocation();
 
   const showControl: boolean = useMemo(() => {

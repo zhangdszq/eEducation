@@ -9,15 +9,28 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
-const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+const isDev = require('electron-is-dev');
+
+isDev && require('electron-debug')({ enabled: true, showDevTools: false });
+function createDevTools() {
+  const {
+    default: installExtension,
+    REACT_DEVELOPER_TOOLS,
+    REDUX_DEVTOOLS,
+  } = require('electron-devtools-installer');
+  const devtronExtension = require('devtron');
+  devtronExtension.install();
+  installExtension(REACT_DEVELOPER_TOOLS);
+  installExtension(REDUX_DEVTOOLS);
+}
+
 function createWindow() {
-  console.log("path : preload.js ", path.join(__dirname, './preload'));
-    // Create the browser window.
+  
     mainWindow = new BrowserWindow({
       frame: false,
       width: 700,
@@ -28,18 +41,18 @@ function createWindow() {
       }
     });
 
-    const startUrl = process.env.ELECTRON_START_URL || url.format({
-      pathname: path.join(__dirname, '/../build/index.html'),
-      protocol: 'file',
-      slashes: true,
-    })
+    const startUrl = process.env.ELECTRON_START_URL || 
+    `file://${path.resolve(
+      __dirname,
+      '../../app.asar/build'
+    )}/index.html`
     mainWindow.center();
 
     // and load the index.html of the app.
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -73,6 +86,7 @@ function createWindow() {
     ipcMain.on('close', () => {
       app.quit()
     })
+    isDev && createDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -90,7 +104,7 @@ app.on('window-all-closed', function () {
 });
 
 app.on('activate', function () {
-    console.log("process activate");
+    console.log("main process activate");
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
