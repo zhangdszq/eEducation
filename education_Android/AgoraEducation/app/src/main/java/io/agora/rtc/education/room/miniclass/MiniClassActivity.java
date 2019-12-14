@@ -8,14 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
@@ -50,7 +53,7 @@ public class MiniClassActivity extends BaseActivity {
     private ImageView mIcClose;
     private TextView mTvRoomName;
     private TimeView mTimeView;
-    private ListView mLvVideos;
+    private RecyclerView mRcvVideos;
     private View mLine1;
     private View mLine2;
     private FrameLayout mFlChatRoom;
@@ -64,7 +67,7 @@ public class MiniClassActivity extends BaseActivity {
     private ChatroomFragment mChatroomFragment;
     private StudentListFrament mStudentListFrament;
 
-    private VideoItemAdapter mAdapter;
+    private VideoItemRcvAdapter mAdapter;
     private RtcDelegate mRtcDelegate;
     private IMStrategy mImStrategy;
     private ChannelDataReadOnly mChannelData;
@@ -190,8 +193,16 @@ public class MiniClassActivity extends BaseActivity {
                         mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1);
                     }
 
+                    List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
                     mAdapter.setList(users);
-                    mAdapter.notifyDataSetChanged();
+
+                    if (updatePositions == null) {
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        for (int i : updatePositions) {
+                            mAdapter.notifyItemChanged(i, new byte[0]);
+                        }
+                    }
                     mStudentListFrament.setList(users);
                 }
             });
@@ -226,6 +237,30 @@ public class MiniClassActivity extends BaseActivity {
         }
     };
 
+    private List<Integer> checkoutUpdatePositions(ArrayList<User> users1, List<User> users2) {
+        if (users1 == null || users2 == null || users1.size() != users2.size()) {
+            return null;
+        }
+        List<Integer> integers = new LinkedList<>();
+        for (int i = 0; i < users1.size(); i++) {
+            User user1 = users1.get(i);
+            User user2 = users2.get(i);
+            if (user1.getUid() != user2.getUid()) {
+                return null;
+            }
+            if (user1.account == null) {
+                user1.account = "";
+            }
+            if (user2.account == null) {
+                user2.account = "";
+            }
+            if (!user1.account.equals(user2.account) || user1.audio != user2.audio || user1.video != user2.video){
+                integers.add(i);
+            }
+        }
+        return integers;
+    }
+
     @Override
     protected void initUI(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_mini_class);
@@ -233,7 +268,7 @@ public class MiniClassActivity extends BaseActivity {
         mIcClose = findViewById(R.id.ic_close);
         mTvRoomName = findViewById(R.id.tv_room_name);
         mTimeView = findViewById(R.id.time_view);
-        mLvVideos = findViewById(R.id.lv_videos);
+        mRcvVideos = findViewById(R.id.rcv_videos);
         mLine1 = findViewById(R.id.line_1);
         mLine2 = findViewById(R.id.line_2);
         mFlChatRoom = findViewById(R.id.fl_chat_room);
@@ -289,8 +324,10 @@ public class MiniClassActivity extends BaseActivity {
         mImStrategy.joinChannel(room);
         mRtcDelegate.joinChannel(room, myAttr);
 
-        this.mAdapter = new VideoItemAdapter(myAttr.uid);
-        mLvVideos.setAdapter(mAdapter);
+        this.mAdapter = new VideoItemRcvAdapter(myAttr.uid);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mRcvVideos.setLayoutManager(layoutManager);
+        mRcvVideos.setAdapter(mAdapter);
     }
 
     private void showChatRoom(boolean isShow) {

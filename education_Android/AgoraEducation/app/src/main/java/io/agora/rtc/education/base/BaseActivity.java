@@ -51,6 +51,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        if (EyeCare.isNeedShow()) {
+            showEyeCareView();
+        } else {
+            dismissEyeCareView();
+        }
+    }
+
     protected void dismissEyeCareView() {
         if (eyeCareView != null && eyeCareView.getVisibility() != View.GONE) {
             eyeCareView.setVisibility(View.GONE);
@@ -62,6 +72,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (eyeCareView == null) {
             eyeCareView = new EyeCare.EyeCareView(this);
             eyeCareView.setVisibility(View.GONE);
+        }
+        if (eyeCareView.getParent() == null) {
             addContentView(eyeCareView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
         if (eyeCareView.getVisibility() != View.VISIBLE) {
