@@ -1,5 +1,5 @@
 import React, { useMemo, createContext, useRef, useEffect, useContext, useState } from 'react';
-import { useRootContext } from './../store';
+import { useRootContext, refStore } from './../store';
 import { UserState, GlobalState } from './../reducers/initialize-state';
 import AgoraRTMClient, { RoomMessage } from '../utils/agora-rtm-client';
 import { ActionType, User, UserRole, AgoraStream } from '../reducers/types';
@@ -13,7 +13,6 @@ import { useGlobalContext } from '../containers/global-container';
 import AgoraWebClient from '../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import { usePlatform } from '../containers/platform-container';
-import { recording } from './use-recording';
 
 export interface InitRTCProps {
   media: MediaInfo
@@ -112,6 +111,21 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
     type: ActionType.REMOVE_SHARED_STREAM
   });
 
+  const showNotice = (peerId: number) => {
+    const applyUser = refStore.users.get(`${peerId}`);
+    console.log("appyUser", applyUser, refStore.users);
+    if (!applyUser) return;
+    dispatch({
+      type: ActionType.NOTICE,
+      reason: 'peer_hands_up',
+      text: `"${applyUser.account}" wants to interact with you`,
+    })
+  }
+
+  const removeNotice = () => dispatch({
+    type: ActionType.NOTICE, reason: ''
+  });
+
   const { platform } = usePlatform();
   const [connect, setConnect] = React.useState<ConnectState>(ConnectState.disconnected);
   const [shareConnect, setShareConnect] = React.useState<ConnectState>(ConnectState.disconnected);
@@ -141,7 +155,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
 
   useEffect(() => {
     if (!location.pathname.match(/big-class/) || store.user.role === UserRole.teacher) return
-
+    if (store.room.linkId) return;
     if (platform === 'web') {
       const webClient = rtcClient as AgoraWebClient;
       if (!webClient.published) return;
@@ -149,21 +163,16 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
         .unpublishLocalStream()
         .then(() => {
           console.log("[smart-client] unpublish local stream");
-          msgLock.current = 'ready';
         }).catch(console.warn)
-        .finally(() => {
-          console.log("[smart-client] be closed");
-        })
     }
 
     if (platform === 'electron') {
       const nativeClient = rtcClient as AgoraElectronClient;
-      if (nativeClient.published) return;
+      if (!nativeClient.published) return;
       nativeClient.unpublish();
-      msgLock.current = 'ready';
     }
 
-  }, [store.user.role, rtcClient, location.pathname]);
+  }, [store.user.role, rtcClient, location.pathname, store.room.linkId]);
 
   const canPublish = useMemo(() => {
     return !location.pathname.match(/big-class/) ||
@@ -230,10 +239,8 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
       if (platform === 'web') {
         const webClient = rtcClient as AgoraWebClient;
         if (webClient.joined) {
-          console.log("[smart-client] joined ", webClient.joined);
           return;
         }
-        console.log("[smart-client] add listener", webClient.joined);
         webClient.rtc.on('error', (evt: any) => {
           console.log('[smart-client] error evt', evt);
         });
@@ -263,9 +270,8 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
         });
         webClient.rtc.on('stream-removed', ({ stream }: any) => {
           const id = stream.getId();
-          console.log('[web-client] stream-removed id ', id, ' linkUid ', linkUid.current);
-          if (id === linkUid.current) {
-            dispatch({ type: ActionType.NOTICE, reason: '' });
+          if (id === applyUid.current) {
+            removeNotice();
             store.user.role === UserRole.teacher &&
             rtmClient && rtmClient.updateChannelAttrs(store, {
               link_uid: 0
@@ -276,9 +282,8 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
           removeRemoteStream(stream.getId());
         });
         webClient.rtc.on('peer-leave', ({ uid }: any) => {
-          console.log('[web-client] peer-leave id ', uid, ' linkUid ', linkUid.current);
-          if (uid === linkUid.current) {
-            dispatch({ type: ActionType.NOTICE, reason: '' });
+          if (uid === applyUid.current) {
+            removeNotice();
             store.user.role === UserRole.teacher &&
             rtmClient && rtmClient.updateChannelAttrs(store, {
               link_uid: 0
@@ -359,7 +364,6 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
         );
         updateMediaJoin(true);
         return () => {
-          console.log("[smart-client] prepare remove listener");
           !rtc.current && nativeClient.exit();
           !rtc.current && updateMediaJoin(false);
           !rtc.current && removeLocalStream();
@@ -432,7 +436,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
     items: []
   });
 
-  const { showDialog, removeDialog, addMe } = useGlobalContext();
+  const { removeDialog } = useGlobalContext();
 
   const ref = useRef<boolean>(false);
 
@@ -520,64 +524,35 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
     return location.pathname.match(/big-class/) !== null;
   }, [location]);
 
-  const [applyId, updateApplyId] = useState<number>(0);
-
-  useEffect(() => {
-    linkUid.current = applyId;
-    if (linkUid.current) {
-      msgLock.current = 'processing'
-    }
-  }, [applyId]);
-
-  useEffect(() => {
-    if (!isLargeClass ||
-      store.user.role !== UserRole.teacher ||
-      store.ui.notice.reason ||
-      msgLock.current !== 'processing') return;
-
-    const applyUser = store.room.users.get(`${applyId}`);
-
-    if (applyUser) {
-      dispatch({ type: ActionType.NOTICE, reason: 'peer_hands_up', text: `"${applyUser.account}" wants to interact with you` });
-    }
-  }, [isLargeClass, applyId, store.ui.dialog.visible])
-
   const linkUid = useRef<number>(0);
+  const applyUid = useRef<number>(0);
   const rtmLock = useRef<boolean>(false);
-  const msgLock = useRef<string>('ready');
+  const msgLock = useRef<boolean>(false);
   const rtcLock = useRef<boolean>(false);
 
   const rtcClientRef = useRef<any>(null);
 
   useEffect(() => {
     return () => {
-      msgLock.current = 'closed'
+      msgLock.current = true;
       rtmLock.current = true;
       rtcLock.current = true;
+      applyUid.current = 0;
+      linkUid.current = 0;
     }
   }, []);
 
-  // // @ts-ignore
-  // window.locks = {
-  //   msgLock,
-  //   linkUid,
-  //   rtmLock,
-  //   rtcLock,
-  // }
-
   useEffect(() => {
-    if (!store.room.linkId) {
-      updateApplyId(0);
-      linkUid.current = 0;
-      msgLock.current = 'ready';
-      return;
+    if (store.room.linkId) {
+      msgLock.current = true;
+    } else {
+      msgLock.current = false;
+      applyUid.current = 0;
     }
-    linkUid.current = store.room.linkId;
-    msgLock.current = 'processing';
   }, [store.room.linkId]);
 
   const canApply = (): boolean => {
-    if (rtmLock.current || msgLock.current !== 'processing') {
+    if (rtmLock.current) {
       return false;
     }
     return true;
@@ -585,16 +560,18 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
 
   const onApplyConfirm = async () => {
     if (!rtmClient || !canApply()) return;
+
+    console.log(" when apply confirm linkId ", applyUid.current);
     try {
       rtmLock.current = true
-      await rtmClient.sendPeerMessage(`${applyId}`, {
+      await rtmClient.sendPeerMessage(`${applyUid.current}`, {
         cmd: RoomMessage.acceptCoVideo
       });
       await rtmClient.updateChannelAttrs(store, {
-        link_uid: applyId
+        link_uid: applyUid.current
       });
       removeDialog();
-      dispatch({ type: ActionType.NOTICE, reason: '' });
+      removeNotice();
     } catch (err) {
       throw err;
     } finally {
@@ -604,18 +581,19 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
 
   const onRejectApply = async () => {
     if (!rtmClient || !canApply()) return;
+
+    console.log(" when apply confirm linkId ", applyUid.current);
     try {
       rtmLock.current = true;
-      await rtmClient.sendPeerMessage(`${applyId}`, {
+      await rtmClient.sendPeerMessage(`${applyUid.current}`, {
         cmd: RoomMessage.rejectCoVideo
       })
+      applyUid.current = 0;
       removeDialog();
-      updateApplyId(0);
-      dispatch({ type: ActionType.NOTICE, reason: '' });
+      removeNotice();
     } catch (err) {
       throw err;
     } finally {
-      msgLock.current = 'ready';
       rtmLock.current = false;
     }
   }
@@ -697,45 +675,31 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
         }
 
         const largeClass = pathname.current.match(/big-class/) !== null;
-        console.log('[MessageFromPeer] body, ', pathname.current, largeClass, cmd, peerId, linkUid.current, applyId);
+        // console.log('[MessageFromPeer] body, ', pathname.current, largeClass, cmd, peerId, linkUid.current, applyId);
 
         if (largeClass
           && [RoomMessage.applyCoVideo,
           RoomMessage.acceptCoVideo,
           RoomMessage.rejectCoVideo,
           RoomMessage.cancelCoVideo].indexOf(body.cmd) !== -1) {
-          console.log("store.room.linkId", store.room.linkId, body);
           // when received accept msg
           if (RoomMessage.acceptCoVideo === body.cmd) {
-            msgLock.current = 'processing';
             showToast({
               message: `U can interactive with teacher now.`,
               type: 'notice'
             })
           }
-          console.log('[rtm-client] apply message received, msgLock: ', msgLock.current, ' user role: ', store.user.role);
-          if (store.user.role === UserRole.teacher && msgLock.current !== 'ready') {
-            console.warn('msgLock.current is not ready', msgLock.current);
-            return;
-          }
-          console.log('[rtm-client] msgLock.current is ready, current: ', msgLock.current, linkUid.current);
           if (store.user.role === UserRole.teacher) {
-            if (cmd === RoomMessage.applyCoVideo && !linkUid.current) {
-              //@ts-ignore
-              // linkUid.current = peerId;
-              updateApplyId(+peerId as number);
-              // msgLock.current = 'processing'
+            if (cmd === RoomMessage.applyCoVideo && !applyUid.current && peerId) {
+              applyUid.current = +peerId as number;
+              showNotice(applyUid.current);
               return;
             }
             if (cmd === RoomMessage.cancelCoVideo) {
-              // when teacher receive cancel covideo
-              if (
-                store.user.role === UserRole.teacher
-                && linkUid.current
-                && store.global.rtmClient
-                && store.ui.apply === false
-                && store.room.linkId) {
-                store.global.rtmClient.updateChannelAttrs(store, {
+              // when teacher receive cancel co-video
+              if (refStore.rtmClient
+                && refStore.linkId) {
+                refStore.rtmClient.updateChannelAttrs(store, {
                   link_uid: 0,
                 }).then(() => {
                 }).catch(console.warn);
@@ -762,7 +726,6 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
               user && console.warn(`[rtm-message] cancel you interactive apply, By Peer User: ${user.account}, reject your apply`);
               rtcLock.current = true;
             }
-            // msgLock.current = 'processing'
           }
         }
       });

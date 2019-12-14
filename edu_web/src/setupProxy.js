@@ -4,7 +4,7 @@ const URL = process.env.REACT_APP_AGORA_RECORDING_SERVICE_URL;
 const APP_ID = process.env.REACT_APP_AGORA_APP_ID;
 
 module.exports = function (app) {
-  app.use(
+  URL && app.use(
     '/v1',
     proxy({
       target: URL.replace('%s', APP_ID),

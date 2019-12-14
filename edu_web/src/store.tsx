@@ -1,14 +1,28 @@
-import { RootAction } from './reducers/types';
+import { RootAction, User } from './reducers/types';
 import {RootState} from './reducers/initialize-state';
 import React, { useReducer, createContext, Dispatch, useContext, useEffect } from 'react';
 import {defaultState, RootReducer} from './reducers/index';
 import GlobalStorage from './reducers/custom-storage';
 import { HashRouter as Router, useLocation } from 'react-router-dom';
 import { isElectron } from './utils/platform';
+import {Map} from 'immutable';
+import AgoraRTMClient from './utils/agora-rtm-client';
 
 export interface RootStore {
   store: RootState
   dispatch: Dispatch<RootAction>
+}
+
+type refStore = {
+  users: Map<string, User>
+  linkId: number
+  rtmClient?: AgoraRTMClient
+}
+
+export const refStore: refStore = {
+  users: Map<string, User>(),
+  linkId: 0,
+  rtmClient: undefined,
 }
 
 export const RootContext = createContext({} as RootStore);
@@ -17,17 +31,18 @@ export const useRootContext = () => useContext(RootContext);
 
 export const useRootObserver = (store: RootState) => {
 
-  const location = useLocation();
-
   useEffect(() => {
     console.log(' [mediaInfo] ', store.global.mediaInfo);
   }, [store.global.mediaInfo]);
 
   useEffect(() => {
+    refStore.users = store.room.users;
+    refStore.linkId = store.room.linkId;
     GlobalStorage.save('room', store.room);
-    // console.log('room ', store.room.users);
     // @ts-ignore
     window.room = store.room;
+    // @ts-ignore
+    window.refStore = refStore;
   }, [store.room]);
 
   useEffect(() => {
@@ -38,10 +53,11 @@ export const useRootObserver = (store: RootState) => {
   }, [store.user]);
 
   useEffect(() => {
-    // GlobalStorage.save('user', store.user);
-    // console.log(store.global.messages);
     // @ts-ignore
     window.global = store.global;
+    refStore.rtmClient = store.global.rtmClient;
+    // @ts-ignore
+    window.refStore = refStore;
     // @ts-ignore
     window.remoteStreams = store.global.remoteStreams;
   }, [store.global]);
@@ -51,24 +67,12 @@ export const useRootObserver = (store: RootState) => {
   }, [store.global.linkId])
 
   useEffect(() => {
-    // GlobalStorage.save('user', store.user);
-    // console.log(store.global.messages);
-    // @ts-ignore
-    window.ui = store.ui;
-  }, [store.ui]);
-
-  useEffect(() => {
     GlobalStorage.save('pass', Boolean(store.global.canPass));
   }, [store.global.canPass]);
 }
 
 export const StoreContainer: React.FC<any> = ({children}: {children: any}) => {
   const [store, dispatch] = useReducer(RootReducer, defaultState);
-  // @ts-ignore
-  window.reducer = {
-    store,
-    dispatch
-  }
 
   const value: RootStore = {
     store,
