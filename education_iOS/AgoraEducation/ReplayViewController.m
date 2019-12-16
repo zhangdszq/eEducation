@@ -12,15 +12,17 @@
 #import "OTOTeacherView.h"
 #import "ReplayControlView.h"
 
+#define PREFERRED_TIME_SCALE 100
 @interface ReplayViewController ()<WhiteCombineDelegate, WhiteCommonCallbackDelegate, WhitePlayerEventDelegate, ReplayControlViewDelegate>
 
-//@property (nonatomic, strong)AVPlayerViewController *playerVC;
-@property (nonatomic, strong) WhiteSDK *sdk;
+@property (nonatomic, strong) WhiteSDK *whiteSDK;
 @property (nonatomic, strong) WhitePlayer *player;
 @property (nonatomic, strong) WhiteCombinePlayer *combinePlayer;
 
-@property (weak, nonatomic) IBOutlet UIView *whiteboardBaseView;
+@property (nonatomic, strong) WhiteBoardView *boardView;
+@property (nonatomic, strong) WhiteVideoView *videoView;
 
+@property (weak, nonatomic) IBOutlet UIView *whiteboardBaseView;
 @property (weak, nonatomic) IBOutlet ReplayControlView *controlView;
 
 @property (weak, nonatomic) IBOutlet UIView *playBackgroundView;
@@ -35,44 +37,71 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.controlView.delegate = self;
-    WhiteVideoView *videoView = [[WhiteVideoView alloc] initWithFrame:self.teacherView.bounds];
-    videoView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.teacherView addSubview:videoView];
     
-    WhiteBoardView *boardView = [[WhiteBoardView alloc] init];
-    boardView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.whiteboardBaseView insertSubview:boardView belowSubview:self.playBackgroundView];
-    
-    NSLayoutConstraint *boardViewTopConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewLeftConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewRightConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewBottomConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.whiteboardBaseView addConstraints:@[boardViewTopConstraint, boardViewLeftConstraint, boardViewRightConstraint, boardViewBottomConstraint]];
+    [self setupView];
+    [self setupWhiteboard];
+}
 
+- (void)setupWhiteboard {
     //配置 SDK 设置
     WhiteSdkConfiguration *config = [WhiteSdkConfiguration defaultConfig];
     //通过实例化，并已经添加在视图栈中 Whiteboard，初始化 WhiteSDK。
-    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:boardView config:config commonCallbackDelegate:self];
-    
+    self.whiteSDK = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:config commonCallbackDelegate:self];
+
     //初始化回放配置类
     WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:@"" roomToken:@""];
-    //创建 whitePlayer 实例，进行回放
+    
+    NSString *videoPath = @"https://white-pan.oss-cn-shanghai.aliyuncs.com/101/oceans.mp4";
+    __block NSTimeInterval time = 0;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        AVURLAsset *asset = [AVURLAsset assetWithURL:[NSURL URLWithString: videoPath]];
+        time = CMTimeGetSeconds([asset duration]);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            playerConfig.duration = @((int)time);
+            [self createReplyWithConfig:playerConfig videoPath:videoPath];
+        });
+    });
+    
+//    NSString *videoPath = @"https://netless-media.oss-cn-hangzhou.aliyuncs.com/c447a98ece45696f09c7fc88f649c082_3002a61acef14e4aa1b0154f734a991d.m3u8";
 
+
+//    /** 传入对应的UTC 时间戳(秒)，如果正确，则会在对应的位置开始播放。 */
+//    @property (nonatomic, strong, nullable) NSNumber *beginTimestamp;
+}
+
+- (void)setupView {
+    
+    self.controlView.delegate = self;
+    
+    _videoView = [[WhiteVideoView alloc] initWithFrame:self.teacherView.bounds];
+    _videoView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.teacherView addSubview:_videoView];
+    
+    _boardView = [[WhiteBoardView alloc] init];
+    _boardView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.whiteboardBaseView insertSubview:_boardView belowSubview:self.playBackgroundView];
+    NSLayoutConstraint *boardViewTopConstraint = [NSLayoutConstraint constraintWithItem:_boardView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewLeftConstraint = [NSLayoutConstraint constraintWithItem:_boardView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewRightConstraint = [NSLayoutConstraint constraintWithItem:_boardView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_boardView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.whiteboardBaseView addConstraints:@[boardViewTopConstraint, boardViewLeftConstraint, boardViewRightConstraint, boardViewBottomConstraint]];
+}
+                       
+- (void)createReplyWithConfig:(WhitePlayerConfig *)playerConfig videoPath:(NSString*)videoPath {
+        
     WEAK(self)
-    [self.sdk createReplayerWithConfig:playerConfig callbacks:self completionHandler:^(BOOL success, WhitePlayer * _Nonnull player, NSError * _Nonnull error) {
+    [self.whiteSDK createReplayerWithConfig:playerConfig callbacks:self completionHandler:^(BOOL success, WhitePlayer * _Nonnull player, NSError * _Nonnull error) {
         if (error) {
             NSLog(@"创建回放房间失败 error:%@", [error localizedDescription]);
         } else {
             weakself.player = player;
-            //TODO: 音视频的url
-            self.combinePlayer = [[WhiteCombinePlayer alloc] initWithMediaUrl:[NSURL URLWithString:@""] whitePlayer:player];
-            //TODO: 把视频 Player 显示在这里
-            [videoView setAVPlayer:self.combinePlayer.nativePlayer];
-            self.combinePlayer.delegate = self;
-            [self.combinePlayer play];
-            NSLog(@"创建回放房间成功，开始回放");
+            // 视频的url
+            weakself.combinePlayer = [[WhiteCombinePlayer alloc] initWithMediaUrl:[NSURL URLWithString:videoPath] whitePlayer:player];
+            [weakself.videoView setAVPlayer:weakself.combinePlayer.nativePlayer];
+            weakself.combinePlayer.delegate = weakself;
+            NSLog(@"创建回放房间成功");
         }
     }];
 }
@@ -83,7 +112,7 @@
     self.playButton.hidden = YES;
     self.controlView.playOrPauseBtn.selected = YES;
     self.defaultTeacherImage.hidden = YES;
-    [self.player play];
+    [self.combinePlayer play];
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControlView) object:nil];
     [self performSelector:@selector(hideControlView) withObject:nil afterDelay:3];
@@ -96,6 +125,26 @@
 }
 
 #pragma mark WhiteCombineDelegate
+- (void)nativePlayerDidFinish {
+    [self.combinePlayer pause];
+
+    CMTime cmTime = CMTimeMakeWithSeconds(0, PREFERRED_TIME_SCALE);
+    [self.combinePlayer seekToTime:cmTime completionHandler:^(BOOL finished) {
+
+    }];
+    
+    self.playBackgroundView.hidden = NO;
+    self.playButton.hidden = NO;
+    self.controlView.playOrPauseBtn.selected = NO;
+    self.defaultTeacherImage.hidden = NO;
+
+    self.controlView.sliderView.value = 0;
+    NSString *totleTimeStr = [self convertTimeSecond: self.player.timeInfo.timeDuration];
+    NSString *currentTimeStr = [self convertTimeSecond: 0];
+    NSString *timeStr = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totleTimeStr];
+    self.controlView.timeLabel.text = timeStr;
+}
+
 - (void)combinePlayerStartBuffering
 {
     NSLog(@"combinePlayerStartBuffering");
@@ -109,34 +158,9 @@
 #pragma mark WhitePlayerEventDelegate
 /** 播放状态切换回调 */
 - (void)phaseChanged:(WhitePlayerPhase)phase {
-    if(phase == WhitePlayerPhaseEnded) {
-        [self.player seekToScheduleTime:0];
-        [self.player pause];
-        
-        self.playBackgroundView.hidden = NO;
-        self.playButton.hidden = NO;
-        self.controlView.playOrPauseBtn.selected = NO;
-        self.defaultTeacherImage.hidden = NO;
-        
-        self.controlView.sliderView.value = 0;
-        NSString *totleTimeStr = [self convertTimeSecond: self.player.timeInfo.timeDuration];
-        NSString *currentTimeStr = [self convertTimeSecond: 0];
-        NSString *timeStr = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totleTimeStr];
-        self.controlView.timeLabel.text = timeStr;
-    }
+    [self.combinePlayer updateWhitePlayerPhase:phase];
 }
-/** 首帧加载回调 */
-- (void)loadFirstFrame {
-    
-}
-///** 播放中，状态出现变化的回调 */
-//- (void)playerStateChanged:(WhitePlayerState *)modifyState {
-//
-//}
-/** 出错暂停 */
-- (void)stoppedWithError:(NSError *)error {
-    
-}
+
 /** 进度时间变化 */
 - (void)scheduleTimeChanged:(NSTimeInterval)time {
     
@@ -153,14 +177,7 @@
         self.controlView.timeLabel.text = timeStr;
     }
 }
-/** 添加帧出错 */
-- (void)errorWhenAppendFrame:(NSError *)error {
-    
-}
-/** 渲染时，出错 */
-- (void)errorWhenRender:(NSError *)error {
-    
-}
+
 
 #pragma mark ReplayControlViewDelegate
 // 滑块滑动开始
@@ -169,8 +186,13 @@
 }
 // 滑块滑动中
 - (void)sliderValueChanged:(float)value {
-    if (self.player.timeInfo.timeDuration > 0) {
-        [self.player seekToScheduleTime:self.player.timeInfo.timeDuration * value];
+    if (self.combinePlayer.whitePlayer.timeInfo.timeDuration > 0) {
+        Float64 seconds = self.player.timeInfo.timeDuration * value;
+        
+        CMTime cmTime = CMTimeMakeWithSeconds(seconds, PREFERRED_TIME_SCALE);
+        [self.combinePlayer seekToTime:cmTime completionHandler:^(BOOL finished) {
+            
+        }];
     }
 }
 // 滑块滑动结束
@@ -182,7 +204,13 @@
     }
     self.controlView.sliderView.value = value;
     float currentTime = self.player.timeInfo.timeDuration * value;
-    [self.player seekToScheduleTime:currentTime];
+    
+    Float64 seconds = currentTime;
+    CMTime cmTime = CMTimeMakeWithSeconds(seconds, PREFERRED_TIME_SCALE);
+    [self.combinePlayer seekToTime:cmTime completionHandler:^(BOOL finished) {
+        
+    }];
+    
     NSString *currentTimeStr = [self convertTimeSecond: currentTime];
     NSString *totleTimeStr = [self convertTimeSecond: self.player.timeInfo.timeDuration];
     NSString *timeStr = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totleTimeStr];
@@ -210,16 +238,24 @@
     
     if(self.player.timeInfo.timeDuration > 0) {
         float currentTime = self.player.timeInfo.timeDuration * value;
-        [self.player seekToScheduleTime:currentTime];
+        CMTime cmTime = CMTimeMakeWithSeconds(currentTime, PREFERRED_TIME_SCALE);
+        WEAK(self)
+        [self.combinePlayer seekToTime:cmTime completionHandler:^(BOOL finished) {
+            weakself.controlView.sliderView.isdragging = NO;
+        }];
+//        self.controlView.sliderView.isdragging = NO;
+        
+//        [self.player seekToScheduleTime:currentTime];
         NSString *currentTimeStr = [self convertTimeSecond: currentTime];
         NSString *totleTimeStr = [self convertTimeSecond: self.player.timeInfo.timeDuration];
         NSString *timeStr = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totleTimeStr];
         self.controlView.timeLabel.text = timeStr;
     } else {
         self.controlView.sliderView.value = 0;
+        self.controlView.sliderView.isdragging = NO;
     }
     
-    self.controlView.sliderView.isdragging = NO;
+    
 }
 // 播放暂停按钮点击
 - (void)playPauseButtonClicked:(BOOL)play {
@@ -229,14 +265,14 @@
     if(play) {
         self.playBackgroundView.hidden = YES;
         self.playButton.hidden = YES;
-        [self.player play];
+        [self.combinePlayer play];
         self.defaultTeacherImage.hidden = YES;
         [self performSelector:@selector(hideControlView) withObject:nil afterDelay:3];
         
     } else {
         self.playBackgroundView.hidden = NO;
         self.playButton.hidden = NO;
-        [self.player pause];
+        [self.combinePlayer pause];
     }
 }
 
@@ -261,4 +297,5 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskLandscapeRight;
 }
+
 @end
