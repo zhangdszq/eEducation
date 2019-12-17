@@ -102,7 +102,7 @@ static SignalManager *manager = nil;
             
             [stuArray addObject:infoModel];
             
-            if([model.userId isEqualToString: self.messageModel.uid]) {
+            if([model.uid isEqualToString: self.messageModel.uid]) {
                 self.currentStuModel = model;
             }
         }
@@ -117,12 +117,20 @@ static SignalManager *manager = nil;
     return rolesInfoModel;
 }
 
+-(void)initCurrentStuModel {
+    self.currentStuModel = [AEStudentModel new];
+    self.currentStuModel.uid = self.messageModel.uid;
+    self.currentStuModel.account = self.messageModel.userName;
+    self.currentStuModel.video = 1;
+    self.currentStuModel.audio = 1;
+    self.currentStuModel.chat = 1;
+}
+
 - (void)joinChannelWithName:(NSString *)channelName completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock {
 
     self.channelName = channelName;
-    
-    self.currentStuModel = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.messageModel.uid name:self.messageModel.userName video:YES audio:YES]];
-    
+    [self initCurrentStuModel];
+
     self.agoraRtmChannel = [self.agoraRtmKit createChannelWithId:channelName delegate:self];
     [self.agoraRtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
         
@@ -230,6 +238,9 @@ static SignalManager *manager = nil;
 
     RolesInfoModel *rolesInfoModel = [self fixRolesInfoModelWithAttributes:attributes];
     if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onUpdateTeactherAttribute:)]){
+        
+        NSLog(@"attributeUpdate teacher link_uid==>%@", rolesInfoModel.teactherModel.link_uid);
+        
         [self.messageDelegate onUpdateTeactherAttribute:rolesInfoModel.teactherModel];
     }
     

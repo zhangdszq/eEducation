@@ -69,8 +69,8 @@
     WEAK(self)
     SignalManager.shareManager.messageDelegate = self;
     [SignalManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:^{
-        
-        NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:weakself.userName video:YES audio:YES chat:YES];
+            
+        NSString *value = [AERTMMessageBody setChannelAttrsWithValue: SignalManager.shareManager.currentStuModel];
         [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
             
             [weakself getRtmChannelAttrs];
@@ -83,15 +83,14 @@
 - (void)onSignalReceived:(NSNotification *)notification{
     AEP2pMessageModel *messageModel = [notification object];
     
-    BOOL audio = SignalManager.shareManager.currentStuModel.audio;
-    BOOL video = SignalManager.shareManager.currentStuModel.video;
-    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+
     WEAK(self)
     switch (messageModel.cmd) {
         case RTMp2pTypeMuteAudio:
         {
-            
-            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:NO];
+            currentStuModel.audio = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
             [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
                 
                 [weakself teacherMuteStudentAudio:YES];
@@ -102,7 +101,8 @@
             break;
         case RTMp2pTypeUnMuteAudio:
         {
-            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:YES];
+            currentStuModel.audio = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
             [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
                 
                 [weakself teacherMuteStudentAudio:NO];
@@ -112,7 +112,8 @@
             break;
         case RTMp2pTypeMuteVideo:
         {
-            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:NO audio:audio];
+            currentStuModel.video = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
             [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
                  [weakself teacherMuteStudentVideo:YES];
             } completeFailBlock:nil];
@@ -120,7 +121,8 @@
             break;
         case RTMp2pTypeUnMuteVideo:
         {
-            NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:YES audio:audio];
+            currentStuModel.video = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
             [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
                  [weakself teacherMuteStudentVideo:NO];
             } completeFailBlock:nil];
@@ -359,18 +361,20 @@
 
 - (void)muteVideoStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalVideoStream:stream];
-    BOOL audio = SignalManager.shareManager.currentStuModel.audio;
-    NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:!stream audio:audio];
-    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
-
     self.studentView.defaultImageView.hidden = stream ? NO : YES;
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.video = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (void)muteAudioStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalAudioStream:stream];
     
-    BOOL video = SignalManager.shareManager.currentStuModel.video;
-    NSString *value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:!stream];
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.audio = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
     [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 

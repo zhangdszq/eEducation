@@ -7,15 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AEStudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AERTMMessageBody : NSObject
 + (NSString *)studentApplyLink;
 + (NSString *)studentCancelLink;
-+ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio;
-+ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio chat:(BOOL)chat;
-+ (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio;
+
++ (NSString *)setChannelAttrsWithValue:(AEStudentModel *)model;
+
 + (NSString *)MD5WithString:(NSString *)str;
 + (BOOL)judgeClassRoomText:(NSString *)text;
 + (void)addShadowWithView:(UIView *)view alpha:(CGFloat)alpha;

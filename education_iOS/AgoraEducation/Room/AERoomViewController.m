@@ -132,13 +132,6 @@
     }];
 }
 
-- (void)teacherMuteStudentVideo:(BOOL)mute {
-
-}
-
-- (void)teacherMuteStudentAudio:(BOOL)mute {
-    
-}
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
     if (modifyState.sceneState) {
