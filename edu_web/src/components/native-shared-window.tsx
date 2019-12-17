@@ -99,10 +99,6 @@ export default function NativeSharedWindowContainer() {
 
   const [windowId, setWindowId] = React.useState<any>('');
 
-  // useEffect(() => {
-  //   console.log('nativeWindowInfo.items', nativeWindowInfo.items);
-  // }, [nativeWindowInfo]);
-
   return (
     nativeWindowInfo.visible ? 
     <WindowList

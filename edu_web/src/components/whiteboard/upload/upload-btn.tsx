@@ -10,11 +10,12 @@ export type UploadBtnProps = {
   roomToken: string,
   whiteboardRef?: HTMLDivElement,
   onProgress?: PPTProgressListener,
+  onFailure?: (err: any) => void,
 };
 
 export const UploadBtn: React.FC<UploadBtnProps> = ({
   room, uuid, roomToken,
-  whiteboardRef, onProgress
+  whiteboardRef, onProgress, onFailure
 }) => {
   const uploadDynamic = async (event: any) => {
     try {
@@ -31,9 +32,8 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         onProgress,
       );
     } catch (err) {
+      onFailure && onFailure(err);
       console.warn(err)
-    } finally {
-
     }
   }
 
@@ -51,11 +51,9 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         uuid,
         onProgress);
     } catch (err) {
+      onFailure && onFailure(err)
       console.warn(err)
-    } finally {
-
     }
-
   }
 
   const uploadImage = async (event: any) => {
@@ -74,9 +72,8 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
       }
     } catch (err) {
+      onFailure && onFailure(err)
       console.warn(err)
-    } finally {
-
     }
   }
 
@@ -86,33 +83,34 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         <label htmlFor="upload-image">
           <div className="upload-image-resource"></div>
           <div className="text-container">
-            <div className="title">Upload Picture</div>
+            <div className="title">Convert Picture</div>
             <div className="description">bmp, jpg, png, gif</div>
           </div>
         </label>
-        <input id="upload-image" onChange={uploadImage} type="file"></input>
+        <input id="upload-image" accept="image/*,.bmp,.jpg,.png,.gif"
+          onChange={uploadImage} type="file"></input>
       </div>
       <div className="slice-dash"></div>
       <div className="upload-items">
         <label htmlFor="upload-dynamic">
           <div className="upload-dynamic-resource"></div>
           <div className="text-container">
-            <div className="title">Upload to Webpage</div>
+            <div className="title">Convert to Webpage</div>
             <div className="description">pptx only support</div>
           </div>
         </label>
-        <input id="upload-dynamic" onChange={uploadDynamic} type="file"></input>
+        <input id="upload-dynamic" accept=".ppt,.pptx" onChange={uploadDynamic} type="file"></input>
       </div>
       <div className="slice-dash"></div>
       <div className="upload-items">
         <label htmlFor="upload-static">
           <div className="upload-static-resource"></div>
           <div className="text-container">
-            <div className="title">Upload to picture</div>
+            <div className="title">Convert to picture</div>
             <div className="description">ppt, pptx, word, pdf support</div>
           </div>
         </label>
-        <input id="upload-static" onChange={uploadStatic} type="file"></input>
+        <input id="upload-static" accept="image/*,.doc, .docx,.ppt, .pptx,.pdf" onChange={uploadStatic} type="file"></input>
       </div>
     </div>
   )

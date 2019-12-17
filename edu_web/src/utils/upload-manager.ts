@@ -118,11 +118,6 @@ export class UploadManager {
           name: rawFile.name,
           type: fileType,
         });
-        // console.log("current room state", this.room.state);
-        // stateManager.setCurrentScene(`/${scenePath}`, this.room.state, 'dynamic', {
-        //   name: rawFile.name,
-        //   type: fileType
-        // });
     }
     if (onProgress) {
         onProgress(PPTProgressPhase.Converting, 1);

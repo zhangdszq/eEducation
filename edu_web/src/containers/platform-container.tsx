@@ -34,7 +34,7 @@ export const PlatformContainer: React.FC<React.ComponentProps<any>> = ({ childre
 
   useEffect(() => {
     if (!ipc) return;
-    if (location.pathname.match(/classroom/)) {
+    if (location.pathname.match(/classroom|replay/)) {
       ipc.send('resize-window', {width: 990, height: 706});
     } else {
       ipc.send('resize-window', {width: 700, height: 500});

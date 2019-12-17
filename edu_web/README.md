@@ -45,7 +45,7 @@
 
 # 搭建之前先获取 agora appid和netless sdktoken
   按照.env.example
-  修改为.env
+  修改为.env.local
 
 ```bash
 # 声网的APPID 通过声网开发者管理界面获取
@@ -83,3 +83,8 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
   npm run pack:mac
   
   等待成功运行结束时会产生一个release目录，可以直接运行里面的.app
+
+# electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本5.0.8的electron和agora-electron-sdk "platform": "win32"版）
+  npm run pack:win
+  
+  等待成功运行结束时会产生一个release目录，可以直接运行里面的.exe

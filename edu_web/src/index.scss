@@ -6,6 +6,23 @@ html, body, #root {
 
 .draggable {
   -webkit-app-region: drag;
+  -webkit-user-select: none;
+  .card-menu, .position-content {
+    -webkit-app-region: no-drag;
+  }
+}
+
+.nav-container {
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+}
+
+button {
+  -webkit-app-region: no-drag;
+}
+
+.electron-btn-group, .menu-group {
+  -webkit-app-region: no-drag;
 }
 
 body {
@@ -297,12 +314,4 @@ body {
       }
     }
   }
-}
-
-.nav-container {
-  -webkit-app-region: drag
-}
-
-button {
-  -webkit-app-region: no-drag;
 }

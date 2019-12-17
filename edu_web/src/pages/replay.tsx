@@ -1,17 +1,15 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
 import './replay.scss';
 import Slider from '@material-ui/core/Slider';
 import { Subject } from 'rxjs';
-import { NetlessPlayer } from '../components/whiteboard/replay/replayer';
-import { WhiteWebSdk, Player, PlayerPhase, } from 'white-web-sdk';
+import { Player, PlayerPhase } from 'white-web-sdk';
 import { useParams } from 'react-router';
 import {apiClient} from '../utils/netless-whiteboard-client';
-import { palette } from '@material-ui/system';
 import { useRootContext } from '../store';
 import { ActionType } from '../reducers/types';
-import { roomTypes } from '../hooks/use-room-control';
 import moment from 'moment';
 import useToast from '../hooks/use-toast';
+import { Progress } from '../components/progress/progress';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -135,13 +133,11 @@ class ReplayStore {
     if (!this.state) return
     let isPlaying = this.state.isPlaying;
 
-    console.log("player phase ", phase);
     if (phase === PlayerPhase.Playing) {
       isPlaying = true;
     }
 
     if (phase === PlayerPhase.Ended || phase === PlayerPhase.Pause) {
-      // console.log("ended", ended);
       isPlaying = false;
     }
 
@@ -150,6 +146,7 @@ class ReplayStore {
       phase,
       isPlaying,
     }
+    
     this.commit(this.state);
   }
 
@@ -201,21 +198,29 @@ export const Replay: React.FC<{}> = () => {
   const state = useReplayContext();
   const {dispatch} = useRootContext();
 
+  const player = useMemo(() => {
+    if (!store.state || !store.state.player) return null;
+    return store.state.player as Player;
+  }, [store.state]);
+
 
   const handlePlayerClick = () => {
-    if (!store.state || !store.state.player) return;
-    if (store.state.isPlaying) {
-      const player = store.state.player as Player;
+    if (!store.state || !player) return;
+
+    if (player.phase === PlayerPhase.Playing) {
       player.pause();
-    } else {
-      const player = store.state.player as Player;
-      player.play();
+      return;
     }
-    // if (store.state.isPlaying) {
-    //   store.state.player.paused();
-    // } else {
-    //   store.state.player.play();
-    // }
+    if (player.phase === PlayerPhase.WaitingFirstFrame || player.phase === PlayerPhase.Pause) {
+      player.play();
+      return;
+    }
+
+    if (player.phase === PlayerPhase.Ended) {
+      player.seekToScheduleTime(0);
+      player.play();
+      return;
+    }
   }
 
   const handleChange = (event: any, newValue: any) => {
@@ -258,10 +263,10 @@ export const Replay: React.FC<{}> = () => {
 
   const {uuid, startTime, endTime} = useParams();
 
-
   const duration = useMemo(() => {
     if (!startTime || !endTime) return 0;
-    return Math.abs(+startTime - +endTime);
+    const _duration = Math.abs(+startTime - +endTime);
+    return _duration;
   }, [startTime, endTime]);
 
   const {showToast} = useToast();
@@ -278,61 +283,63 @@ export const Replay: React.FC<{}> = () => {
     window.addEventListener('resize', onWindowResize);
     window.addEventListener('keydown', handleSpaceKey);
     if (uuid && startTime && endTime) {
-      dispatch({ type: ActionType.LOADING, payload: true});
-      store.joinRoom(uuid).then(({roomToken}) => {
-        apiClient.client.replayRoom({
-          beginTimestamp: +startTime,
-          duration: duration,
-          room: uuid,
-          // mediaURL: state.mediaUrl,
-          roomToken: roomToken,
-        }, {
-          onCatchErrorWhenRender: error => {
-            error && console.warn(error);
-            showToast({
-              message: `Replay Failed please refresh browser`,
-              type: 'notice'
-            });
-          },
-          onCatchErrorWhenAppendFrame: error => {
-            error && console.warn(error);
-            showToast({
-              message: `Replay Failed please refresh browser`,
-              type: 'notice'
-            });
-          },
-          onPhaseChanged: phase => {
-            store.updatePhase(phase);
-          },
-          onLoadFirstFrame: () => {
-            store.loadFirstFrame();
-          },
-          onSliceChanged: () => {
-          },
-          onPlayerStateChanged: (error) => {
-          },
-          onStoppedWithError: (error) => {
-            dispatch({ type: ActionType.LOADING, payload: false});
-            error && console.warn(error);
-            showToast({
-              message: `Replay Failed please refresh browser`,
-              type: 'notice'
-            });
-            store.setReplayFail(true);
-          },
-          onScheduleTimeChanged: (scheduleTime) => {
-            if (lock.current) return;
-            store.setCurrentTime(scheduleTime);
-          }
-        }).then((player: Player) => {
-          dispatch({ type: ActionType.LOADING, payload: false});
-          store.setPlayer(player);
-          player.bindHtmlElement(document.getElementById("whiteboard") as HTMLDivElement);
-        }).catch(console.warn);
-      });
+        store.joinRoom(uuid).then(({roomToken}) => {
+          apiClient.replayRoom({
+            beginTimestamp: +startTime,
+            duration: duration,
+            room: uuid,
+            // mediaURL: state.mediaUrl,
+            roomToken: roomToken,
+          }, {
+            onCatchErrorWhenRender: error => {
+              error && console.warn(error);
+              showToast({
+                message: `Replay Failed please refresh browser`,
+                type: 'notice'
+              });
+            },
+            onCatchErrorWhenAppendFrame: error => {
+              error && console.warn(error);
+              showToast({
+                message: `Replay Failed please refresh browser`,
+                type: 'notice'
+              });
+            },
+            onPhaseChanged: phase => {
+              store.updatePhase(phase);
+            },
+            onLoadFirstFrame: () => {
+              // console.log("player phase: loadFirstFrame");
+              // console.log("player phase: ", player && player.phase);
+              store.loadFirstFrame();
+            },
+            onSliceChanged: () => {
+            },
+            onPlayerStateChanged: (error) => {
+            },
+            onStoppedWithError: (error) => {
+              dispatch({ type: ActionType.LOADING, payload: false});
+              error && console.warn(error);
+              showToast({
+                message: `Replay Failed please refresh browser`,
+                type: 'notice'
+              });
+              store.setReplayFail(true);
+            },
+            onScheduleTimeChanged: (scheduleTime) => {
+              if (lock.current) return;
+              store.setCurrentTime(scheduleTime);
+            }
+          }).then((player: Player | undefined) => {
+            if (player) {
+              store.setPlayer(player);
+              player.bindHtmlElement(document.getElementById("whiteboard") as HTMLDivElement);
+            }
+          })//.catch(console.warn);
+        });
+      // dispatch({ type: ActionType.LOADING, payload: true});
     }
     return () => {
-      console.log("unmounted");
       window.removeEventListener('resize', onWindowResize);
       window.removeEventListener('keydown', onWindowResize);
     }
@@ -346,15 +353,32 @@ export const Replay: React.FC<{}> = () => {
     return moment(state.currentTime).format("mm:ss");
   }, [state.currentTime]);
 
+  const PlayerCover = useCallback(() => {
+    if (!player) {
+      return (<Progress title={"loading..."} />)
+    }
+
+    if (player.phase === PlayerPhase.Playing) return null;
+
+    return (
+      <div className="player-cover">
+        {player.phase === PlayerPhase.Buffering ? <Progress title={"loading..."} />: null}
+        {player.phase === PlayerPhase.Pause || player.phase === PlayerPhase.Ended || player.phase === PlayerPhase.WaitingFirstFrame ? 
+          <div className="play-btn" onClick={handlePlayerClick}></div> : null}
+      </div>
+    )
+  }, [player]);
+
   return (
     <div className="replay">
-      <div className={`player-container ${state.isPlaying ? '' : ''}`} >
+      <div className={`player-container`} >
+        <PlayerCover />
         <div className="player">
           <div className="agora-logo"></div>
           <div id="whiteboard" className="whiteboard"></div>
           <div className="video-menu">
             <div className="control-btn">
-              <div className={`btn ${state.isPlaying ? 'paused' : 'play'}`} onClick={handlePlayerClick}></div>
+              <div className={`btn ${player && player.phase === PlayerPhase.Playing ? 'paused' : 'play'}`} onClick={handlePlayerClick}></div>
             </div>
             <div className="progress">
               <Slider

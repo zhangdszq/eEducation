@@ -6,7 +6,7 @@ import { Room, SceneState, RoomState } from 'white-web-sdk';
 import GlobalStorage from '../reducers/custom-storage';
 import { Subject } from 'rxjs';
 import { Map } from 'immutable';
-import {isEmpty} from 'lodash';
+import {isEmpty, get} from 'lodash';
 
 interface SceneFile {
   name: string
@@ -42,6 +42,8 @@ const pathName = (path: string): string => {
 export interface NetlessState {
   scenes: Map<string, CustomScene>
   currentScenePath: string
+  currentHeight: number
+  currentWidth: number
   dirs: SceneResource[]
   activeDir: number
   zoomRadio: number
@@ -51,6 +53,8 @@ export interface NetlessState {
 const defaultState: NetlessState = {
   scenes: Map<string, CustomScene>(),
   currentScenePath: '',
+  currentHeight: 0,
+  currentWidth: 0,
   dirs: [],
   activeDir: 0,
   zoomRadio: 0,
@@ -97,7 +101,20 @@ class NetlessStateManager {
     const type = isEmpty(ppt) ? 'static' : 'dynamic';
     const currentPage = roomState.sceneState.index;
     const totalPage = roomState.sceneState.scenes.length;
-    
+
+    if (type !== 'dynamic') {
+      this.state = {
+        ...this.state,
+        currentHeight: 0,
+        currentWidth: 0
+      }
+    } else {
+      this.state = {
+        ...this.state,
+        currentHeight: get(ppt, 'height', 0),
+        currentWidth: get(ppt, 'width', 0)
+      }
+    }
 
     const _dirPath = pathName(path);
     const dirPath = _dirPath === "" ? "/init" : `/${_dirPath}`;
@@ -185,11 +202,21 @@ class NetlessStateManager {
 
     this.commit(this.state);
   }
+
+  updateScale(scale: number) {
+    if (!this.state) return;
+    this.state = {
+      ...this.state,
+      scale: scale
+    }
+    
+    this.commit(this.state);
+  }
 }
 
 export const stateManager = new NetlessStateManager();
 
-// @ts-ignore
+// @ts-ignore DEBUG
 window.stateManager = stateManager;
 
 export const NetlessContext = createContext({} as NetlessState);
@@ -321,11 +348,10 @@ export default function useNetlessSDK({store, dispatch}: RootStore) {
         console.log("changed ", newSceneState, netlessClient);
         if (ref.current) return;
         stateManager.updateSceneState(newSceneState);
-        // if (netlessClient && netlessClient.state) {
-        //   // stateManager.setCurrentScene(currentPath, netlessClient.state);
-        //   console.log("netlessClient.state ", netlessClient.state);
-        //   stateManager.updateState(netlessClient.state);
-        // }
+      });
+      whiteboard.on('scaleChanged', (zoomScale: number) => {
+        if (ref.current) return;
+        stateManager.updateScale(zoomScale);
       });
       const room = await whiteboard.init({
         whiteboard_uid: whiteboardUid,

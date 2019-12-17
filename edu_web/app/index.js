@@ -16,19 +16,6 @@ let mainWindow;
 
 const isDev = require('electron-is-dev');
 
-isDev && require('electron-debug')({ enabled: true, showDevTools: false });
-function createDevTools() {
-  const {
-    default: installExtension,
-    REACT_DEVELOPER_TOOLS,
-    REDUX_DEVTOOLS,
-  } = require('electron-devtools-installer');
-  const devtronExtension = require('devtron');
-  devtronExtension.install();
-  installExtension(REACT_DEVELOPER_TOOLS);
-  installExtension(REDUX_DEVTOOLS);
-}
-
 function createWindow() {
   
     mainWindow = new BrowserWindow({
@@ -52,7 +39,7 @@ function createWindow() {
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -86,7 +73,6 @@ function createWindow() {
     ipcMain.on('close', () => {
       app.quit()
     })
-    isDev && createDevTools();
 }
 
 // This method will be called when Electron has finished

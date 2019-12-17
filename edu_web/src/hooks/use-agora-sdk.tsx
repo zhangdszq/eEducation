@@ -122,9 +122,12 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
     })
   }
 
-  const removeNotice = () => dispatch({
-    type: ActionType.NOTICE, reason: ''
-  });
+  const removeNotice = () => {
+    dispatch({
+      type: ActionType.NOTICE, reason: ''
+    });
+    applyUid.current = 0;
+  }
 
   const { platform } = usePlatform();
   const [connect, setConnect] = React.useState<ConnectState>(ConnectState.disconnected);
@@ -269,6 +272,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
           webClient.subscribe(stream);
         });
         webClient.rtc.on('stream-removed', ({ stream }: any) => {
+          console.log("[link] trigger stream-removed", stream.getId());
           const id = stream.getId();
           if (id === applyUid.current) {
             removeNotice();
@@ -282,6 +286,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
           removeRemoteStream(stream.getId());
         });
         webClient.rtc.on('peer-leave', ({ uid }: any) => {
+          console.log("[link] trigger peer-leave", uid);
           if (uid === applyUid.current) {
             removeNotice();
             store.user.role === UserRole.teacher &&
@@ -354,6 +359,15 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
           addRemoteStream(_stream);
         });
         nativeClient.on('stream-removed', ({ uid }: any) => {
+          if (uid === applyUid.current) {
+            removeNotice();
+            store.user.role === UserRole.teacher &&
+            rtmClient && rtmClient.updateChannelAttrs(store, {
+              link_uid: 0
+            }).then(() => {
+              console.log("update teacher link_uid to 0");
+            }).catch(console.warn);
+          }
           removeRemoteStream(uid);
         });
         const enableDual = Boolean(location.pathname.match(/small-class/));
@@ -496,6 +510,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
       } finally {
         rtmClient.destroy();
         dispatch({ type: ActionType.REMOVE_RTM_CLIENT });
+        console.log('quit rtm client >>>> ');
         dispatch({ type: ActionType.LOADING, payload: false });
       }
     }
@@ -662,8 +677,6 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
       rtmClient.on("MessageFromPeer", ({ message: { text }, peerId, props }: { message: { text: string }, peerId: string, props: any }) => {
         const body = resolvePeerMessage(text);
         resolveMessage(peerId, body);
-        // @ts-ignore
-        window.body = body
         const cmd = body.cmd;
         // handle media state
         if ([
@@ -689,6 +702,7 @@ export function AgoraSDKProvider({ children }: React.ComponentProps<any>) {
               type: 'notice'
             })
           }
+          console.log(`role. ${store.user.role} current applyUid.current`, applyUid.current, " peerId ", peerId, cmd, store.room.users.toJSON());
           if (store.user.role === UserRole.teacher) {
             if (cmd === RoomMessage.applyCoVideo && !applyUid.current && peerId) {
               applyUid.current = +peerId as number;

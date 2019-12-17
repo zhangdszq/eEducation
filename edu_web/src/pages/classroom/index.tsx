@@ -16,6 +16,7 @@ import { useGlobalContext } from '../../containers/global-container';
 import NativeSharedWindow from '../../components/native-shared-window';
 import { NetlessProvider } from '../../hooks/use-netless-sdk';
 import { RecordingProvider } from '../../hooks/use-recording';
+import { NoticeProvider } from '../../components/whiteboard/upload/upload-notice';
 
 function RoomPage({ children, roomType }: any) {
   const history = useHistory();
@@ -28,6 +29,14 @@ function RoomPage({ children, roomType }: any) {
       ref.current = true;
     }
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      exitAll().then(() => {
+
+      }).catch(console.warn);
+    }
+  }, [location]);
   const {
     rtmClient,
     initRTM,
@@ -137,6 +146,7 @@ function Classroom() {
     <div className="flex-container">
       <NetlessProvider>
         <RecordingProvider>
+          <NoticeProvider>
           <NativeSharedWindow />
           <Switch>
             <Route exact path="/classroom/one-to-one">
@@ -158,6 +168,7 @@ function Classroom() {
               <Redirect to="/" />
             </Route>
           </Switch>
+          </NoticeProvider>
         </RecordingProvider>
       </NetlessProvider>
     </div>

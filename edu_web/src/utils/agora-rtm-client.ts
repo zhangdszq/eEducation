@@ -73,8 +73,6 @@ export default class AgoraRTMClient {
   private _client: any;
   private _channelAttrsKey: string | any;
 
-  public static _instance?: AgoraRTMClient = undefined;
-
   constructor (appId: string) {
     this._bus = new EventEmitter();
     this._channels = {};

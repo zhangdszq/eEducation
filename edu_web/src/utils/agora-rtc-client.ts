@@ -49,7 +49,7 @@ class AgoraRTCClient {
   public _joined: boolean = false;
   public _published: boolean = false;
   private _internalTimer: NodeJS.Timeout | any;
-  public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'h264'});
+  public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'vp8'});
   public _bus: EventEmitter = new EventEmitter();
   public _localStream: any = null;
 
@@ -67,7 +67,7 @@ class AgoraRTCClient {
       }, reject);
     })
     await prepareInit;
-    console.log("[smart-client] init client");
+    // console.log("[smart-client] init client");
   }
 
   // create rtc client;
@@ -177,7 +177,7 @@ class AgoraRTCClient {
 
   createLocalStream(data: AgoraStreamSpec): Promise<any> {
     this._localStream = AgoraRTC.createStream({...data, mirror: false});
-    console.log("[smart-client] _localStream ", this._localStream);
+    // console.log("[smart-client] _localStream ", this._localStream);
     return new Promise((resolve, reject) => {
       this._localStream.init(() => {
         this.streamID = data.streamID;
