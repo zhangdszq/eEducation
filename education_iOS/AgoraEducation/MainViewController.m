@@ -21,7 +21,7 @@
 
 #import "SignalManager.h"
 
-#import "ReplayViewController.h"
+#import "ReplayNoVideoViewController.h"
 
 @interface MainViewController ()<AgoraRtmDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
@@ -149,12 +149,12 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     
-    ReplayViewController * vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
-    vc.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:vc animated:YES completion:nil];
-    return;
+//    ReplayNoVideoViewController * vc = [[ReplayNoVideoViewController alloc] initWithNibName:@"ReplayNoVideoViewController" bundle:nil];
+//    vc.modalPresentationStyle = UIModalPresentationFullScreen;
+//    [self presentViewController:vc animated:YES completion:nil];
+//    return;
     
-    self.classNameTextFiled.text = @"test01";
+    self.classNameTextFiled.text = @"test04";
     self.userNameTextFiled.text = @"jerry";
     
     [self.activityIndicator startAnimating];

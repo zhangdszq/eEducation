@@ -331,6 +331,8 @@
         {
             [self stateBarHidden:NO];
             [self verticalScreenConstraints];
+            [self.view layoutIfNeeded];
+            [self.room refreshViewSize];
         }
             break;
         case UIDeviceOrientationLandscapeLeft:
@@ -338,10 +340,12 @@
         {
             [self stateBarHidden:YES];
             [self landscapeScreenConstraints];
+            [self.view layoutIfNeeded];
+            [self.room refreshViewSize];
         }
             break;
         default:
-            NSLog(@"无法辨识");
+            NSLog(@"设备方向无法辨识");
             break;
     }
 }

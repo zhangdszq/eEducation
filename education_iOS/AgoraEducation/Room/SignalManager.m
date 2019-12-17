@@ -158,7 +158,6 @@ static SignalManager *manager = nil;
                 [weakself.messageDelegate onUpdateMessage:messageModel];
             }
         }
-        
     }];
 }
 

@@ -73,6 +73,11 @@
 		1AFD47BB237EB06F005AA56C /* MCStudentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD47BA237EB06F005AA56C /* MCStudentViewCell.m */; };
 		1AFD47BD237EB079005AA56C /* MCStudentViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD47BC237EB079005AA56C /* MCStudentViewCell.xib */; };
 		787C5C28239CF52F009E971B /* AgoraRtmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 787C5C27239CF52F009E971B /* AgoraRtmKit.framework */; };
+		787E7A1823A87B05005F8F0C /* EduButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A1723A87B05005F8F0C /* EduButton.m */; };
+		787E7A1C23A880C2005F8F0C /* ReplayNoVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A1A23A880C2005F8F0C /* ReplayNoVideoViewController.m */; };
+		787E7A1D23A880C2005F8F0C /* ReplayNoVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A1B23A880C2005F8F0C /* ReplayNoVideoViewController.xib */; };
+		787E7A2023A88DE3005F8F0C /* LoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A1F23A88DE3005F8F0C /* LoadingView.m */; };
+		787E7A2223A88DF0005F8F0C /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A2123A88DF0005F8F0C /* LoadingView.xib */; };
 		78D43C0E239E726D00B8F709 /* EducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D43C0D239E726D00B8F709 /* EducationManager.m */; };
 		78F0C6DB2399FB5400772378 /* SignalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6DA2399FB5400772378 /* SignalManager.m */; };
 		78F0C6DE2399FBCB00772378 /* MessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6DD2399FBCB00772378 /* MessageModel.m */; };
@@ -228,6 +233,14 @@
 		4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.release.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.release.xcconfig"; sourceTree = "<group>"; };
 		76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AgoraEducation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		787C5C27239CF52F009E971B /* AgoraRtmKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AgoraRtmKit.framework; path = AgoraEducation/AgoraRtmKit.framework; sourceTree = "<group>"; };
+		787E7A1623A87B05005F8F0C /* EduButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EduButton.h; sourceTree = "<group>"; };
+		787E7A1723A87B05005F8F0C /* EduButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EduButton.m; sourceTree = "<group>"; };
+		787E7A1923A880C2005F8F0C /* ReplayNoVideoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReplayNoVideoViewController.h; sourceTree = "<group>"; };
+		787E7A1A23A880C2005F8F0C /* ReplayNoVideoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReplayNoVideoViewController.m; sourceTree = "<group>"; };
+		787E7A1B23A880C2005F8F0C /* ReplayNoVideoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReplayNoVideoViewController.xib; sourceTree = "<group>"; };
+		787E7A1E23A88DE3005F8F0C /* LoadingView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoadingView.h; sourceTree = "<group>"; };
+		787E7A1F23A88DE3005F8F0C /* LoadingView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoadingView.m; sourceTree = "<group>"; };
+		787E7A2123A88DF0005F8F0C /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		78D43C0C239E726D00B8F709 /* EducationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EducationManager.h; sourceTree = "<group>"; };
 		78D43C0D239E726D00B8F709 /* EducationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EducationManager.m; sourceTree = "<group>"; };
 		78F0C6D92399FB5400772378 /* SignalManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalManager.h; sourceTree = "<group>"; };
@@ -382,9 +395,17 @@
 				1A44BE5C22BF863000766274 /* MainViewController.m */,
 				78FE6C6623A09ABD00AFF975 /* SliderView.h */,
 				78FE6C6723A09ABD00AFF975 /* SliderView.m */,
+				787E7A1623A87B05005F8F0C /* EduButton.h */,
+				787E7A1723A87B05005F8F0C /* EduButton.m */,
+				787E7A1E23A88DE3005F8F0C /* LoadingView.h */,
+				787E7A1F23A88DE3005F8F0C /* LoadingView.m */,
+				787E7A2123A88DF0005F8F0C /* LoadingView.xib */,
 				78FE6C6123A093E200AFF975 /* ReplayControlView.h */,
 				78FE6C6223A093E200AFF975 /* ReplayControlView.m */,
 				78FE6C6423A093ED00AFF975 /* ReplayControlView.xib */,
+				787E7A1923A880C2005F8F0C /* ReplayNoVideoViewController.h */,
+				787E7A1A23A880C2005F8F0C /* ReplayNoVideoViewController.m */,
+				787E7A1B23A880C2005F8F0C /* ReplayNoVideoViewController.xib */,
 				78FE6C6923A0BE8500AFF975 /* ReplayViewController.h */,
 				78FE6C6A23A0BE8500AFF975 /* ReplayViewController.m */,
 				78FE6C6B23A0BE8500AFF975 /* ReplayViewController.xib */,
@@ -721,7 +742,9 @@
 				1A05ADA7237E55630041F27B /* Room.storyboard in Resources */,
 				1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */,
 				1A61CB7F2387CE2C003D9E81 /* BCStudentVideoView.xib in Resources */,
+				787E7A1D23A880C2005F8F0C /* ReplayNoVideoViewController.xib in Resources */,
 				1A05AD96237BC08B0041F27B /* OTOStudentView.xib in Resources */,
+				787E7A2223A88DF0005F8F0C /* LoadingView.xib in Resources */,
 				1A05AD91237BBB090041F27B /* OTOTeacherView.xib in Resources */,
 				1A44BE7522BF863000766274 /* Assets.xcassets in Resources */,
 				1A17499E236297CF00A65B10 /* EEChatTextFiled.xib in Resources */,
@@ -804,10 +827,12 @@
 				78FE6C6C23A0BE8500AFF975 /* ReplayViewController.m in Sources */,
 				1A41D4EA2373B7900092C0EC /* EETeacherVideoView.m in Sources */,
 				1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */,
+				787E7A1823A87B05005F8F0C /* EduButton.m in Sources */,
 				1A44BE7822BF863000766274 /* MainViewController.m in Sources */,
 				1A1749992361A7F000A65B10 /* MainNavigationController.m in Sources */,
 				1A61CB88238806EB003D9E81 /* AEP2pMessageModel.m in Sources */,
 				1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */,
+				787E7A2023A88DE3005F8F0C /* LoadingView.m in Sources */,
 				1A296C6222DEFCE6008AC68A /* MCStudentVideoCell.m in Sources */,
 				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
 				1A44BE7D22BF863000766274 /* Configs.m in Sources */,
@@ -823,6 +848,7 @@
 				1A61CB812387CE35003D9E81 /* BCStudentVideoView.m in Sources */,
 				1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */,
 				1A8EEB68237ABBBD00A809B1 /* EENavigationView.m in Sources */,
+				787E7A1C23A880C2005F8F0C /* ReplayNoVideoViewController.m in Sources */,
 				1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */,
 				1AFD47B8237EAEA6005AA56C /* MCStudentListView.m in Sources */,
 				1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */,

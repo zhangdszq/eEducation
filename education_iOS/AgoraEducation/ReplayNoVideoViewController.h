@@ -1,8 +1,8 @@
 //
-//  ReplayViewController.h
+//  ReplayNoVideoViewController.h
 //  AgoraEducation
 //
-//  Created by SRS on 2019/12/11.
+//  Created by SRS on 2019/12/17.
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
@@ -10,13 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ReplayViewController : UIViewController
+@interface ReplayNoVideoViewController : UIViewController
 
 @property (strong, nonatomic) NSString *roomid;
 @property (strong, nonatomic) NSString *startTime;
 @property (strong, nonatomic) NSString *endTime;
-@property (strong, nonatomic) NSString *videoPath;
 
 @end
 
 NS_ASSUME_NONNULL_END
+

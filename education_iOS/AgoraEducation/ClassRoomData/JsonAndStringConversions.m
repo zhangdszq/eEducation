@@ -13,7 +13,10 @@
 {
     NSError *parseError = nil;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&parseError];
-    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    json = [json stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+    json = [json stringByReplacingOccurrencesOfString:@" " withString:@""];
+    return json;
 }
 
 + (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString

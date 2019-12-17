@@ -69,12 +69,12 @@
             }
         }else {
             if (failure) {
-                failure(@"获取失败");
+                failure(@"获取roomToken失败");
             }
         }
     } failure:^(NSError *error) {
         if (failure) {
-            failure(@"获取失败");
+            failure(@"获取roomToken失败");
         }
     }];
 }
