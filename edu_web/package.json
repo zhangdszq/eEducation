@@ -2,12 +2,29 @@
   "name": "agora-edu-web",
   "version": "3.0.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "./",
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
     "prebuilt": true,
     "platform": "darwin"
+  },
+  "dmg": {
+    "compression": "store",
+    "npmRebuild": false,
+    "title": "agora_edu",
+    "contents": [
+      {
+        "x": 130,
+        "y": 220
+      },
+      {
+        "x": 410,
+        "y": 220,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ]
   },
   "build": {
     "extraMetadata": {
@@ -18,23 +35,14 @@
     "files": [
       "build/**/*"
     ],
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
     "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "icons/favicon.png",
       "entitlements": "entitlements.mac.plist",
+      "category": "io.agora.Education",
       "hardenedRuntime": true,
       "extendInfo": {
         "NSMicrophoneUsageDescription": "AgoraEdu Classroom acquire your microphone permission",
@@ -77,7 +85,7 @@
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.2",
     "@types/react-router-dom": "^5.1.0",
-    "agora-electron-sdk": "^2.9.1-beta.1",
+    "agora-electron-sdk": "2.9.1-beta.4",
     "agora-rtc-sdk": "3.0.0",
     "agora-rtm-sdk": "^1.2.0",
     "animate.css": "^3.7.2",
@@ -111,7 +119,7 @@
     "build": "cross-env REACT_APP_RUNTIME_PLATFORM=web react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
-    "pack:mac": "npm run electron:build && electron-builder --dir",
+    "pack:mac": "npm run electron:build && electron-builder --mac",
     "pack:win": "npm run electron:build && electron-builder --win"
   },
   "eslintConfig": {

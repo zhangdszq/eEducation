@@ -16,16 +16,20 @@ import { UploadBtn } from './whiteboard/upload/upload-btn';
 import { ResourcesMenu } from './whiteboard/resources-menu';
 import ScaleController from './whiteboard/scale-controller';
 import _ from 'lodash';
+import { PPTProgressPhase } from '../utils/upload-manager';
+import { useUploadNotice, UploadNoticeView } from '../components/whiteboard/upload/upload-notice';
+import Progress from '../components/progress/progress';
 
 interface MediaBoardProps {
   handleClick?: (type: string) => void
   children?: any
 }
 
-export default function MediaBoard ({
+const MediaBoard: React.FC<MediaBoardProps> = ({
   handleClick,
   children
-}: MediaBoardProps) {
+}) => {
+
   const {store, dispatch} = useRootContext();
   
   const role = useMemo(() => {
@@ -163,8 +167,6 @@ export default function MediaBoard ({
     }
     return false;
   }, [store.user.id, store.room.linkId]);
-
-  console.log("isHost ", isHost);
   
   const location = useLocation();
 
@@ -230,8 +232,6 @@ const items = [
 
   const [tool, setTool] = useState<string | any>('pencil');
 
-  const [menuVisible, setMenuVisible] = useState<boolean>(false);
-
   const handleToolClick = (evt: any, name: string) => {
     if (!room) return;
     if (['upload', 'color_picker'].indexOf(name) !== -1 && name === tool) {
@@ -252,7 +252,6 @@ const items = [
     if (name === 'folder') {
       return
     }
-    if (!room)return;
     room.setMemberState({currentApplianceName: name});
   }
 
@@ -265,17 +264,99 @@ const items = [
     });
   }
 
+  const [uploadPhase, updateUploadPhase] = useState<string>('init');
+  const [convertPhase, updateConvertPhase] = useState<string>('init');
+
   const UploadPanel = useCallback(() => {
     if (tool !== 'upload' || !room) return null;
     return (<UploadBtn 
       room={room}
       uuid={room.uuid}
       roomToken={room.roomToken}
+      onProgress={(phase: PPTProgressPhase, percent: number) => {
+        if (phase === PPTProgressPhase.Uploading) {
+          if (percent < 1) {
+            !ref.current && uploadPhase === 'init' && updateUploadPhase('uploading');
+          } else {
+            !ref.current && updateUploadPhase('upload_success');
+          }
+          return;
+        }
+
+        if (phase === PPTProgressPhase.Converting) {
+          if (percent < 1) {
+            !ref.current && convertPhase === 'init' && updateConvertPhase('converting');
+          } else {
+            !ref.current && updateConvertPhase('convert_success');
+          }
+          return;
+        }
+      }}
+      onFailure={(err: any) => {
+        console.warn("pptConvert [agora] err: " ,err);
+        if (uploadPhase === 'uploading') {
+          updateUploadPhase('upload_failure');
+          return;
+        }
+        if (convertPhase === 'converting') {
+          updateConvertPhase('convert_failure');
+          return;
+        }
+      }}
     />)
   }, [tool, room]);
 
+  const {Notice} = useUploadNotice();
 
-  const [scale, setScale] = useState<number>(_.get(room, 'state.zoomScale', 1));
+  useEffect(() => {
+    if (uploadPhase === 'upload_success') {
+      Notice({
+        title: 'upload success',
+        type: 'ok',
+      })
+    }
+    if (uploadPhase === 'convert_failure') {
+      Notice({
+        title: 'upload failure, check the network',
+        type: 'error',
+      })
+    }
+  }, [uploadPhase]);
+
+  useEffect(() => {
+    if (convertPhase === 'convert_success') {
+      Notice({
+        title: 'convert success',
+        type: 'ok',
+      })
+    }
+    if (convertPhase === 'convert_failure') {
+      Notice({
+        title: 'convert failure, check the network',
+        type: 'error',
+      })
+    }
+  }, [convertPhase]);
+
+  const scale = useMemo(() => {
+    if (!stateManager.state) return 1;
+    if (stateManager.state.scale === 0) return 1;
+    return stateManager.state.scale;
+  }, [stateManager.state]);
+
+  const UploadProgressView = useCallback(() => {
+    if (uploadPhase === 'uploading') {
+      return (
+        <Progress title={"uploading..."} />
+      )
+    } else 
+    if (convertPhase === 'converting') {
+      return (
+        <Progress title={"converting..."} />
+      )
+    }
+    return null;
+  }, [uploadPhase, convertPhase]);
   
   return (
     <div className="media-board">
@@ -319,7 +400,7 @@ const items = [
           }}
           zoomChange={(scale: number) => {
             room.moveCamera({scale});
-            setScale(room.state.zoomScale);
+            stateManager.updateScale(scale);
           }}
         />
         :
@@ -347,11 +428,14 @@ const items = [
               }
             }}
             onClose={(evt: any) => {
-              setMenuVisible(false)
               setTool('')
             }}
           />
         : null}
+      <UploadNoticeView />
+      <UploadProgressView />
     </div>
   )
-}
+} 
+
+export default React.memo(MediaBoard);

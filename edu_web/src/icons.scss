@@ -813,16 +813,24 @@
       content: ' ';
       background-image: url('./assets/icon-hand-white@2x.png');
     }
-    // .control-quit_screen_sharing {
-    //   min-width: 120px;
-    // }
-
-    // .control-stop_recording {
-    //   min-width: 85px;
-    // }
-
     .control-text {
       margin-right: 4px;
     }
   }
+}
+
+.icon-error {
+  background-image: url('./assets/icon-caution@2x.png');
+  width: 14px;
+  height: 14px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.icon-ok {
+  background-image: url('./assets/icon-success@2x.png');
+  width: 14px;
+  height: 14px;
+  background-repeat: no-repeat;
+  background-size: cover;
 }

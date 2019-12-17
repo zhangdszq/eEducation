@@ -16,11 +16,9 @@ export default function useHomePage() {
   const {initRTM} = useAgoraSDK();
   const rtmClientLock = useRef<any>(false);
 
-  console.log("rtmClientLock.current", rtmClientLock.current);
-
   useEffect(() => {
     return () => {
-      rtmClientLock.current = false;
+      rtmClientLock.current = true;
       ref.current = true;
     }
   }, [])
@@ -37,27 +35,21 @@ export default function useHomePage() {
   const [join, setJoin] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("rtmClient ", rtmClient);
-  }, [rtmClient]);
-
-  useEffect(() => {
-    if (
-      rtmClientLock.current === false
-      && join
-      && rid && id && account && !rtmClient) {
-      rtmClientLock.current = true
-      initRTM().then(() => {
-        history.push({pathname: `/classroom/${resolveRoomPath(store.room.type)}`});
-      }).catch((err: any) => {
-        setJoin(false);
-        err.type === 'not_permitted' && showError(err.reason);
-        console.warn('login failured');
-        console.warn(err)
-      }).finally(() => {
-        // rtmClientLock.current = false;
-        console.log('[rtm-client] signin');
-      })
-    }
+    //
+    if (!rid || !id || !account || rtmClientLock.current || !join) return;
+    rtmClientLock.current = true
+    initRTM().then(() => {
+      // rtmClient._joined = true;
+      history.push({pathname: `/classroom/${resolveRoomPath(store.room.type)}`});
+    }).catch((err: any) => {
+      setJoin(false);
+      err.type === 'not_permitted' && showError(err.reason);
+      console.warn('login failured');
+      console.warn(err)
+    }).finally(() => {
+      rtmClientLock.current = false;
+      console.log('[rtm-client] signin');
+    })
   }, [rid, id, account, rtmClient, join]);
 
   const [roomName, setRoomName] = useState('');
@@ -86,7 +78,6 @@ export default function useHomePage() {
       validProperties = {...validProperties, role: 'Role is required'};
     }
 
-    console.log("click join", validProperties);
     if (Object.keys(validProperties).length === 0) {
       const _role: UserRole = UserRole[role as keyof typeof UserRole];
       const id: string = genUid();

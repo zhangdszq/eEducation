@@ -41,12 +41,10 @@ export default function useChatControl () {
       if (!lock.current) {
         if (store.global.rtmClient) {
           lock.current = true;
-          console.log("type === mute", type, type === 'mute' ? 1 : 0);
           store.global.rtmClient.updateChannelAttrs(store, {
             mute_chat: type === 'mute' ? 1 : 0
           }).then(() => {
             lock.current = false
-            console.log('mute all success');
           }).catch((err: any) => {
             lock.current = false
             console.warn(err);

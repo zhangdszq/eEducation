@@ -6,7 +6,6 @@ import { AgoraStream } from '../reducers/types';
 const AgoraRtcEngine = window.rtcEngine;
 
 if (AgoraRtcEngine) {
-  console.log('AgoraRtcEngine ' ,AgoraRtcEngine);
   AgoraRtcEngine.initialize(APP_ID);
   AgoraRtcEngine.setChannelProfile(1);
   AgoraRtcEngine.enableVideo();
@@ -226,8 +225,10 @@ export class AgoraElectronClient {
       // shareClient.setVideoRenderDimension(3, SHARE_ID, 1280, 960);
       shareClient.videoSourceSetVideoProfile(50, false);
       // to adjust render dimension to optimize performance
+      console.log("[electron-debug] SHARE_ID", SHARE_ID);
       shareClient.videoSourceJoin(null, this.rid, '', SHARE_ID);
       shareClient.once('videoSourceJoinedSuccess', (uid: number) => {
+        console.log("[electron-debug] videoSource Joined", uid);
         this.shared = true;
         // shareClient.startScreenCapture2(windowId, 15, rect, 0);
         shareClient.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15});

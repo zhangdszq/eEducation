@@ -1,7 +1,8 @@
 import { EventEmitter } from 'events';
 import "white-web-sdk/style/index.css";
-import { WhiteWebSdk, Room } from 'white-web-sdk';
+import { WhiteWebSdk, Room, DeviceType, PlayerCallbacks, ReplayRoomParams } from 'white-web-sdk';
 import {get} from 'lodash';
+import { isElectron } from './platform';
 // import {AgoraFetch as fetch} from './fetch';
 
 const whiteboardSdkToken = process.env.REACT_APP_NETLESS_APP_TOKEN;
@@ -16,9 +17,13 @@ type NetlessRoomArgs = {
 
 export class NetlessApi {
 
-  public readonly client: WhiteWebSdk = new WhiteWebSdk();
+  public client: WhiteWebSdk;
 
-  constructor () {}
+  constructor () {
+    this.client = new WhiteWebSdk({
+      deviceType: DeviceType.Desktop, handToolKey: " "
+    });
+  }
 
   async applyRoom (uuid?: string, rid?: string) {
     if (uuid) {
@@ -107,6 +112,24 @@ export class NetlessApi {
       roomToken: get(json, 'msg.roomToken')
     }
   }
+
+  async replayRoom(args: ReplayRoomParams, callback: PlayerCallbacks) {
+    let retrying;
+    do {
+      try {
+        let result = await this.client.replayRoom({
+          beginTimestamp: args.beginTimestamp,
+          duration: args.duration,
+          room: args.room,
+          roomToken: args.roomToken
+        }, callback);
+        retrying = false;
+        return result;
+      } catch (err) {
+        retrying = true;
+      }
+    } while (retrying);
+  }
 }
 
 export const apiClient = new NetlessApi();
@@ -138,6 +161,10 @@ export default class NetlessWhiteboardClient {
 
       },
       onRoomStateChanged: modifyState => {
+        console.log("state ", modifyState);
+        if (modifyState.zoomScale) {
+          this._bus.emit("scaleChanged", modifyState.zoomScale);
+        }
         if (modifyState.sceneState) {
           const newSceneState = modifyState.sceneState;
           this._bus.emit("sceneChanged", newSceneState);

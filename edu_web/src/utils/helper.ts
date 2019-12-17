@@ -5,7 +5,6 @@ import { Map } from 'immutable';
 import * as _ from 'lodash';
 import { RoomState, UserState } from '../reducers/initialize-state';
 import OSS from 'ali-oss';
-import { get } from 'lodash';
 
 export interface OSSConfig {
   accessKeyId: string,

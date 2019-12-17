@@ -32,10 +32,6 @@ export const useRootContext = () => useContext(RootContext);
 export const useRootObserver = (store: RootState) => {
 
   useEffect(() => {
-    console.log(' [mediaInfo] ', store.global.mediaInfo);
-  }, [store.global.mediaInfo]);
-
-  useEffect(() => {
     refStore.users = store.room.users;
     refStore.linkId = store.room.linkId;
     GlobalStorage.save('room', store.room);
