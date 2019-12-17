@@ -60,14 +60,15 @@
 
     RolesStudentInfoModel *infoModel = self.studentArray[indexPath.row];
     AEStudentModel *stuModel = infoModel.studentModel;
-    stuModel.userId = infoModel.attrKey;
+    stuModel.uid = infoModel.attrKey;
+    cell.userId = self.userId;
     cell.studentModel = stuModel;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
     [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
-    cell.muteVideoButton.hidden = cell.studentModel.userId != self.userId ? YES : NO;
-    cell.muteAudioButton.hidden = cell.studentModel.userId != self.userId ? YES : NO;
+//    cell.muteVideoButton.hidden = cell.studentModel.uid != self.userId ? YES : NO;
+//    cell.muteAudioButton.hidden = cell.studentModel.uid != self.userId ? YES : NO;
     return cell;
 }
 

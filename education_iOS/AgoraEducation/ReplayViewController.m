@@ -123,6 +123,9 @@
             weakself.combinePlayer = [[WhiteCombinePlayer alloc] initWithMediaUrl:[NSURL URLWithString:videoPath] whitePlayer:player];
             [weakself.videoView setAVPlayer:weakself.combinePlayer.nativePlayer];
             weakself.combinePlayer.delegate = weakself;
+            
+            [weakself.view layoutIfNeeded];
+            [weakself.combinePlayer.whitePlayer refreshViewSize];
             NSLog(@"创建回放房间成功");
         }
     }];

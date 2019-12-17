@@ -10,9 +10,6 @@
 #import "AgoraHttpRequest.h"
 #import <CommonCrypto/CommonCrypto.h>
 
-@interface AERTMMessageBody ()
-
-@end
 @implementation AERTMMessageBody
 + (NSString *)studentApplyLink {
     NSDictionary *dict = @{@"cmd":@(RTMp2pTypeApply),@"text":@"co-video"};
@@ -47,21 +44,14 @@
     return message;
 }
 
-+ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{@"account":name,@"video":@(video?1:0),@"audio":@(audio?1:0)};
++ (NSString *)setChannelAttrsWithValue:(AEStudentModel *)model {
+    NSDictionary *dict = @{@"uid": model.uid,
+                           @"account": model.account,
+                           @"video": @(model.video),
+                           @"audio": @(model.audio),
+                           @"chat": @(model.chat)};
     NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
     return attrString;
-}
-
-+ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio chat:(BOOL)chat {
-    NSDictionary *dict = @{@"account":name,@"video":@(video?1:0),@"audio":@(audio?1:0),@"chat":@(chat?1:0)};
-    NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
-    return attrString;
-}
-
-+ (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{@"account":name,@"userId": userId,@"video":@(video?1:0),@"audio":@(audio?1:0)};
-    return dict;
 }
 
 + (NSString *)MD5WithString:(NSString *)str {

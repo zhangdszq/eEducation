@@ -106,6 +106,9 @@
         } else {
             weakself.player = player;
             [player seekToScheduleTime:0];
+            
+            [weakself.view layoutIfNeeded];
+            [weakself.player refreshViewSize];
             NSLog(@"创建回放房间成功");
         }
     }];
