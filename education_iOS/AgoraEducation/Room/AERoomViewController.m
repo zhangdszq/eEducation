@@ -75,8 +75,6 @@
             if (scene.ppt) {
                 [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
             }
-            
-//            [room disableCameraTransform:NO];
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
