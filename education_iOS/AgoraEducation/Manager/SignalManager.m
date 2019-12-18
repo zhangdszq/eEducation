@@ -238,9 +238,6 @@ static SignalManager *manager = nil;
 
     RolesInfoModel *rolesInfoModel = [self fixRolesInfoModelWithAttributes:attributes];
     if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onUpdateTeactherAttribute:)]){
-        
-        NSLog(@"attributeUpdate teacher link_uid==>%@", rolesInfoModel.teactherModel.link_uid);
-        
         [self.messageDelegate onUpdateTeactherAttribute:rolesInfoModel.teactherModel];
     }
     
