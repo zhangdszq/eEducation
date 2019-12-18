@@ -319,6 +319,7 @@
         }else {
             [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
         }
+        [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
     }
 }
 
@@ -365,7 +366,6 @@
 }
 
 - (IBAction)handUpEvent:(UIButton *)sender {
-    
     switch (self.linkState) {
         case StudentLinkStateIdle:
             [self studentApplyLink];
@@ -391,26 +391,12 @@
     [SignalManager.shareManager setSignalWithValue:msgText toPeer:peerId completeSuccessBlock:^{
         
         weakself.linkState = StudentLinkStateApply;
-//        [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
         
     } completeFailBlock:nil];
-
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        if (weakself.linkState == StudentLinkStateApply) {
-//            [weakself studentCancelLink];
-//            weakself.handUpButton.enabled = YES;
-//            weakself.linkState = StudentLinkStateIdle;
-//            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
-//        }
-//    });
 }
 
 - (void)studentCancelLink {
     WEAK(self)
-//    if (self.segmentedIndex == 0) {
-//        self.whiteboardTool.hidden = YES;
-//    }
-    
     NSString *msgText = [AERTMMessageBody studentCancelLink];
     NSString *peerId = self.teacherAttr.uid;
     [SignalManager.shareManager setSignalWithValue:msgText toPeer:peerId completeSuccessBlock:^{
@@ -430,8 +416,8 @@
     [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
         
         weakself.linkState = StudentLinkStateAccept;
-        [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
         
+        weakself.tipLabel.hidden = NO;
         [weakself.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakself.tipLabel.hidden = YES;

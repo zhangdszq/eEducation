@@ -97,7 +97,7 @@
 
 - (void)joinRtm {
     
-    self.userNameTextFiled.text = @"jerry";
+//    self.userNameTextFiled.text = @"jerry";
     
     MessageModel *model = [MessageModel new];
     model.appId = kAgoraAppid;
@@ -154,8 +154,8 @@
 //    [self presentViewController:vc animated:YES completion:nil];
 //    return;
     
-    self.classNameTextFiled.text = @"test04";
-    self.userNameTextFiled.text = @"jerry";
+//    self.classNameTextFiled.text = @"test02";
+//    self.userNameTextFiled.text = @"jerry";
     
     [self.activityIndicator startAnimating];
     [sender setEnabled:NO];
