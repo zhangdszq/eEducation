@@ -11,16 +11,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AEStudentModel : NSObject
+
 @property (nonatomic, copy) NSString *account;
-@property (nonatomic, copy) NSString *userId;
-@property (nonatomic, assign) BOOL video;
-@property (nonatomic, assign) BOOL audio;
-@property (nonatomic, assign) BOOL screen;
-@property (nonatomic, assign) BOOL whiteboard;
-@property (nonatomic, assign) BOOL chatroom;
-@property (nonatomic, copy)   NSString * _Nullable connect_state;
-@property (nonatomic, copy)   NSString * _Nullable link_state;
-- (instancetype)initWithParams:(NSDictionary *_Nonnull)param;
+@property (nonatomic, copy) NSString *uid;
+@property (nonatomic, assign) NSInteger video;
+@property (nonatomic, assign) NSInteger audio;
+@property (nonatomic, assign) NSInteger chat;
+
 @end
 
 NS_ASSUME_NONNULL_END

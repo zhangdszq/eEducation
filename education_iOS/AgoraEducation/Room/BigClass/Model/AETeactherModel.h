@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL audio;
 @property (nonatomic, copy) NSString *test;
 - (void)modelWithDict:(NSDictionary *)dict;
+- (void)modelWithTeactherModel:(AETeactherModel *)model;
 @end
 
 NS_ASSUME_NONNULL_END

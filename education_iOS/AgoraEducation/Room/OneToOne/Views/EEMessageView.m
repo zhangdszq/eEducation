@@ -8,7 +8,8 @@
 
 #import "EEMessageView.h"
 #import "EEMessageViewCell.h"
-
+#import "ReplayViewController.h"
+#import "ReplayNoVideoViewController.h"
 
 @interface EEMessageView ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) UITableView *messageTableView;
@@ -46,8 +47,36 @@
 - (void)updateTableView {
     [self.messageTableView reloadData];
 }
+
+- (void)checkMessageDataLink {
+    
+    for (AERoomMessageModel *messageModel in self.messageArray) {
+        
+//        messageModel.link = @"/replay/80d1a353c68b4db7a3284f9a02835c27/1576549172877/1576549193735";
+        if(messageModel.link == nil){
+            continue;
+        }
+        
+        NSString *regex = @"^/replay/*/*/*";
+        NSError *error;
+        NSRegularExpression *regular = [NSRegularExpression regularExpressionWithPattern:regex options:NSRegularExpressionCaseInsensitive error:&error];
+        NSArray *matches = [regular matchesInString:messageModel.link options:0 range:NSMakeRange(0, messageModel.link.length)];
+        if(matches != nil && matches.count == 1) {
+            NSArray *componentsArray = [messageModel.link componentsSeparatedByString:@"/"];
+            if(componentsArray != nil && componentsArray.count == 5) {
+                messageModel.roomid = componentsArray[2];
+                messageModel.startTime = componentsArray[3];
+                messageModel.endTime = componentsArray[4];
+                messageModel.content = @"replay recording";
+            }
+        }
+    }
+}
+
 - (void)addMessageModel:(AERoomMessageModel *)model {
     [self.messageArray addObject:model];
+    [self checkMessageDataLink];
+    
     [self.messageTableView reloadData];
     if (self.messageArray.count > 0) {
          [self.messageTableView scrollToRowAtIndexPath:
@@ -71,7 +100,50 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     AERoomMessageModel *messageModel = self.messageArray[indexPath.row];
-    CGSize labelSize = [messageModel.content boundingRectWithSize:CGSizeMake(self.messageTableView.frame.size.width - 38, 1000) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
+    if(messageModel.cellHeight > 0){
+        return messageModel.cellHeight;
+    }
+    NSString *str = messageModel.content;
+    if(str == nil){
+        str = @"";
+    }
+    CGSize labelSize = [str boundingRectWithSize:CGSizeMake(self.messageTableView.frame.size.width - 38, 1000) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
+    messageModel.cellHeight = labelSize.height + 60;
     return labelSize.height + 60;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    AERoomMessageModel *messageModel = self.messageArray[indexPath.row];
+    if(messageModel.roomid == nil){
+        return;
+    }
+    
+    UIViewController *currrentVC;
+    if(messageModel.videoPath == nil){
+        
+        ReplayNoVideoViewController *vc = [[ReplayNoVideoViewController alloc] initWithNibName:@"ReplayNoVideoViewController" bundle:nil];
+        vc.roomid = messageModel.roomid;
+        vc.startTime = messageModel.startTime;
+        vc.endTime = messageModel.endTime;
+        currrentVC = vc;
+    } else {
+        
+        ReplayViewController *vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
+        vc.roomid = messageModel.roomid;
+        vc.startTime = messageModel.startTime;
+        vc.endTime = messageModel.endTime;
+        vc.videoPath = messageModel.videoPath;
+        currrentVC = vc;
+    }
+    
+    currrentVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+    UINavigationController *nvc = (UINavigationController*)window.rootViewController;
+    if(nvc != nil){
+        [nvc.visibleViewController presentViewController:currrentVC animated:YES completion:nil];
+    }
+    return;
 }
 @end

@@ -17,7 +17,9 @@
 #import "AERTMMessageBody.h"
 #import "EEChatTextFiled.h"
 
-@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AgoraRtmChannelDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate,AgoraRtmDelegate>
+#import "SignalManager.h"
+
+@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
@@ -29,49 +31,24 @@
 @implementation AERoomViewController
 - (void)setParams:(NSDictionary *)params {
     _params = params;
-    if (params[@"rtmKit"]) {
-        self.rtmKit = params[@"rtmKit"];
-        self.channelName = params[@"channelName"];
-        self.userName = params[@"userName"];
-        self.userId = params[@"userId"];
-        self.rtmChannelName = params[@"rtmChannelName"];
-    }
+ 
+    self.channelName = params[@"channelName"];
+    self.userName = params[@"userName"];
+    self.userId = params[@"userId"];
+    self.rtmChannelName = params[@"rtmChannelName"];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    [self joinRTMChannel];
+
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
-    [self.rtmKit setAgoraRtmDelegate:self];
-}
-
-- (void)joinRTMChannel {
-    self.rtmChannel  =  [self.rtmKit createChannelWithId:self.rtmChannelName delegate:self];
-    [self.rtmChannel joinWithCompletion:^(AgoraRtmJoinChannelErrorCode errorCode) {
-    }];
-}
-
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio {
-    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
-    setAttr.key = self.userId;
-    setAttr.value = [AERTMMessageBody setAndUpdateStudentChannelAttrsWithName:self.userName video:video audio:audio];
-    AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-    options.enableNotificationToChannelMembers = YES;
-    NSArray *attrArray = [NSArray arrayWithObjects:setAttr, nil];
-    [self.rtmKit addOrUpdateChannel:self.rtmChannelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"更新成功");
-        }else {
-            NSLog(@"更新失败");
-        }
-    }];
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
-    self.sdk = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
+    WhiteSDK *whiteSDK = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
     if (self.room) {
         [self.room disconnect:^{
         }];
@@ -79,26 +56,28 @@
     WEAK(self)
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-        [weakself.sdk joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
+        [whiteSDK joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
             weakself.room = room;
-            [weakself getWhiteboardSceneInfo];
+            
+//            [weakself.room setViewMode:WhiteViewModeFollower];
+
             [room refreshViewSize];
-            [room disableCameraTransform:NO];
+            
             [weakself.room disableDeviceInputs:disableDevice];
-            [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:720 height:720]];
+            
+            NSArray<WhiteScene *> *scenes = room.state.sceneState.scenes;
+            NSInteger sceneIndex = room.state.sceneState.index;
+            weakself.sceneCount = scenes.count;
+            weakself.sceneIndex = sceneIndex;
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+            
+            WhiteScene *scene = scenes[sceneIndex];
+            if (scene.ppt) {
+                [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
+            }
         }];
     } failure:^(NSString * _Nonnull msg) {
         NSLog(@"获取失败 %@",msg);
-    }];
-}
-
-- (void)getWhiteboardSceneInfo {
-    WEAK(self)
-    [self.room getSceneStateWithResult:^(WhiteSceneState * _Nonnull state) {
-        weakself.scenes = [NSArray arrayWithArray:state.scenes];
-        weakself.sceneDirectory = @"/";
-        weakself.sceneIndex = state.index;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)weakself.sceneIndex+1,weakself.scenes.count]];
     }];
 }
 
@@ -151,50 +130,70 @@
     }];
 }
 
-- (void)teacherMuteStudentVideo:(BOOL)mute {
-
-}
-
-- (void)teacherMuteStudentAudio:(BOOL)mute {
-    
-}
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
-    self.sceneIndex = modifyState.sceneState.index;
-    if (modifyState.sceneState && modifyState.sceneState.scenes.count > self.scenes.count) {
-        self.scenes = [NSArray arrayWithArray:modifyState.sceneState.scenes];
-        self.sceneDirectory = @"/";
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
+    if (modifyState.sceneState) {
+        self.sceneIndex = modifyState.sceneState.index;
+        self.sceneCount = modifyState.sceneState.scenes.count;
+        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", self.sceneIndex + 1, self.sceneCount]];
+        
+        WhiteScene *scene = modifyState.sceneState.scenes[self.sceneIndex];
+        if (scene.ppt) {
+            [self.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
+        }
     }
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
 }
 
 - (void)previousPage {
     if (self.sceneIndex > 0) {
         self.sceneIndex--;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        WEAK(self);
+        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        }];
     }
 }
 
 - (void)nextPage {
-    if (self.sceneIndex < self.scenes.count - 1  && self.scenes.count > 0) {
+    if (self.sceneIndex < self.sceneCount - 1  && self.sceneCount > 0) {
         self.sceneIndex ++;
-        [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex].name]];
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%zd",(long)self.sceneIndex+1,self.scenes.count]];
+        
+        WEAK(self);
+        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        }];
     }
 }
 
 - (void)lastPage {
-    self.sceneIndex = self.scenes.count;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[self.sceneIndex - 1].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%zd/%zd",self.scenes.count,self.scenes.count]];
+    self.sceneIndex = self.sceneCount - 1;
+    
+    WEAK(self);
+    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, (long)weakself.sceneCount]];
+    }];
+}
+
+-(void)setWhiteSceneIndex:(NSInteger)sceneIndex completionSuccessBlock:(void (^ _Nullable)(void ))successBlock {
+    
+    [self.room setSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
+        
+        if(success) {
+            if(successBlock != nil){
+                successBlock();
+            }
+        } else {
+            NSLog(@"设置场景Index失败：%@", error);
+        }
+    }];
 }
 
 - (void)firstPage {
     self.sceneIndex = 0;
-    [self.room setScenePath:[NSString stringWithFormat:@"/%@",self.scenes[0].name]];
-    [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"1/%zd",self.scenes.count]];
+    WEAK(self);
+    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+    }];
 }
 
 - (void)selectWhiteboardToolIndex:(NSInteger)index {
@@ -228,58 +227,6 @@
     }
 }
 
-- (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
-    if ([peerId isEqualToString:self.teacherAttr.uid]) {
-        NSDictionary *dict = [DataTypeManager dictionaryWithJsonString:message.text];
-        AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
-        switch (model.cmd) {
-            case RTMp2pTypeMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:YES];
-                [self setChannelAttrsWithVideo:self.ownAttrs.video audio:NO];
-                [self teacherMuteStudentAudio:YES];
-            }
-                break;
-            case RTMp2pTypeUnMuteAudio:
-            {
-                [self.rtcEngineKit muteLocalAudioStream:NO];
-                [self setChannelAttrsWithVideo:self.ownAttrs.video audio:YES];
-                [self teacherMuteStudentAudio:NO];
-            }
-                break;
-            case RTMp2pTypeMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:YES];
-                [self setChannelAttrsWithVideo:NO audio:self.ownAttrs.audio];
-                [self teacherMuteStudentVideo:YES];
-            }
-                break;
-            case RTMp2pTypeUnMuteVideo:
-            {
-                [self.rtcEngineKit muteLocalVideoStream:NO];
-                [self setChannelAttrsWithVideo:YES audio:self.ownAttrs.audio];
-                [self teacherMuteStudentVideo:NO];
-            }
-                break;
-            case RTMp2pTypeApply:
-            case RTMp2pTypeReject:
-            case RTMp2pTypeAccept:
-            case RTMp2pTypeCancel:
-                break;
-            case RTMp2pTypeMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-                self.chatTextFiled.contentTextFiled.enabled = NO;
-                break;
-            case RTMp2pTypeUnMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-                self.chatTextFiled.contentTextFiled.enabled = YES;
-                break;
-            default:
-                break;
-        }
-    }
-}
-
 - (void)dealloc
 {
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
@@ -289,4 +236,5 @@
 - (BOOL)prefersStatusBarHidden {
     return YES;
 }
+
 @end

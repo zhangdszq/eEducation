@@ -18,15 +18,17 @@
 #import "MCViewController.h"
 #import "AERoomViewController.h"
 #import "AEStudentModel.h"
-#import "RTMManager.h"
 
-@interface MainViewController ()<AgoraRtmDelegate,AgoraRtmChannelDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
+#import "SignalManager.h"
+
+#import "ReplayNoVideoViewController.h"
+
+@interface MainViewController ()<AgoraRtmDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomCon;
-@property (nonatomic, strong) AgoraRtmKit *agoraRtmKit;
-@property (nonatomic, strong) AgoraRtmChannel *agoraRtmChannel;
+
 @property (nonatomic, copy)   NSString *serverRtmId;
 @property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
 @property (nonatomic, copy)   NSString  *className;
@@ -60,6 +62,12 @@
     [self setUpView];
     [self addTouchedRecognizer];
     [self addKeyboardNotification];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onMessageDisconnect) name:NOTICE_KEY_ON_MESSAGE_DISCONNECT object:nil];
+}
+
+-(void)onMessageDisconnect{
+    [self joinRtm];
 }
 
 - (void)setUpView {
@@ -88,17 +96,14 @@
 }
 
 - (void)joinRtm {
-    self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:kAgoraAppid delegate:self];
-    [self.agoraRtmKit loginByToken:nil user:self.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
-        if (errorCode == AgoraRtmLoginErrorOk) {
-            NSLog(@"rtm login success");
-        }
-    }];
-}
-
-- (void)joinRtmChannelCompletion:(AgoraRtmJoinChannelBlock _Nullable)completionBlock {
-    self.agoraRtmChannel  =  [self.agoraRtmKit createChannelWithId:self.className delegate:self];
-    [self.agoraRtmChannel joinWithCompletion:completionBlock];
+    
+//    self.userNameTextFiled.text = @"jerry";
+    
+    MessageModel *model = [MessageModel new];
+    model.appId = kAgoraAppid;
+    model.uid = self.uid;
+    model.userName = self.userNameTextFiled.text;
+    [SignalManager.shareManager initWithMessageModel:model completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (void)keyboardWasShow:(NSNotification *)notification {
@@ -143,11 +148,21 @@
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
+    
+//    ReplayNoVideoViewController * vc = [[ReplayNoVideoViewController alloc] initWithNibName:@"ReplayNoVideoViewController" bundle:nil];
+//    vc.modalPresentationStyle = UIModalPresentationFullScreen;
+//    [self presentViewController:vc animated:YES completion:nil];
+//    return;
+    
+//    self.classNameTextFiled.text = @"test02";
+//    self.userNameTextFiled.text = @"jerry";
+    
     [self.activityIndicator startAnimating];
     [sender setEnabled:NO];
-    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![DataTypeManager judgeClassRoomText:self.classNameTextFiled.text] || ![DataTypeManager judgeClassRoomText:self.userNameTextFiled.text]) {
+    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![AERTMMessageBody judgeClassRoomText:self.classNameTextFiled.text] || ![AERTMMessageBody judgeClassRoomText:self.userNameTextFiled.text]) {
         [EEAlertView showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
         [self.activityIndicator stopAnimating];
+        [sender setEnabled:YES];
     }else {
         self.className = self.classNameTextFiled.text;
         self.userName = self.userNameTextFiled.text;
@@ -159,6 +174,8 @@
             [self presentOneToOneViewController];
         }else {
             [EEAlertView showAlertWithController:self title:@"请选择房间类型"];
+            [self.activityIndicator stopAnimating];
+            [sender setEnabled:YES];
         }
     }
 }
@@ -174,71 +191,45 @@
     if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
         [self joinRtm];
     }else {
-        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[DataTypeManager MD5WithString:self.className]];
+        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
         [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
     }
 }
 
 - (void)presentMiniClassViewController {
     WEAK(self)
-    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[DataTypeManager MD5WithString:self.className]];
-    [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
+    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
-            NSInteger teacherUid = [self getTeacherUidWithChannelAttribute:attributes];
-            if (studentCount < 16) {
-                [weakself joinClassRoomWithIdentifier:@"mcRoom"  rtmChannelName:rtcChannelName teacherUid:teacherUid];
-            }else {
-                [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
-            }
-        }else {
-            [EEAlertView showAlertWithController:self title:@"获取频道属性失败"];
+        NSInteger studentCount = rolesInfoModel.studentModels.count;
+        NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
+
+        if (studentCount < 16) {
+            [weakself joinClassRoomWithIdentifier:@"mcRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
+        } else {
+            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
         }
     }];
 }
 
 - (void)presentOneToOneViewController {
-    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[DataTypeManager MD5WithString:self.className]];
+    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
     WEAK(self)
-    [self.agoraRtmKit getChannelAllAttributes:rtcChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
+    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+        
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
-        if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSInteger studentCount = [self judgeStudentCountWithChannelAttribute:attributes];
-            NSInteger teacherUid = [self getTeacherUidWithChannelAttribute:attributes];
-            if (studentCount < 1) {
-                [weakself joinClassRoomWithIdentifier:@"oneToOneRoom"  rtmChannelName:rtcChannelName teacherUid:teacherUid];
-            }else {
-                [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
-            }
-        }else {
-            [EEAlertView showAlertWithController:self title:@"获取频道属性失败"];
-        }
+        NSInteger studentCount = rolesInfoModel.studentModels.count;
+        NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
+
+//        if (studentCount < 1) {
+            [weakself joinClassRoomWithIdentifier:@"oneToOneRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
+//        } else {
+//            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
+//        }
     }];
-}
-
-- (NSInteger)judgeStudentCountWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-    NSMutableArray *tempArray = [NSMutableArray arrayWithArray:attributes];
-    for (AgoraRtmChannelAttribute *attr in attributes) {
-        if ([attr.key isEqualToString:@"teacher"]) {
-            [tempArray removeObject:attr];
-        }else if ([attr.key isEqualToString:self.uid]) {
-            [tempArray removeObject:attr];
-        }
-    }
-    return tempArray.count;
-}
-
-- (NSInteger)getTeacherUidWithChannelAttribute:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-    for (AgoraRtmChannelAttribute *attr in attributes) {
-        NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:attr.value];
-       if ([attr.key isEqualToString:@"teacher"]) {
-           return [[valueDict objectForKey:@"uid"] integerValue];
-       }
-    }
-    return 0;
 }
 
 - (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName teacherUid:(NSInteger)teacherUid {
@@ -247,12 +238,11 @@
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
     viewController.params = @{
         @"channelName": self.className,
-        @"rtmKit" : self.agoraRtmKit,
         @"userName": self.userName,
         @"userId" : self.uid,
         @"rtmChannelName":rtmChannelName,
     };
-    viewController.teacherUid = teacherUid;
+    
     [self presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -271,7 +261,6 @@
     [self.roomType setTitle:name forState:(UIControlStateNormal)];
     self.classRoomTypeView.hidden = YES;
 }
-
 
 - (BOOL)prefersStatusBarHidden {
     return NO;

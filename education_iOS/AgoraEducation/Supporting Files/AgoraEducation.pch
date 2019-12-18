@@ -19,7 +19,7 @@
 #import <AgoraRtmKit/AgoraRtmKit.h>
 #import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
 #import "Configs.m"
-#import "DataTypeManager.h"
+#import "JsonAndStringConversions.h"
 #import "EducationEnumerates.h"
 #import <YYModel.h>
 #import <AFNetworking/AFNetworking.h>
