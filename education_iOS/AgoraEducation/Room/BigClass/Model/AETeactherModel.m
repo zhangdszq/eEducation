@@ -27,4 +27,32 @@
        [self setValue:[dict valueForKey:key] forKey:key];
    }
 }
+
+- (void)modelWithTeactherModel:(AETeactherModel *)model {
+    
+    if(model.account){
+        self.account = model.account;
+    }
+    if(model.uid){
+        self.uid = model.uid;
+    }
+    if(model.whiteboard_uid){
+        self.whiteboard_uid = model.whiteboard_uid;
+    }
+    if(model.link_uid){
+        self.link_uid = model.link_uid;
+    }
+    if(model.shared_uid){
+        self.shared_uid = model.shared_uid;
+    }
+    
+    self.mute_chat = model.mute_chat;
+    self.class_state = model.class_state;
+    self.video = model.video;
+    self.audio = model.audio;
+    
+    if(model.test){
+        self.test = model.test;
+    }
+}
 @end

@@ -8,59 +8,92 @@
 
 #import "AERTMMessageBody.h"
 #import "AgoraHttpRequest.h"
-
-
-@interface AERTMMessageBody ()
-@end
+#import <CommonCrypto/CommonCrypto.h>
 
 @implementation AERTMMessageBody
 + (NSString *)studentApplyLink {
-    NSString *applyString = [AERTMMessageBody p2pMessageWithType:RTMp2pTypeApply];
+    NSDictionary *dict = @{@"cmd":@(RTMp2pTypeApply),@"text":@"co-video"};
+    NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
     return applyString;
 }
 
 + (NSString *)studentCancelLink {
-    NSString *cancelString = [AERTMMessageBody p2pMessageWithType:RTMp2pTypeCancel];
-    return cancelString;
+    NSDictionary *dict = @{@"cmd":@(RTMp2pTypeCancel),@"text":@""};
+    NSString *applyString = [JsonAndStringConversions dictionaryToJson:dict];
+    return applyString;
 }
 
 + (NSString *)muteVideoStream:(BOOL)stream {
-    RTMp2pType type = stream ? RTMp2pTypeMuteVideo : RTMp2pTypeUnMuteVideo;
-    NSString *message = [AERTMMessageBody p2pMessageWithType:type];
+    NSNumber *type = stream ? @(RTMp2pTypeMuteVideo) : @(RTMp2pTypeUnMuteVideo);
+    NSDictionary *dict = @{@"cmd":type,@"resource":@""};
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteAudioStream:(BOOL)stream {
-    RTMp2pType type = stream ? RTMp2pTypeMuteAudio : RTMp2pTypeUnMuteAudio;
-    NSString *message = [AERTMMessageBody p2pMessageWithType:type];
+    NSNumber *type = stream ? @(RTMp2pTypeMuteAudio) : @(RTMp2pTypeUnMuteAudio);
+    NSDictionary *dict = @{@"cmd":type,@"text":@""};
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
 + (NSString *)muteChatContent:(BOOL)isMute {
-    RTMp2pType type = isMute ? RTMp2pTypeMuteChat: RTMp2pTypeUnMuteChat;
-    NSString *message = [AERTMMessageBody p2pMessageWithType:type];
+    NSNumber *type = isMute ? @(RTMp2pTypeMuteChat): @(RTMp2pTypeUnMuteChat);
+    NSDictionary *dict = @{@"cmd":type,@"text":@""};
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 
-+ (NSString *)setAndUpdateStudentChannelAttrsWithName:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{@"account":name,@"video":@(video),@"audio":@(audio)};
-    NSString *attrString = [DataTypeManager dictionaryToJson:dict];
++ (NSString *)setChannelAttrsWithValue:(AEStudentModel *)model {
+    NSDictionary *dict = @{@"uid": model.uid,
+                           @"account": model.account,
+                           @"video": @(model.video),
+                           @"audio": @(model.audio),
+                           @"chat": @(model.chat)};
+    NSString *attrString = [JsonAndStringConversions dictionaryToJson:dict];
     return attrString;
 }
 
-+ (NSString *)p2pMessageWithType:(RTMp2pType)type {
-    NSDictionary *dict = @{@"cmd":@(type),@"text":@""};
-    NSString *message = [DataTypeManager dictionaryToJson:dict];
-    return message;
++ (NSString *)MD5WithString:(NSString *)str {
+    const char *fooData = [str UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+
+    CC_MD5(fooData, (CC_LONG)strlen(fooData), result);
+    NSMutableString *saveResult = [NSMutableString string];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [saveResult appendFormat:@"%02x", result[i]];
+    }
+    return saveResult;
 }
-+ (NSDictionary *)paramsStudentWithUserId:(NSString *)userId name:(NSString *)name video:(BOOL)video audio:(BOOL)audio {
-    NSDictionary *dict = @{@"account":name,@"userId": userId,@"video":@(video),@"audio":@(audio)};
-    return dict;
+
++ (BOOL)judgeClassRoomText:(NSString *)text {
+    NSString *regex = @"^[a-zA-Z0-9]*$";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    if ([predicate evaluateWithObject:text] && text.length <= 11) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
++ (void)addShadowWithView:(UIView *)view alpha:(CGFloat)alpha {
+    view.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:alpha].CGColor;
+    view.layer.shadowOffset = CGSizeMake(0,2);
+    view.layer.shadowOpacity = 2;
+    view.layer.shadowRadius = 4;
+    view.layer.masksToBounds = YES;
+}
+
++ (NSString *)getUserID{
+    NSDate *datenow = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
+    NSString *uid =  [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
+    return uid;
 }
 
 + (NSString *)sendP2PMessageWithName:(NSString *)name content:(NSString *)content {
     NSDictionary *dict = @{@"account":name,@"content":content,};
-    NSString *message = [DataTypeManager dictionaryToJson:dict];
+    NSString *message = [JsonAndStringConversions dictionaryToJson:dict];
     return message;
 }
 

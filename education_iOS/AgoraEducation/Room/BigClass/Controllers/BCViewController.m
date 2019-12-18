@@ -12,7 +12,7 @@
 #import "EEWhiteboardTool.h"
 #import "EEChatTextFiled.h"
 #import "BCStudentVideoView.h"
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AgoraHttpRequest.h"
 #import "MainViewController.h"
 #import "AERTMMessageBody.h"
@@ -24,8 +24,10 @@
 #import "EEMessageView.h"
 #import "AEP2pMessageModel.h"
 
+#import "SignalManager.h"
+
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<BCSegmentedDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,AgoraRtmChannelDelegate,WhiteRoomCallbackDelegate,AgoraRtmDelegate,AEClassRoomProtocol>
+@interface BCViewController ()<BCSegmentedDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol, SignalDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -63,7 +65,7 @@
 @property (weak, nonatomic) IBOutlet EEChatTextFiled *chatTextFiled;
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
-@property (nonatomic, strong) NSMutableDictionary *studentListDict;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentList;
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (nonatomic, assign) NSInteger unreadMessageCount;
@@ -81,21 +83,114 @@
 @implementation BCViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.studentList = [NSArray array];
+    
     [self.navigationView updateChannelName:self.channelName];
     [self addNotification];
     [self setUpView];
     [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
-    [self.rtmKit setAgoraRtmDelegate:self];
-    self.studentListDict = [NSMutableDictionary dictionary];
+    
+    SignalManager.shareManager.messageDelegate = self;
+    [SignalManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:nil completeFailBlock:nil];
+    
     [self joinAgoraRtcChannel];
 }
 
+- (void)onSignalReceived:(NSNotification *)notification{
+    AEP2pMessageModel *messageModel = [notification object];
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    
+    switch (messageModel.cmd) {
+        case RTMp2pTypeMuteAudio:
+        {
+            currentStuModel.audio = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteAudio:
+        {
+            currentStuModel.audio = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            
+            break;
+        case RTMp2pTypeMuteVideo:
+        {
+            currentStuModel.video = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteVideo:
+        {
+            currentStuModel.video = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeApply:
+            break;
+        case RTMp2pTypeReject:
+        {
+            self.linkState = StudentLinkStateReject;
+//            self.handUpButton.enabled = YES;
+//            [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+        }
+            break;
+        case RTMp2pTypeAccept:
+        {
+            [self teacherAcceptLink];
+        }
+            break;
+        case RTMp2pTypeCancel:
+        {
+            self.whiteboardTool.hidden = YES;
+            self.linkState = StudentLinkStateIdle;
+            [self removeStudentVideo];
+            [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+        }
+            break;
+        case RTMp2pTypeMuteChat:
+            self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+            self.chatTextFiled.contentTextFiled.enabled = NO;
+            break;
+        case RTMp2pTypeUnMuteChat:
+            self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
+            self.chatTextFiled.contentTextFiled.enabled = YES;
+            break;
+        default:
+            break;
+    }
+}
+
 - (void)getRtmChannelAttrs{
+    
     WEAK(self)
-    [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
-        [weakself parsingChannelAttr:attributes];
+    [SignalManager.shareManager queryGlobalStateWithChannelName:self.rtmChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+        
+        [weakself updateTeacherStatusWithModel:rolesInfoModel.teactherModel];
+        
+        weakself.studentList = rolesInfoModel.studentModels;
     }];
+}
+
+-(void)updateTeacherStatusWithModel:(AETeactherModel*)model{
+ 
+    if(model != nil){
+        [self.teacherAttr modelWithTeactherModel:model];
+        if (self.segmentedIndex == 0) {
+            self.handUpButton.hidden = NO;
+            self.pageControlView.hidden = NO;
+        }
+        [self.teactherVideoView updateSpeakerImageWithMuted:!self.teacherAttr.audio];
+        self.teactherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+        [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
+    }
 }
 
 - (void)setUpView {
@@ -118,10 +213,10 @@
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
     self.handUpButton.layer.cornerRadius = 6;
 
-    [DataTypeManager addShadowWithView:self.handUpButton alpha:0.1];
+    [AERTMMessageBody addShadowWithView:self.handUpButton alpha:0.1];
     self.tipLabel.layer.backgroundColor = [UIColor colorWithHexString:@"000000" alpha:0.7].CGColor;
     self.tipLabel.layer.cornerRadius = 6;
-    [DataTypeManager addShadowWithView:self.tipLabel alpha:0.25];
+    [AERTMMessageBody addShadowWithView:self.tipLabel alpha:0.25];
     self.segmentedView.delegate = self;
     self.studentVideoView.delegate = self;
     self.navigationView.delegate = self;
@@ -139,7 +234,13 @@
     [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
         NSLog(@"join channel success");
         [weakself getRtmChannelAttrs];
-        [weakself setChannelAttrsWithVideo:NO audio:NO];
+        
+        AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+        currentStuModel.audio = 0;
+        currentStuModel.video = 0;
+        currentStuModel.chat = 1;
+        NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+        [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
     }];
 }
 
@@ -151,28 +252,37 @@
         NSUInteger uid = [change[@"new"] integerValue];
         if (uid > 0 ) {
             self.teacherInRoom = YES;
-            self.teacherUid = [new integerValue];
+//            self.teacherUid = [new integerValue];
             self.teactherVideoView.defaultImageView.hidden = YES;
             AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
             canvas.uid = uid;
             canvas.view = self.teactherVideoView.teacherRenderView;
             [self.rtcEngineKit setupRemoteVideo:canvas];
-        }else {
-            self.teacherUid = 0;
         }
+//        else {
+//            self.teacherUid = 0;
+//        }
     }else if ([keyPath isEqualToString:@"account"]) {
         [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
     }else if ([keyPath isEqualToString:@"link_uid"]) {
         self.linkUserId = [new integerValue];
         if (self.linkUserId > 0) {
-            AEStudentModel *studentModel = [self.studentListDict valueForKeyPath:new];
-            [self.studentVideoView updateVideoImageWithMuted:!studentModel.video];
-            [self.studentVideoView updateAudioImageWithMuted:!studentModel.audio];
-            if (self.linkUserId == [self.userId integerValue]) {
-                [self addStudentVideoWithUid:self.linkUserId remoteVideo:NO];
-            }else {
-                [self.studentVideoView setButtonEnabled:NO];
-                [self addStudentVideoWithUid:self.linkUserId remoteVideo:YES];
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", new];
+            NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentList filteredArrayUsingPredicate:predicate];
+            if(filteredArray.count > 0){
+//                AEStudentModel *studentModel = filteredArray.firstObject.studentModel;
+//                [self.studentVideoView updateVideoImageWithMuted:NO];
+//                [self.studentVideoView updateAudioImageWithMuted:NO];
+                if (self.linkUserId == [self.userId integerValue]) {
+                    [self.studentVideoView setButtonEnabled:YES];
+                    [self addStudentVideoWithUid:self.linkUserId remoteVideo:NO];
+                } else {
+                    [self.studentVideoView setButtonEnabled:NO];
+                    [self addStudentVideoWithUid:self.linkUserId remoteVideo:YES];
+                }
+            } else {
+                [self removeStudentVideo];
             }
         }else {
             [self removeStudentVideo];
@@ -199,16 +309,17 @@
 - (void)addStudentVideoWithUid:(NSInteger)uid remoteVideo:(BOOL)remote {
     self.studentVideoView.hidden = NO;
     if (!self.studentCanvas || uid != self.studentCanvas.uid) {
+        [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
         self.studentVideoView.defaultImageView.hidden = YES;
         self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
+        self.studentCanvas.uid = uid;
         self.studentCanvas.view = self.studentVideoView.studentRenderView;
         if (remote) {
-            self.studentCanvas.uid = uid;
             [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
         }else {
-            self.studentCanvas.uid = 0;
             [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
         }
+        [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
     }
 }
 
@@ -229,6 +340,8 @@
         {
             [self stateBarHidden:NO];
             [self verticalScreenConstraints];
+            [self.view layoutIfNeeded];
+            [self.room refreshViewSize];
         }
             break;
         case UIDeviceOrientationLandscapeLeft:
@@ -236,10 +349,12 @@
         {
             [self stateBarHidden:YES];
             [self landscapeScreenConstraints];
+            [self.view layoutIfNeeded];
+            [self.room refreshViewSize];
         }
             break;
         default:
-            NSLog(@"无法辨识");
+            NSLog(@"设备方向无法辨识");
             break;
     }
 }
@@ -250,8 +365,6 @@
     self.isLandscape = hidden; // 横屏隐藏
 }
 
-
-
 - (IBAction)handUpEvent:(UIButton *)sender {
     switch (self.linkState) {
         case StudentLinkStateIdle:
@@ -261,8 +374,10 @@
             [self studentCancelLink];
             break;
         case StudentLinkStateApply:
-            [self.studentVideoView updateVideoImageWithMuted:NO];
-            [self.studentVideoView updateAudioImageWithMuted:NO];
+            [self studentApplyLink];
+            break;
+        case StudentLinkStateReject:
+            [self studentApplyLink];
             break;
         default:
             break;
@@ -271,71 +386,44 @@
 
 - (void)studentApplyLink {
     WEAK(self)
-    [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentApplyLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-        if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
-            weakself.linkState = StudentLinkStateApply;
-            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
-        }
-    }];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (weakself.linkState == StudentLinkStateApply) {
-            [weakself studentCancelLink];
-            weakself.handUpButton.enabled = YES;
-            weakself.linkState = StudentLinkStateIdle;
-            [weakself.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
-        }
-    });
+    NSString *msgText = [AERTMMessageBody studentApplyLink];
+    NSString *peerId = self.teacherAttr.uid;
+    [SignalManager.shareManager setSignalWithValue:msgText toPeer:peerId completeSuccessBlock:^{
+        
+        weakself.linkState = StudentLinkStateApply;
+        
+    } completeFailBlock:nil];
 }
 
 - (void)studentCancelLink {
     WEAK(self)
-    if (self.segmentedIndex == 0) {
-        self.whiteboardTool.hidden = YES;
-    }
-    [self.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:self.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-        if (errorCode == AgoraRtmSendPeerMessageErrorOk) {
-            weakself.linkState = StudentLinkStateIdle;
-            [weakself removeStudentVideo];
-        }
-    }];
+    NSString *msgText = [AERTMMessageBody studentCancelLink];
+    NSString *peerId = self.teacherAttr.uid;
+    [SignalManager.shareManager setSignalWithValue:msgText toPeer:peerId completeSuccessBlock:^{
+        
+        weakself.linkState = StudentLinkStateIdle;
+        [weakself removeStudentVideo];
+        
+    } completeFailBlock:nil];
 }
 
 - (void)teacherAcceptLink {
-    [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
-    self.linkState = StudentLinkStateAccept;
-    [self addStudentVideoWithUid:[self.userId integerValue] remoteVideo:NO];
-    [self.studentVideoView setButtonEnabled:YES];
-    [self.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
-    [self setChannelAttrsWithVideo:YES audio:YES];
     WEAK(self)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        weakself.tipLabel.hidden = YES;
-    });
-    self.handUpButton.enabled = YES;
-}
-- (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-    if (attributes.count > 0) {
-        for (AgoraRtmChannelAttribute *channelAttr in attributes) {
-            NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:channelAttr.value];
-            if ([channelAttr.key isEqualToString:@"teacher"]) {
-                if (!self.teacherAttr) {
-                    self.teacherAttr = [[AETeactherModel alloc] init];
-                }
-                [self.teacherAttr modelWithDict:valueDict];
-                if (self.segmentedIndex == 0) {
-                    self.handUpButton.hidden = NO;
-                    self.pageControlView.hidden = NO;
-                }
-                [self.teactherVideoView updateSpeakerImageWithMuted:!self.teacherAttr.audio];
-                self.teactherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-                [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
-            }else {
-                AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
-                studentAttr.userId = channelAttr.key;
-                [self.studentListDict setValue:studentAttr forKey:channelAttr.key];
-            }
-        }
-    }
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.audio = 1;
+    currentStuModel.video = 1;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
+        
+        weakself.linkState = StudentLinkStateAccept;
+        
+        weakself.tipLabel.hidden = NO;
+        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!",self.teacherAttr.account]];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            weakself.tipLabel.hidden = YES;
+        });
+        
+    } completeFailBlock:nil];
 }
 
 - (void)landscapeScreenConstraints {
@@ -404,6 +492,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleDeviceOrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onSignalReceived:) name:NOTICE_KEY_ON_SIGNAL_RECEIVED object:nil];
 }
 
 - (void)keyboardWasShow:(NSNotification *)notification {
@@ -430,8 +520,7 @@
         self.segmentedIndex = 0;
         self.messageView.hidden = YES;
         self.chatTextFiled.hidden = YES;
-        self.pageControlView.hidden = self.teacherAttr ? NO: YES;
-        self.handUpButton.hidden = NO;
+        self.pageControlView.hidden = self.teacherInRoom ? NO: YES;
         self.whiteboardTool.hidden = YES;
         self.handUpButton.hidden = self.teacherInRoom ? NO: YES;
     }else {
@@ -449,20 +538,23 @@
 - (void)closeRoom {
     WEAK(self)
     [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+        
         if (weakself.linkState == StudentLinkStateAccept) {
-            [weakself.rtmKit sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody studentCancelLink]] toPeer:weakself.teacherAttr.uid completion:^(AgoraRtmSendPeerMessageErrorCode errorCode) {
-                NSLog(@"退出消息发送成功与否--- %ld",errorCode);
+            NSString *msgText = [AERTMMessageBody studentCancelLink];
+            NSString *peerId = weakself.teacherAttr.uid;
+            [SignalManager.shareManager setSignalWithValue:msgText toPeer:peerId completeSuccessBlock:^{
+                NSLog(@"退出消息发送成功");
+            } completeFailBlock:^{
+                NSLog(@"退出消息发送失败");
             }];
         }
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself.room disconnect:^{
         }];
         [weakself removeTeacherObserver];
-        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-        options.enableNotificationToChannelMembers = YES;
-        [weakself.rtmKit deleteChannel:weakself.channelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
-        [weakself.rtmChannel leaveWithCompletion:nil];
-        [weakself dismissViewControllerAnimated:NO completion:nil];
+        [SignalManager.shareManager leaveChannel];
+        
+        [weakself dismissViewControllerAnimated:YES completion:nil];
     }];
 }
 
@@ -477,18 +569,10 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    WEAK(self)
-    __block NSString *content = textField.text;
+    NSString *content = textField.text;
     if (content.length > 0) {
-        [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
-              if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-                  AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
-                  messageModel.content = content;
-                  messageModel.account = weakself.userName;
-                  messageModel.isSelfSend = YES;
-                  [weakself.messageView addMessageModel:messageModel];
-              }
-        }];
+        [SignalManager.shareManager sendMessageWithValue:content];
+        
     }
     textField.text = nil;
     [textField resignFirstResponder];
@@ -497,38 +581,49 @@
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
     if (uid == [self.teacherAttr.uid integerValue]) {
-    }else if (uid == kWhiteBoardUid && !self.shareScreenCanvas) {
+    } else if (uid == kWhiteBoardUid && !self.shareScreenCanvas) {
         [self addShareScreenVideoWithUid:uid];
     }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid  == self.teacherUid) {
+    if (uid == self.teacherAttr.uid.integerValue) {
         self.teacherInRoom = NO;
         self.teactherVideoView.defaultImageView.hidden = NO;
         [self.teactherVideoView updateAndsetTeacherName:@""];
-    }else if (uid == kWhiteBoardUid) {
+        
+        if (self.segmentedIndex == 0) {
+            self.handUpButton.hidden = YES;
+            self.pageControlView.hidden = YES;
+        }
+        [self.teactherVideoView updateSpeakerImageWithMuted:YES];
+        self.teactherVideoView.defaultImageView.hidden = NO;
+        [self.teactherVideoView updateAndsetTeacherName:@""];
+        
+    } else if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
-    }else {
-        [self removeStudentVideo];
+    } else {
+        if(self.studentCanvas != nil && self.studentCanvas.uid == uid) {
+            [self removeStudentVideo];
+        }
     }
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didAudioMuted:(BOOL)muted byUid:(NSUInteger)uid {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        [self.teactherVideoView updateSpeakerImageWithMuted:muted];
-    }else {
-        [self.studentVideoView updateAudioImageWithMuted:muted];
-    }
-}
-
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didVideoMuted:(BOOL)muted byUid:(NSUInteger)uid {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-        self.teactherVideoView.defaultImageView.hidden = !muted;
-    }else {
-        [self.studentVideoView updateVideoImageWithMuted:muted];
-    }
-}
+//- (void)rtcEngine:(AgoraRtcEngineKit *)engine didAudioMuted:(BOOL)muted byUid:(NSUInteger)uid {
+//    if (uid == [self.teacherAttr.uid integerValue]) {
+//        [self.teactherVideoView updateSpeakerImageWithMuted:muted];
+//    }else {
+//        [self.studentVideoView updateAudioImageWithMuted:muted];
+//    }
+//}
+//
+//- (void)rtcEngine:(AgoraRtcEngineKit *)engine didVideoMuted:(BOOL)muted byUid:(NSUInteger)uid {
+//    if (uid == [self.teacherAttr.uid integerValue]) {
+//        self.teactherVideoView.defaultImageView.hidden = !muted;
+//    }else {
+//        [self.studentVideoView updateVideoImageWithMuted:muted];
+//    }
+//}
 
 - (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
     switch (type) {
@@ -550,80 +645,25 @@
     }
 }
 
-- (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
-    NSDictionary *dict =  [DataTypeManager dictionaryWithJsonString:message.text];
-    AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
-    messageModel.isSelfSend = NO;
-    [self.messageView addMessageModel:messageModel];
-    if (self.messageView.hidden == YES) {
-        self.unreadMessageCount = self.unreadMessageCount + 1;
-        [self.segmentedView showBadgeWithCount:(self.unreadMessageCount)];
-    }
-}
-
-- (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
-    [self parsingChannelAttr:attributes];
-}
-
-- (void)rtmKit:(AgoraRtmKit *)kit messageReceived:(AgoraRtmMessage *)message fromPeer:(NSString *)peerId {
-    if ([peerId isEqualToString:self.teacherAttr.uid]) {
-        NSDictionary *dict = [DataTypeManager dictionaryWithJsonString:message.text];
-        AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
-        switch (model.cmd) {
-            case RTMp2pTypeMuteAudio:
-                break;
-            case RTMp2pTypeUnMuteAudio:
-                break;
-            case RTMp2pTypeMuteVideo:
-                break;
-            case RTMp2pTypeUnMuteVideo:
-                break;
-            case RTMp2pTypeApply:
-                break;
-            case RTMp2pTypeReject:
-            {
-                self.linkState = StudentLinkStateReject;
-                self.handUpButton.enabled = YES;
-            }
-                break;
-            case RTMp2pTypeAccept:
-            {
-                [self teacherAcceptLink];
-            }
-                break;
-            case RTMp2pTypeCancel:
-            {
-                self.whiteboardTool.hidden = YES;
-                self.linkState = StudentLinkStateIdle;
-                [self removeStudentVideo];
-                [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
-            }
-                break;
-            case RTMp2pTypeMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-                self.chatTextFiled.contentTextFiled.enabled = NO;
-                break;
-            case RTMp2pTypeUnMuteChat:
-                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-                self.chatTextFiled.contentTextFiled.enabled = YES;
-                break;
-            default:
-                break;
-        }
-    }
-}
-
 - (void)muteVideoStream:(BOOL)stream {
-    AEStudentModel *attrs =  [self.studentListDict objectForKey:self.userId];
-    [self setChannelAttrsWithVideo:!attrs.video audio:attrs.audio];
-    [self.rtcEngineKit muteLocalVideoStream:attrs.video];
+
+    [self.rtcEngineKit muteLocalVideoStream:stream];
     self.studentVideoView.defaultImageView.hidden = stream ? NO : YES;
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.video = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (void)muteAudioStream:(BOOL)stream {
-    AEStudentModel *attrs =  [self.studentListDict objectForKey:self.userId];
-    [self setChannelAttrsWithVideo:attrs.video audio:!attrs.audio];
-    [self.rtcEngineKit muteLocalAudioStream:attrs.audio];
+    
+    [self.rtcEngineKit muteLocalAudioStream:stream];
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.audio = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -633,5 +673,36 @@
 - (void)dealloc {
     NSLog(@"BCViewController is Dealloc");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark SignalDelegate
+- (void)onUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel {
+    [self.messageView addMessageModel:roomMessageModel];
+    if (self.messageView.hidden == YES) {
+        self.unreadMessageCount = self.unreadMessageCount + 1;
+        [self.segmentedView showBadgeWithCount:(self.unreadMessageCount)];
+    }
+}
+- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel {
+    [self updateTeacherStatusWithModel:teactherModel];
+}
+- (void)onUpdateStudentsAttribute:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+    self.studentList = studentInfoModels;
+
+    if (self.studentCanvas!= nil) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.userId];
+        NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentList filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count > 0){
+            
+            AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+            [self.studentVideoView updateVideoImageWithMuted:canvasStudentModel.video == 0 ? YES : NO];
+            [self.studentVideoView updateAudioImageWithMuted:canvasStudentModel.audio == 0 ? YES : NO];
+            if([canvasStudentModel.uid isEqualToString:self.userId]){
+                [self.rtcEngineKit muteLocalVideoStream:canvasStudentModel.video == 0 ? YES : NO];
+                [self.rtcEngineKit muteLocalAudioStream:canvasStudentModel.audio == 0 ? YES : NO];
+            }
+        }
+    }
 }
 @end

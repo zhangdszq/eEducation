@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AEStudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,26 +20,20 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *rtmChannelName;
 
 @property (nonatomic, strong) WhiteBoardView *boardView;
-@property (nonatomic, strong) WhiteSDK *sdk;
 @property (nonatomic, strong) WhiteRoom *room;
 @property (nonatomic, assign) NSInteger sceneIndex;
-@property (nonatomic, copy) NSString *sceneDirectory;
-@property (nonatomic, strong) NSArray<WhiteScene *> *scenes;
+@property (nonatomic, assign) NSInteger sceneCount;
+
 @property (nonatomic, strong) WhiteMemberState *memberState;
 @property (nonatomic, strong) UIColor *pencilColor;
 
-@property (nonatomic, strong) AgoraRtmKit *rtmKit;
-@property (nonatomic, strong) AgoraRtmChannel *rtmChannel;
 @property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
-@property (nonatomic, strong) AEStudentModel *ownAttrs;
-@property (nonatomic, assign)NSInteger teacherUid;
+//@property (nonatomic, strong) AEStudentModel *ownAttrs;
+//@property (nonatomic, assign)NSInteger teacherUid;
 
-- (void)joinRTMChannel;
-- (void)setChannelAttrsWithVideo:(BOOL)video audio:(BOOL)audio;
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
-- (void)getWhiteboardSceneInfo;
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;

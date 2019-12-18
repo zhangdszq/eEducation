@@ -48,16 +48,22 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 - (void)setMessageModel:(AERoomMessageModel *)messageModel {
     _messageModel = messageModel;
+
+    NSMutableAttributedString *contentString;
+    if(messageModel.roomid != nil){
+        contentString = [[NSMutableAttributedString alloc] initWithString:@"replay recording" attributes:@{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)}];
+    } else {
+        contentString = [[NSMutableAttributedString alloc] initWithString:messageModel.content];
+    }
+
     if (messageModel.isSelfSend) {
         CGSize size =  [self sizeWithContent:messageModel.content];
         self.rightViewWidthCon.constant = (size.width + 25) > self.cellWidth ? self.cellWidth : size.width + 25;
-        [self.rightContentLabel setText:messageModel.content];
+        [self.rightContentLabel setAttributedText:contentString];
         self.rightView.hidden = NO;
         self.rightContentLabel.hidden = NO;
         self.leftView.hidden = YES;
@@ -66,15 +72,17 @@
     }else {
         CGSize size =  [self sizeWithContent:messageModel.content];
         self.leftViewWidthCon.constant = size.width + 25 > self.cellWidth ? self.cellWidth : size.width +25;
-        [self.leftContentLabel setText:messageModel.content];
+        [self.leftContentLabel setAttributedText:contentString];
         self.rightView.hidden = YES;
         self.rightContentLabel.hidden = YES;
         self.leftView.hidden = NO;
         self.leftContentLabel.hidden = NO;
         self.nameLabel.textAlignment = NSTextAlignmentLeft;
     }
+    
     [self.nameLabel setText:messageModel.account];
 }
+
 - (CGSize)sizeWithContent:(NSString *)string {
     CGSize labelSize = [string boundingRectWithSize:CGSizeMake(self.cellWidth - 38, 1000) options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12.f]} context:nil].size;
     return labelSize;

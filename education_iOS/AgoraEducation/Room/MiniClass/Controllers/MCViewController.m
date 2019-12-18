@@ -20,12 +20,15 @@
 #import "EEMessageView.h"
 #import "MCStudentListView.h"
 #import "MCSegmentedView.h"
-#import <WhiteSDK.h>
+#import <Whiteboard/Whiteboard.h>
 #import "AERTMMessageBody.h"
 #import "AgoraHttpRequest.h"
 
+#import "SignalManager.h"
+#import "AEP2pMessageModel.h"
+
 #define kLandscapeViewWidth    222
-@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,AgoraRtmDelegate>
+@interface MCViewController ()<AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol,SignalDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoManagerViewRightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledBottomCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledWidthCon;
@@ -45,13 +48,9 @@
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
-@property (nonatomic, strong) NSMutableDictionary *studentListDict;
-@property (nonatomic, strong) NSMutableArray *studentListArray;
-@property (nonatomic, strong) NSMutableArray *studentUidArray;
 
-@property (nonatomic, assign) BOOL isTeacherInRoom;
-@property (nonatomic, assign) BOOL isMuteVideo;
-@property (nonatomic, assign) BOOL isMuteAudio;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentListArray;
+
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @end
 
@@ -59,41 +58,55 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.studentListDict = [NSMutableDictionary dictionary];
-    self.studentListArray = [NSMutableArray array];
-    self.studentUidArray = [NSMutableArray array];
+    self.studentListArray = [NSArray array];
     self.studentListView.userId = self.userId;
-    self.isMuteVideo = NO;
-    self.isMuteAudio = NO;
+
     [self loadAgoraRtcEngine];
     [self setUpView];
-    [self getRtmChannelAttrs];
     [self selectSegmentIndex];
     [self setWhiteBoardBrushColor];
-    [self setAllStudentVideoRender];
     [self addTeacherObserver];
     [self addNotification];
-    [self.rtmKit setAgoraRtmDelegate:self];
-    [self setStudentAttrs];
-}
 
-- (void)setStudentAttrs {
-    self.ownAttrs = [[AEStudentModel alloc] initWithParams:[AERTMMessageBody paramsStudentWithUserId:self.userId name:self.userName video:YES audio:YES]];
-    [self.studentListArray addObject:self.ownAttrs];
-    [self.studentListDict setValue:self.ownAttrs forKeyPath:self.userId];
-    [self.studentUidArray addObject:self.userId];
-    [self.studentListView updateStudentArray:self.studentListArray];
-    [self.studentVideoListView updateStudentArray:self.studentListArray];
-    [self setChannelAttrsWithVideo:YES audio:YES];
+    
+    WEAK(self)
+    SignalManager.shareManager.messageDelegate = self;
+    [SignalManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:^{
+        
+        NSString *value = [AERTMMessageBody setChannelAttrsWithValue: SignalManager.shareManager.currentStuModel];
+        [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:^{
+            
+            [weakself getRtmChannelAttrs];
+            
+        } completeFailBlock:nil];
+        
+    } completeFailBlock:nil];
 }
 
 - (void)getRtmChannelAttrs{
     WEAK(self)
-    [self.rtmKit getChannelAllAttributes:self.rtmChannelName completion:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes, AgoraRtmProcessAttributeErrorCode errorCode) {
-        [weakself parsingChannelAttr:attributes];
+    [SignalManager.shareManager queryGlobalStateWithChannelName:self.rtmChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+        
+        [weakself updateTeacherStatusWithModel: rolesInfoModel.teactherModel];
+
+        weakself.studentListArray = rolesInfoModel.studentModels;
+        [weakself.studentListView updateStudentArray:weakself.studentListArray];
+        [weakself.studentVideoListView updateStudentArray:weakself.studentListArray];
+        
+        [weakself setAllStudentVideoRender];
     }];
 }
 
+-(void)updateTeacherStatusWithModel:(AETeactherModel*)model{
+ 
+    if(model != nil){
+        [self.teacherAttr modelWithTeactherModel:model];
+        self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
+        NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
+        [self.teacherVideoView updateSpeakerImageName:imageName];
+    }
+}
+ 
 - (void)setUpView {
     if (@available(iOS 11, *)) {
     } else {
@@ -162,14 +175,17 @@
 - (void)setAllStudentVideoRender {
     WEAK(self)
     [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
-        AEStudentModel *model = weakself.studentListArray[indexPath.row];
+        
+        RolesStudentInfoModel *roleInfoModel = weakself.studentListArray[indexPath.row];
+        NSString *uid = roleInfoModel.attrKey;
+        
         AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        videoCanvas.uid = [model.userId integerValue];
+        videoCanvas.uid = [uid integerValue];
         videoCanvas.view = imageView;
-        if ([model.userId isEqualToString:weakself.userId]) {
+        if ([uid isEqualToString:weakself.userId]) {
             [weakself.rtcEngineKit setupLocalVideo:videoCanvas];
         }else {
-            [weakself.rtcEngineKit setRemoteVideoStream:[model.userId integerValue] type:(AgoraVideoStreamTypeLow)];
+            [weakself.rtcEngineKit setRemoteVideoStream:[uid integerValue] type:(AgoraVideoStreamTypeLow)];
             [weakself.rtcEngineKit setupRemoteVideo:videoCanvas];
         }
     }];
@@ -190,84 +206,6 @@
     }];
 }
 
-- (void)parsingChannelAttr:(NSArray<AgoraRtmChannelAttribute *> *)attributes {
-    for (AgoraRtmChannelAttribute *channelAttr in attributes) {
-        NSDictionary *valueDict =   [DataTypeManager dictionaryWithJsonString:channelAttr.value];
-        if ([channelAttr.key isEqualToString:@"teacher"]) {
-            if (!self.teacherAttr) {
-                self.teacherAttr = [[AETeactherModel alloc] init];
-            }
-            [self.teacherAttr modelWithDict:valueDict];
-            self.teacherUid = [self.teacherAttr.uid integerValue];
-            self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-            NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
-            [self.teacherVideoView updateSpeakerImageName:imageName];
-        }else {
-            AEStudentModel *studentAttr = [AEStudentModel yy_modelWithJSON:valueDict];
-            studentAttr.userId = channelAttr.key;
-            [self.studentListDict setValue:studentAttr forKeyPath:channelAttr.key];
-            if ([channelAttr.key isEqualToString:self.userId]) {
-                self.ownAttrs = [AEStudentModel yy_modelWithDictionary:valueDict];
-            }
-        }
-    }
-    [self updateStudentModelArray];
-}
-
-- (BOOL)judgeUidArrayWithUid:(NSInteger)uid {
-    for (NSInteger i = 0; i< self.studentUidArray.count; i++) {
-        if ([self.studentUidArray[i] integerValue] ==uid) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (void)updateStudentModelArray {
-    NSInteger studentCount = self.studentUidArray.count;
-    for (NSInteger i = 0; i < studentCount; i++) {
-        if ([self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%@",self.studentUidArray[i]]]) {
-            AEStudentModel *model = [self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%@",self.studentUidArray[i]]];
-            if (![self queryStudentListArrayContainsStudentModel:model]) {
-                [self.studentListArray addObject:model];
-            }else {
-                [self updateStudentListArrayStudentModel:model];
-            }
-        }
-    }
-    [self.studentListView updateStudentArray:self.studentListArray];
-    [self.studentVideoListView updateStudentArray:self.studentListArray];
-}
-
-- (BOOL)judgeStudentArrayWithModel:(AEStudentModel *)model {
-    for (NSInteger j = 0; j < self.studentListArray.count; j++) {
-        AEStudentModel *tempModel = self.studentListArray[j];
-        if ([tempModel.userId isEqualToString:model.userId]) {
-            return YES;
-            break;
-        }
-    }
-    return NO;
-}
-
-- (BOOL)queryStudentListArrayContainsStudentModel:(AEStudentModel *)model {
-    for (NSInteger i = 0; i < self.studentListArray.count; i++) {
-        AEStudentModel *studentModel = self.studentListArray[i];
-        if ([studentModel.userId isEqualToString:model.userId]) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (void)updateStudentListArrayStudentModel:(AEStudentModel *)model {
-    for (NSInteger i = 0; i < self.studentListArray.count; i++) {
-        AEStudentModel *studentModel = self.studentListArray[i];
-        if ([studentModel.userId isEqualToString:model.userId]) {
-            [self.studentListArray replaceObjectAtIndex:i withObject:model];
-        }
-    }
-}
 - (void)loadAgoraRtcEngine {
     self.rtcEngineKit = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppid delegate:self];
     [self.rtcEngineKit setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
@@ -283,7 +221,74 @@
 - (void)addNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+        
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onSignalReceived:) name:NOTICE_KEY_ON_SIGNAL_RECEIVED object:nil];
 }
+
+- (void)onSignalReceived:(NSNotification *)notification{
+    AEP2pMessageModel *messageModel = [notification object];
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+
+    switch (messageModel.cmd) {
+        case RTMp2pTypeMuteAudio:
+        {
+            currentStuModel.audio = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteAudio:
+        {
+            currentStuModel.audio = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeMuteVideo:
+        {
+            currentStuModel.video = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteVideo:
+        {
+            currentStuModel.video = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeApply:
+        case RTMp2pTypeReject:
+        case RTMp2pTypeAccept:
+        case RTMp2pTypeCancel:
+            break;
+        case RTMp2pTypeMuteChat:
+        {
+            self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+            self.chatTextFiled.contentTextFiled.enabled = NO;
+            
+            currentStuModel.chat = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteChat:
+        {
+            self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
+            self.chatTextFiled.contentTextFiled.enabled = YES;
+            
+            currentStuModel.chat = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
 
 - (void)keyboardWasShow:(NSNotification *)notification {
     if (self.isChatTextFieldKeyboard) {
@@ -320,18 +325,10 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    WEAK(self)
-    __block NSString *content = textField.text;
+    
+    NSString *content = textField.text;
     if (content.length > 0) {
-        [self.rtmChannel sendMessage:[[AgoraRtmMessage alloc] initWithText:[AERTMMessageBody sendP2PMessageWithName:self.userName content:content]] completion:^(AgoraRtmSendChannelMessageErrorCode errorCode) {
-             if (errorCode == AgoraRtmSendChannelMessageErrorOk) {
-                 AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
-                 messageModel.content = content;
-                 messageModel.account = weakself.userName;
-                 messageModel.isSelfSend = YES;
-                 [weakself.messageView addMessageModel:messageModel];
-             }
-        }];
+        [SignalManager.shareManager sendMessageWithValue:content];
     }
     textField.text = nil;
     [textField resignFirstResponder];
@@ -341,45 +338,39 @@
 - (void)closeRoom {
     WEAK(self)
     [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
-        [[NSNotificationCenter defaultCenter] removeObserver:weakself];
+        
         [weakself.navigationView stopTimer];
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself.room disconnect:^{
         }];
         [weakself removeTeacherObserver];
-        AgoraRtmChannelAttributeOptions *options = [[AgoraRtmChannelAttributeOptions alloc] init];
-        options.enableNotificationToChannelMembers = YES;
-        [weakself.rtmKit deleteChannel:weakself.rtmChannelName AttributesByKeys:@[weakself.userId] Options:options completion:nil];
-        [weakself.rtmChannel leaveWithCompletion:nil];
+
+        [SignalManager.shareManager leaveChannel];
+        
         [weakself dismissViewControllerAnimated:YES completion:nil];
     }];
 }
 
 #pragma mark --------------------- RTC Delegate -------------------
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
-    if (self.teacherUid == uid) {
     
-    }else if (uid == kWhiteBoardUid){
+    if (uid == [self.teacherAttr.uid integerValue]) {
+    
+    } else if (uid == kWhiteBoardUid){
         [self addShareScreenVideoWithUid:uid];
-
-    }else {
-        if (![self judgeUidArrayWithUid:uid]) {
-            [self.studentUidArray addObject:@(uid)];
-            [self updateStudentModelArray];
-        }
     }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid == self.teacherUid) {
-        self.teacherAttr.uid = [NSString stringWithFormat:@"0"];
-        self.teacherUid = 0;
-    }else if (uid == kWhiteBoardUid) {
+    
+    if (uid == self.teacherAttr.uid.integerValue) {
+        [self.teacherVideoView updateUserName:@""];
+        self.teacherVideoView.defaultImageView.hidden = NO;
+    } else if (uid == kWhiteBoardUid) {
         [self removeShareScreen];
-    }else {
-        AEStudentModel *model =  [self.studentListDict valueForKeyPath:[NSString stringWithFormat:@"%zd",uid]];
-        [self.studentListArray removeObject:model];
-        [self.studentUidArray removeObject:@(uid)];
+    } else {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey != %d", uid];
+        self.studentListArray = [self.studentListArray filteredArrayUsingPredicate:predicate];
         [self.studentListView updateStudentArray:self.studentListArray];
         [self.studentVideoListView updateStudentArray:self.studentListArray];
     }
@@ -409,27 +400,21 @@
     NSLog(@"joinchannel success");
 }
 
-#pragma mark --------------- RTM Delegate -----------
-- (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
-    NSDictionary *dict =  [DataTypeManager dictionaryWithJsonString:message.text];
-    AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
-    messageModel.isSelfSend = NO;
-    [self.messageView addMessageModel:messageModel];
-}
-
-- (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
-    [self parsingChannelAttr:attributes];
-}
-
 - (void)muteAudioStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalAudioStream:stream];
-    [self setChannelAttrsWithVideo:!self.isMuteVideo audio:!stream];
-    self.isMuteAudio = stream;
+
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.audio = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 - (void)muteVideoStream:(BOOL)stream {
     [self.rtcEngineKit muteLocalVideoStream:stream];
-    [self setChannelAttrsWithVideo:!stream audio:!self.isMuteAudio];
-    self.isMuteVideo = stream;
+    
+    AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
+    currentStuModel.video = !stream ? 1 : 0;
+    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 #pragma mark  --------  Mandatory landscape -------
@@ -458,5 +443,29 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"MCViewController dealloc");
+}
+
+#pragma mark SignalDelegate
+- (void)onUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel {
+    [self.messageView addMessageModel:roomMessageModel];
+}
+- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel {
+    [self updateTeacherStatusWithModel: teactherModel];
+}
+- (void)onUpdateStudentsAttribute:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+    self.studentListArray = studentInfoModels;
+    
+    [self.studentListView updateStudentArray:self.studentListArray];
+    [self.studentVideoListView updateStudentArray:self.studentListArray];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.userId];
+    NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentListArray filteredArrayUsingPredicate:predicate];
+    if(filteredArray.count > 0){
+        AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+        if([canvasStudentModel.uid isEqualToString:self.userId]){
+            [self.rtcEngineKit muteLocalVideoStream:canvasStudentModel.video == 0 ? YES : NO];
+            [self.rtcEngineKit muteLocalAudioStream:canvasStudentModel.audio == 0 ? YES : NO];
+        }
+    }
 }
 @end

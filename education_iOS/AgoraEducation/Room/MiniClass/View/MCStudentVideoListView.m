@@ -12,7 +12,7 @@
 @interface MCStudentVideoListView ()<UICollectionViewDataSource,UICollectionViewDelegate>
 @property (nonatomic, strong) UICollectionView *videoListView;
 @property (nonatomic, strong) NSLayoutConstraint *collectionViewLeftCon;
-@property (nonatomic, strong) NSMutableArray *studentArray;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentArray;
 @end
 
 @implementation MCStudentVideoListView
@@ -29,7 +29,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self setUpView];
-    self.studentArray = [NSMutableArray array];
+    self.studentArray = [NSArray array];
 }
 
 - (void)setUpView {
@@ -58,7 +58,7 @@
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     MCStudentVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
-    cell.userModel = self.studentArray[indexPath.row];
+    cell.userModel = self.studentArray[indexPath.row].studentModel;
     if (self.studentVideoList) {
         self.studentVideoList(cell.videoCanvasView,indexPath);
     }
@@ -73,9 +73,8 @@
     return CGSizeMake(95, 70);
 }
 
-- (void)updateStudentArray:(NSMutableArray *)studentArray {
-    [self.studentArray removeAllObjects];
-    [self.studentArray addObjectsFromArray:studentArray];
+- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)studentArray {
+    self.studentArray = [NSArray arrayWithArray:studentArray];
     [self.videoListView reloadData];
 }
 

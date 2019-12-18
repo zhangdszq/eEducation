@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEMessageView : UIView
+
 - (void)addMessageModel:(AERoomMessageModel *)model;
 - (void)updateTableView;
 @end
