@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "WhiteManager.h"
+//#import "WhiteManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
