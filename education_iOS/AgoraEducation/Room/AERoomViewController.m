@@ -19,7 +19,7 @@
 
 #import "SignalManager.h"
 
-@interface AERoomViewController ()<WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate>
+@interface AERoomViewController ()<EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate, WhitePlayDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
@@ -65,11 +65,9 @@
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
     
     WEAK(self)
-    [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:nil];
+    [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:self];
     [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
-        
-        [weakself.view layoutIfNeeded];
-        [weakself.educationManager refreshWhiteViewSize];
+
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
             weakself.sceneCount = sceneCount;
@@ -136,14 +134,14 @@
 }
 
 #pragma mark ---------------------------------------- Delegate ----------------------------------------
-- (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
-    if (modifyState.sceneState) {
-        self.sceneIndex = modifyState.sceneState.index;
-        self.sceneCount = modifyState.sceneState.scenes.count;
-        [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", self.sceneIndex + 1, self.sceneCount]];
-        
-        [self.educationManager moveWhiteToContainer:self.sceneIndex];
-    }
+- (void)whiteRoomStateChanged {
+    WEAK(self)
+    [self.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
+        weakself.sceneCount = sceneCount;
+        weakself.sceneIndex = sceneIndex;
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        [weakself.educationManager moveWhiteToContainer:sceneIndex];
+    }];
 }
 
 - (void)previousPage {

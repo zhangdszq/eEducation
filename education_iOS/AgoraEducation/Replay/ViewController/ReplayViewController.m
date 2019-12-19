@@ -44,7 +44,6 @@
     
 //    for video test
 //    self.videoPath = @"https://white-pan.oss-cn-shanghai.aliyuncs.com/101/oceans.mp4";
-
     [self setupView];
     [self initData];
     [self setupWhiteBoard];
@@ -108,9 +107,10 @@
         if(weakself.videoPath != nil && weakself.videoPath.length > 0 && avPlayer != nil) {
             [weakself.videoView setAVPlayer: avPlayer];
         }
-        
-        [weakself.view layoutIfNeeded];
-        [weakself.educationManager refreshWhiteViewSize];
+
+        [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
+            [weakself.educationManager moveWhiteToContainer:sceneIndex];
+        }];
         
     } completeFailBlock:^(NSError * _Nullable error) {
         

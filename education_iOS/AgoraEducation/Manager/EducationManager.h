@@ -39,6 +39,12 @@
  */
 - (void)whitePlayerError:(NSError * _Nullable)error;
 
+/**
+ 房间中RoomState属性，发生变化时，会触发该回调。
+ @param modifyState 发生变化的 RoomState 内容
+ */
+- (void)whiteRoomStateChanged;
+
 @end
 
 NS_ASSUME_NONNULL_BEGIN
