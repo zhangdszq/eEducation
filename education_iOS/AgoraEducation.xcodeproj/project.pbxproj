@@ -71,18 +71,18 @@
 		1AFD47B8237EAEA6005AA56C /* MCStudentListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD47B7237EAEA6005AA56C /* MCStudentListView.m */; };
 		1AFD47BB237EB06F005AA56C /* MCStudentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD47BA237EB06F005AA56C /* MCStudentViewCell.m */; };
 		1AFD47BD237EB079005AA56C /* MCStudentViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AFD47BC237EB079005AA56C /* MCStudentViewCell.xib */; };
+		7820550823AA4FB400FF1930 /* ReplayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7820550723AA4FB400FF1930 /* ReplayerModel.m */; };
 		787E7A3823A9FE97005F8F0C /* LoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2723A9FE97005F8F0C /* LoadingView.m */; };
 		787E7A3923A9FE97005F8F0C /* ReplayControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2823A9FE97005F8F0C /* ReplayControlView.m */; };
 		787E7A3A23A9FE97005F8F0C /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2923A9FE97005F8F0C /* SliderView.m */; };
 		787E7A3B23A9FE97005F8F0C /* ReplayControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A2B23A9FE97005F8F0C /* ReplayControlView.xib */; };
 		787E7A3C23A9FE97005F8F0C /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A2D23A9FE97005F8F0C /* LoadingView.xib */; };
 		787E7A3D23A9FE97005F8F0C /* EduButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3023A9FE97005F8F0C /* EduButton.m */; };
-		787E7A3E23A9FE97005F8F0C /* ReplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3323A9FE97005F8F0C /* ReplayViewController.m */; };
-		787E7A3F23A9FE97005F8F0C /* ReplayNoVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A3423A9FE97005F8F0C /* ReplayNoVideoViewController.xib */; };
-		787E7A4023A9FE97005F8F0C /* ReplayNoVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3523A9FE97005F8F0C /* ReplayNoVideoViewController.m */; };
-		787E7A4123A9FE97005F8F0C /* ReplayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A3723A9FE97005F8F0C /* ReplayViewController.xib */; };
+		787E7A3F23A9FE97005F8F0C /* ReplayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A3423A9FE97005F8F0C /* ReplayViewController.xib */; };
+		787E7A4023A9FE97005F8F0C /* ReplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3523A9FE97005F8F0C /* ReplayViewController.m */; };
 		787E7A4723A9FEFF005F8F0C /* EducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4423A9FEFF005F8F0C /* EducationManager.m */; };
 		787E7A4823A9FEFF005F8F0C /* SignalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4523A9FEFF005F8F0C /* SignalManager.m */; };
+		787E7A4B23A9FF1E005F8F0C /* WhiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */; };
 		78F0C6DE2399FBCB00772378 /* MessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6DD2399FBCB00772378 /* MessageModel.m */; };
 		78F0C6E1239A2AB600772378 /* RolesInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6E0239A2AB600772378 /* RolesInfoModel.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraEducation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */; };
@@ -229,6 +229,8 @@
 		40B28313D80C71B4DA8D643D /* Pods-AgoraEducation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.debug.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.release.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.release.xcconfig"; sourceTree = "<group>"; };
 		76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AgoraEducation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7820550623AA4FB400FF1930 /* ReplayerModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReplayerModel.h; sourceTree = "<group>"; };
+		7820550723AA4FB400FF1930 /* ReplayerModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReplayerModel.m; sourceTree = "<group>"; };
 		787E7A2723A9FE97005F8F0C /* LoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadingView.m; sourceTree = "<group>"; };
 		787E7A2823A9FE97005F8F0C /* ReplayControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayControlView.m; sourceTree = "<group>"; };
 		787E7A2923A9FE97005F8F0C /* SliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderView.m; sourceTree = "<group>"; };
@@ -239,16 +241,15 @@
 		787E7A2E23A9FE97005F8F0C /* LoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadingView.h; sourceTree = "<group>"; };
 		787E7A2F23A9FE97005F8F0C /* ReplayControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayControlView.h; sourceTree = "<group>"; };
 		787E7A3023A9FE97005F8F0C /* EduButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EduButton.m; sourceTree = "<group>"; };
-		787E7A3223A9FE97005F8F0C /* ReplayNoVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayNoVideoViewController.h; sourceTree = "<group>"; };
-		787E7A3323A9FE97005F8F0C /* ReplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayViewController.m; sourceTree = "<group>"; };
-		787E7A3423A9FE97005F8F0C /* ReplayNoVideoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReplayNoVideoViewController.xib; sourceTree = "<group>"; };
-		787E7A3523A9FE97005F8F0C /* ReplayNoVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayNoVideoViewController.m; sourceTree = "<group>"; };
-		787E7A3623A9FE97005F8F0C /* ReplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayViewController.h; sourceTree = "<group>"; };
-		787E7A3723A9FE97005F8F0C /* ReplayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReplayViewController.xib; sourceTree = "<group>"; };
+		787E7A3223A9FE97005F8F0C /* ReplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayViewController.h; sourceTree = "<group>"; };
+		787E7A3423A9FE97005F8F0C /* ReplayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReplayViewController.xib; sourceTree = "<group>"; };
+		787E7A3523A9FE97005F8F0C /* ReplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayViewController.m; sourceTree = "<group>"; };
 		787E7A4323A9FEFF005F8F0C /* SignalManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalManager.h; sourceTree = "<group>"; };
 		787E7A4423A9FEFF005F8F0C /* EducationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EducationManager.m; sourceTree = "<group>"; };
 		787E7A4523A9FEFF005F8F0C /* SignalManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalManager.m; sourceTree = "<group>"; };
 		787E7A4623A9FEFF005F8F0C /* EducationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EducationManager.h; sourceTree = "<group>"; };
+		787E7A4923A9FF1E005F8F0C /* WhiteManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WhiteManager.h; sourceTree = "<group>"; };
+		787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WhiteManager.m; sourceTree = "<group>"; };
 		78F0C6DC2399FBCB00772378 /* MessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageModel.h; sourceTree = "<group>"; };
 		78F0C6DD2399FBCB00772378 /* MessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageModel.m; sourceTree = "<group>"; };
 		78F0C6DF239A2AB600772378 /* RolesInfoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RolesInfoModel.h; sourceTree = "<group>"; };
@@ -607,12 +608,9 @@
 		787E7A3123A9FE97005F8F0C /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				787E7A3223A9FE97005F8F0C /* ReplayNoVideoViewController.h */,
-				787E7A3523A9FE97005F8F0C /* ReplayNoVideoViewController.m */,
-				787E7A3423A9FE97005F8F0C /* ReplayNoVideoViewController.xib */,
-				787E7A3623A9FE97005F8F0C /* ReplayViewController.h */,
-				787E7A3323A9FE97005F8F0C /* ReplayViewController.m */,
-				787E7A3723A9FE97005F8F0C /* ReplayViewController.xib */,
+				787E7A3223A9FE97005F8F0C /* ReplayViewController.h */,
+				787E7A3523A9FE97005F8F0C /* ReplayViewController.m */,
+				787E7A3423A9FE97005F8F0C /* ReplayViewController.xib */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -624,6 +622,10 @@
 				787E7A4523A9FEFF005F8F0C /* SignalManager.m */,
 				787E7A4623A9FEFF005F8F0C /* EducationManager.h */,
 				787E7A4423A9FEFF005F8F0C /* EducationManager.m */,
+				7820550623AA4FB400FF1930 /* ReplayerModel.h */,
+				7820550723AA4FB400FF1930 /* ReplayerModel.m */,
+				787E7A4923A9FF1E005F8F0C /* WhiteManager.h */,
+				787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -760,14 +762,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A44BE7722BF863000766274 /* Main.storyboard in Resources */,
-				787E7A4123A9FE97005F8F0C /* ReplayViewController.xib in Resources */,
 				1A6BC51023603F7700FE8289 /* EEWhiteboardTool.xib in Resources */,
 				787E7A3B23A9FE97005F8F0C /* ReplayControlView.xib in Resources */,
 				1A893A022361752400C2398A /* BCNavigationView.xib in Resources */,
 				1A05ADA7237E55630041F27B /* Room.storyboard in Resources */,
 				1AD4E9A62360092A00C415BF /* EEPageControlView.xib in Resources */,
 				1A61CB7F2387CE2C003D9E81 /* BCStudentVideoView.xib in Resources */,
-				787E7A3F23A9FE97005F8F0C /* ReplayNoVideoViewController.xib in Resources */,
+				787E7A3F23A9FE97005F8F0C /* ReplayViewController.xib in Resources */,
 				1A05AD96237BC08B0041F27B /* OTOStudentView.xib in Resources */,
 				1A05AD91237BBB090041F27B /* OTOTeacherView.xib in Resources */,
 				787E7A3C23A9FE97005F8F0C /* LoadingView.xib in Resources */,
@@ -870,8 +871,9 @@
 				1A61CB812387CE35003D9E81 /* BCStudentVideoView.m in Sources */,
 				1A44BE7222BF863000766274 /* AgoraBaseRequest.m in Sources */,
 				1A8EEB68237ABBBD00A809B1 /* EENavigationView.m in Sources */,
-				787E7A4023A9FE97005F8F0C /* ReplayNoVideoViewController.m in Sources */,
+				787E7A4023A9FE97005F8F0C /* ReplayViewController.m in Sources */,
 				1A44BE7322BF863000766274 /* AgoraHttpRequest.m in Sources */,
+				7820550823AA4FB400FF1930 /* ReplayerModel.m in Sources */,
 				1AFD47B8237EAEA6005AA56C /* MCStudentListView.m in Sources */,
 				1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */,
 				1AFD47B5237E9E25005AA56C /* MCSegmentedView.m in Sources */,
@@ -887,6 +889,7 @@
 				1A226C44236A7C1B0024D984 /* AEStudentModel.m in Sources */,
 				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
 				1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */,
+				787E7A4B23A9FF1E005F8F0C /* WhiteManager.m in Sources */,
 				1AD4E99B235F100400C415BF /* BCSegmentedView.m in Sources */,
 				1A44BE8322BFA97400766274 /* AERoomMessageModel.m in Sources */,
 				1A2FFA0D237261FF0049E49F /* UIView+EEBadge.m in Sources */,
@@ -900,7 +903,6 @@
 				787E7A3A23A9FE97005F8F0C /* SliderView.m in Sources */,
 				787E7A4823A9FEFF005F8F0C /* SignalManager.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,
-				787E7A3E23A9FE97005F8F0C /* ReplayViewController.m in Sources */,
 				1A6BC50E2360396B00FE8289 /* EEWhiteboardTool.m in Sources */,
 				1A05AD99237D93600041F27B /* MCStudentVideoListView.m in Sources */,
 			);

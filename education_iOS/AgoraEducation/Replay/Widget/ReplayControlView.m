@@ -50,7 +50,7 @@
     self.clipsToBounds = YES;
     
     self.sliderView.delegate = self;
-        self.sliderView.thumbSize = CGSizeMake(50, 50);
+    self.sliderView.thumbSize = CGSizeMake(50, 50);
     self.sliderView.maximumTrackTintColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.3];
     self.sliderView.bufferTrackTintColor  = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5];
     self.sliderView.minimumTrackTintColor = [UIColor colorWithRed:68/255.0 green:162/255.0 blue:252/255.0 alpha:1];

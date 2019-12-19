@@ -9,7 +9,6 @@
 #import "EEMessageView.h"
 #import "EEMessageViewCell.h"
 #import "ReplayViewController.h"
-#import "ReplayNoVideoViewController.h"
 
 @interface EEMessageView ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) UITableView *messageTableView;
@@ -52,6 +51,7 @@
     
     for (AERoomMessageModel *messageModel in self.messageArray) {
         
+        // for test
 //        messageModel.link = @"/replay/80d1a353c68b4db7a3284f9a02835c27/1576549172877/1576549193735";
         if(messageModel.link == nil){
             continue;
@@ -120,29 +120,16 @@
         return;
     }
     
-    UIViewController *currrentVC;
-    if(messageModel.videoPath == nil){
-        
-        ReplayNoVideoViewController *vc = [[ReplayNoVideoViewController alloc] initWithNibName:@"ReplayNoVideoViewController" bundle:nil];
-        vc.roomid = messageModel.roomid;
-        vc.startTime = messageModel.startTime;
-        vc.endTime = messageModel.endTime;
-        currrentVC = vc;
-    } else {
-        
-        ReplayViewController *vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
-        vc.roomid = messageModel.roomid;
-        vc.startTime = messageModel.startTime;
-        vc.endTime = messageModel.endTime;
-        vc.videoPath = messageModel.videoPath;
-        currrentVC = vc;
-    }
-    
-    currrentVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    ReplayViewController *vc = [[ReplayViewController alloc] initWithNibName:@"ReplayViewController" bundle:nil];
+    vc.roomid = messageModel.roomid;
+    vc.startTime = messageModel.startTime;
+    vc.endTime = messageModel.endTime;
+    vc.videoPath = messageModel.videoPath;
+    vc.modalPresentationStyle = UIModalPresentationFullScreen;
     UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
     UINavigationController *nvc = (UINavigationController*)window.rootViewController;
     if(nvc != nil){
-        [nvc.visibleViewController presentViewController:currrentVC animated:YES completion:nil];
+        [nvc.visibleViewController presentViewController:vc animated:YES completion:nil];
     }
     return;
 }

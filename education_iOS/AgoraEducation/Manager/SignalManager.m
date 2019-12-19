@@ -188,6 +188,7 @@ static SignalManager *manager = nil;
 }
 
 -(void)leaveChannel {
+    NSLog(@"leaveChannel self.channelName:%@ uid:%@", self.channelName, self.messageModel.uid);
     if(self.channelName != nil){
         
         SignalManager.shareManager.messageDelegate = nil;

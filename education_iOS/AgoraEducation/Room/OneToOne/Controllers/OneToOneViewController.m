@@ -268,13 +268,13 @@
 }
 
 - (void)teacherMuteStudentVideo:(BOOL)mute {
-    [self.rtcEngineKit muteLocalVideoStream:mute];
+    [self.rtcEngineKit enableLocalVideo:!mute];
     self.studentView.defaultImageView.hidden = mute ? NO : YES;
     [self.studentView updateCameraImageWithLocalVideoMute:mute];
 }
 
 - (void)teacherMuteStudentAudio:(BOOL)mute {
-    [self.rtcEngineKit muteLocalAudioStream:mute];
+    [self.rtcEngineKit enableLocalAudio:!mute];
     [self.studentView updateMicImageWithLocalVideoMute:mute];
 }
 
@@ -360,7 +360,7 @@
 }
 
 - (void)muteVideoStream:(BOOL)stream {
-    [self.rtcEngineKit muteLocalVideoStream:stream];
+    [self.rtcEngineKit enableLocalVideo:!stream];
     self.studentView.defaultImageView.hidden = stream ? NO : YES;
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
@@ -370,7 +370,7 @@
 }
 
 - (void)muteAudioStream:(BOOL)stream {
-    [self.rtcEngineKit muteLocalAudioStream:stream];
+    [self.rtcEngineKit enableLocalAudio:stream];
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;

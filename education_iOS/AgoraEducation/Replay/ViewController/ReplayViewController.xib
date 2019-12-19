@@ -13,7 +13,7 @@
                 <outlet property="backButton" destination="jzw-Yu-DnS" id="I0x-Ec-Phb"/>
                 <outlet property="controlView" destination="Hi6-0l-v7Z" id="FBx-R7-jXe"/>
                 <outlet property="defaultTeacherImage" destination="0Kj-Ro-l3V" id="C7y-ig-Ovi"/>
-                <outlet property="loadingView" destination="lck-qe-bji" id="SnI-99-65m"/>
+                <outlet property="loadingView" destination="e84-YP-Tqr" id="zHJ-Tb-3YF"/>
                 <outlet property="playBackgroundView" destination="hld-Yf-Sot" id="ZZ0-8g-KE8"/>
                 <outlet property="playButton" destination="Dv9-qi-6m2" id="8T0-jA-hCa"/>
                 <outlet property="teacherView" destination="aA1-yU-h8j" id="pcT-WC-BtG"/>
@@ -50,19 +50,20 @@
                                 <action selector="onPlayClick:" destination="-1" eventType="touchUpInside" id="3mj-WG-xcP"/>
                             </connections>
                         </button>
-                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loading" translatesAutoresizingMaskIntoConstraints="NO" id="lck-qe-bji">
-                            <rect key="frame" x="253" y="167" width="80" height="80"/>
+                        <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e84-YP-Tqr" customClass="LoadingView">
+                            <rect key="frame" x="231" y="145" width="124" height="124"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="80" id="QdY-OL-3io"/>
-                                <constraint firstAttribute="width" constant="80" id="bhb-OH-w1i"/>
+                                <constraint firstAttribute="height" constant="124" id="auy-5w-vNp"/>
+                                <constraint firstAttribute="width" constant="124" id="t9c-Ou-Yv0"/>
                             </constraints>
-                        </imageView>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstItem="e84-YP-Tqr" firstAttribute="centerX" secondItem="FNl-TS-YFc" secondAttribute="centerX" id="1Rm-IL-74M"/>
                         <constraint firstAttribute="trailing" secondItem="1V9-dC-Fa3" secondAttribute="trailing" id="BH1-Im-Jee"/>
                         <constraint firstItem="hld-Yf-Sot" firstAttribute="top" secondItem="FNl-TS-YFc" secondAttribute="top" id="GjL-rS-bbx"/>
-                        <constraint firstItem="lck-qe-bji" firstAttribute="centerX" secondItem="FNl-TS-YFc" secondAttribute="centerX" id="KTY-xx-aGP"/>
                         <constraint firstItem="hld-Yf-Sot" firstAttribute="leading" secondItem="FNl-TS-YFc" secondAttribute="leading" id="PBw-bZ-H7R"/>
                         <constraint firstAttribute="bottom" secondItem="hld-Yf-Sot" secondAttribute="bottom" id="R4T-ld-D2q"/>
                         <constraint firstAttribute="bottom" secondItem="1V9-dC-Fa3" secondAttribute="bottom" id="XT6-un-lfI"/>
@@ -71,7 +72,7 @@
                         <constraint firstItem="Dv9-qi-6m2" firstAttribute="centerX" secondItem="FNl-TS-YFc" secondAttribute="centerX" id="fpY-Mx-tGh"/>
                         <constraint firstItem="1V9-dC-Fa3" firstAttribute="leading" secondItem="FNl-TS-YFc" secondAttribute="leading" id="gJc-iZ-aeI"/>
                         <constraint firstAttribute="trailing" secondItem="hld-Yf-Sot" secondAttribute="trailing" id="phI-M1-9s6"/>
-                        <constraint firstItem="lck-qe-bji" firstAttribute="centerY" secondItem="FNl-TS-YFc" secondAttribute="centerY" id="u24-16-Lyo"/>
+                        <constraint firstItem="e84-YP-Tqr" firstAttribute="centerY" secondItem="FNl-TS-YFc" secondAttribute="centerY" id="wv9-gZ-BP6"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aA1-yU-h8j">
@@ -93,13 +94,14 @@
                         <constraint firstItem="0Kj-Ro-l3V" firstAttribute="centerX" secondItem="aA1-yU-h8j" secondAttribute="centerX" id="ySX-bd-5y0"/>
                     </constraints>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jzw-Yu-DnS" customClass="EduButton">
+                <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jzw-Yu-DnS" customClass="EduButton">
                     <rect key="frame" x="54" y="10" width="35" height="35"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="35" id="1Vk-Ei-HL7"/>
                         <constraint firstAttribute="height" constant="35" id="31z-jn-HWh"/>
                     </constraints>
-                    <state key="normal" title="Button"/>
+                    <state key="normal" backgroundImage="back"/>
                     <connections>
                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="ON7-xp-Siw"/>
                     </connections>
@@ -141,8 +143,8 @@
         </view>
     </objects>
     <resources>
+        <image name="back" width="17.5" height="17.5"/>
         <image name="big_play" width="40" height="40"/>
-        <image name="loading" width="50" height="50"/>
         <image name="message" width="65" height="65"/>
         <image name="replay_teacher" width="48" height="48"/>
     </resources>

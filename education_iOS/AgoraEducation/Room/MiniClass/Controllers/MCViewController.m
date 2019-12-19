@@ -401,7 +401,7 @@
 }
 
 - (void)muteAudioStream:(BOOL)stream {
-    [self.rtcEngineKit muteLocalAudioStream:stream];
+    [self.rtcEngineKit enableLocalAudio:!stream];
 
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;
@@ -409,7 +409,7 @@
     [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 - (void)muteVideoStream:(BOOL)stream {
-    [self.rtcEngineKit muteLocalVideoStream:stream];
+    [self.rtcEngineKit enableLocalVideo:!stream];
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
     currentStuModel.video = !stream ? 1 : 0;
@@ -463,8 +463,8 @@
     if(filteredArray.count > 0){
         AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
         if([canvasStudentModel.uid isEqualToString:self.userId]){
-            [self.rtcEngineKit muteLocalVideoStream:canvasStudentModel.video == 0 ? YES : NO];
-            [self.rtcEngineKit muteLocalAudioStream:canvasStudentModel.audio == 0 ? YES : NO];
+            [self.rtcEngineKit enableLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
+            [self.rtcEngineKit enableLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
         }
     }
 }
