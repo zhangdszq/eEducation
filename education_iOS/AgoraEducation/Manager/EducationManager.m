@@ -181,9 +181,7 @@ static EducationManager *manager = nil;
         [self.whiteManager moveCameraToContainer:size];
     }
 }
-- (void)moveWhiteCameraToContainer:(CGSize)size {
-    [self.whiteManager moveCameraToContainer:size];
-}
+
 - (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler {
     [self.whiteManager setSceneIndex:index completionHandler:completionHandler];
 }
@@ -305,6 +303,18 @@ static EducationManager *manager = nil;
 - (void)combineVideoPlayerError:(NSError *)error {
     if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerError:)]) {
         [self.whitePlayerDelegate whitePlayerError: error];
+    }
+}
+
+/**
+ 房间中RoomState属性，发生变化时，会触发该回调。
+ @param modifyState 发生变化的 RoomState 内容
+ */
+- (void)fireRoomStateChanged:(WhiteRoomState *_Nullable)modifyState {
+    if (modifyState.sceneState) {
+        if([self.whitePlayerDelegate respondsToSelector:@selector(whiteRoomStateChanged)]) {
+            [self.whitePlayerDelegate whiteRoomStateChanged];
+        }
     }
 }
 

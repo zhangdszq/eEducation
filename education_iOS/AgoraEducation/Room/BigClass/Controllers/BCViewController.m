@@ -459,7 +459,7 @@
 - (void)verticalScreenConstraints {
     self.chatTextFiled.hidden = self.segmentedIndex == 0 ? YES : NO;
     self.messageView.hidden = self.segmentedIndex == 0 ? YES : NO;
-    self.whiteboardView.hidden = self.segmentedIndex == 0 ? NO : YES;
+//    self.whiteboardView.hidden = self.segmentedIndex == 0 ? NO : YES;
     self.lineView.hidden = YES;
     self.segmentedView.hidden = NO;
     self.pageControlView.hidden = self.teacherInRoom ? NO : YES;
@@ -484,7 +484,7 @@
     self.studentViewWidthCon.constant = 85;
     self.studentViewHeightCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
-    [self setBoardViewFrame:CGRectMake(0, 0, MIN(kScreenWidth, kScreenHeight), MAX(kScreenHeight, kScreenWidth) - 257)];
+    [self setBoardViewFrame:CGRectMake(0, 0, MIN(kScreenWidth, kScreenHeight), MAX(kScreenHeight, kScreenWidth) - 257 - navigationBarHeight)];
 }
 #pragma mark ---------------------------- Notification ----------------------------
 - (void)addNotification {
@@ -507,7 +507,7 @@
 
 - (void)keyboardWillBeHiden:(NSNotification *)notification {
     self.textFiledBottomConstraint.constant = 0;
-    self.chatTextFiledWidthCon .constant = self.isLandscape ? kLandscapeViewWidth : MIN(kScreenHeight, kScreenWidth);
+    self.chatTextFiledWidthCon.constant = self.isLandscape ? kLandscapeViewWidth : MIN(kScreenHeight, kScreenWidth);
 }
 
 #pragma mark ---------------------------- Delegate ----------------------------
