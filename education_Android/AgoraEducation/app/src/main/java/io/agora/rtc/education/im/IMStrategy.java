@@ -16,7 +16,11 @@ public interface IMStrategy {
 
     void muteLocalAudio(boolean isMute);
 
+    void muteLocalChat(boolean isMute);
+
     ChannelMsg sendChannelMessage(String text);
 
     void sendMessage(String peerId, int cmd);
+
+    void release();
 }

@@ -22,6 +22,10 @@ import java.util.HashMap;
 
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
+import io.agora.rtc.education.data.ChannelDataReadOnly;
+import io.agora.rtc.education.data.bean.Teacher;
+import io.agora.rtc.education.im.IMCmd;
+import io.agora.rtc.education.im.IMStrategy;
 import io.agora.rtc.education.room.view.ColorSelectView;
 import io.agora.rtc.education.room.whiteboard.SceneHelper;
 import io.agora.rtc.education.room.whiteboard.WhiteboardDelegate;
@@ -149,6 +153,10 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         mLayoutHandUp.setSelected(isAccept);
     }
 
+    public boolean isApplyingOrLinking() {
+        return mLayoutHandUp.isSelected();
+    }
+
     public interface JoinRoomCallBack {
         void onSuccess();
 
@@ -227,9 +235,8 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         @Override
         public void run() {
             mLayoutHandUp.setSelected(false);
-//            Teacher teacher = mChannelData.getTeacher();
-//            if (teacher != null) {
-//                mImStrategy.sendMessage(String.valueOf(teacher.getUid()), IMCmd.CANCEL);
+//            if (handUpOperateListener != null) {
+//                handUpOperateListener.onCancel();
 //            }
         }
     };
