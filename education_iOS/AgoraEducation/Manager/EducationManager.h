@@ -51,15 +51,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)joinWhiteRoomWithUuid:(NSString*)uuid completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock;
 - (void)createWhiteReplayerWithModel:(ReplayerModel *)model completeSuccessBlock:(void (^) (WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock;
 - (void)disableWhiteDeviceInputs:(BOOL)disable;
-- (void)setWhiteMemberInput:(nonnull WhiteMemberState *)memberState;
+- (void)setWhiteStrokeColor:(NSArray<NSNumber *>*)strokeColor;
+- (void)setWhiteApplianceName:(NSString *)applianceName;
 - (void)refreshWhiteViewSize;
-- (void)moveWhiteCameraToContainer:(CGSize)size;
+- (void)moveWhiteToContainer:(NSInteger)sceneIndex;
 - (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler;
 - (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler;
 - (void)playWhite;
 - (void)pauseWhite;
 - (void)stopWhite;
 - (NSTimeInterval)whiteTotleTimeDuration;
+- (void)currentWhiteScene:(void (^)(NSInteger sceneCount, NSInteger sceneIndex))completionBlock;
+
 
 - (void)releaseResources;
 

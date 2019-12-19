@@ -207,11 +207,6 @@
 
 - (void)setUpView {
     [self addWhiteBoardViewToView:self.whiteboardView];
-    self.view.backgroundColor = [UIColor whiteColor];
-    if (@available(iOS 11, *)) {
-    } else {
-        self.automaticallyAdjustsScrollViewInsets = NO;
-    }
     self.handUpButton.layer.borderWidth = 1.f;
     self.handUpButton.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
@@ -345,7 +340,7 @@
             [self stateBarHidden:NO];
             [self verticalScreenConstraints];
             [self.view layoutIfNeeded];
-            [self.room refreshViewSize];
+            [self.educationManager refreshWhiteViewSize];
         }
             break;
         case UIDeviceOrientationLandscapeLeft:
@@ -354,7 +349,7 @@
             [self stateBarHidden:YES];
             [self landscapeScreenConstraints];
             [self.view layoutIfNeeded];
-            [self.room refreshViewSize];
+            [self.educationManager refreshWhiteViewSize];
         }
             break;
         default:
@@ -458,7 +453,7 @@
     self.studentViewWidthCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
     CGFloat boardViewWidth = isIphoneX ? MAX(kScreenHeight, kScreenWidth) - 311 : MAX(kScreenHeight, kScreenWidth) - kLandscapeViewWidth;
-    self.boardView.frame = CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 30);
+    [self setBoardViewFrame:CGRectMake(0, 0,boardViewWidth , MIN(kScreenWidth, kScreenHeight) - 30)];
 }
 
 - (void)verticalScreenConstraints {
@@ -489,7 +484,7 @@
     self.studentViewWidthCon.constant = 85;
     self.studentViewHeightCon.constant = 120;
     [self.view bringSubviewToFront:self.studentVideoView];
-    self.boardView.frame = CGRectMake(0, 0, MIN(kScreenWidth, kScreenHeight), MAX(kScreenHeight, kScreenWidth) - 257);
+    [self setBoardViewFrame:CGRectMake(0, 0, MIN(kScreenWidth, kScreenHeight), MAX(kScreenHeight, kScreenWidth) - 257)];
 }
 #pragma mark ---------------------------- Notification ----------------------------
 - (void)addNotification {
@@ -553,9 +548,8 @@
             }];
         }
         [weakself.rtcEngineKit leaveChannel:nil];
-        [weakself.room disconnect:^{
-        }];
         [weakself removeTeacherObserver];
+        [weakself.educationManager releaseResources];
         [SignalManager.shareManager leaveChannel];
         
         [weakself dismissViewControllerAnimated:YES completion:nil];

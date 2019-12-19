@@ -25,6 +25,9 @@
         
         if(success) {
             weakself.room = room;
+            weakself.whiteMemberState = [WhiteMemberState new];
+            [weakself.room setMemberState:weakself.whiteMemberState];
+            
             if(successBlock != nil){
                 successBlock(room);
             }

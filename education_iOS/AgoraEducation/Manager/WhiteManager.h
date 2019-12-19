@@ -49,12 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WhiteManager : NSObject
 
+@property (nonatomic, weak) id<WhiteManagerDelegate> whiteManagerDelegate;
+
 @property (nonatomic, strong) WhiteSDK * _Nullable whiteSDK;
 @property (nonatomic, strong) WhiteRoom * _Nullable room;
 @property (nonatomic, strong) WhitePlayer * _Nullable player;
 @property (nonatomic, strong) WhiteCombinePlayer * _Nullable combinePlayer;
-
-@property (nonatomic, weak) id<WhiteManagerDelegate> whiteManagerDelegate;
+@property (nonatomic, strong) WhiteMemberState * _Nullable whiteMemberState;
 
 - (void)initWhiteSDKWithBoardView:(WhiteBoardView *)boardView config:(WhiteSdkConfiguration *)config;
 - (void)joinWhiteRoomWithWhiteRoomConfig:(WhiteRoomConfig*)roomConfig completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock;

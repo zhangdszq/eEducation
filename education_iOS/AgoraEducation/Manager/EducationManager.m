@@ -155,11 +155,31 @@ static EducationManager *manager = nil;
 - (void)disableWhiteDeviceInputs:(BOOL)disable {
     [self.whiteManager disableDeviceInputs:disable];
 }
+
+- (void)setWhiteStrokeColor:(NSArray<NSNumber *>*)strokeColor {
+    self.whiteManager.whiteMemberState.strokeColor = strokeColor;
+    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
+}
+
+- (void)setWhiteApplianceName:(NSString *)applianceName {
+    self.whiteManager.whiteMemberState.currentApplianceName = applianceName;
+    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
+}
+
 - (void)setWhiteMemberInput:(nonnull WhiteMemberState *)memberState {
     [self.whiteManager setMemberState:memberState];
 }
 - (void)refreshWhiteViewSize {
     [self.whiteManager refreshViewSize];
+}
+- (void)moveWhiteToContainer:(NSInteger)sceneIndex {
+    WhiteSceneState *sceneState = self.whiteManager.room.sceneState;
+    NSArray<WhiteScene *> *scenes = sceneState.scenes;
+    WhiteScene *scene = scenes[sceneIndex];
+    if (scene.ppt) {
+        CGSize size = CGSizeMake(scene.ppt.width, scene.ppt.height);
+        [self.whiteManager moveCameraToContainer:size];
+    }
 }
 - (void)moveWhiteCameraToContainer:(CGSize)size {
     [self.whiteManager moveCameraToContainer:size];
@@ -199,6 +219,16 @@ static EducationManager *manager = nil;
 
 - (NSTimeInterval)whiteTotleTimeDuration {
     return [self.whiteManager timeDuration];
+}
+
+- (void)currentWhiteScene:(void (^)(NSInteger sceneCount, NSInteger sceneIndex))completionBlock {
+    
+    WhiteSceneState *sceneState = self.whiteManager.room.sceneState;
+    NSArray<WhiteScene *> *scenes = sceneState.scenes;
+    NSInteger sceneIndex = sceneState.index;
+    if(completionBlock != nil){
+        completionBlock(scenes.count, sceneIndex);
+    }
 }
 
 #pragma mark WhiteManagerDelegate
