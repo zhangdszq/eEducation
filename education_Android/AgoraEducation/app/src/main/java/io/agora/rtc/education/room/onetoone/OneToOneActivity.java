@@ -85,7 +85,7 @@ public class OneToOneActivity extends BaseActivity {
                         mLayoutShareVideo.removeAllViews();
                         SurfaceView surfaceView = RtcEngine.CreateRendererView(OneToOneActivity.this);
                         mLayoutShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        mRtcDelegate.bindRemoteRtcVideo(uid, surfaceView);
+                        mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
                     }
                 });
             }
@@ -133,7 +133,12 @@ public class OneToOneActivity extends BaseActivity {
             if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
                     && mChannelData.getTeacher() != null
                     && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
-                mWhiteboardFragment.finishRoomPage();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWhiteboardFragment.finishRoomPage();
+                    }
+                });
             }
         }
 
@@ -146,6 +151,10 @@ public class OneToOneActivity extends BaseActivity {
                     if (teacher == null) {
                         ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
                         mChatroomFragment.setEditTextEnable(true);
+                        mVideoItemTeacher.showVideo(false);
+                        mVideoItemTeacher.setIcVideoSelect(false);
+                        mVideoItemTeacher.setIcAudioState(SpeakerView.STATE_CLOSED);
+                        mVideoItemTeacher.setName("");
                         return;
                     }
                     if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
@@ -179,7 +188,7 @@ public class OneToOneActivity extends BaseActivity {
                         mTimeView.stop();
                     }
 
-                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1);
+                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
                 }
             });
         }
@@ -202,6 +211,12 @@ public class OneToOneActivity extends BaseActivity {
                             break;
                         case IMCmd.UNMUTE_VIDEO:
                             muteLocalVideo(false);
+                            break;
+                        case IMCmd.MUTE_CHAT:
+                            muteLocalChat(true);
+                            break;
+                        case IMCmd.UNMUTE_CAHT:
+                            muteLocalChat(false);
                             break;
                     }
                 }
@@ -231,6 +246,11 @@ public class OneToOneActivity extends BaseActivity {
         mImStrategy.muteLocalVideo(isMute);
         mVideoItemStudent.showVideo(!isMute);
         mVideoItemStudent.setIcVideoSelect(!isMute);
+    }
+
+    private void muteLocalChat(boolean isMute) {
+        mImStrategy.muteLocalChat(isMute);
+        mChatroomFragment.setEditTextEnable(!isMute);
     }
 
     @Override
@@ -290,6 +310,7 @@ public class OneToOneActivity extends BaseActivity {
         Student myAttr = new Student();
         myAttr.audio = 1;
         myAttr.video = 1;
+        myAttr.chat = 1;
         myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
         myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
 
@@ -316,6 +337,8 @@ public class OneToOneActivity extends BaseActivity {
         mWhiteboardFragment.finishRoomPage();
         mImStrategy.leaveChannel();
         mRtcDelegate.leaveChannel();
+        mImStrategy.release();
+        mRtcDelegate.release();
         super.finish();
     }
 

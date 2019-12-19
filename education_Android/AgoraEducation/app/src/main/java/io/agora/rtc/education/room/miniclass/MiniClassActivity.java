@@ -1,7 +1,9 @@
 package io.agora.rtc.education.room.miniclass;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.SurfaceView;
 import android.view.View;
@@ -76,7 +78,6 @@ public class MiniClassActivity extends BaseActivity {
         @Override
         public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
             log.d("onFirstLocalVideoFrame");
-
         }
 
         @Override
@@ -103,7 +104,7 @@ public class MiniClassActivity extends BaseActivity {
                         mLayoutShareVideo.removeAllViews();
                         SurfaceView surfaceView = RtcEngine.CreateRendererView(MiniClassActivity.this);
                         mLayoutShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        mRtcDelegate.bindRemoteRtcVideo(uid, surfaceView);
+                        mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
                     }
                 });
             }
@@ -145,7 +146,12 @@ public class MiniClassActivity extends BaseActivity {
             if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
                     && mChannelData.getTeacher() != null
                     && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
-                mWhiteboardFragment.finishRoomPage();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWhiteboardFragment.finishRoomPage();
+                    }
+                });
             }
         }
 
@@ -190,7 +196,7 @@ public class MiniClassActivity extends BaseActivity {
                             mTimeView.stop();
                         }
 
-                        mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1);
+                        mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
                     }
 
                     List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
@@ -223,6 +229,12 @@ public class MiniClassActivity extends BaseActivity {
                 case IMCmd.UNMUTE_VIDEO:
                     muteLocalVideo(false);
                     break;
+                case IMCmd.MUTE_CHAT:
+                    muteLocalChat(true);
+                    break;
+                case IMCmd.UNMUTE_CAHT:
+                    muteLocalChat(false);
+                    break;
             }
         }
 
@@ -254,7 +266,7 @@ public class MiniClassActivity extends BaseActivity {
             if (user2.account == null) {
                 user2.account = "";
             }
-            if (!user1.account.equals(user2.account) || user1.audio != user2.audio || user1.video != user2.video){
+            if (!user1.account.equals(user2.account) || user1.audio != user2.audio || user1.video != user2.video) {
                 integers.add(i);
             }
         }
@@ -305,6 +317,7 @@ public class MiniClassActivity extends BaseActivity {
         Student myAttr = new Student();
         myAttr.audio = 1;
         myAttr.video = 1;
+        myAttr.chat = 1;
         myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
         myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
 
@@ -318,7 +331,7 @@ public class MiniClassActivity extends BaseActivity {
 
         mChatroomFragment.setImStrategy(mImStrategy);
         mStudentListFrament.setImStrategy(mImStrategy);
-        mStudentListFrament.setMyUid(mChannelData.getMyAttr().uid);
+        mStudentListFrament.setMyUid(myAttr.uid);
 
         String room = intent.getStringExtra(IntentKey.ROOM_NAME_REAL);
         mImStrategy.joinChannel(room);
@@ -365,6 +378,8 @@ public class MiniClassActivity extends BaseActivity {
         mWhiteboardFragment.finishRoomPage();
         mImStrategy.leaveChannel();
         mRtcDelegate.leaveChannel();
+        mImStrategy.release();
+        mRtcDelegate.release();
         super.finish();
     }
 
@@ -376,6 +391,11 @@ public class MiniClassActivity extends BaseActivity {
     private void muteLocalVideo(boolean isMute) {
         mRtcDelegate.muteLocalVideo(isMute);
         mImStrategy.muteLocalVideo(isMute);
+    }
+
+    private void muteLocalChat(boolean isMute) {
+        mImStrategy.muteLocalChat(isMute);
+        mChatroomFragment.setEditTextEnable(!isMute);
     }
 
     public void onClickShowChat(View view) {
