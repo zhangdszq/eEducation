@@ -98,6 +98,18 @@
     [self joinAgoraRtcChannel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
+    if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
+        [self stateBarHidden:YES];
+        [self landscapeScreenConstraints];
+    }else {
+        [self stateBarHidden:NO];
+        [self verticalScreenConstraints];
+    }
+}
+
 - (void)onSignalReceived:(NSNotification *)notification{
     AEP2pMessageModel *messageModel = [notification object];
     
@@ -195,14 +207,6 @@
 
 - (void)setUpView {
     [self addWhiteBoardViewToView:self.whiteboardView];
-    UIDeviceOrientation duration = [[UIDevice currentDevice] orientation];
-    if (duration == UIDeviceOrientationLandscapeLeft || duration == UIDeviceOrientationLandscapeRight) {
-        [self stateBarHidden:YES];
-        [self landscapeScreenConstraints];
-    }else {
-        [self stateBarHidden:NO];
-        [self verticalScreenConstraints];
-    }
     self.view.backgroundColor = [UIColor whiteColor];
     if (@available(iOS 11, *)) {
     } else {
@@ -647,7 +651,7 @@
 
 - (void)muteVideoStream:(BOOL)stream {
 
-    [self.rtcEngineKit muteLocalVideoStream:stream];
+    [self.rtcEngineKit enableLocalVideo:!stream];
     self.studentVideoView.defaultImageView.hidden = stream ? NO : YES;
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
@@ -658,7 +662,7 @@
 
 - (void)muteAudioStream:(BOOL)stream {
     
-    [self.rtcEngineKit muteLocalAudioStream:stream];
+    [self.rtcEngineKit enableLocalAudio:!stream];
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;
@@ -699,8 +703,8 @@
             [self.studentVideoView updateVideoImageWithMuted:canvasStudentModel.video == 0 ? YES : NO];
             [self.studentVideoView updateAudioImageWithMuted:canvasStudentModel.audio == 0 ? YES : NO];
             if([canvasStudentModel.uid isEqualToString:self.userId]){
-                [self.rtcEngineKit muteLocalVideoStream:canvasStudentModel.video == 0 ? YES : NO];
-                [self.rtcEngineKit muteLocalAudioStream:canvasStudentModel.audio == 0 ? YES : NO];
+                [self.rtcEngineKit enableLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
+                [self.rtcEngineKit enableLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
             }
         }
     }

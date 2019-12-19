@@ -8,16 +8,17 @@
 
 #import "EducationManager.h"
 #import "AERTMMessageBody.h"
+#import "AgoraHttpRequest.h"
+
 #import "SignalManager.h"
+#import "WhiteManager.h"
 
-#define kWhiteBoardUrl  @"https://cloudcapiv4.herewhite.com"
-#define kPOSTCreateWhiteBoardUrl [kWhiteBoardUrl stringByAppendingString:@"/room"]
-#define kPOSTJoinWhiteBoardUrl [kWhiteBoardUrl stringByAppendingString:@"/room/join"]
-
-@interface EducationManager()
+@interface EducationManager()<WhiteManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
+@property (nonatomic, strong) WhiteManager *whiteManager;
 
+@property (nonatomic, weak) id<WhitePlayDelegate> whitePlayerDelegate;
 
 @end
 
@@ -31,6 +32,14 @@ static EducationManager *manager = nil;
         manager = [[self alloc]init];
     });
     return manager;
+}
+
+- (instancetype)init {
+    if(self = [super init]) {
+        self.whiteManager = [[WhiteManager alloc] init];
+        
+    }
+    return self;
 }
 
 - (void)initWithMessageModel:(MessageModel*)model completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock {
@@ -55,6 +64,8 @@ static EducationManager *manager = nil;
 }
 
 - (void)sendMessageWithValue:(NSString *)value {
+    
+    
 //    SignalManager.shareManager.currentStuModel =
 //
 //
@@ -62,36 +73,213 @@ static EducationManager *manager = nil;
 //    [SignalManager.shareManager sendMessageWithValue:value];
 }
 
-#pragma mark --whitemanager
-- (void)sdf {
-    WEAK(self)
+#pragma mark WhiteManager
+- (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate {
+    self.whitePlayerDelegate = whitePlayerDelegate;
+    self.whiteManager.whiteManagerDelegate = self;
+    [self.whiteManager initWhiteSDKWithBoardView:boardView config:[WhiteSdkConfiguration defaultConfig]];
+}
+
+- (void)joinWhiteRoomWithUuid:(NSString*)uuid completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock {
     
-//    AgoraHttpRequest POSTWhiteBoardRoomWithUuid
-//        [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
-//            WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-//            [whiteSDK joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
-//                weakself.room = room;
-//
-//    //            [weakself.room setViewMode:WhiteViewModeFollower];
-//
-//                [room refreshViewSize];
-//
-//                [weakself.room disableDeviceInputs:disableDevice];
-//
-//                NSArray<WhiteScene *> *scenes = room.state.sceneState.scenes;
-//                NSInteger sceneIndex = room.state.sceneState.index;
-//                weakself.sceneCount = scenes.count;
-//                weakself.sceneIndex = sceneIndex;
-//                [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-//
-//                WhiteScene *scene = scenes[sceneIndex];
-//                if (scene.ppt) {
-//                    [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
-//                }
-//            }];
-//        } failure:^(NSString * _Nonnull msg) {
-//            NSLog(@"获取失败 %@",msg);
-//        }];
+    WEAK(self)
+    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
+
+        WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
+        [weakself.whiteManager joinWhiteRoomWithWhiteRoomConfig:roomConfig completeSuccessBlock:^(WhiteRoom * _Nullable room) {
+            
+            if(successBlock != nil){
+                successBlock(room);
+            }
+            
+        } completeFailBlock:^(NSError * _Nullable error) {
+            
+            if(failBlock != nil){
+                failBlock(error);
+            }
+        }];
+        
+    } failure:^(NSString * _Nonnull msg) {
+        if(failBlock != nil){
+            failBlock(nil);
+        }
+        NSLog(@"EducationManager Get Room Token Err:%@", msg);
+    }];
+}
+
+- (void)createWhiteReplayerWithModel:(ReplayerModel *)model completeSuccessBlock:(void (^) (WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock {
+
+    WEAK(self)
+    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:model.uuid token:^(NSString * _Nonnull token) {
+
+        WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:model.uuid roomToken:token];
+        NSString *startTime = model.startTime;
+        NSString *endTime = model.endTime;
+        if(model.startTime.length == 13) {
+            startTime = [model.startTime substringToIndex:10];
+        }
+        if(model.endTime.length == 13){
+            endTime = [model.endTime substringToIndex:10];
+        }
+        NSInteger iStartTime = startTime.integerValue;
+        NSInteger iEndTime = endTime.integerValue;
+
+        playerConfig.beginTimestamp = @(iStartTime);
+        playerConfig.duration = @(labs(iEndTime - iStartTime));
+        
+        [weakself.whiteManager createReplayerWithConfig:playerConfig completeSuccessBlock:^(WhitePlayer * _Nullable player) {
+            
+            AVPlayer *avPlayer;
+            if(model.videoPath != nil && model.videoPath.length > 0){
+                avPlayer = [weakself.whiteManager createCombinePlayerWithVideoPath: model.videoPath];
+            }
+            if(successBlock != nil){
+                successBlock(player, avPlayer);
+            }
+            
+        } completeFailBlock:^(NSError * _Nullable error) {
+            
+            if(failBlock != nil){
+                failBlock(error);
+            }
+        }];
+        
+    } failure:^(NSString * _Nonnull msg) {
+        if(failBlock != nil){
+            failBlock(nil);
+        }
+        NSLog(@"EducationManager CreateReplayer Err:%@", msg);
+    }];
+}
+
+- (void)disableWhiteDeviceInputs:(BOOL)disable {
+    [self.whiteManager disableDeviceInputs:disable];
+}
+- (void)setWhiteMemberInput:(nonnull WhiteMemberState *)memberState {
+    [self.whiteManager setMemberState:memberState];
+}
+- (void)refreshWhiteViewSize {
+    [self.whiteManager refreshViewSize];
+}
+- (void)moveWhiteCameraToContainer:(CGSize)size {
+    [self.whiteManager moveCameraToContainer:size];
+}
+- (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler {
+    [self.whiteManager setSceneIndex:index completionHandler:completionHandler];
+}
+- (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler {
+    
+    if(self.whiteManager.combinePlayer != nil) {
+        [self.whiteManager seekToCombineTime:time completionHandler:completionHandler];
+    } else {
+        NSTimeInterval seekTime = CMTimeGetSeconds(time);
+        [self.whiteManager.player seekToScheduleTime:seekTime];
+        if(completionHandler != nil){
+            completionHandler(YES);
+        }
+    }
+}
+- (void)playWhite {
+    if(self.whiteManager.combinePlayer != nil) {
+        [self.whiteManager combinePlay];
+    } else {
+        [self.whiteManager play];
+    }
+}
+- (void)pauseWhite {
+    if(self.whiteManager.combinePlayer != nil) {
+        [self.whiteManager combinePause];
+    } else {
+        [self.whiteManager pause];
+    }
+}
+- (void)stopWhite {
+    [self.whiteManager stop];
+}
+
+- (NSTimeInterval)whiteTotleTimeDuration {
+    return [self.whiteManager timeDuration];
+}
+
+#pragma mark WhiteManagerDelegate
+- (void)phaseChanged:(WhitePlayerPhase)phase {
+    
+    // use nativePlayerDidFinish when videoPath no empty
+    if(self.whiteManager.combinePlayer != nil){
+        return;
+    }
+    
+    if(phase == WhitePlayerPhaseWaitingFirstFrame || phase == WhitePlayerPhaseBuffering){
+        if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerStartBuffering)]) {
+            [self.whitePlayerDelegate whitePlayerStartBuffering];
+        }
+    } else if (phase == WhitePlayerPhasePlaying || phase == WhitePlayerPhasePause) {
+        if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerEndBuffering)]) {
+            [self.whitePlayerDelegate whitePlayerEndBuffering];
+        }
+    } else if(phase == WhitePlayerPhaseEnded) {
+        if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerDidFinish)]) {
+            [self.whitePlayerDelegate whitePlayerDidFinish];
+        }
+    }
+}
+/** 出错暂停 */
+- (void)stoppedWithError:(NSError *)error {
+    
+    // use nativePlayerDidFinish when videoPath no empty
+    if(self.whiteManager.combinePlayer != nil){
+        return;
+    }
+    
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerError:)]) {
+        [self.whitePlayerDelegate whitePlayerError: error];
+    }
+}
+/** 进度时间变化 */
+- (void)scheduleTimeChanged:(NSTimeInterval)time {
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerTimeChanged:)]) {
+        [self.whitePlayerDelegate whitePlayerTimeChanged: time];
+    }
+}
+
+- (void)combinePlayerStartBuffering {
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerStartBuffering)]) {
+        [self.whitePlayerDelegate whitePlayerStartBuffering];
+    }
+}
+
+/**
+ 结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
+ */
+- (void)combinePlayerEndBuffering {
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerDidFinish)]) {
+        [self.whitePlayerDelegate whitePlayerEndBuffering];
+    }
+}
+
+/**
+ NativePlayer 播放结束
+ */
+- (void)nativePlayerDidFinish {
+    
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerEndBuffering)]) {
+        [self.whitePlayerDelegate whitePlayerDidFinish];
+    }
+}
+
+/**
+播放失败
+
+@param error 错误原因
+ */
+- (void)combineVideoPlayerError:(NSError *)error {
+    if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerError:)]) {
+        [self.whitePlayerDelegate whitePlayerError: error];
+    }
+}
+
+- (void)releaseResources {
+    [self.whiteManager releaseResources];
 }
 
 @end
