@@ -55,11 +55,19 @@ public class RtcDelegate {
         rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
     }
 
+    public void bindRemoteRtcVideoFitMode(int uid, SurfaceView surfaceView) {
+        rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_FIT, uid));
+    }
+
     public void changeRoleToBroadcaster() {
         rtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
     }
 
     public void changeRoleToAudience() {
         rtcEngine.setClientRole(Constants.CLIENT_ROLE_AUDIENCE);
+    }
+
+    public void release() {
+        rtcWorker.setRtcEventHandler(null);
     }
 }
