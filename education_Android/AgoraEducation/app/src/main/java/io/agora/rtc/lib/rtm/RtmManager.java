@@ -11,7 +11,9 @@ import java.util.Map;
 import io.agora.rtc.education.BuildConfig;
 import io.agora.rtc.lib.util.LogUtil;
 import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.RemoteInvitation;
 import io.agora.rtm.ResultCallback;
+import io.agora.rtm.RtmCallManager;
 import io.agora.rtm.RtmChannel;
 import io.agora.rtm.RtmChannelListener;
 import io.agora.rtm.RtmClient;
@@ -148,6 +150,39 @@ public class RtmManager {
             }
         });
         changeLoginStatus(LOGIN_STATUS_IDLE);
+
+        RtmCallManager manager = mRtmClient.getRtmCallManager();
+        manager.refuseRemoteInvitation(new RemoteInvitation() {
+            @Override
+            public String getCallerId() {
+                return null;
+            }
+
+            @Override
+            public String getContent() {
+                return null;
+            }
+
+            @Override
+            public String getChannelId() {
+                return null;
+            }
+
+            @Override
+            public void setResponse(String s) {
+
+            }
+
+            @Override
+            public String getResponse() {
+                return null;
+            }
+
+            @Override
+            public int getState() {
+                return 0;
+            }
+        }, null);
     }
 
 

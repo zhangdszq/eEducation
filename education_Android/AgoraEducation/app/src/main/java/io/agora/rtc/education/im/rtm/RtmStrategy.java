@@ -42,7 +42,7 @@ public class RtmStrategy implements IMStrategy {
         rtmManager.registerListener(clientListener);
     }
 
-    private final RtmChannelListener channelListener = new RtmChannelListener() {
+    private RtmChannelListener channelListener = new RtmChannelListener() {
         @Override
         public void onMemberCountUpdated(int i) {
             if (eventListener != null) {
@@ -138,7 +138,7 @@ public class RtmStrategy implements IMStrategy {
             try {
                 mRepository.setTeacher(gson.fromJson(teacherJson, Teacher.class));
             } catch (Exception e) {
-               mRepository.setTeacher(null);
+                mRepository.setTeacher(null);
             }
         }
 
@@ -167,8 +167,33 @@ public class RtmStrategy implements IMStrategy {
 
     @Override
     public void leaveChannel() {
+        deleteMyAttrInChannel();
         rtmManager.leaveChannel(rtmChannel);
         rtmManager.releaseChannel(rtmChannel);
+    }
+
+    private void deleteMyAttrInChannel() {
+        if (!TextUtils.isEmpty(mRoom)) {
+            ChannelAttributeOptions options = new ChannelAttributeOptions(true);
+            List<String> deleteKeys = new ArrayList<>();
+            deleteKeys.add(myRtmUid());
+            rtmManager.getRtmClient().deleteChannelAttributesByKeys(
+                    mRoom,
+                    deleteKeys,
+                    options,
+                    new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            log.i("deleteChannelAttributesByKeys success");
+                        }
+
+                        @Override
+                        public void onFailure(ErrorInfo errorInfo) {
+                            log.i("deleteChannelAttributesByKeys failed");
+                        }
+                    }
+            );
+        }
     }
 
     public ChannelMsg sendChannelMessage(String text) {
@@ -207,7 +232,8 @@ public class RtmStrategy implements IMStrategy {
         public void onChannelMemberCountUpdated(int i) {
         }
 
-        public void onMemberLeft(RtmChannelMember rtmChannelMember){}
+        public void onMemberLeft(RtmChannelMember rtmChannelMember) {
+        }
     }
 
     public RtmStrategy(RtmManager rtmManager, EventListener rtmListener) {
@@ -264,8 +290,7 @@ public class RtmStrategy implements IMStrategy {
 
                     @Override
                     public void onFailure(ErrorInfo errorInfo) {
-                        log.i("addOrUpdateMyAttr failed: " + errorInfo.getErrorCode() + ","
-                                + errorInfo.getErrorDescription());
+                        log.i("addOrUpdateMyAttr failed: " + errorInfo.toString());
                         if (eventListener != null) {
                             eventListener.onErrorInfo(errorInfo);
                         }
@@ -288,6 +313,12 @@ public class RtmStrategy implements IMStrategy {
     }
 
     @Override
+    public void muteLocalChat(boolean isMute) {
+        myAttr().chat = isMute ? 0 : 1;
+        addOrUpdateMyChannelAttribute();
+    }
+
+    @Override
     public void muteLocalVideo(boolean isMute) {
         myAttr().video = isMute ? 0 : 1;
         addOrUpdateMyChannelAttribute();
@@ -297,6 +328,12 @@ public class RtmStrategy implements IMStrategy {
     public void sendMessage(String peerId, int cmd) {
         String msg = gson.toJson(new P2PMessage(cmd));
         rtmManager.sendP2PMsg(peerId, msg, new SendMessageOptions(), null);
+    }
+
+    @Override
+    public void release() {
+        rtmManager.unregisterListener(clientListener);
+        channelListener = null;
     }
 
     public void sendMessage(String peerId, int cmd, String text) {
