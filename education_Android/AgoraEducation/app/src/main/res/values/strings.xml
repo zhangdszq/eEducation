@@ -33,4 +33,7 @@
     <string name="send_message_failed">Send message failed.</string>
     <string name="No_enough_permissions">没有足够的权限</string>
     <string name="There_is_no_teacher_in_this_classroom">There is no teacher in this classroom, cannot use the whiteboard.</string>
+    <string name="get_channel_attr_failed">获取房间信息失败，请稍后重试!</string>
+    <string name="the_room_is_full">此房间人数已达上限!</string>
+    <string name="chat_muting">禁言中!</string>
 </resources>

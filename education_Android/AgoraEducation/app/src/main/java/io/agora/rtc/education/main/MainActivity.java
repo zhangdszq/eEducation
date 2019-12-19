@@ -13,6 +13,8 @@ import androidx.cardview.widget.CardView;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 import io.agora.rtc.Constants;
 import io.agora.rtc.education.AGApplication;
 import io.agora.rtc.education.R;
@@ -29,6 +31,9 @@ import io.agora.rtc.lib.util.AppUtil;
 import io.agora.rtc.lib.util.CryptoUtil;
 import io.agora.rtc.lib.util.SPUtil;
 import io.agora.rtc.lib.util.ToastUtil;
+import io.agora.rtm.ErrorInfo;
+import io.agora.rtm.ResultCallback;
+import io.agora.rtm.RtmChannelAttribute;
 
 public class MainActivity extends BaseActivity {
     CardView layoutRoomType;
@@ -71,7 +76,7 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        String roomType = edtRoomType.getText().toString();
+        final String roomType = edtRoomType.getText().toString();
         if (TextUtils.isEmpty(roomType)) {
             ToastUtil.showShort(R.string.Room_type_should_not_be_empty);
             return;
@@ -82,8 +87,8 @@ public class MainActivity extends BaseActivity {
             rtmManager().login(String.valueOf(userId));
         }
 
-        Intent intent;
-        int roomTypeInt;
+        final Intent intent;
+        final int roomTypeInt;
         if (roomType.equals(getString(R.string.one_to_one))) {
             intent = new Intent(this, OneToOneActivity.class);
             roomTypeInt = Constant.RoomType.ONE_TO_ONE;
@@ -95,12 +100,50 @@ public class MainActivity extends BaseActivity {
             roomTypeInt = Constant.RoomType.BIG_CLASS;
         }
         String roomNameReal = roomTypeInt + CryptoUtil.md5(roomName);
-        if (!TextUtils.isEmpty(roomNameReal)) {
-            intent.putExtra(IntentKey.ROOM_NAME, roomName)
-                    .putExtra(IntentKey.ROOM_NAME_REAL, roomNameReal)
-                    .putExtra(IntentKey.USER_ID, userId)
-                    .putExtra(IntentKey.YOUR_NAME, yourName);
+        intent.putExtra(IntentKey.ROOM_NAME, roomName)
+                .putExtra(IntentKey.ROOM_NAME_REAL, roomNameReal)
+                .putExtra(IntentKey.USER_ID, userId)
+                .putExtra(IntentKey.YOUR_NAME, yourName);
+
+        if (roomTypeInt == Constant.RoomType.BIG_CLASS) {
             startActivity(intent);
+        } else {
+            rtmManager().getRtmClient().getChannelAttributes(roomNameReal, new ResultCallback<List<RtmChannelAttribute>>() {
+                @Override
+                public void onSuccess(final List<RtmChannelAttribute> attributes) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int studentCount = 0;
+                            for (RtmChannelAttribute attribute : attributes) {
+                                try {
+                                    int uid = Integer.parseInt(attribute.getKey());
+                                    if (uid != userId) {
+                                        studentCount++;
+                                    }
+                                } catch (NumberFormatException e) {
+                                }
+                            }
+                            if ((roomTypeInt == Constant.RoomType.ONE_TO_ONE && studentCount == 0)
+                                    || (roomTypeInt == Constant.RoomType.SMALL_CLASS && studentCount < 16)) {
+                                startActivity(intent);
+                            } else {
+                                ToastUtil.showShort(R.string.the_room_is_full);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(ErrorInfo errorInfo) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showShort(R.string.get_channel_attr_failed);
+                        }
+                    });
+                }
+            });
         }
     }
 

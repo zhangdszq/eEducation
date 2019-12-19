@@ -97,7 +97,7 @@ public class LargeClassActivity extends BaseActivity {
                         mFlShareVideo.removeAllViews();
                         SurfaceView surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
                         mFlShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        mRtcDelegate.bindRemoteRtcVideo(uid, surfaceView);
+                        mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
                         updateShareVideoUI();
                     }
                 });
@@ -150,19 +150,28 @@ public class LargeClassActivity extends BaseActivity {
             if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
                     && mChannelData.getTeacher() != null
                     && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
-                mWhiteboardFragment.finishRoomPage();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWhiteboardFragment.finishRoomPage();
+                    }
+                });
             }
         }
 
         @Override
         public void onChannelAttributesUpdated() {
+            final Teacher teacher = mChannelData.getTeacher();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Teacher teacher = mChannelData.getTeacher();
                     if (teacher == null) {
                         ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
                         mChatroomFragment.setEditTextEnable(true);
+                        mVideoItemTeacher.showVideo(false);
+                        mVideoItemTeacher.setIcVideoSelect(false);
+                        mVideoItemTeacher.setIcAudioState(SpeakerView.STATE_CLOSED);
+                        mVideoItemTeacher.setName("");
                         return;
                     }
                     if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
@@ -192,7 +201,7 @@ public class LargeClassActivity extends BaseActivity {
                     mVideoItemTeacher.setIcAudioState(teacher.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
                     mVideoItemTeacher.setName(teacher.account);
 
-                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1);
+                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
 
                     if (teacher.link_uid != 0) {
                         int linkUid = teacher.link_uid;
@@ -208,6 +217,7 @@ public class LargeClassActivity extends BaseActivity {
                                 mVideoItemStudent.setVideoView(surfaceViewStudent);
                                 if (mChannelData.getMyAttr().uid == linkUid) {
                                     mRtcDelegate.bindLocalRtcVideo(surfaceViewStudent);
+                                    mWhiteboardFragment.acceptLink(true);
                                 } else {
                                     mRtcDelegate.bindRemoteRtcVideo(linkUid, surfaceViewStudent);
                                 }
@@ -221,6 +231,10 @@ public class LargeClassActivity extends BaseActivity {
                     } else {
                         mVideoItemStudent.setVideoView(null);
                         mVideoItemStudent.setVisibility(View.GONE);
+                        if (mWhiteboardFragment.isApplyingOrLinking()) {
+                            mWhiteboardFragment.acceptLink(false);
+                            mRtcDelegate.changeRoleToAudience();
+                        }
                     }
                 }
             });
@@ -259,6 +273,12 @@ public class LargeClassActivity extends BaseActivity {
                             mWhiteboardFragment.acceptLink(false);
                         }
                     });
+                    break;
+                case IMCmd.MUTE_CHAT:
+                    muteLocalChat(true);
+                    break;
+                case IMCmd.UNMUTE_CAHT:
+                    muteLocalChat(false);
                     break;
             }
         }
@@ -308,6 +328,7 @@ public class LargeClassActivity extends BaseActivity {
         Student myAttr = new Student();
         myAttr.audio = 0;
         myAttr.video = 0;
+        myAttr.chat = 1;
         myAttr.uid = intent.getIntExtra(IntentKey.USER_ID, 0);
         myAttr.account = intent.getStringExtra(IntentKey.YOUR_NAME);
 
@@ -334,8 +355,10 @@ public class LargeClassActivity extends BaseActivity {
             @Override
             public void onCancel() {
                 Teacher teacher = mChannelData.getTeacher();
-                String teacherUid = String.valueOf(teacher.getUid());
-                mImStrategy.sendMessage(teacherUid, IMCmd.CANCEL);
+                if (teacher != null) {
+                    String teacherUid = String.valueOf(teacher.getUid());
+                    mImStrategy.sendMessage(teacherUid, IMCmd.CANCEL);
+                }
                 mRtcDelegate.changeRoleToAudience();
             }
         });
@@ -513,6 +536,8 @@ public class LargeClassActivity extends BaseActivity {
         mWhiteboardFragment.finishRoomPage();
         mImStrategy.leaveChannel();
         mRtcDelegate.leaveChannel();
+        mImStrategy.release();
+        mRtcDelegate.release();
         super.finish();
     }
 
@@ -524,6 +549,11 @@ public class LargeClassActivity extends BaseActivity {
     private void muteLocalVideo(boolean isMute) {
         mRtcDelegate.muteLocalVideo(isMute);
         mImStrategy.muteLocalVideo(isMute);
+    }
+
+    private void muteLocalChat(boolean isMute) {
+        mImStrategy.muteLocalChat(isMute);
+        mChatroomFragment.setEditTextEnable(!isMute);
     }
 
     @Override

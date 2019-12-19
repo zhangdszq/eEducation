@@ -55,4 +55,12 @@ public class RtcDelegate {
     public void bindRemoteRtcVideo(int uid, SurfaceView surfaceView) {
         rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
     }
+
+    public void bindRemoteRtcVideoFitMode(int uid, SurfaceView surfaceView) {
+        rtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_FIT, uid));
+    }
+
+    public void release() {
+        rtcWorker.setRtcEventHandler(null);
+    }
 }

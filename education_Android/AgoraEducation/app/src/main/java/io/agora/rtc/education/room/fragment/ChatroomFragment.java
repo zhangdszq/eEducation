@@ -54,7 +54,7 @@ public class ChatroomFragment extends BaseFragment {
                     return false;
                 }
                 String text = mEdtSendMsg.getText().toString();
-                if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && !TextUtils.isEmpty(text)) {
+                if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && text.trim().length() > 0) {
                     ChannelMsg msg = mImStrategy.sendChannelMessage(text);
                     mEdtSendMsg.setText("");
                     addMessage(msg);
@@ -69,6 +69,11 @@ public class ChatroomFragment extends BaseFragment {
     public void setEditTextEnable(boolean isEnable) {
         if (mEdtSendMsg != null) {
             mEdtSendMsg.setEnabled(isEnable);
+            if (isEnable) {
+                mEdtSendMsg.setHint(R.string.hint_im_message);
+            } else {
+                mEdtSendMsg.setHint(R.string.chat_muting);
+            }
         }
     }
 

@@ -48,7 +48,6 @@ public class VideoItemRcvAdapter extends BaseRcvAdapter<VideoItemRcvAdapter.View
             surfaceView = RtcEngine.CreateRendererView(holder.itemView.getContext());
             surfaceView.setTag(user.getUid());
             item.setVideoView(surfaceView);
-
         }
         if (user.getUid() == myUid) {
             AGApplication.the().getRtcWorker().getRtcEngine().setupLocalVideo(new VideoCanvas(surfaceView));
