@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Whiteboard/Whiteboard.h>
+#import "EducationManager.h"
 #import "AEStudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,13 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *userId;
 @property (nonatomic, copy) NSString *rtmChannelName;
 
-@property (nonatomic, strong) WhiteBoardView *boardView;
-@property (nonatomic, strong) WhiteRoom *room;
-@property (nonatomic, assign) NSInteger sceneIndex;
-@property (nonatomic, assign) NSInteger sceneCount;
 
-@property (nonatomic, strong) WhiteMemberState *memberState;
-@property (nonatomic, strong) UIColor *pencilColor;
+@property (nonatomic, strong) EducationManager *educationManager;
 
 @property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
@@ -40,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addShareScreenVideoWithUid:(NSInteger)uid;
 - (void)removeShareScreen;
 - (void)setWhiteBoardBrushColor;
+
+- (void)setBoardViewFrame:(CGRect)frame;
+
 @end
 
 NS_ASSUME_NONNULL_END

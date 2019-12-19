@@ -27,7 +27,7 @@
 #import "SignalManager.h"
 #import "AEP2pMessageModel.h"
 
-@interface OneToOneViewController ()<UITextFieldDelegate,AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,WhiteCommonCallbackDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol, SignalDelegate>
+@interface OneToOneViewController ()<UITextFieldDelegate,AgoraRtmChannelDelegate,AgoraRtcEngineDelegate,AEClassRoomProtocol, SignalDelegate>
 @property (weak, nonatomic) IBOutlet EENavigationView *navigationView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatRoomViewWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatRoomViewRightCon;
@@ -57,7 +57,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
+
     [self setUpView];
     [self setWhiteBoardBrushColor];
     [self addTeacherObserver];
@@ -148,14 +148,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.boardView.frame = self.whiteboardView.bounds;
+    [self setBoardViewFrame:self.whiteboardView.bounds];
 }
 
 - (void)setUpView {
-    if (@available(iOS 11, *)) {
-    } else {
-        self.automaticallyAdjustsScrollViewInsets = NO;
-    }
     [self addWhiteBoardViewToView:self.whiteboardView];
     self.studentView.delegate = self;
     self.navigationView.delegate = self;
@@ -308,8 +304,7 @@
         [weakself.rtcEngineKit stopPreview];
         [weakself.rtcEngineKit leaveChannel:nil];
         [weakself removeTeacherObserver];
-        [weakself.room disconnect:^{
-        }];
+        [weakself.educationManager releaseResources];
         [SignalManager.shareManager leaveChannel];
         
         [weakself dismissViewControllerAnimated:YES completion:nil];

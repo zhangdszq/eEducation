@@ -106,14 +106,14 @@
         [self.teacherVideoView updateSpeakerImageName:imageName];
     }
 }
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self setBoardViewFrame:self.whiteboardBaseView.bounds];
+}
  
 - (void)setUpView {
-    if (@available(iOS 11, *)) {
-    } else {
-        self.automaticallyAdjustsScrollViewInsets = NO;
-    }
     [self addWhiteBoardViewToView:self.whiteboardBaseView];
-    self.boardView.frame = self.whiteboardBaseView.bounds;
     self.chatTextFiled.contentTextFiled.delegate = self;
     self.studentListView.delegate = self;
     self.navigationView.delegate = self;
@@ -341,10 +341,9 @@
         
         [weakself.navigationView stopTimer];
         [weakself.rtcEngineKit leaveChannel:nil];
-        [weakself.room disconnect:^{
-        }];
         [weakself removeTeacherObserver];
 
+        [weakself.educationManager releaseResources];
         [SignalManager.shareManager leaveChannel];
         
         [weakself dismissViewControllerAnimated:YES completion:nil];

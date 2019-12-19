@@ -57,7 +57,7 @@
         self.canSeek = YES;
     }
     self.controlView.delegate = self;
-    self.educationManager = [[EducationManager alloc] init];
+    self.educationManager = [EducationManager new];
 }
 
 - (void)setupWhiteBoard {
@@ -148,7 +148,7 @@
 }
 
 -(void)dealloc {
-    [self.educationManager stopWhite];
+    [self.educationManager releaseResources];
 }
 
 #pragma mark Click Event

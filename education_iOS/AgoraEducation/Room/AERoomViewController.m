@@ -26,6 +26,12 @@
 @property (nonatomic, weak) EEColorShowView *colorShowView;
 @property (nonatomic, weak) UIView *shareScreenView;
 @property (nonatomic, weak) EEChatTextFiled *chatTextFiled;
+
+// white
+@property (nonatomic, strong) WhiteBoardView *boardView;
+@property (nonatomic, assign) NSInteger sceneIndex;
+@property (nonatomic, assign) NSInteger sceneCount;
+
 @end
 
 @implementation AERoomViewController
@@ -42,43 +48,43 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    
+    if (@available(iOS 11, *)) {
+    } else {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
+    self.view.backgroundColor = [UIColor whiteColor];
 
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
+    
+    self.educationManager = [EducationManager new];
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
-    WhiteSDK *whiteSDK = [[WhiteSDK alloc] initWithWhiteBoardView:self.boardView config:[WhiteSdkConfiguration defaultConfig] commonCallbackDelegate:self];
-    if (self.room) {
-        [self.room disconnect:^{
-        }];
-    }
+    
     WEAK(self)
-    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
-        WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-        [whiteSDK joinRoomWithConfig:roomConfig callbacks:self completionHandler:^(BOOL success, WhiteRoom * _Nullable room, NSError * _Nullable error) {
-            weakself.room = room;
-            
-//            [weakself.room setViewMode:WhiteViewModeFollower];
-
-            [room refreshViewSize];
-            
-            [weakself.room disableDeviceInputs:disableDevice];
-            
-            NSArray<WhiteScene *> *scenes = room.state.sceneState.scenes;
-            NSInteger sceneIndex = room.state.sceneState.index;
-            weakself.sceneCount = scenes.count;
+    [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:nil];
+    [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
+        
+        [weakself.view layoutIfNeeded];
+        [weakself.educationManager refreshWhiteViewSize];
+        [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
+        [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
+            weakself.sceneCount = sceneCount;
             weakself.sceneIndex = sceneIndex;
             [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-            
-            WhiteScene *scene = scenes[sceneIndex];
-            if (scene.ppt) {
-                [weakself.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
-            }
+            [weakself.educationManager moveWhiteToContainer:sceneIndex];
         }];
-    } failure:^(NSString * _Nonnull msg) {
-        NSLog(@"获取失败 %@",msg);
+        
+    } completeFailBlock:^(NSError * _Nullable error) {
+        
     }];
+}
+
+- (void)setBoardViewFrame:(CGRect)frame {
+    self.boardView.frame = frame;
 }
 
 - (void)addWhiteBoardViewToView:(UIView *)view {
@@ -125,8 +131,7 @@
     WEAK(self)
     [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
         NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-        weakself.memberState.strokeColor = colorArray;
-        [weakself.room setMemberState:weakself.memberState];
+        [weakself.educationManager setWhiteStrokeColor:colorArray];
     }];
 }
 
@@ -137,10 +142,7 @@
         self.sceneCount = modifyState.sceneState.scenes.count;
         [self.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", self.sceneIndex + 1, self.sceneCount]];
         
-        WhiteScene *scene = modifyState.sceneState.scenes[self.sceneIndex];
-        if (scene.ppt) {
-            [self.room moveCameraToContainer:[[WhiteRectangleConfig alloc] initWithInitialPosition:scene.ppt.width height:scene.ppt.height]];
-        }
+        [self.educationManager moveWhiteToContainer:self.sceneIndex];
     }
 }
 
@@ -176,8 +178,7 @@
 
 -(void)setWhiteSceneIndex:(NSInteger)sceneIndex completionSuccessBlock:(void (^ _Nullable)(void ))successBlock {
     
-    [self.room setSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
-        
+    [self.educationManager setWhiteSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
         if(success) {
             if(successBlock != nil){
                 successBlock();
@@ -197,33 +198,20 @@
 }
 
 - (void)selectWhiteboardToolIndex:(NSInteger)index {
-    self.memberState = [[WhiteMemberState alloc] init];
-    switch (index) {
-        case 0:
-            self.memberState.currentApplianceName = ApplianceSelector;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 1:
-            self.memberState.currentApplianceName = AppliancePencil;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 2:
-            self.memberState.currentApplianceName = ApplianceText;
-            [self.room setMemberState:self.memberState];
-            break;
-        case 3:
-            self.memberState.currentApplianceName = ApplianceEraser;
-            [self.room setMemberState:self.memberState];
-            break;
-        default:
-            break;
-    }
-    if (index == 4) {
-        self.colorShowView.hidden = NO;
-    }else {
-        if (self.colorShowView.hidden == NO) {
-            self.colorShowView.hidden = YES;
+    
+    NSArray<NSString *> *applianceNameArray = @[ApplianceSelector, AppliancePencil, ApplianceText, ApplianceEraser];
+    if(index < applianceNameArray.count) {
+        NSString *applianceName = [applianceNameArray objectAtIndex:index];
+        if(applianceName != nil) {
+            [self.educationManager setWhiteApplianceName:applianceName];
         }
+    }
+    
+    BOOL bHidden = self.colorShowView.hidden;
+    if (index == 4) {
+        self.colorShowView.hidden = !bHidden;
+    } else if (!bHidden) {
+        self.colorShowView.hidden = YES;
     }
 }
 
