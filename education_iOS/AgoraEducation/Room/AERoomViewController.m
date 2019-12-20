@@ -67,7 +67,6 @@
     [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:self];
     [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
         
-        [weakself.educationManager refreshWhiteViewSize];
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
             weakself.sceneCount = sceneCount;
