@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
 @property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
+// white
+@property (nonatomic, strong) WhiteBoardView *boardView;
+
 //@property (nonatomic, strong) AEStudentModel *ownAttrs;
 //@property (nonatomic, assign)NSInteger teacherUid;
 
