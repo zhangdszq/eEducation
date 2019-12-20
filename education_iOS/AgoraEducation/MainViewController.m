@@ -154,13 +154,16 @@
     }else {
         self.className = self.classNameTextFiled.text;
         self.userName = self.userNameTextFiled.text;
+        
+        SignalManager.shareManager.messageModel.userName = self.userName;
+        
         if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
             [self presentMiniClassViewController];
-        }else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
+        } else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
             [self presentBigClassController];
-        }else if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
+        } else if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
             [self presentOneToOneViewController];
-        }else {
+        } else {
             [EEAlertView showAlertWithController:self title:@"请选择房间类型"];
             [self.activityIndicator stopAnimating];
             [sender setEnabled:YES];
@@ -176,12 +179,8 @@
 - (void)presentBigClassController {
     [self.activityIndicator stopAnimating];
     [self.joinButton setEnabled:YES];
-    if (self.rtmConnectionState == AgoraRtmConnectionStateDisconnected) {
-        [self joinRtm];
-    }else {
-        NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
-        [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
-    }
+    NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
+    [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
 }
 
 - (void)presentMiniClassViewController {
