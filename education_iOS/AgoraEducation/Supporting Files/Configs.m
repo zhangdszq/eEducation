@@ -8,17 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-
-
-
-#define kAgoraAppid  <#@"Agora AppID"#>
-#define kWhiteBoardToken <#@"netless Token"#>
-
+#define kAgoraAppid  @"aab8b8f5a8cd4469a63042fcfafe7063"
+#define kWhiteBoardToken @"WHITEcGFydG5lcl9pZD0xTnd5aDBsMW9ZazhaRWNuZG1kaWgwcmJjVWVsQnE1UkpPMVMmc2lnPWI5ZGRmNTU1YTgwM2Q0NjFjMDY5YTQ3NDA2ZDMxN2Q5NTVmYTJjYjY6YWRtaW5JZD01MjEmcm9sZT1taW5pJmV4cGlyZV90aW1lPTE2MDM3OTIwOTMmYWs9MU53eWgwbDFvWWs4WkVjbmRtZGloMHJiY1VlbEJxNVJKTzFTJmNyZWF0ZV90aW1lPTE1NzIyMzUxNDEmbm9uY2U9MTU3MjIzNTE0MDY3MTAw"
 
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define WEAK(object) __weak typeof(object) weak##object = object;
-
 
 #define kWhiteBoardUrl  @"https://cloudcapiv4.herewhite.com"
 #define kPOSTCreateWhiteBoardUrl [kWhiteBoardUrl stringByAppendingString:@"/room"]

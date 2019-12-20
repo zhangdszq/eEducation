@@ -28,7 +28,6 @@
 @property (nonatomic, weak) EEChatTextFiled *chatTextFiled;
 
 // white
-@property (nonatomic, strong) WhiteBoardView *boardView;
 @property (nonatomic, assign) NSInteger sceneIndex;
 @property (nonatomic, assign) NSInteger sceneCount;
 
@@ -67,7 +66,8 @@
     WEAK(self)
     [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:self];
     [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
-
+        
+        [weakself.educationManager refreshWhiteViewSize];
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
             weakself.sceneCount = sceneCount;

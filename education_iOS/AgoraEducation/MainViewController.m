@@ -94,9 +94,7 @@
 }
 
 - (void)joinRtm {
-    
-//    self.userNameTextFiled.text = @"jerry";
-    
+
     MessageModel *model = [MessageModel new];
     model.appId = kAgoraAppid;
     model.uid = self.uid;
@@ -137,7 +135,7 @@
 - (NSString *)getUserID{
     NSDate *datenow = [NSDate date];
     NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
-    NSString *uid =  [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
+    NSString *uid = [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
     return uid;
 }
 
@@ -146,10 +144,7 @@
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
-    
-//    self.classNameTextFiled.text = @"test03";
-//    self.userNameTextFiled.text = @"jerry";
-    
+
     [self.activityIndicator startAnimating];
     [sender setEnabled:NO];
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![AERTMMessageBody judgeClassRoomText:self.classNameTextFiled.text] || ![AERTMMessageBody judgeClassRoomText:self.userNameTextFiled.text]) {
@@ -217,11 +212,11 @@
         NSInteger studentCount = rolesInfoModel.studentModels.count;
         NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
 
-//        if (studentCount < 1) {
+        if (studentCount < 1) {
             [weakself joinClassRoomWithIdentifier:@"oneToOneRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
-//        } else {
-//            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
-//        }
+        } else {
+            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
+        }
     }];
 }
 

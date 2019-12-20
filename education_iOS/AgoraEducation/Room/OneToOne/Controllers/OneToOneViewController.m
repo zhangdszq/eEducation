@@ -146,13 +146,21 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self setBoardViewFrame:self.whiteboardView.bounds];
-}
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+//    [self setBoardViewFrame:self.whiteboardView.bounds];
+//}
 
 - (void)setUpView {
     [self addWhiteBoardViewToView:self.whiteboardView];
+
+    self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint *boardViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.whiteboardView addConstraints:@[boardViewTopConstraint, boardViewLeftConstraint, boardViewRightConstraint, boardViewBottomConstraint]];
+
     self.studentView.delegate = self;
     self.navigationView.delegate = self;
     self.chatTextFiled.contentTextFiled.delegate = self;
