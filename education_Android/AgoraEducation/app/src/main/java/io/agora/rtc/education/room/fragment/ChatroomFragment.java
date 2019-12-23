@@ -105,9 +105,6 @@ public class ChatroomFragment extends BaseFragment {
             holder.tvContent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO test
-                    msg.link = "/replay/331955d6f3044769840541af95e81f30/1576832941411/1576832945848";
-
                     if (!TextUtils.isEmpty(msg.link)) {
                         String[] strs = msg.link.split("/");
                         String uuid = strs[2];
