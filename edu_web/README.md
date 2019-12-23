@@ -92,15 +92,19 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
 # Web发布和开发操作
 
 #### 本地开发运行方式
-  npm run dev
+  `npm run dev`
 
 #### 本地编译方式
-  npm run build
+  `npm run build`
 
 ### 部署的时候需要修改package.json，然后执行npm run build
   "homepage": "你的域名/路径"
 
 # Electron版发布和开发操作
+
+#### 本地运行
+  `npm run electron`
+  `此时会启动两个进程，一个进程使用cra的webpack编译构建render进程，electron主进程会等待webpack构建成功以后开始执行。`
 
 #### electron mac打包方式
   npm run pack:mac
@@ -113,3 +117,4 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
 
 #### FAQ
   * [问题反馈](https://github.com/AgoraIO-Usecase/eEducation/issues/new)
+  * 关于electron启动时发现localhost:3000端口被占用问题解决方案，可以在package.json里找到ELECTRON_START_URL=http://localhost:3000 修改成你本地可以使用的端口号
