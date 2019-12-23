@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import Icon from '../icon';
-import { NoticeProps } from '../../reducers/initialize-state';
-import { recording, useRecording } from '../../hooks/use-recording';
-import { useRootContext } from '../../store';
-import { useHistory } from 'react-router';
-import { ActionType } from '../../reducers/types';
+import { roomStore } from '../../stores/room';
+import { whiteboard } from '../../stores/whiteboard';
+import moment from 'moment';
+import { globalStore } from '../../stores/global';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void
@@ -32,6 +31,11 @@ const ControlItem = (props: ControlItemProps) => {
   )
 }
 
+interface NoticeProps {
+  reason: string
+  text?: string
+}
+
 interface ControlProps {
   sharing: boolean
   isHost?: boolean
@@ -53,47 +57,48 @@ export default function Control({
   role,
   notice,
 }: ControlProps) {
-
-  const history = useHistory();
-
-  const recordingState = useRecording();
-  const {store, dispatch} = useRootContext();
-
   const lock = useRef<boolean>(false);
 
-  const handleRecording = (evt: any) => {
-    if (lock.current
-      || !recording
-      || !recording.state 
-      || !store.room.rid
-      || !store.user.id) return;
-    evt.preventDefault();
+  const canStop = () => {
+    const timeMoment = moment(whiteboard.state.startTime).add(15, 'seconds');
+    if (+timeMoment >= +Date.now()) {
+      globalStore.showToast({
+        type: 'netlessClient',
+        message: 'Recording too short, at least 15 seconds'
+      })
+      return false;
+    }
+    return true;
+  }
+  
+  const handleRecording = (evt: any, type: string) => {
+    const roomState = roomStore.state;
+    const me = roomState.me;
+    if (lock.current || !me.uid) return;
 
-    if (recording.state.recording) {
-      recording.stopRecording();
-      if (recording.state.endTime 
-        && recording.state.startTime) {
-        const {endTime, startTime, roomUUID} = recording.clearRecording();
-        if (store.global.rtmClient) {
-          store.global.rtmClient.sendChannelMessage(JSON.stringify({
-            account: store.user.account,
-            link: `/replay/${roomUUID}/${startTime}/${endTime}`
-          })).then(() => {
-            const message = {
-              account: store.user.account,
-              id: store.user.id,
-              link: `/replay/${roomUUID}/${startTime}/${endTime}`,
-              text: '',
-              ts: +Date.now()
-            }
-            dispatch({type: ActionType.ADD_MESSAGE, message});
-            console.log('send replay link success');
-          }).catch(console.warn);
-        }
+    if (whiteboard.state.recording) {
+      if (!canStop()) return;
+      whiteboard.stopRecording();
+      if (whiteboard.state.endTime 
+        && whiteboard.state.startTime) {
+        const {endTime, startTime, roomUUID} = whiteboard.clearRecording();
+        roomStore.rtmClient.sendChannelMessage(JSON.stringify({
+          account: me.account,
+          link: `/replay/${roomUUID}/${startTime}/${endTime}`
+        })).then(() => {
+          const message = {
+            account: me.account,
+            id: me.uid,
+            link: `/replay/${roomUUID}/${startTime}/${endTime}`,
+            text: '',
+            ts: +Date.now()
+          }
+          roomStore.updateChannelMessage(message);
+        })
         return;
       }
     } else {
-      recording.startRecording();
+      whiteboard.startRecording();
     }
   }
 
@@ -130,7 +135,7 @@ export default function Control({
         {role === 'teacher' ?
           <>
             <ControlItem
-              name={recordingState.recording ? 'stop_recording' : 'recording'}
+              name={whiteboard.state.recording ? 'stop_recording' : 'recording'}
               onClick={handleRecording}
               active={false}
             />

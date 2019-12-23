@@ -1,38 +1,39 @@
 import { useState, useMemo } from 'react';
-import { useRootContext } from '../store';
-import { ActionType, User, UserRole } from '../reducers/types';
+import { useRoomState } from '../containers/root-container';
+import { roomStore, AgoraUser } from '../stores/room';
 
 export default function useChatText () {
-  const {store, dispatch} = useRootContext();
   const [value, setValue] = useState('');
 
-  const roomName = useMemo(() => {
-    return store.room.room;
-  }, [store.room.room]);
+  const roomState = useRoomState();
 
-  const role = useMemo(() => {
-    return store.user.role;
-  }, [store.user.role]);
+  const roomName = roomState.course.roomName;
+
+  const me = roomState.me;
+
+  const role = me.role;
 
   const messages = useMemo(() => {
-    return store.global.messages;
-  }, [store.global.messages]);
+    return roomState.messages;
+  }, [roomState.messages]);
+
+  const rtmClient = roomStore.rtmClient;
 
   const sendMessage = async (content: string) => {
-    if (store.global.rtmClient && store.user.id) {
-      if (store.user.role !== UserRole.teacher && (!store.user.chat || Boolean(store.room.muteChat))) return console.warn("chat already muted");
-      if (store.user.role === UserRole.teacher && !store.user.chat) return console.warn("chat already muted");
-      await store.global.rtmClient.sendChannelMessage(JSON.stringify({
-        account: store.user.account,
+    if (rtmClient &&  me.uid) {
+      if (me.role !== 'teacher' && (!me.chat || Boolean(roomState.course.muteChat))) return console.warn("chat already muted");
+      if (me.role === 'teacher' && !me.chat) return console.warn("chat already muted");
+      await rtmClient.sendChannelMessage(JSON.stringify({
+        account: me.account,
         content
       }));
       const message = {
-        account: store.user.account,
-        id: store.user.id,
+        account: me.account,
+        id: me.uid,
         text: content,
         ts: +Date.now()
       }
-      dispatch({type: ActionType.ADD_MESSAGE, message});
+      roomStore.updateChannelMessage(message);
       setValue('');
     }
   }
@@ -41,14 +42,20 @@ export default function useChatText () {
     setValue(evt.target.value.slice(0, 100));
   }
   const list = useMemo(() => {
-    if (store.room.users) {
-      return store.room.users.toArray()
-      .map(([_, user]: [string, User]) => {
-        return user;
-      })
+    if (!roomState.me.uid || !roomState.rtc.users.count()) return [];
+    const my = roomState.users.get(roomState.me.uid);
+    const users = [];
+    if (my) {
+      users.push(my);
     }
-    return [];
-  }, [store.room.users]);
+    for (let id of roomState.rtc.users) {
+      const user = roomState.users.get(''+id);
+      if (user) {
+        users.push(user);
+      }
+    }
+    return users.filter((user: AgoraUser) => user.role === 'student');
+  }, [roomState.me.uid, roomState.rtc.users, roomState.users]);
 
   return {
     list,

@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import VideoPlayer from './video-player';
 import './video-marquee.scss';
 import useStream from '../hooks/use-streams';
-import { AgoraMediaStream } from '../reducers/types';
+import { AgoraMediaStream } from '../utils/types';
 
-export default function VideoMarquee() {
+function VideoMarquee() {
 
   const {teacher, students, onPlayerClick} = useStream();
 
@@ -22,23 +22,14 @@ export default function VideoMarquee() {
     scrollLeft(marqueeEl.current, -1);
   }
 
-  useEffect(() => {
-    // @ts-ignore
-    window.ss = {
-      students,
-      teacher
-    }
-  }, [students, teacher]);
-
   return (
     <div className="video-marquee-container">
       <div className="main">
-      {/* <TeacherPlayer></TeacherPlayer> */}
         {teacher ?
           <VideoPlayer
             role="teacher"
-            domId={`dom-${teacher.id}`}
-            id={`${teacher.id}`}
+            domId={`dom-${teacher.streamID}`}
+            id={`${teacher.streamID}`}
             streamID={teacher.streamID}
             stream={teacher.stream}
             account={teacher.account}
@@ -57,12 +48,13 @@ export default function VideoMarquee() {
             <div className="icon icon-left" onClick={handleScrollLeft}></div>
             <div className="icon icon-right" onClick={handleScrollRight}></div>
         </div> : null}
+          {/* <StudentViews /> */}
           {students.map((student: AgoraMediaStream, key: number) => (
             <VideoPlayer
               role="student"
-              domId={`dom-${student.id}`}
-              key={`${key}${student.stream.streamID}`}
-              id={`${student.id}`}
+              domId={`dom-${student.streamID}`}
+              key={`${key}${student.streamID}`}
+              id={`${student.streamID}`}
               account={student.account}
               streamID={student.streamID}
               stream={student.stream}
@@ -77,3 +69,4 @@ export default function VideoMarquee() {
     </div>
   )
 }
+export default React.memo(VideoMarquee);

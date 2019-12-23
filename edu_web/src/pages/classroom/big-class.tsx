@@ -4,15 +4,14 @@ import VideoPlayer from '../../components/video-player';
 import './big-class.scss';
 import ChatBoard from '../../components/chat/board';
 import MediaBoard from '../../components/mediaboard';
-import { useRootContext } from '../../store';
-import { ActionType, UserRole } from '../../reducers/types';
 import useStream from '../../hooks/use-streams';
 import useChatText from '../../hooks/use-chat-text';
 import { RoomMessage } from '../../utils/agora-rtm-client';
-import { useAgoraSDK } from '../../hooks/use-agora-sdk';
-import { usePlatform } from '../../containers/platform-container';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
 import AgoraWebClient from '../../utils/agora-rtc-client';
+import { useRoomState } from '../../containers/root-container';
+import { roomStore } from '../../stores/room';
+import { platform } from '../../utils/platform';
 
 export default function BigClass() {
   const {
@@ -24,13 +23,13 @@ export default function BigClass() {
     roomName
   } = useChatText();
 
-  const {platform} = usePlatform();
+  const roomState = useRoomState();
 
-  const {store, dispatch} = useRootContext();
+  const me = roomState.me;
+
+  const memberCount = roomState.rtm.memberCount;
 
   const {teacher, currentHost, onPlayerClick} = useStream();
-
-  const {memberCount, rtcClient} = useAgoraSDK();
 
   const rtmLock = useRef<boolean>(false);
   const lock = useRef<boolean>(false);
@@ -43,77 +42,60 @@ export default function BigClass() {
     }
   }, []);
 
-  useEffect(() => {
-    if (store.global.rtmClient
-      && store.user.role === UserRole.teacher
-      && store.global.remoteStreams.count()
-      && store.global.linkId) {
-      const stream = store.global.remoteStreams.get(`${store.global.linkId}`);
-      if (!stream)
-      lock.current = true;
-      store.global.rtmClient.updateChannelAttrs(store, {
-        link_id: 0
-      }).then(() => {
-        lock.current = false;
-      }).catch((err: any) => {
-        lock.current = false;
-        console.warn(err);
-      });
-    }
-  }, [store.global.remoteStreams]);
-
-
   const handleClick = (type: string) => {
+    if (rtmLock.current) return;
+
     if (type === 'hands_up') {
-      if (teacher && store.global.rtmClient && store.user.id) {
-        if (!rtmLock.current) {
-          rtmLock.current = true;
-          store.global.rtmClient
-          .sendPeerMessage(teacher.id, {cmd: RoomMessage.applyCoVideo})
+      if (roomStore.state.course.teacherId) {
+        rtmLock.current = true;
+        roomStore.rtmClient.sendPeerMessage(roomStore.state.course.teacherId,
+          {cmd: RoomMessage.applyCoVideo})
           .then((result: any) => {
-            rtmLock.current = false;
-            if (result) {
-              console.log(`[co-video] apply success teacherId: ${teacher.id}, me: ${store.user.id}`);
-              dispatch({ type: ActionType.UPDATE_APPLY, apply: true});
-            }
+            console.log("peerMessage result ", result);
           })
-          .catch((err: any) => {
+          .catch(console.warn)
+          .finally(() => {
             rtmLock.current = false;
-            console.warn('[co-video] apply failured ', JSON.stringify(err));
           })
-        }
       }
     }
   
     if (type === 'hands_up_end') {
-      if (teacher && store.global.rtmClient) {
-        if (!rtmLock.current) {
-          rtmLock.current = true;
-          store.global.rtmClient
-          .sendPeerMessage(teacher.id, {cmd: RoomMessage.cancelCoVideo})
-          .then((result: boolean) => {
-            rtmLock.current = false;
-            if (result) {
-              dispatch({ type: ActionType.UPDATE_APPLY, apply: false });
-              console.log(`[co-video] cancel success teacherId: ${teacher.id}, me: ${store.user && store.user.id}`);
-            }
+      if (roomStore.state.course.teacherId) {
+        rtmLock.current = true;
+        roomStore.rtmClient.sendPeerMessage(roomStore.state.course.teacherId,
+          {cmd: RoomMessage.cancelCoVideo})
+          .then((result: any) => {
+            console.log("peerMessage result ", result);
           })
-          .catch((err: any) => {
+          .catch(console.warn)
+          .finally(() => {
             rtmLock.current = false;
-            console.warn('[co-video] cancel failured ', JSON.stringify(err));
-          });
-        }
+          })
       }
     }
   }
 
   // TODO: handleClose
+  const closeLock = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      closeLock.current = true;
+    }
+  }, []);
+
   const handleClose = (type: string, streamID: number) => {
-    if (store.user.id && currentHost && store.global.rtmClient) {
-      // when current host is local and teacher is broadcasting
-      if (currentHost.id === store.user.id && teacher && !rtmLock.current) {
+    if (type === 'close') {
+      if (!currentHost || closeLock.current) return;
 
+      const rtmClient = roomStore.rtmClient;
+      const rtcClient = roomStore.rtcClient;
+      const teacherUid = roomStore.state.course.teacherId;
 
+      console.log("close rtmClient: ", rtmClient, ", rtcClient: ", rtcClient, ", teacherUid: ", teacherUid, ", lock :", closeLock.current);
+
+      if (currentHost.streamID === +me.uid && teacherUid) {
         const quitClient = new Promise((resolve, reject) => {
           if (platform === 'electron') {
             const nativeClient = rtcClient as AgoraElectronClient;
@@ -130,46 +112,39 @@ export default function BigClass() {
             resolve(webClient.unpublishLocalStream());
           }
         });
-
-        rtmLock.current = true
+        closeLock.current = true;
+        rtmLock.current = true;
         Promise.all([
-          store.global
-            .rtmClient
-            .sendPeerMessage(`${teacher.id}`,
-            {
-              cmd: RoomMessage.cancelCoVideo
-            }
-          ),
-          quitClient
-        ])
-        .then(() => {
-          rtmLock.current = false;
-        }).catch((err: any) => {
-          rtmLock.current = false;
-          console.log("[rtm-client] send cancel ", err);
-          throw err;
-        }).finally(() => {
-          // dispatch({type: ActionType.REMOVE_LOCAL_STREAM });
-        })
-      }
-
-      // when teacher
-      if (teacher && teacher.id === store.user.id && !rtmLock.current) {
-        rtmLock.current = true
-        Promise.all([
-          store.global.rtmClient.sendPeerMessage(`${streamID}`, {
+          rtmClient.sendPeerMessage(`${teacherUid}`,{
             cmd: RoomMessage.cancelCoVideo
           }),
-          store.global.rtmClient.updateChannelAttrs(store, {
-            link_uid: 0
-          })
-        ])
-        .then(() => {
+          quitClient
+        ]).then(() => {
           rtmLock.current = false;
-          dispatch({ type: ActionType.UPDATE_APPLY, apply: false });
         }).catch((err: any) => {
           rtmLock.current = false;
           console.warn(err);
+          throw err;
+        }).finally(() => {
+          closeLock.current = false;
+        })
+      }
+
+      if (teacherUid && teacherUid === me.uid) {
+        rtmLock.current = true;
+        closeLock.current = true;
+        Promise.all([
+          rtmClient.sendPeerMessage(`${streamID}`, {
+            cmd: RoomMessage.cancelCoVideo,
+          }),
+          roomStore.updateCourseLinkUid(0)
+        ]).then(() => {
+          rtmLock.current = false;
+        }).catch((err: any) => {
+          rtmLock.current = false;
+          console.warn(err);
+        }).finally(() => {
+          closeLock.current = false;
         })
       }
     }
@@ -187,11 +162,11 @@ export default function BigClass() {
               role="teacher"
               streamID={currentHost.streamID}
               stream={currentHost.stream}
-              domId={currentHost.id}
-              id={currentHost.id}
+              domId={`${currentHost.streamID}`}
+              id={`${currentHost.streamID}`}
               account={currentHost.account}
               handleClick={onPlayerClick}
-              close={store.user.role === UserRole.teacher || store.user.id === currentHost.id}
+              close={me.role === 'teacher' || +me.uid === currentHost.streamID}
               handleClose={handleClose}
               video={currentHost.video}
               audio={currentHost.audio}
@@ -209,13 +184,13 @@ export default function BigClass() {
               role="teacher"
               streamID={teacher.streamID}
               stream={teacher.stream}
-              domId={teacher.id}
-              id={teacher.id}
+              domId={`dom-${teacher.streamID}`}
+              id={`${teacher.streamID}`}
               account={teacher.account}
               handleClick={onPlayerClick}
-              video={teacher.video}
-              audio={teacher.audio}
-              local={teacher.local}
+              audio={Boolean(teacher.audio)}
+              video={Boolean(teacher.video)}
+              local={Boolean(teacher.local)}
               /> :
             <VideoPlayer
               role="teacher"
@@ -229,7 +204,7 @@ export default function BigClass() {
           name={roomName}
           teacher={role === 'teacher'}
           messages={messages}
-          mute={Boolean(store.room.muteChat)}
+          mute={Boolean(roomState.course.muteChat)}
           value={value}
           roomCount={memberCount}
           sendMessage={sendMessage}

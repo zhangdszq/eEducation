@@ -1,8 +1,10 @@
 import React from 'react';
 import OSS from "ali-oss";
+import uuidv4 from 'uuid/v4';
 import { PPTProgressListener, UploadManager } from "../../../utils/upload-manager";
-import { PptKind, Room, WhiteWebSdk } from "white-web-sdk";
+import { PptKind, Room } from "white-web-sdk";
 import { ossConfig, ossClient } from '../../../utils/helper';
+import { whiteboard } from '../../../stores/whiteboard';
 
 export type UploadBtnProps = {
   room: Room,
@@ -21,8 +23,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
     try {
       const file = event.currentTarget.files[0];
       const uploadManager = new UploadManager(ossClient, room);
-      const whiteWebSdk = new WhiteWebSdk();
-      const pptConverter = whiteWebSdk.pptConverter(roomToken);
+      const pptConverter = whiteboard.client.pptConverter(roomToken);
       await uploadManager.convertFile(
         file,
         pptConverter,
@@ -41,8 +42,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
     try {
       const file = event.currentTarget.files[0];
       const uploadManager = new UploadManager(ossClient, room);
-      const whiteWebSdk = new WhiteWebSdk();
-      const pptConverter = whiteWebSdk.pptConverter(roomToken);
+      const pptConverter = whiteboard.client.pptConverter(roomToken);
       await uploadManager.convertFile(
         file,
         pptConverter,
@@ -75,6 +75,36 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
       onFailure && onFailure(err)
       console.warn(err)
     }
+  }
+
+  const uploadVideo = async (event: any) => {
+    const uploadManager = new UploadManager(ossClient, room);
+        const file = event.currentTarget.files[0];
+        console.log("file ", file);
+        const path = `/${ossConfig.folder}`
+        const uuid = uuidv4();
+        const res = await uploadManager.addFile(`${path}/video-${file.name}${uuid}`, file, 
+          onProgress
+        );
+        const isHttps = res.indexOf("https") !== -1;
+        let url;
+        if (isHttps) {
+            url = res;
+        } else {
+            url = res.replace("http", "https");
+        }
+        if (url && whiteboard.state.room) {
+          whiteboard.state.room.insertPlugin({
+            protocal: 'video',
+            centerX: 0,
+            centerY: 0,
+            width: 480,
+            height: 270,
+            props: {
+              videoUrl: url
+            }
+          });
+        }
   }
 
   return (
@@ -111,6 +141,17 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
           </div>
         </label>
         <input id="upload-static" accept="image/*,.doc, .docx,.ppt, .pptx,.pdf" onChange={uploadStatic} type="file"></input>
+      </div>
+      <div className="slice-dash"></div>
+      <div className="upload-items">
+        <label htmlFor="upload-video">
+          <div className="upload-static-resource"></div>
+          <div className="text-container">
+            <div className="title">Upload video</div>
+            <div className="description">mp4</div>
+          </div>
+        </label>
+        <input id="upload-video" accept="video/*,.mp4" onChange={uploadVideo} type="file"></input>
       </div>
     </div>
   )

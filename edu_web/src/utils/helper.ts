@@ -1,9 +1,5 @@
 import { RoomMessage } from './agora-rtm-client';
-import { RootState } from './../reducers/initialize-state';
-import { RoomType, StudentInfo, TeacherInfo, User, UserRole } from './../reducers/types';
-import { Map } from 'immutable';
 import * as _ from 'lodash';
-import { RoomState, UserState } from '../reducers/initialize-state';
 import OSS from 'ali-oss';
 
 export interface OSSConfig {
@@ -23,6 +19,8 @@ export const ossConfig: OSSConfig = {
 }
 
 export const ossClient = new OSS(ossConfig);
+
+console.log("[upload-btn] ", ossConfig, ossClient);
 
 export function resolveMessage(peerId: string, { cmd, text }: { cmd: number, text?: string }) {
   let type = '';
@@ -108,76 +106,9 @@ export function resolveMediaState(body: any) {
   return mediaState;
 }
 
-export function resolveRootState({ room, user }: RootState): UserAttrs {
-  const userMedia = room.users.get(user.id)
-  const audio = _.get(userMedia, 'audio', 1)
-  const video = _.get(userMedia, 'video', 1)
-  const chat = _.get(userMedia, 'chat', 1)
-  const role = user.role === UserRole.teacher ? 'teacher' : 'student';
-  if (role === 'teacher') {
-    const teacher: UserAttrs = {
-      uid: user.id,
-      account: user.account,
-      role,
-      audio,
-      video,
-      chat,
-      shared_uid: room.sharedId,
-      mute_chat: room.muteChat,
-      class_state: room.classState,
-      whiteboard_uid: room.whiteboardId,
-      link_uid: room.linkId
-    }
-    return teacher;
-  }
-  const userAttrs: UserAttrs = {
-    uid: user.id,
-    account: user.account,
-    role,
-    audio,
-    video,
-    chat,
-  }
-  return userAttrs;
-}
-
-export function resolveUserJson(teacher: TeacherInfo): any {
-  const userJson: any = {
-    account: teacher.account,
-    id: teacher.uid,
-    video: teacher.video,
-    audio: teacher.audio,
-    chat: teacher.chat,
-    role: UserRole.teacher,
-    whiteboardId: teacher.whiteboard_uid
-  }
-  return userJson;
-}
-
-export function resolveStudentUserJson(user: User): any {
-  const userJson: any = {
-    account: user.account,
-    id: user.id,
-    video: user.video,
-    audio: user.audio,
-    chat: user.chat,
-  }
-  return userJson;
-}
-
 export function genUid(): string {
   const id = +Date.now() % 1000000;
   return id.toString();
-}
-
-export function resolveStreamID(uid: string): number {
-  return +uid % 1000000;
-}
-
-export function hasTeacher(users: Map<string, User>, id: string): boolean {
-  const user: User | undefined = users.get(id);
-  if (user && user.role === 'teacher') return true;
-  return false;
 }
 
 export function jsonParse(json: string) {
@@ -191,32 +122,6 @@ export function jsonParse(json: string) {
 export function resolvePeerMessage(text: string) {
   const body = jsonParse(text);
   return body;
-}
-
-export function resolveChannelAttrsByKey(key: string, channelAttrs: any) {
-  let result: TeacherInfo | StudentInfo = {
-    account: channelAttrs.account,
-    uid: channelAttrs.uid,
-    audio: channelAttrs.audio,
-    video: channelAttrs.video,
-    chat: channelAttrs.chat
-  }
-  if (key === 'teacher') {
-    const room = channelAttrs as RoomState
-    const user = channelAttrs as UserState
-    result = {
-      uid: user.id,
-      account: channelAttrs.account,
-      video: user.video,
-      audio: user.audio,
-      class_state: room.classState as number,
-      mute_chat: room.muteChat,
-      shared_uid: room.sharedId,
-      whiteboard_uid: room.whiteboardId,
-      chat: user.chat
-    }
-  }
-  return result;
 }
 
 export function resolveChannelAttrs(json: object) {
@@ -255,6 +160,9 @@ export function resolveChannelAttrs(json: object) {
       video: +teacherJson.video,
       audio: +teacherJson.audio,
       chat: +teacherJson.chat,
+      link_uid: teacherJson.link_uid,
+      shared_uid: teacherJson.shared_uid,
+      whiteboard_uid: teacherJson.whiteboard_uid,
     });
   }
   for (let student of students) {
@@ -265,6 +173,9 @@ export function resolveChannelAttrs(json: object) {
       video: +student.video,
       audio: +student.audio,
       chat: +student.chat,
+      link_uid: student.link_uid,
+      shared_uid: student.shared_uid,
+      whiteboard_uid: student.whiteboard_uid,
     });
   }
   return {
@@ -273,29 +184,6 @@ export function resolveChannelAttrs(json: object) {
     accounts,
     room,
   };
-}
-
-export function resolveRoomPath(roomType: RoomType) {
-  const path = ['one-to-one', 'small-class', 'big-class'];
-  return path[roomType];
-}
-
-export function findUserAccount(uid: string, channelStr: string) {
-  const channelAttrs = jsonParse(channelStr);
-  const teacher = jsonParse(_.get(channelAttrs, 'teacher.value'));
-  if (teacher && teacher.uid == uid) {
-    return teacher.account;
-  }
-  const keys = Object.keys(channelAttrs);
-  let account = '';
-  for (let key of keys) {
-    if (key === 'teacher') continue;
-    if (channelAttrs[key].uid == uid) {
-      account = channelAttrs[key].account;
-      break;
-    }
-  }
-  return account;
 }
 
 const level = [
@@ -312,10 +200,6 @@ export function NetworkQualityEvaluation(evt: { downlinkNetworkQuality: number, 
   let defaultQuality = 'unknown';
   const val = Math.max(evt.downlinkNetworkQuality, evt.uplinkNetworkQuality);
   return level[val] ? level[val] : defaultQuality;
-}
-
-export function ResolveNetworkQuality(quality: number) {
-  return level[quality];
 }
 
 export function btoa(input: any) {

@@ -4,8 +4,8 @@ import { Input } from '@material-ui/core';
 import Button from '../custom-button';
 import './panel.scss';
 import { List } from 'immutable';
-import { ChatMessage } from '../../reducers/types';
-import { useRootContext } from '../../store';
+import { ChatMessage } from '../../utils/types';
+import { useRoomState } from '../../containers/root-container';
 import useChatControl from '../../hooks/use-chat-control';
 
 interface ChatPanelProps {
@@ -25,9 +25,7 @@ export default function ChatPanel ({
   sendMessage,
   handleChange,
 }: ChatPanelProps) {
-
-  const {store} = useRootContext();
-
+  
   const {handleMute, disableChat, muteControl, muteChat} = useChatControl();
 
   const ref = useRef(null);
@@ -40,12 +38,14 @@ export default function ChatPanel ({
     scrollDown(ref.current);
   }, [messages]);
 
+  const roomState = useRoomState();
+
   return (
     <>
       <div className="chat-messages-container">
         <div className="chat-messages" ref={ref}>
           {messages.map((item: ChatMessage, key: number) => (
-            <Message key={key} nickname={item.account} content={item.text} link={item.link} sender={item.id === store.user.id} />
+            <Message key={key} nickname={item.account} content={item.text} link={item.link} sender={item.id === roomState.me.uid} />
           ))}
         </div>   
       </div>

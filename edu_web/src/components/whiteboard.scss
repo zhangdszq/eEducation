@@ -208,15 +208,15 @@
     top: 10px;
     pointer-events: none;
     .upload-btn {
+      user-select: none;
       width:225px;
-      height:250px;
       background:rgba(255,255,255,1);
       box-shadow:0px 2px 4px 0px rgba(0,0,0,0.1);
       border-radius:6px;
       border:1px solid rgba(219,226,229,1);
       top: 183px;
       left: 63px;
-      z-index: 1;
+      z-index: 5;
       position: absolute;
       pointer-events: all;
       display: flex;
@@ -229,6 +229,7 @@
           flex: 1;
           display: flex;
           cursor: pointer;
+          min-height: 75px;
           &:hover {
             background-color: rgba(0, 0, 0, 0.07);
           }

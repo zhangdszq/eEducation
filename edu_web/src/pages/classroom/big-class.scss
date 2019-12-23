@@ -1,16 +1,16 @@
 @media screen and (min-width: 1366px) and (min-height: 768px) {
   .classroom {
     min-width: 1366px;
-    min-height: 768px;
+    // min-height: 768px;
 
     .whiteboard {
       flex: 1;
-      min-height: 720px;
+      // min-height: 720px;
       min-width: 1086px;
     }
 
     .live-board {
-      min-height: 720px;    
+      // min-height: 720px;    
     }
 
     // TODO: comment for brand resolution

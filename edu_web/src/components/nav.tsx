@@ -4,16 +4,15 @@ import SettingCard from '../components/setting-card';
 import './nav.scss';
 import Button from './custom-button';
 import * as moment from 'moment';
-import { useRootContext } from '../store';
-import { useAgoraSDK } from '../hooks/use-agora-sdk';
-import { ClassState } from '../reducers/types';
-import { useHistory } from 'react-router';
+import { ClassState } from '../utils/types';
 import { NetworkQualityEvaluation } from '../utils/helper';
-import { useGlobalContext } from '../containers/global-container';
 import { usePlatform } from '../containers/platform-container';
 import AgoraWebClient from '../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
-import { isElectron } from '../utils/platform';
+import { isElectron, platform } from '../utils/platform';
+import { useRoomState } from '../containers/root-container';
+import { roomStore } from '../stores/room';
+import { globalStore } from '../stores/global';
 
 interface NavProps {
   delay: string
@@ -41,7 +40,7 @@ export function Nav ({
   onCardConfirm,
 }: NavProps) {
 
-  const {platform, NavBtn} = usePlatform();
+  const {NavBtn} = usePlatform();
     
   const handleFinish = (evt: any) => {
     onCardConfirm('setting');
@@ -85,26 +84,13 @@ export function Nav ({
         handleFinish={handleFinish} /> : null
     }
     </>
-
   )
 }
 
 export default function NavContainer() {
-  const history = useHistory();
-  const {store} = useRootContext();
-  const {
-    showDialog,
-    removeDialog,
-  } = useGlobalContext();
-
   const {
     platform
   } = usePlatform();
-
-  const {
-    exitAll,
-    rtcClient
-  } = useAgoraSDK();
 
   const ref = useRef<boolean>(false);
 
@@ -134,7 +120,12 @@ export default function NavContainer() {
     }
   }, []);
 
+  const roomState = useRoomState();
+
+  const me = roomState.me;
+
   useEffect(() => {
+    const rtcClient = roomStore.rtcClient;
     if (platform === 'web') {
       const webClient = rtcClient as AgoraWebClient;
       webClient.rtc.on('watch-rtt', (rtt: number) => {
@@ -173,31 +164,41 @@ export default function NavContainer() {
         nativeClient.off('audioquality', () => {});
       }
     }
-  }, [rtcClient]);
+  }, []);
+
+  const courseState = roomState.course.courseState;
+  const course = roomState.course;
 
   useEffect(() => {
-    if (store.room.classState === ClassState.STARTED
+    if (courseState === ClassState.STARTED
       && timer === null) {
         const now: number = +Date.now();
         setTimer(calcDuration(now));
     }
-    if (timer && store.room.classState === ClassState.CLOSED) {
+    if (timer && courseState === ClassState.CLOSED) {
       clearInterval(timer);
       setTimer(null);
     }
-  }, [store.room]);
+  }, [courseState]);
+
+  const lock = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      lock.current = true;
+    }
+  }, []);
 
   const updateClassState = () => {
-    if (store.global.rtmClient) {
-      const class_state: number = store.room.classState === ClassState.CLOSED ? 1 : 0;
-      store.global.rtmClient.updateChannelAttrs(store, {
-        class_state
-      })
-      .then(() => {
-        console.log("update teacher ");
-      })
-      .catch((err: any) => {
-        console.warn(err);
+    if (!lock.current) {
+      lock.current = true;
+      roomStore.updateAttrsBy(me.uid, {
+        class_state: +!Boolean(roomStore.state.course.courseState)
+      }).then(() => {
+        console.log("update success");
+      }).catch(console.warn)
+      .finally(() => {
+        lock.current = false;
       })
     }
   };
@@ -206,9 +207,9 @@ export default function NavContainer() {
     if (type === 'setting') {
       setCard(true);
     } else if (type === 'exit') {
-      showDialog({
+      globalStore.showDialog({
         type: 'exitRoom',
-        desc: 'Are U sure to exit the classroom?'
+        message: 'Are U sure to exit the classroom?'
       });
     } else if (type === 'classState') {
       updateClassState();
@@ -221,21 +222,16 @@ export default function NavContainer() {
         setCard(false);
         return;
       case 'exitRoom':
-        removeDialog();
-        exitAll().then(() => {
-        }).catch(console.warn)
-          .finally(() => {
-            history.push('/');
-          })
+        globalStore.removeDialog();
         return;
     }
   }
 
   return (
     <Nav 
-      role={store.user.role}
-      roomName={store.room.room}
-      classState={Boolean(store.room.classState)}
+      role={me.role}
+      roomName={course.roomName}
+      classState={Boolean(course.courseState)}
       delay={`${rtt}ms`}
       time={time}
       network={`${quality}`}

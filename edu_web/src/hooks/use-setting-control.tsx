@@ -1,19 +1,17 @@
 import { usePlatform } from '../containers/platform-container';
-import { useAgoraSDK } from './use-agora-sdk';
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-
 import VoiceVolume from '../components/volume/voice';
-import { ActionType } from '../reducers/types';
-import { MediaInfo } from '../reducers/initialize-state';
-import {useRootContext} from '../store';
 import AgoraWebClient from '../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import VideoPlayer from '../components/video-player';
+import { useRoomState } from '../containers/root-container';
+import { roomStore, MediaDeviceState } from '../stores/room';
+import { globalStore } from '../stores/global';
 
 export default function useSettingControl () {
 
-  const {store, dispatch} = useRootContext();
-  const {rtcClient, devices, setDevices} = useAgoraSDK();
+  const [devices, setDevices] = useState<any[]>([]);
+
   const {platform} = usePlatform();
 
   const cameraList = useMemo(() => {
@@ -34,36 +32,28 @@ export default function useSettingControl () {
       it.kind === 'audiooutput');
   }, [devices]);
 
-  const {mediaInfo} = store.global;
+  const roomState = useRoomState();
 
-  const [camera, setCamera] = useState(mediaInfo.camera);
-  const [microphone, setMicrophone] = useState(mediaInfo.microphone);
-  const [speaker, setSpeaker] = useState(mediaInfo.speaker);
-  // const [localStream, setLocalStream] = useState<any>(null);
-  const [speakerVolume, setSpeakerVolume] = useState<number>(mediaInfo.speakerVolume);
+  const mediaDevice = useMemo(() => {
+    return roomState.mediaDevice;
+  }, [roomState.mediaDevice]);
+
+  const [camera, setCamera] = useState(mediaDevice.camera);
+  const [microphone, setMicrophone] = useState(mediaDevice.microphone);
+  const [speaker, setSpeaker] = useState(mediaDevice.speaker);
+  const [speakerVolume, setSpeakerVolume] = useState<number>(mediaDevice.speakerVolume);
   const [volume, setVolume] = useState<number>(0);
-  const ref = useRef<boolean>(false);
-
-  useEffect(() => {
-    // @ts-ignore
-    window.d = {
-      mediaInfo,
-      devices
-    }
-  }, [mediaInfo, devices]);
-
-
 
   let mounted = false;
 
   useEffect(() => {
+    const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
     if (!platform || !rtcClient) return;
 
     if (platform === 'web' && !mounted) {
       const webClient = rtcClient as AgoraWebClient;
       const onChange = async () => {
         const devices: Device[] = await webClient.getDevices();
-        console.log("devices", devices);
         setDevices(devices.map((item: Device) => ({
           value: item.deviceId,
           text: item.label,
@@ -86,22 +76,23 @@ export default function useSettingControl () {
         let microphoneIds = await nativeClient.rtcEngine.getAudioRecordingDevices();
         let speakerIds = await nativeClient.rtcEngine.getAudioPlaybackDevices();
         let cameraIds = await nativeClient.rtcEngine.getVideoDevices();
+
         const microphones = microphoneIds.map((it: any) => (
           {
             kind: 'audioinput',
             text: it.devicename,
-            deviceId: it.deviceid
+            value: it.deviceid
           }
         ));
         const speakers = speakerIds.map((it: any) => ({
           kind: 'audiooutput',
           text: it.devicename,
-          deviceId: it.deviceid,
+          value: it.deviceid,
         }));
         const cameras = cameraIds.map((it: any) => ({
           kind: 'videoinput',
           text: it.devicename,
-          deviceId: it.deviceid,
+          value: it.deviceid,
         }));
         setDevices([].concat(microphones).concat(speakers).concat(cameras));
       }
@@ -116,7 +107,7 @@ export default function useSettingControl () {
         nativeClient.off('audiodevicestatechanged', onChange);
       }
     }
-  }, [platform, rtcClient]);
+  }, [platform]);
 
   const cameraId: string = useMemo(() => {
     return cameraList[camera] ? cameraList[camera].value : '';
@@ -132,31 +123,51 @@ export default function useSettingControl () {
 
   const [stream, setStream] = useState<any>(null);
 
-  const preview = useRef<boolean>(false);
+  const ref = useRef<boolean>(false);
+
   useEffect(() => {
-    if (preview.current) return;
+    return () => {
+      ref.current = true;
+    }
+  }, []);
+
+  const lock = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      lock.current = true;
+    }
+  }, []);
+  useEffect(() => {
+    console.log("device: " ,speakerId, cameraId, microphoneId);
+    if (lock.current || !speakerId || !cameraId || !microphoneId) return;
+    const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
+    lock.current = true;
     if (platform === 'web') {
       const webClient = rtcClient as AgoraWebClient;
-      preview.current = true;
+      !ref.current &&
       webClient.createPreviewStream({
         cameraId,
         microphoneId,
         speakerId,
       }).then((stream: any) => {
-        setStream(stream);
+        !ref.current && setStream(stream);
+      }).finally(() => {
+        lock.current = false;
       })
     }
 
     if (platform === 'electron') {
       const nativeClient = rtcClient as AgoraElectronClient;
-      preview.current = true;
       const stream = nativeClient.createStream({
         streamID: 0,
         cameraId,
         microphoneId,
         speakerId,
       })
+      console.log("electron stream", stream);
       setStream(stream);
+      lock.current = false;
     }
   }, [platform, speakerId, cameraId, microphoneId]);
 
@@ -165,8 +176,7 @@ export default function useSettingControl () {
   useEffect(() => {
     if (!stream || !stream.getAudioLevel) return;
     interval.current = setInterval(() => {
-      console.log("setVolume: ", stream.getAudioLevel());
-      setVolume(stream.getAudioLevel())
+      !ref.current && setVolume(stream.getAudioLevel())
     }, 300);
     return () => {
       interval.current && clearInterval(interval.current);
@@ -180,9 +190,9 @@ export default function useSettingControl () {
     if (platform === 'electron') {
       console.log("[electron-client] add volume event listener");
       const onVolumeChange = (uid: number, volume: number, speaker: any, totalVolume: number)=> {
-        console.log("update volume");
         setVolume(Number((totalVolume / 255).toFixed(3)))
       }
+      const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
       const nativeClient = rtcClient as AgoraElectronClient;
       nativeClient.rtcEngine.setClientRole(1);
       nativeClient.rtcEngine.enableAudioVolumeIndication(1000, 3, false);
@@ -220,7 +230,7 @@ export default function useSettingControl () {
     const cameraId = cameraList[camera] ? cameraList[camera].value : '';
     const microphoneId = microphoneList[microphone] ? microphoneList[microphone].value : '';
     const speakerId = speakerList[speaker] ? speakerList[speaker].value : '';
-    const mediaInfo: MediaInfo = {
+    const mediaInfo: MediaDeviceState = {
       cameraId,
       microphoneId,
       speakerId,
@@ -229,7 +239,8 @@ export default function useSettingControl () {
       speaker,
       speakerVolume,
     }
-    dispatch({type: ActionType.SAVE_MEDIA, media: mediaInfo});
+    ref.current = true;
+    roomStore.updateDevice(mediaInfo);
     if (stream && stream.close) {
       stream.close();
     }

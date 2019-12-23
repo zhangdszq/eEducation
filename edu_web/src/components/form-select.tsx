@@ -1,6 +1,5 @@
 import React from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import { Select, FormControl, InputLabel, MenuItem } from '@material-ui/core';
+import { Select, InputLabel, MenuItem } from '@material-ui/core';
 
 export interface FormSelectItems {
   text: string

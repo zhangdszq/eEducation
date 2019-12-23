@@ -1,6 +1,10 @@
 import EventEmitter from 'events';
 import AgoraRTC from 'agora-rtc-sdk';
+import { roomStore } from '../stores/room';
 
+if (process.env.REACT_APP_AGORA_LOG !== 'true') {
+  AgoraRTC.Logger.setLogLevel(AgoraRTC.Logger.NONE);
+}
 export interface AgoraStreamSpec {
   streamID: number
   video: boolean
@@ -35,6 +39,8 @@ const clientEvents: string[] = [
   'network-type-changed',
   'network-quality',
   'exception',
+  'onTokenPrivilegeWillExpire',
+  'onTokenPrivilegeDidExpire',
 ]
 
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
@@ -52,9 +58,13 @@ class AgoraRTCClient {
   public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'vp8'});
   public _bus: EventEmitter = new EventEmitter();
   public _localStream: any = null;
+  public _streamEvents: string[];
+  public _clientEvents: string[];
 
   constructor () {
     this.streamID = null;
+    this._streamEvents = [];
+    this._clientEvents = [];
   }
 
   // init rtc client when _init flag is false;
@@ -67,7 +77,6 @@ class AgoraRTCClient {
       }, reject);
     })
     await prepareInit;
-    // console.log("[smart-client] init client");
   }
 
   // create rtc client;
@@ -84,13 +93,13 @@ class AgoraRTCClient {
     }
   }
 
-  // destroy rtc client (only unsubscribe client events)
   destroyClient(): void {
     this.unsubscribeClientEvents();
   }
 
   subscribeClientEvents() {
     for (let evtName of clientEvents) {
+      this._clientEvents.push(evtName);
       this._client.on(evtName, (args: any) => {
         this._bus.emit(evtName, args);
       });
@@ -98,13 +107,15 @@ class AgoraRTCClient {
   }
 
   unsubscribeClientEvents() {
-    for (let evtName of clientEvents) {
+    for (let evtName of this._clientEvents) {
       this._client.off(evtName, () => {});
+      this._clientEvents = this._clientEvents.filter((it: any) => it === evtName);
     }
   }
 
   subscribeLocalStreamEvents() {
     for (let evtName of streamEvents) {
+      this._streamEvents.push(evtName);
       this._localStream.on(evtName, (args: any) => {
         this._bus.emit(evtName, args);
       });
@@ -113,10 +124,16 @@ class AgoraRTCClient {
 
   unsubscribeLocalStreamEvents() {
     if (this._localStream) {
-      for (let evtName of streamEvents) {
+      for (let evtName of this._streamEvents) {
         this._localStream.removeEventListener(evtName, (args: any[]) => {});
+        this._streamEvents = this._streamEvents.filter((it: any) => it === evtName);
       }
     }
+  }
+
+  renewToken(newToken: string) {
+    if (!this._client) return console.warn('renewToken is not permitted, checkout your instance');
+    this._client.renewToken(newToken);
   }
 
   removeAllListeners() {
@@ -177,7 +194,6 @@ class AgoraRTCClient {
 
   createLocalStream(data: AgoraStreamSpec): Promise<any> {
     this._localStream = AgoraRTC.createStream({...data, mirror: false});
-    // console.log("[smart-client] _localStream ", this._localStream);
     return new Promise((resolve, reject) => {
       this._localStream.init(() => {
         this.streamID = data.streamID;
@@ -208,9 +224,9 @@ class AgoraRTCClient {
     this.streamID = 0;
   }
 
-  async join (uid: number, channel: string) {
+  async join (uid: number, channel: string, token?: string) {
     return new Promise((resolve, reject) => {
-      this._client.join(null, channel, +uid, resolve, reject);
+      this._client.join(token, channel, +uid, resolve, reject);
     })
   }
 
@@ -253,7 +269,7 @@ class AgoraRTCClient {
     return new Promise((resolve, reject) => {
       AgoraRTC.getDevices((devices: any) => {
         const _devices: any[] = [];
-        devices.map((item: any) => {
+        devices.forEach((item: any) => {
           _devices.push({deviceId: item.deviceId, kind: item.kind, label: item.label});
         })
         resolve(_devices);
@@ -274,6 +290,7 @@ export default class AgoraWebClient {
   public shared: boolean;
   public joined: boolean;
   public published: boolean;
+  public tmpStream: any;
 
   constructor() {
     this.localUid = 0;
@@ -282,6 +299,7 @@ export default class AgoraWebClient {
     this.bus = new EventEmitter();
     this.shared = false;
     this.shareClient = null;
+    this.tmpStream = null;
     this.joined = false;
     this.published = false;
   }
@@ -302,13 +320,21 @@ export default class AgoraWebClient {
     return client.getDevices();
   }
 
-  async joinChannel(uid: number, channel: string, dual: boolean) {
+  async joinChannel({
+    uid, channel, dual, token
+  }: {
+    uid: number,
+    channel: string,
+    dual: boolean,
+    token: string
+  }) {
     this.localUid = uid;
     this.channel = channel;
     await this.rtc.createClient(APP_ID, true);
-    await this.rtc.join(this.localUid, channel);
+    await this.rtc.join(this.localUid, channel, token);
     dual && await this.rtc.enableDualStream();
     this.joined = true;
+    roomStore.setRTCJoined(true);
   }
 
   async leaveChannel() {
@@ -319,6 +345,7 @@ export default class AgoraWebClient {
     this.rtc.destroy();
     this.rtc.destroyClient();
     this.joined = false;
+    roomStore.setRTCJoined(false);
   }
 
   async enableDualStream() {
@@ -329,7 +356,7 @@ export default class AgoraWebClient {
     console.log(" publish local stream ", this.published);
     if (this.published) {
       await this.unpublishLocalStream();
-      console.log("[smart-client] unpublished", this.published);
+      console.log("[agora-web] unpublished", this.published);
     }
     await this.rtc.createLocalStream(data);
     await this.rtc.publish();
@@ -337,12 +364,12 @@ export default class AgoraWebClient {
   }
 
   async unpublishLocalStream() {
-    console.log("[smart-client] unpublishStream");
+    console.log("[agora-web] invoke unpublishStream");
     await this.rtc.unpublish();
     this.published = false;
   }
 
-  async startScreenShare () {
+  async startScreenShare (token: string) {
     this.shareClient = new AgoraRTCClient();
     await this.shareClient.createLocalStream({
       video: false,
@@ -353,7 +380,7 @@ export default class AgoraWebClient {
       cameraId: ''
     })
     await this.shareClient.createClient(APP_ID);
-    await this.shareClient.join(SHARE_ID, this.channel);
+    await this.shareClient.join(SHARE_ID, this.channel, token);
     await this.shareClient.publish();
     this.shared = true;
   }
@@ -363,6 +390,7 @@ export default class AgoraWebClient {
     await this.shareClient.leave();
     await this.shareClient.destroy();
     await this.shareClient.destroyClient();
+    roomStore.removeLocalSharedStream();
     this.shared = false;
   }
 
@@ -386,9 +414,16 @@ export default class AgoraWebClient {
       cameraId,
       microphoneId,
       speakerId
-    })
+    });
+
+    if (this.tmpStream) {
+      this.tmpStream.isPlaying() && this.tmpStream.stop();
+      this.tmpStream.close();
+    }
+
     return new Promise((resolve, reject) => {
       tmpStream.init(() => {
+        this.tmpStream = tmpStream;
         resolve(tmpStream);
       }, (err: any) => {
         reject(err);

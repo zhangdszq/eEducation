@@ -1,17 +1,15 @@
-import React, { useMemo, useEffect } from 'react';
-import { useRootContext } from '../store';
-import { useAgoraSDK, IWindow } from '../hooks/use-agora-sdk';
+import React from 'react';
 import './native-shared-window.scss';
 import Button from './custom-button';
 import { usePlatform } from '../containers/platform-container';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
-import { AgoraStream } from '../reducers/types';
+import { AgoraStream } from '../utils/types';
+import { globalStore } from '../stores/global';
+import { roomStore } from '../stores/room';
+import { useGlobalState } from '../containers/root-container';
 
-export interface IWindowProps extends IWindow {
-  className?: string
-}
 
-export const WindowItem: React.FC<IWindowProps> = ({
+export const WindowItem: React.FC<any> = ({
   ownerName,
   name,
   className,
@@ -90,13 +88,8 @@ export default function NativeSharedWindowContainer() {
     platform
   } = usePlatform();
 
-  const {
-    nativeWindowInfo,
-    setNativeWindowInfo,
-    rtcClient,
-    addLocalSharedStream,
-  } = useAgoraSDK();
-
+  const globalState = useGlobalState();
+  const nativeWindowInfo = globalState.nativeWindowInfo;
   const [windowId, setWindowId] = React.useState<any>('');
 
   return (
@@ -106,27 +99,29 @@ export default function NativeSharedWindowContainer() {
       title={'Please select and click window for share'}
       items={nativeWindowInfo.items}
       cancel={() => {
-        setNativeWindowInfo({visible: false, items: []});
+        globalStore.setNativeWindowInfo({visible: false, items: []});
       }}
       selectWindow={(windowId: any) => {
         setWindowId(windowId)
       }}
       confirm={async (evt: any) => {
         if (!windowId) {
-          console.log("windowId is empty");
+          console.warn("windowId is empty");
           return;
         }
-        console.log("windowId ", windowId);
         try {
           if (platform === 'electron') {
+            const rtcClient = roomStore.rtcClient;
             const nativeClient = rtcClient as AgoraElectronClient;
-            let electronStream = await nativeClient.startScreenShare(windowId)
-            addLocalSharedStream(new AgoraStream(electronStream, electronStream.uid, true));
+            // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+            const screenShareToken = '';
+            let electronStream = await nativeClient.startScreenShare(windowId, screenShareToken);
+            roomStore.addLocalSharedStream(new AgoraStream(electronStream, electronStream.uid, true));
           }
         } catch(err) {
           throw err;
         } finally {
-          setNativeWindowInfo({visible: false, items: []});
+          globalStore.setNativeWindowInfo({visible: false, items: []});
         }
       }}
     />

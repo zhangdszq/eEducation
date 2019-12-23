@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Icon from '../components/icon';
 import _, {isFunction} from 'lodash';
 import { useLocation } from 'react-router';
@@ -16,7 +16,6 @@ export interface IWindow {
   windowId: any
   image: string
 }
-
 
 const PlatformContext: React.Context<IPlatformContext> = React.createContext({} as IPlatformContext);
 
@@ -89,8 +88,12 @@ export const PlatformContainer: React.FC<React.ComponentProps<any>> = ({ childre
       return (<>
         <Icon className="icon-setting" onClick={handleSetting} />
         <div className="icon-container">
-          <Icon className="icon-minimum" icon onClick={() => handleClick("minimum")}/>
-          <Icon className="icon-close" icon onClick={() => handleClick('close')} />
+          <Icon className="icon-minimum" onClick={() => {
+            handleClick("minimum")
+          }}/>
+          <Icon className="icon-close" onClick={() => {
+            handleClick('close')
+          }}/>
         </div>
       </>)
     }
@@ -98,13 +101,26 @@ export const PlatformContainer: React.FC<React.ComponentProps<any>> = ({ childre
   }
 
   const SettingBtn: React.FC<any> = () => {
-    return null
+    if (platform === 'electron') {
+      return (
+        <>
+          <Icon className="icon-minimum" onClick={() => {
+            handleClick("minimum")
+          }}/>
+          <Icon className="icon-close" onClick={() => {
+            handleClick('close')
+          }}/>
+        </>
+      )
+    }
+    return null;
   }
+
   const value = {
     platform,
     NavBtn,
     HomeBtn,
-    SettingBtn,
+    SettingBtn
   }
 
   return (

@@ -20,13 +20,13 @@ export default function OneToOne() {
       <MediaBoard />
       <div className="live-board">
         <div className="video-board">
-          {teacher !== undefined ?
+          {teacher ?
             <VideoPlayer
               role="teacher"
               streamID={teacher.streamID}
               stream={teacher.stream}
-              domId={teacher.id}
-              id={teacher.id}
+              domId={`${teacher.streamID}`}
+              id={`${teacher.streamID}`}
               account={teacher.account}
               handleClick={onPlayerClick}
               video={teacher.video}
@@ -46,8 +46,8 @@ export default function OneToOne() {
               role="student"
               streamID={students[0].streamID}
               stream={students[0].stream}
-              domId={students[0].id}
-              id={students[0].id}
+              domId={`${students[0].streamID}`}
+              id={`${students[0].streamID}`}
               handleClick={onPlayerClick}
               account={students[0].account}
               video={students[0].video}

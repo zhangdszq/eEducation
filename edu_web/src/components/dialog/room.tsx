@@ -1,29 +1,28 @@
-import React, {useState} from 'react';
+import React, {useMemo} from 'react';
 import Button from '../custom-button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import {Dialog, DialogContent, DialogContentText} from '@material-ui/core';
 
 import './dialog.scss';
+import { useGlobalState } from '../../containers/root-container';
+import { roomStore } from '../../stores/room';
+import { globalStore } from '../../stores/global';
+import { useHistory } from 'react-router-dom';
+import { RoomMessage } from '../../utils/agora-rtm-client';
 
 interface RoomProps {
-  visible: boolean
   onConfirm: (type: string) => void
   onClose: (type: string) => void
   desc: string
   type: string
 }
 
-export default function RoomDialog(
+function RoomDialog(
 {
-  visible = false,
   onConfirm,
   onClose,
   desc,
   type
 }: RoomProps) {
-
-  const [open, setOpen] = useState<boolean>(visible);
 
   const handleClose = () => {
     onClose(type)
@@ -57,3 +56,67 @@ export default function RoomDialog(
     </div>
   );
 }
+
+const DialogContainer = () => {
+
+  const history = useHistory();
+  const {dialog} = useGlobalState();
+
+  const visible = useMemo(() => {
+    if (!dialog.type) return false;
+    return true;
+  }, [dialog]);
+
+  const onClose = (type: string) => {
+    if (type === 'exitRoom') {
+      globalStore.removeDialog();
+      // history.push('/');
+    }
+    else if (type === 'apply') {
+      roomStore.rtmClient.sendPeerMessage(
+        `${roomStore.applyUid}`, {cmd: RoomMessage.rejectCoVideo}
+      ).then(() => {
+        globalStore.removeDialog();
+      }).catch(console.warn);
+    }
+  }
+
+  const onConfirm = (type: string) => {
+    if (type === 'exitRoom') {
+      roomStore.exitAll().then(() => {
+        console.log("exit all success");
+      }).catch(console.warn)
+      .finally(() => {
+        globalStore.removeDialog();
+        history.push('/');
+      })
+    }
+    else if (type === 'apply') {
+      Promise.all([
+        roomStore.rtmClient.sendPeerMessage(
+          `${roomStore.applyUid}`, {cmd: RoomMessage.acceptCoVideo}
+        ),
+        roomStore.updateCourseLinkUid(roomStore.applyUid)
+      ]).then(() => {
+        globalStore.removeNotice();
+        globalStore.removeDialog();
+      }).catch(console.warn);
+    }
+
+    return;
+  }
+
+  return (
+    visible ? 
+      <RoomDialog 
+        type={dialog.type}
+        desc={dialog.message}
+        onClose={onClose}
+        onConfirm={onConfirm}
+      /> : 
+      null
+  )
+}
+
+
+export default React.memo(DialogContainer);
