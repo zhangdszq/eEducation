@@ -2,6 +2,9 @@ const electron = require('electron');
 
 const ipcMain = electron.ipcMain;
 
+// workaround for resizable issue in mac os
+const platform = require('os').platform();
+
 const process = require('process');
 // Module to control application life.
 const app = electron.app;
@@ -14,14 +17,14 @@ const path = require('path');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-const isDev = require('electron-is-dev');
-
 function createWindow() {
   
     mainWindow = new BrowserWindow({
       frame: false,
       width: 700,
       height: 500,
+      center: true,
+      resizable: false,
       webPreferences: {
         nodeIntegration: true,
         preload: path.join(__dirname, './preload')
@@ -32,7 +35,8 @@ function createWindow() {
     `file://${path.resolve(
       __dirname,
       '../../app.asar/build'
-    )}/index.html`
+    )}/index.html`;
+
     mainWindow.center();
 
     // and load the index.html of the app.
@@ -49,30 +53,57 @@ function createWindow() {
         mainWindow = null
     })
 
-    mainWindow.setMenu(null)
-    let resizable = false;
-    let fullscreen = false;
-    mainWindow.setResizable(resizable);
+    mainWindow.setMenu(null);
+
     ipcMain.on('resize-window', (event, reply) => {
-      mainWindow.center();
+      
+      if (platform === 'darwin') {
+
+      }
+
+      if (platform === 'win32') {
+        if (reply.width === 700) {
+          if (mainWindow.isFullScreen()) {
+            mainWindow.setResizable(true);
+            mainWindow.setFullScreen(false);
+            mainWindow.setResizable(false);
+          }
+        }
+      }
+
       mainWindow.setContentSize(reply.width, reply.height, false);
-    })
-    ipcMain.on('resizable', () => {
-      mainWindow.setResizable(!resizable);
-      resizable = !resizable;
+      mainWindow.center();
     });
+
     ipcMain.on('minimum', () => {
-      mainWindow.hide();
-      mainWindow.setFullScreen(false);
-      fullscreen = false;
-    })
+      mainWindow.minimize();
+    });
+
     ipcMain.on('maximum', () => {
-      mainWindow.setFullScreen(!fullscreen);
-      fullscreen = !fullscreen;
-    })
+
+      if (platform === 'win32') {
+        const fullscreen = mainWindow.isFullScreen();
+        if (fullscreen) {
+          mainWindow.setResizable(true);
+          mainWindow.setFullScreen(false);
+          mainWindow.setResizable(false);
+        } else {
+          mainWindow.setResizable(true);
+          mainWindow.setFullScreen(true);
+          mainWindow.setResizable(false);
+        }
+      }
+
+      if (platform === 'darwin') {
+        const fullscreen = mainWindow.isFullScreen();
+        mainWindow.setFullScreen(!fullscreen);
+      }
+
+    });
+
     ipcMain.on('close', () => {
-      app.quit()
-    })
+      app.quit();
+    });
 }
 
 // This method will be called when Electron has finished

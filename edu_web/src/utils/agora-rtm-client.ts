@@ -1,9 +1,11 @@
-import AgoraRtm from 'agora-rtm-sdk';
+import AgoraRTM from 'agora-rtm-sdk';
 import EventEmitter from 'events';
 import * as _ from 'lodash';
-import { resolveRootState, UserAttrs, resolveMessage, jsonParse } from './helper';
-import { RootState } from '../reducers/initialize-state';
-import { UserRole } from '../reducers/types';
+import { resolveMessage, jsonParse } from './helper';
+
+export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
+const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
+const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_INFO : AgoraRTM.LOG_FILTER_OFF;
 
 export enum RoomMessage {
   muteAudio = 101,
@@ -64,6 +66,14 @@ function canJoin({onlineStatus, roomType, channelCount, role}: {onlineStatus: an
   return result;
 }
 
+export type SessionProps = {
+  roomType: number,
+  role: string,
+  id: string,
+  room: string,
+  token: string
+}
+
 export default class AgoraRTMClient {
 
   private _bus: EventEmitter;
@@ -72,14 +82,16 @@ export default class AgoraRTMClient {
   private _channels: any;
   private _client: any;
   private _channelAttrsKey: string | any;
+  private _logged: boolean = false;
+  private _joined: boolean = false;
 
-  constructor (appId: string) {
+  constructor () {
     this._bus = new EventEmitter();
     this._channels = {};
     this._currentChannel = null;
     this._currentChannelName = null;
     this._channelAttrsKey = null;
-    this._client = AgoraRtm.createInstance(appId, { enableLogUpload: false });
+    this._client = AgoraRTM.createInstance(APP_ID, { enableLogUpload: false, logFilter });
   }
 
   public removeAllListeners(): any {
@@ -106,20 +118,23 @@ export default class AgoraRTMClient {
     this._bus.off(evtName, cb);
   }
 
-  async login (uid: string) {
+  async login (uid: string, token?: string) {
+    await this._client.login({uid, token});
     this._client.on("ConnectionStateChanged", (newState: string, reason: string) => {
       this._bus.emit("ConnectionStateChanged", {newState, reason});
     });
     this._client.on("MessageFromPeer", (message: any, peerId: string, props: any) => {
       this._bus.emit("MessageFromPeer", {message, peerId, props});
     });
-    await this._client.login({uid});
+    this._logged = true;
     return
   }
 
   async logout () {
+    if (!this._logged) return;
     await this._client.logout();
     this.destroy();
+    this._logged = false;
     return;
   }
 
@@ -128,6 +143,7 @@ export default class AgoraRTMClient {
     this._channels[channel] = _channel;
     this._currentChannel = this._channels[channel];
     this._currentChannelName = channel;
+    await _channel.join();
     _channel.on('ChannelMessage', (message: string, memberId: string) => {
       this._bus.emit('ChannelMessage', {message, memberId});
     });
@@ -147,7 +163,7 @@ export default class AgoraRTMClient {
     _channel.on('AttributesUpdated', (attributes: any) => {
       this._bus.emit('AttributesUpdated', attributes);
     });
-    await _channel.join();
+    this._joined = true;
     return;
   }
 
@@ -159,15 +175,16 @@ export default class AgoraRTMClient {
   }
 
   async leave (channel: string) {
-    await this._channels[channel].leave();
-    this.destroyChannel(channel);
+    if (this._channels[channel]) {
+      await this._channels[channel].leave();
+      this._joined = false;
+      this.destroyChannel(channel);
+    }
   }
 
-  async exit(channel: string) {
-    if (this._channelAttrsKey) {
-      await this.deleteChannelAttributesByKey();
-    }
-    await this.leave(channel);
+  async exit() {
+    await this.deleteChannelAttributesByKey();
+    await this.leave(this._currentChannelName);
     await this.logout();
   }
 
@@ -175,23 +192,11 @@ export default class AgoraRTMClient {
     return this._currentChannel.sendMessage({ text: msg });
   }
 
-  async updateChannelAttrs(store: RootState, attrs: any) {
-    const key = store.user.role === UserRole.teacher ? 'teacher' : store.user.id
-    const userAttrs: UserAttrs = resolveRootState(store);
-    const _attrKey = Object.keys(attrs);
-    return this.updateChannelAttrsByKey(key, {
-      [`${key}`]: {
-        ...userAttrs,
-        ...attrs,
-      }
-    })
-  }
-
   async updateChannelAttrsByKey (key: string, attrs: any) {
     this._channelAttrsKey = key;
     const channelAttributes: {[key: string]: string} = {}
-    if (attrs[this._channelAttrsKey]) {
-      channelAttributes[key] = JSON.stringify(attrs[key]);
+    if (key) {
+      channelAttributes[key] = JSON.stringify(attrs);
     }
 
     console.log("[rtm-client] updateChannelAttrsByKey ", attrs, " key ", key, channelAttributes);
@@ -202,6 +207,7 @@ export default class AgoraRTMClient {
   }
 
   async deleteChannelAttributesByKey() {
+    if (!this._channelAttrsKey) return;
     await this._client.deleteChannelAttributesByKeys(
       this._currentChannelName,
       [this._channelAttrsKey],
@@ -285,12 +291,14 @@ export default class AgoraRTMClient {
     return accounts;
   }
 
-  async loginAndJoin({roomType, role, id, room}: {roomType: number, role: string, id: string, room: string}, pass: boolean): Promise<any> {
-    await this.login(id);
+  async loginAndJoin(
+    {roomType, role, id, room, token} :SessionProps, pass: boolean): Promise<any> {
+    await this.login(id, token);
     const channelMemberCount = await this.getChannelMemberCount([room]);
     const channelCount = channelMemberCount[room];
     let accounts = await this.getChannelAttributeBy(room);
     const onlineStatus = await this.queryOnlineStatusBy(accounts); 
+    console.log(" onlineStatus: ", onlineStatus);
     this._channelAttrsKey = role === 'teacher' ? 'teacher' : id;
     const argsJoin = {
       channelCount,

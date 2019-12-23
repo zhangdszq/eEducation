@@ -4,12 +4,11 @@ import Slider from '@material-ui/core/Slider';
 import { Subject } from 'rxjs';
 import { Player, PlayerPhase } from 'white-web-sdk';
 import { useParams } from 'react-router';
-import {apiClient} from '../utils/netless-whiteboard-client';
-import { useRootContext } from '../store';
-import { ActionType } from '../reducers/types';
 import moment from 'moment';
-import useToast from '../hooks/use-toast';
 import { Progress } from '../components/progress/progress';
+import { globalStore } from '../stores/global';
+import { WhiteboardAPI } from '../utils/api';
+import { whiteboard } from '../stores/whiteboard';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -161,7 +160,7 @@ class ReplayStore {
 
   
   async joinRoom(_uuid: string) {
-    return await apiClient.sendJoinRoom(_uuid);
+    return await WhiteboardAPI.joinRoom(_uuid);
   }
 }
 
@@ -196,7 +195,6 @@ export default ReplayContainer;
 
 export const Replay: React.FC<{}> = () => {
   const state = useReplayContext();
-  const {dispatch} = useRootContext();
 
   const player = useMemo(() => {
     if (!store.state || !store.state.player) return null;
@@ -269,8 +267,6 @@ export const Replay: React.FC<{}> = () => {
     return _duration;
   }, [startTime, endTime]);
 
-  const {showToast} = useToast();
-
   const lock = useRef<boolean>(false);
 
   useEffect(() => {
@@ -284,7 +280,8 @@ export const Replay: React.FC<{}> = () => {
     window.addEventListener('keydown', handleSpaceKey);
     if (uuid && startTime && endTime) {
         store.joinRoom(uuid).then(({roomToken}) => {
-          apiClient.replayRoom({
+          WhiteboardAPI.replayRoom(whiteboard.client,
+          {
             beginTimestamp: +startTime,
             duration: duration,
             room: uuid,
@@ -293,14 +290,14 @@ export const Replay: React.FC<{}> = () => {
           }, {
             onCatchErrorWhenRender: error => {
               error && console.warn(error);
-              showToast({
+              globalStore.showToast({
                 message: `Replay Failed please refresh browser`,
                 type: 'notice'
               });
             },
             onCatchErrorWhenAppendFrame: error => {
               error && console.warn(error);
-              showToast({
+              globalStore.showToast({
                 message: `Replay Failed please refresh browser`,
                 type: 'notice'
               });
@@ -309,8 +306,6 @@ export const Replay: React.FC<{}> = () => {
               store.updatePhase(phase);
             },
             onLoadFirstFrame: () => {
-              // console.log("player phase: loadFirstFrame");
-              // console.log("player phase: ", player && player.phase);
               store.loadFirstFrame();
             },
             onSliceChanged: () => {
@@ -318,9 +313,8 @@ export const Replay: React.FC<{}> = () => {
             onPlayerStateChanged: (error) => {
             },
             onStoppedWithError: (error) => {
-              dispatch({ type: ActionType.LOADING, payload: false});
               error && console.warn(error);
-              showToast({
+              globalStore.showToast({
                 message: `Replay Failed please refresh browser`,
                 type: 'notice'
               });
@@ -335,9 +329,8 @@ export const Replay: React.FC<{}> = () => {
               store.setPlayer(player);
               player.bindHtmlElement(document.getElementById("whiteboard") as HTMLDivElement);
             }
-          })//.catch(console.warn);
+          })
         });
-      // dispatch({ type: ActionType.LOADING, payload: true});
     }
     return () => {
       window.removeEventListener('resize', onWindowResize);

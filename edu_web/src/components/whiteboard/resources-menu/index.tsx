@@ -1,5 +1,5 @@
 import React from 'react';
-import { SceneResource } from '../../../hooks/use-netless-sdk';
+import { SceneResource } from '../../../stores/whiteboard';
 
 type ResourceMenuProps = {
   active: number

@@ -1,46 +1,57 @@
-import React, { useEffect } from 'react';
-import { Route, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Route } from 'react-router-dom';
 import CustomBrowserRouter from '../containers/custom-browser-router';
 import ThemeContainer from '../containers/theme-container';
 import Home from './home';
 import DeviceTest from './device-test';
-import ClassRoom from './classroom';
+import { RoomPage } from './classroom';
 import Loading from '../components/loading';
 import Toast from '../components/toast';
-import { useRootContext, useRootObserver } from '../store';
-import { AgoraSDKProvider } from '../hooks/use-agora-sdk';
-import {GlobalContainer} from '../containers/global-container';
 import '../icons.scss';
 import { PlatformContainer } from '../containers/platform-container';
 import ReplayContainer from './replay';
+import { RootProvider } from '../containers/root-container';
+import SmallClass from './classroom/small-class';
+import OneToOne from './classroom/one-to-one';
+import BigClass from './classroom/big-class';
+import { UploadNoticeView } from '../components/whiteboard/upload/upload-notice';
 
 export default function () {
-  const { store } = useRootContext();
-  useRootObserver(store);
 
   return (
     <ThemeContainer>
       <CustomBrowserRouter>
-        <GlobalContainer>
-          <PlatformContainer>
-            <AgoraSDKProvider>
-              <Loading />
-              <Toast />
-              <Route exact path="/">
-                <Home />
-              </Route>
-              <Route exact path="/device_test">
-                <DeviceTest />
-              </Route>
-              <Route exact path="/classroom/:roomType">
-                <ClassRoom />
-              </Route>
-              <Route exact path="/replay/:uuid/:startTime/:endTime">
-                <ReplayContainer />
-              </Route>
-            </AgoraSDKProvider>
-          </PlatformContainer>
-        </GlobalContainer>
+        <PlatformContainer>
+        <RootProvider>
+          <Loading />
+          <Toast />
+          <UploadNoticeView />
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/device_test">
+            <DeviceTest />
+          </Route>
+          <Route exact path="/classroom/one-to-one">
+            <RoomPage >
+              <OneToOne />
+            </RoomPage>
+            </Route>
+          <Route exact path="/classroom/small-class">
+            <RoomPage>
+              <SmallClass />
+            </RoomPage>
+          </Route>
+          <Route exact path="/classroom/big-class">
+            <RoomPage>
+              <BigClass />
+            </RoomPage>
+          </Route>
+          <Route exact path="/replay/:uuid/:startTime/:endTime">
+            <ReplayContainer />
+          </Route>
+        </RootProvider>
+        </PlatformContainer>
       </CustomBrowserRouter>
     </ThemeContainer>
   )

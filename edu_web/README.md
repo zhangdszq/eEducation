@@ -1,20 +1,35 @@
-# Agora Edu
+# 声网教育场景demo
+
+### 在线预览
+  [web demo](https://webdemo.agora.io/agora-web-showcase/examples/test_agora-edu-web/)
 
 ### 简介
   Agora Edu是基于声网的音视频sdk和实时消息sdk，以及Netless的白板sdk构成  
   主要功能如下:
-  老师1v1教学授课
-  小班课场景：老师1v17学生教学授课
-  大班课场景：老师1v多学生，学生举手开始授课
 
-### 需要用到的环境
-  * typescript 3.6.4
-  * react & react hooks
-  * agora-web-sdk
-  * agora-rtm-sdk
-  * electron 5.0.8
-  * electron-builder
+  |功能概述|代码入口|功能描述|  
+  | ---- | ----- | ----- |
+  |老师1v1教学授课 | [one-to-one.tsx](./src/pages/classroom/one-to-one.tsx) | 1个老师和1个学生默认连麦进入教室 |
+  |小班课场景：老师1v16学生教学授课| [small-class.tsx](./src/pages/classroom/small-class.tsx) | 1个老师和至多16个学生默认连麦进入教室 |
+  |大班课场景：老师1v多学生，默认以观众身份进入频道，举手向老师发起连麦，老师接受连麦并且统一以后，连麦互动。| [big-class.tsx](./src/pages/classroom/big-class.tsx) | 1个老师默认连麦进入教室，学生进入无限制人数 |
+
+### 使用的SDK
+  * agora-rtc-sdk （web版声网sdk）
+  * agora-rtm-sdk（web版声网实时消息sdk）
+  * agora-electron-sdk  （声网官方electron-sdk）
+  * white-web-sdk （netless官方白板sdk）
+  * ali-oss（可替换成你自己的oss client）
+
+### 所用技术
+  * typescript ^3.6.4
+  * react & react hooks & rxjs
+  * electron 5.0.8 & electron-builder
+  * material-ui
+
+### 开发环境
   * mac or windows
+  * nodejs LTS
+  * electron 5.0.8
 
 ### electron下载慢的解决方案
   * mac
@@ -47,6 +62,11 @@
   按照.env.example
   修改为.env.local
 
+# 如果你的appid项目里启用了证书服务，请在代码里搜索以下注释寻找使用到token的地方，在这里加入获取token的业务逻辑。
+```
+WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+```
+
 ```bash
 # 声网的APPID 通过声网开发者管理界面获取
 REACT_APP_AGORA_APP_ID=Agora APPID
@@ -69,22 +89,27 @@ REACT_APP_AGORA_OSS_BUCKET_KEY=你的oss存储key或者存储id
 REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
 ```
 
-# 部署的时候需要修改package.json
-  "homepage": "你的域名/路径"
+# Web发布和开发操作
 
-# 运行方式
+#### 本地开发运行方式
   npm run dev
 
-# 部署方式
+#### 本地编译方式
   npm run build
 
+### 部署的时候需要修改package.json，然后执行npm run build
+  "homepage": "你的域名/路径"
 
-# electron mac打包方式
+# Electron版发布和开发操作
+
+#### electron mac打包方式
   npm run pack:mac
-  
-  等待成功运行结束时会产生一个release目录，可以直接运行里面的.app
+  等待成功运行结束时会产生一个release目录，默认会打包出一个dmg文件，正常打开更新到Application目录即可完成安装，然后可以执行程序。
 
-# electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本5.0.8的electron和agora-electron-sdk "platform": "win32"版）
+#### electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本5.0.8的electron和agora-electron-sdk "platform": "win32"版）
   npm run pack:win
   
-  等待成功运行结束时会产生一个release目录，可以直接运行里面的.exe
+  等待成功运行结束时会产生一个release目录，默认会打包出一个安装程序，请使用windows管理员身份打开，即可完成安装，然后可以执行程序。
+
+#### FAQ
+  * [问题反馈](https://github.com/AgoraIO-Usecase/eEducation/issues/new)

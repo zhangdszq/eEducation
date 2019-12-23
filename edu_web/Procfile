@@ -1,3 +1,0 @@
-concurrently npm run electron:web \
-  wait-on $ELECTRON_START_URL && \
-  npm run electron:client

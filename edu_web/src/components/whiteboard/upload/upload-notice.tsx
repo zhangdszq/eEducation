@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 
 import './upload-notice.scss';
+import { useGlobalState } from '../../../containers/root-container';
 
 type UploadNoticeProps = {
   title: string
@@ -36,9 +37,11 @@ export const useUploadNotice = () => React.useContext(UploadNoticeContext);
 
 const duration = 1500;
 
-export const UploadNoticeView: React.FC<{}> = () => {
+export const UploadNoticeContainer: React.FC<{}> = () => {
 
-  const {state} = useUploadNotice();
+  const globalState = useGlobalState();
+
+  const uploadNotice = globalState.uploadNotice;
 
   const queueRef = React.useRef<NoticeMessage[]>([]);
   const [messages, setMessages] = useState<NoticeMessage[]>([]);
@@ -55,15 +58,15 @@ export const UploadNoticeView: React.FC<{}> = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!state.title || !state.type) return;
+    if (!uploadNotice.title || !uploadNotice.type) return;
     if (queueRef.current) {
       queueRef.current.push({
-        ...state,
+        ...uploadNotice,
         key: +Date.now()
       })
       setMessages([...queueRef.current]);
     }
-  }, [state]);
+  }, [uploadNotice]);
 
   return (
     <div className="upload-notice">
@@ -77,24 +80,4 @@ export const UploadNoticeView: React.FC<{}> = () => {
   )
 }
 
-export const NoticeProvider: React.FC<any> = ({children}) => {
-
-  const [state, Notice] = useState<NoticeMessage>({
-    title: '',
-    type: '',
-    key: +Date.now()
-  });
-
-  const value = {state,Notice};
-
-  return (
-    <UploadNoticeContext.Provider value={value}>
-      {children}
-    </UploadNoticeContext.Provider>
-  )
-
-}
-
-export default React.memo(NoticeProvider);
-
-// export default React.memo(UploadNotice);
+export const UploadNoticeView = React.memo(UploadNoticeContainer);

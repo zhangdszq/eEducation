@@ -2,23 +2,35 @@ import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react'
 import Whiteboard from './whiteboard';
 import VideoPlayer from '../components/video-player';
 import Control from './whiteboard/control';
-import { useRootContext } from '../store';
-import { ActionType, UserRole } from '../reducers/types';
+import { AgoraStream } from '../utils/types';
 import useStream from '../hooks/use-streams';
 import { useLocation } from 'react-router';
-import useNetlessSDK, { stateManager } from '../hooks/use-netless-sdk';
-import { useAgoraSDK } from '../hooks/use-agora-sdk';
 import Tools from './whiteboard/tools';
 import { SketchPicker } from 'react-color';
-import { usePlatform } from '../containers/platform-container';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import { UploadBtn } from './whiteboard/upload/upload-btn';
 import { ResourcesMenu } from './whiteboard/resources-menu';
 import ScaleController from './whiteboard/scale-controller';
-import _ from 'lodash';
 import { PPTProgressPhase } from '../utils/upload-manager';
-import { useUploadNotice, UploadNoticeView } from '../components/whiteboard/upload/upload-notice';
+import { UploadNoticeView } from '../components/whiteboard/upload/upload-notice';
 import Progress from '../components/progress/progress';
+import { useRoomState, useWhiteboardState, useGlobalState } from '../containers/root-container';
+import { roomStore } from '../stores/room';
+import { whiteboard } from '../stores/whiteboard';
+import { globalStore } from '../stores/global';
+import { platform } from '../utils/platform';
+import AgoraWebClient, { SHARE_ID } from '../utils/agora-rtc-client';
+import "white-web-sdk/style/index.css";
+
+const pathName = (path: string): string => {
+  const reg = /\/([^/]*)\//g;
+  reg.exec(path);
+  if (RegExp.$1 === "aria") {
+      return "";
+  } else {
+      return RegExp.$1;
+  }
+}
 
 interface MediaBoardProps {
   handleClick?: (type: string) => void
@@ -30,92 +42,97 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   children
 }) => {
 
-  const {store, dispatch} = useRootContext();
+  const roomState = useRoomState();
+
+  const whiteboardState = useWhiteboardState();
   
-  const role = useMemo(() => {
-    return store.user.role;
-  }, [store.user.role]);
-
-  const {
-    initWhiteboard,
-    exitWhiteboard,
-    reinitWhiteboard,
-    currentPage,
-    totalPage,
-    addNewPage,
-    changePage,
-    room,
-    netlessContext,
-  } = useNetlessSDK({store, dispatch});
-
+  const role = roomState.me.role;
+  const room = whiteboardState.room;
+  const me = roomState.me;
+  const course = roomState.course;
+  
   const ref = useRef<any>(false);
-
-  const {
-    setShared,
-    removeLocalSharedStream,
-    setNativeWindowInfo,
-    rtcClient
-  } = useAgoraSDK();
-
-  const {
-    platform
-  } = usePlatform();
 
   const [pageTool, setPageTool] = useState<string>('');
 
-  useEffect(() => {
-    ref.current = false;
-    return () => {
-      ref.current = true;
-      exitWhiteboard().then(() => {
-      }).catch((err: any) => {
-        console.error(err);
-      })
-    }
-  }, []);
-
-  const connect = useRef<string>('disconnected');
-
-  useEffect(() => {
-    if (!ref.current
-      && connect.current === 'disconnected'
-      && store.global.rtmClient
-      && store.global.whiteboard.state === '') {
-      connect.current = 'connecting'
-      initWhiteboard().then(() => {
-        connect.current = 'connected'
-      }).catch((err: any) => {
-        connect.current = 'disconnected'
-        console.warn(err);
-      })
-      return;
-    }
-
-    if (!ref.current && connect.current === 'connected'
-      && store.global.whiteboard.client
-      && store.user.whiteboardId
-      && store.room.whiteboardId
-      && store.user.whiteboardId !== store.room.whiteboardId
-    ) {
-      connect.current = 'reconnect'
-    }
-
-    if (!ref.current
-      && connect.current === 'reconnect' && store.global.whiteboard.state === 'done') {
-      connect.current = 'reconnecting';
-      reinitWhiteboard(store.room.whiteboardId).then(() => {
-        connect.current = 'connected';
-      }).catch((err: any) => {
-        connect.current = 'disconnected';
-        console.warn(err);
-      })
-    }
-  }, [store.global.whiteboard, store.room.whiteboardId, store.global.rtmClient]);
-
   const {sharedStream} = useStream();
+
+  const shared = roomState.rtc.shared;
+
+  useEffect(() => {
+    if (!shared && platform === 'web') return;
+
+    const rtcClient = roomStore.rtcClient;
+    if (!shared) {
+      if (platform === 'electron') {
+        const nativeClient = rtcClient as AgoraElectronClient;
+        console.log("[native] electron screen sharing shared: ", shared, " nativeClient.shared: ", nativeClient.shared);
+        nativeClient.shared &&
+        nativeClient.stopScreenShare().then(() => {
+          console.log("[native] remove local shared stream");
+        }).catch(console.warn);
+        return;
+      }
+    }
+
+    if (platform === 'web') {
+      const webClient = rtcClient as AgoraWebClient;
+      // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+      const screenShareToken = '';
+      webClient.startScreenShare(screenShareToken).then(() => {
+        webClient.shareClient.on('onTokenPrivilegeWillExpire', (evt: any) => {
+          // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+          const newToken = '';
+          webClient.shareClient.renewToken(newToken);
+        });
+        webClient.shareClient.on('onTokenPrivilegeDidExpire', (evt: any) => {
+          // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+          const newToken = '';
+          webClient.shareClient.renewToken(newToken);
+        });
+        webClient.shareClient.on('stopScreenSharing', (evt: any) => {
+          console.log('stop screen share', evt);
+          webClient.stopScreenShare().then(() => {
+            roomStore.setScreenShare(false);
+          }).catch(console.warn).finally(() => {
+            console.log('[agora-web] stop share');
+          })
+        })
+        const localShareStream = webClient.shareClient._localStream
+        const _stream = new AgoraStream(localShareStream, localShareStream.getId(), true);
+        roomStore.addLocalSharedStream(_stream);
+      }).catch((err: any) => {
+        roomStore.setScreenShare(false);
+        if (err.type === 'error' && err.msg === 'NotAllowedError') {
+          globalStore.showToast({
+            message: `You canceled screen sharing`,
+            type: 'notice'
+          });
+        }
+        if (err.type === 'error' && err.msg === 'PERMISSION_DENIED') {
+          globalStore.showToast({
+            message: `Screen Sharing Failed: ${err.msg}`,
+            type: 'notice'
+          });
+        }
+        console.warn(err);
+      }).finally(() => {
+        console.log('[agora-web] start share');
+      })
+      return () => {
+        console.log("before shared change", shared);
+        shared && webClient.stopScreenShare().then(() => {
+          roomStore.setScreenShare(false);
+        }).catch(console.warn).finally(() => {
+          console.log('[agora-web] stop share');
+        })
+      }
+    }
+  }, [shared]);
 
   const handlePageTool: any = (evt: any, type: string) => {
     setPageTool(type);
+    console.log("[page-tool] click ", type);
     if (type === 'first_page') {
       changePage(1, true);
     }
@@ -133,10 +150,11 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
     }
 
     if (type === 'screen_sharing') {
-      setShared(true);
+      roomStore.setScreenShare(true);
 
       if (platform === 'electron') {
-        setNativeWindowInfo({
+        const rtcClient = roomStore.rtcClient;
+        globalStore.setNativeWindowInfo({
           visible: true,
           items: (rtcClient as AgoraElectronClient).getScreenShareWindows()
         })
@@ -144,16 +162,15 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
     }
 
     if (type === 'quit_screen_sharing') {
-      removeLocalSharedStream();
-      setShared(false);
+      roomStore.setScreenShare(false);
     }
 
     if (type === 'peer_hands_up') {
-      dispatch({type: ActionType.ADD_DIALOG, dialog: {
-        visible: true,
+      globalStore.showDialog({
         type: 'apply',
-        desc: `${store.ui.notice.text}`,
-      }})
+        message: `${globalStore.state.notice.text}`,
+      })
+      setPageTool('');
     }
 
     if (handleClick) {
@@ -162,31 +179,67 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   }
 
   const isHost = useMemo(() => {
-    if (+store.user.id === store.room.linkId) {
-      return true;
-    }
-    return false;
-  }, [store.user.id, store.room.linkId]);
+    return +roomStore.state.me.uid === +roomStore.state.course.linkId;
+  }, [roomStore.state.me.uid,
+    roomStore.state.course.linkId]);
   
   const location = useLocation();
 
+  const current =  useMemo(() => {
+    return whiteboardState.scenes.get(whiteboardState.currentScenePath);
+  }, [whiteboardState.scenes, whiteboardState.currentScenePath]);
+
+  const totalPage = useMemo(() => {
+    if (!current) return 0;
+    return current.totalPage;
+  }, [current]);
+
+  const currentPage = useMemo(() => {
+    if (!current) return 0;
+    return current.currentPage + 1;
+  }, [current]);
+
+  const addNewPage: any = (evt: any) => {
+    if (!current) return;
+    // const newIndex = netlessClient.state.sceneState.scenes.length;
+    const newIndex = room.state.sceneState.index + 1;
+    const scenePath = room.state.sceneState.scenePath;
+    const currentPath = `/${pathName(scenePath)}`;
+    room.putScenes(currentPath, [{}], newIndex);
+    room.setSceneIndex(newIndex);
+    whiteboard.updateRoomState();
+  }
+
+  const changePage = (idx: number, force?: boolean) => {
+    if (ref.current || !current) return;
+    const _idx = idx -1;
+    if (_idx < 0 || _idx >= current.totalPage) return;
+    if (force) {
+      room.setSceneIndex(_idx);
+      whiteboard.updateRoomState();
+      return
+    }
+    if (current.type === 'dynamic') {
+      if (_idx > current.currentPage) {
+        room.pptNextStep();
+      } else {
+        room.pptPreviousStep();
+      }
+    } else {
+      room.setSceneIndex(_idx);
+    }
+    whiteboard.updateRoomState();
+  }
+
   const showControl: boolean = useMemo(() => {
-    if (store.user.role === UserRole.teacher) return true;
+    if (me.role === 'teacher') return true;
     if (location.pathname.match(/big-class/)) {
-      if (store.user.role === UserRole.student) {
+      if (me.role === 'student') {
         return true;
       }
     }
     return false;
-  }, [location, store.user.role]);
-
-  useEffect(() => {
-    if (location.pathname.match(/big-class/)
-    && !store.ui.dialog.visible) {
-      setPageTool('');
-    }
-  }, [location, store.ui.dialog.visible]);
-
+  }, []);
 
 const items = [
   {
@@ -252,6 +305,8 @@ const items = [
     if (name === 'folder') {
       return
     }
+
+    console.log("set member whiteboard", name);
     room.setMemberState({currentApplianceName: name});
   }
 
@@ -263,6 +318,57 @@ const items = [
       strokeColor: [r, g, b]
     });
   }
+
+  const lock = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      lock.current = true;
+      whiteboard.destroy()
+      .then(() => {
+
+      }).catch(console.warn);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!lock.current && !whiteboard.state.room) {
+      lock.current = true;
+      whiteboard.join({
+        rid: roomStore.state.course.rid,
+        uid: me.boardId,
+        userPayload: {
+          userId: roomStore.state.me.uid,
+          identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
+        }
+      })
+      .then(() => {
+        console.log("whiteboard.state.room.uuid", whiteboard.state.room.uuid);
+      }).catch(console.warn)
+      .finally(() => {
+        lock.current = false;
+      })
+    }
+
+    if (!lock.current && course.boardId && me.boardId !== course.boardId && whiteboard.state.room) {
+      lock.current = true;
+      whiteboard.join({
+        rid: roomStore.state.course.rid,
+        uid: course.boardId,
+        userPayload: {
+          userId: roomStore.state.me.uid,
+          identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
+        }
+      })
+      .then(() => {
+        console.log("whiteboard.state.room.uuid", whiteboard.state.room.uuid);
+      }).catch(console.warn)
+      .finally(() => {
+        lock.current = false;
+      })
+    }
+
+  }, [me.boardId, course.boardId]);
 
   const [uploadPhase, updateUploadPhase] = useState<string>('init');
   const [convertPhase, updateConvertPhase] = useState<string>('init');
@@ -293,7 +399,8 @@ const items = [
         }
       }}
       onFailure={(err: any) => {
-        console.warn("pptConvert [agora] err: " ,err);
+        // WARN: capture exception
+        console.warn("pptConvert [agora] err: " ,err, uploadPhase, convertPhase);
         if (uploadPhase === 'uploading') {
           updateUploadPhase('upload_failure');
           return;
@@ -306,43 +413,39 @@ const items = [
     />)
   }, [tool, room]);
 
-  const {Notice} = useUploadNotice();
-
   useEffect(() => {
     if (uploadPhase === 'upload_success') {
-      Notice({
+      globalStore.showUploadNotice({
         title: 'upload success',
         type: 'ok',
-      })
+      });
     }
     if (uploadPhase === 'convert_failure') {
-      Notice({
+      globalStore.showUploadNotice({
         title: 'upload failure, check the network',
         type: 'error',
-      })
+      });
     }
   }, [uploadPhase]);
 
   useEffect(() => {
     if (convertPhase === 'convert_success') {
-      Notice({
+      globalStore.showUploadNotice({
         title: 'convert success',
         type: 'ok',
-      })
+      });
     }
     if (convertPhase === 'convert_failure') {
-      Notice({
+      globalStore.showUploadNotice({
         title: 'convert failure, check the network',
         type: 'error',
-      })
+      });
     }
   }, [convertPhase]);
 
-  const scale = useMemo(() => {
-    if (!stateManager.state) return 1;
-    if (stateManager.state.scale === 0) return 1;
-    return stateManager.state.scale;
-  }, [stateManager.state]);
+  const globalState = useGlobalState();
+
+  const scale = whiteboardState.scale ? whiteboardState.scale : 1;
 
   const UploadProgressView = useCallback(() => {
     if (uploadPhase === 'uploading') {
@@ -362,8 +465,8 @@ const items = [
     <div className="media-board">
       {sharedStream ? 
         <VideoPlayer
-          id={`${store.room.sharedId}`}
-          domId={`shared-${store.room.sharedId}`}
+          id={`${sharedStream.streamID}`}
+          domId={`shared-${sharedStream.streamID}`}
           className={'screen-sharing'}
           streamID={sharedStream.streamID}
           stream={sharedStream.stream}
@@ -392,7 +495,7 @@ const items = [
         <UploadPanel />
         {children ? children : null}
       </div>
-      {store.user.role === UserRole.teacher && room ?
+      {me.role === 'teacher' && room ?
         <ScaleController
           zoomScale={scale}
           onClick={() => {
@@ -400,7 +503,7 @@ const items = [
           }}
           zoomChange={(scale: number) => {
             room.moveCamera({scale});
-            stateManager.updateScale(scale);
+            whiteboard.updateScale(scale);
           }}
         />
         :
@@ -408,7 +511,7 @@ const items = [
       }
       { showControl ?
       <Control
-        notice={store.ui.notice}
+        notice={globalState.notice}
         role={role}
         sharing={Boolean(sharedStream)}
         current={pageTool}
@@ -416,15 +519,15 @@ const items = [
         totalPage={totalPage}
         isHost={isHost}
         onClick={handlePageTool}/> : null }
-        {tool === 'folder' && netlessContext ? 
+        {tool === 'folder' && whiteboardState.room ? 
           <ResourcesMenu
-            active={netlessContext.activeDir}
-            items={netlessContext.dirs}
+            active={whiteboardState.activeDir}
+            items={whiteboardState.dirs}
             onClick={(rootPath: string) => {
               if (room) {
                 room.setScenePath(rootPath);
                 room.setSceneIndex(0);
-                stateManager.updateState(room.state);
+                whiteboard.updateRoomState();
               }
             }}
             onClose={(evt: any) => {

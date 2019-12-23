@@ -1,10 +1,7 @@
-import React, {useEffect, forwardRef} from 'react';
+import React, {useEffect} from 'react';
 import './whiteboard.scss';
 import { Room } from 'white-web-sdk';
-import { recording } from '../hooks/use-recording';
-import { useRootContext } from '../store';
-import { stateManager } from '../hooks/use-netless-sdk';
-
+import { whiteboard } from '../stores/whiteboard';
 interface WhiteBoardProps {
   room: Room
 }
@@ -13,16 +10,13 @@ export default function Whiteboard ({
   room,
 }: WhiteBoardProps) {
 
-  const {store} = useRootContext();
   useEffect(() => {
-    if (!room || !store.room.rid) return;
-    // if (room) {
+    if (!room) return;
     room.bindHtmlElement(document.getElementById('whiteboard') as HTMLDivElement);
-    const whiteboard = document.getElementById('whiteboard') as HTMLDivElement
-    if (whiteboard) {
-      recording.updateRoom(room.uuid, store.room.rid);
+    const $whiteboard = document.getElementById('whiteboard') as HTMLDivElement
+    whiteboard.updateRoomState();
+    if ($whiteboard) {
       window.addEventListener("resize", (evt: any) => {
-        // RESIZE
         room.moveCamera({centerX: 0, centerY: 0});
         room.refreshViewSize();
       });
@@ -30,8 +24,7 @@ export default function Whiteboard ({
         window.removeEventListener("resize", (evt: any) => {});
       }
     }
-    // }
-  }, [room, store.room.rid])
+  }, [room])
 
   return (
     <div className="whiteboard">

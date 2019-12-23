@@ -1,7 +1,7 @@
 import { APP_ID } from './agora-rtc-client';
 import EventEmitter from 'events';
 import { btoa } from './helper';
-import { AgoraStream } from '../reducers/types';
+import { roomStore } from '../stores/room';
 // @ts-ignore
 const AgoraRtcEngine = window.rtcEngine;
 
@@ -112,7 +112,20 @@ export class AgoraElectronClient {
     'audioquality',
   ]
 
-  joinChannel(uid: number, channel: string, dual: boolean): number {
+  private _subscribedEvents: any[] = [];
+  private destroyed: boolean = false;
+
+  joinChannel({
+    uid,
+    channel,
+    dual,
+    token
+  }: {
+    uid: number,
+    channel: string,
+    dual: boolean,
+    token: string
+  }): number {
     this.localUid = uid;
     this.rid = channel;
     const rtcEngine = this.rtcEngine;
@@ -128,29 +141,32 @@ export class AgoraElectronClient {
       'audioquality',
     ]
     for (let event of events) {
+      this._subscribedEvents.push(event);
       rtcEngine.on(event, (...args: any[]) => {
         this.bus.emit(event, ...args);
       })
     }
     rtcEngine.on('joinedchannel', (channel: string, uid: number) => {
       const stream = new AgoraElectronStream(uid, uid !== SHARE_ID ? StreamType.local : StreamType.localVideoSource);
-      this.bus.emit('stream-published', {stream});
+      this.bus.emit('joinedchannel', {stream});
     })
     rtcEngine.on('userjoined', (uid: number) => {
       const stream = new AgoraElectronStream(uid, uid !== SHARE_ID ? StreamType.remote : StreamType.remoteVideoSource);
-      this.bus.emit('stream-subscribed', {stream});
+      this.bus.emit('userjoined', {stream});
     })
     rtcEngine.on('removestream', (uid: number) => {
-      this.bus.emit('stream-removed', {uid});
+      this.bus.emit('removestream', {uid});
     })
     if (dual) {
       rtcEngine.enableDualStreamMode(true);
     }
     // default role is audience
     this.rtcEngine.setClientRole(2);
-    let res = this.rtcEngine.joinChannel('', channel, '', this.localUid);
+    // WARN: TOKEN
+    let res = this.rtcEngine.joinChannel(token, channel, '', this.localUid);
     if(res === 0) {
       this.joined = true;
+      this.destroyed = false;
     }
     return res;
   }
@@ -183,6 +199,7 @@ export class AgoraElectronClient {
   }
 
   leave() {
+    if (!this.joined) return;
     const result = this.rtcEngine.leaveChannel();
     this.joined = false;
     this.localUid = 0;
@@ -199,10 +216,12 @@ export class AgoraElectronClient {
   }
 
   destroyClient() {
-    for (let event of this.events) {
+    if (this.destroyed) return;
+    for (let event of this._subscribedEvents) {
       this.rtcEngine.off(event, () => {});
     }
     this.bus.removeAllListeners();
+    this.destroyed = true;
   }
 
   getScreenShareWindows() {
@@ -215,7 +234,7 @@ export class AgoraElectronClient {
       }));
   }
 
-  async startScreenShare(windowId: number, rect = {x: 0, y: 0, width: 0, height: 0}, param = {width: 0, height: 0, bitrate: 500, frameRate: 15}): Promise<AgoraElectronStream> {
+  async startScreenShare(windowId: number, token: string, rect = {x: 0, y: 0, width: 0, height: 0}, param = {width: 0, height: 0, bitrate: 500, frameRate: 15}): Promise<AgoraElectronStream> {
     console.log("[native] start screen share");
     const shareClient = this.rtcEngine;
     return new Promise((resolve, reject) => {
@@ -225,17 +244,18 @@ export class AgoraElectronClient {
       // shareClient.setVideoRenderDimension(3, SHARE_ID, 1280, 960);
       shareClient.videoSourceSetVideoProfile(50, false);
       // to adjust render dimension to optimize performance
-      console.log("[electron-debug] SHARE_ID", SHARE_ID);
-      shareClient.videoSourceJoin(null, this.rid, '', SHARE_ID);
+      console.log("[electron-debug] SHARE_ID", SHARE_ID, " TOKEN: ", token);
+      shareClient.videoSourceJoin(token, this.rid, '', SHARE_ID);
       shareClient.once('videoSourceJoinedSuccess', (uid: number) => {
         console.log("[electron-debug] videoSource Joined", uid);
-        this.shared = true;
         // shareClient.startScreenCapture2(windowId, 15, rect, 0);
         shareClient.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15});
         shareClient.startScreenCapturePreview();
         // shareClient.videoSourceSetVideoProfile(43, false);
         // shareClient.startScreenCapture2(windowId, 15, rect, 0);
         // shareClient.startScreenCapturePreview();
+        this.shared = true;
+
         const electronStream = new AgoraElectronStream(uid, StreamType.localVideoSource);
         resolve(electronStream);
         shareClient.off('videoSourceJoinedSuccess', () => {});
@@ -249,13 +269,13 @@ export class AgoraElectronClient {
 
   async stopScreenShare() {
     if (this.shared) {
-      try {
-        console.log("[native] stop screen share");
-        this.rtcEngine.videoSourceLeave();
-        this.rtcEngine.videoSourceRelease();
-      } finally {
-        this.shared = false;
-      }
+      this.rtcEngine.once('videoSourceLeaveChannel', (evt: any) => {
+        roomStore.removeLocalSharedStream();
+        this.rtcEngine.off('videoSourceLeaveChannel', (evt: any) => {});
+      });
+      this.rtcEngine.videoSourceLeave();
+      this.rtcEngine.videoSourceRelease();
+      this.shared = false;
     }
   }
 

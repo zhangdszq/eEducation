@@ -1,8 +1,8 @@
 import { MultipartUploadResult } from 'ali-oss';
 import uuidv4 from 'uuid/v4';
 import {Room, PptConverter, PptKind, Ppt} from 'white-web-sdk';
-import {stateManager} from '../hooks/use-netless-sdk';
 import MD5 from 'js-md5';
+import { whiteboard } from '../stores/whiteboard';
 
 export type imageSize = {
   width: number
@@ -90,9 +90,9 @@ export class UploadManager {
         this.room.putScenes(`/${scenePath}`, res.scenes);
         this.room.setScenePath(`/${scenePath}/${res.scenes[0].name}`);
         console.log("current room state", this.room.state);
-        stateManager.updateState(this.room.state, {
+        whiteboard.updateRoomState({
           name: rawFile.name,
-          type: fileType,
+          type: fileType
         });
     } else {
       console.log("convert no static ppt");
@@ -114,9 +114,9 @@ export class UploadManager {
         const scenePath = MD5(`/${uuid}/${documentFile.id}`);
         this.room.putScenes(`/${scenePath}`, res.scenes);
         this.room.setScenePath(`/${scenePath}/${res.scenes[0].name}`);
-        stateManager.updateState(this.room.state, {
+        whiteboard.updateRoomState({
           name: rawFile.name,
-          type: fileType,
+          type: fileType
         });
     }
     if (onProgress) {

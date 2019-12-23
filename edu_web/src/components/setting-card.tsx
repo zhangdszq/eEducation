@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormControl } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import Button from './custom-button';
-import Icon from './icon';
 import FormSelect from './form-select';
 import SpeakerVolume from './volume/speaker';
 import useSettingControl from '../hooks/use-setting-control';
 
-import {isElectron} from '../utils/platform';
+import { usePlatform } from '../containers/platform-container';
 
 const useStyles = makeStyles ({
   formControl: {
@@ -23,6 +22,8 @@ interface SettingProps {
 
 export default function (props: SettingProps) {
   const classes = useStyles();
+
+  const {SettingBtn} = usePlatform();
   const {
     cameraList,
     microphoneList,
@@ -42,18 +43,22 @@ export default function (props: SettingProps) {
   } = useSettingControl();
 
   const changeCamera = (evt: any) => {
+    console.log('changeCamera ', evt.target.value);
     setCamera(evt.target.value);
   }
 
   const changeMicrophone = (evt: any) => {
+    console.log('changeMicrophone ', evt.target.value);
     setMicrophone(evt.target.value);
   }
 
   const changeSpeaker = (evt: any) => {
+    console.log('changeSpeaker ', evt.target.value);
     setSpeaker(evt.target.value);
   }
 
   const changeSpeakerVolume = (volume: number) => {
+    console.log('changeSpeaker ', volume);
     setSpeakerVolume(volume);
   }
 
@@ -62,23 +67,12 @@ export default function (props: SettingProps) {
       <div className="custom-card">
         <div className="flex-item cover">
           <PreviewPlayer />
-          {/* {localStream ?
-            <VideoPlayer
-              local={true}
-              domId={"local"}
-              preview={true}
-              stream={localStream}
-              video={true}
-              audio={true}
-            /> :
-            <div className="cover-placeholder"></div>} */}
         </div>
         <div className="flex-item card">
           <div className="position-top card-menu">
             <div></div>
             <div className="icon-container">
-              {/* <Icon className="icon-minimum" icon /> */}
-              {isElectron ? <Icon className="icon-close" icon /> : null }
+              <SettingBtn />
             </div>
           </div>
           <div className="position-content flex-direction-column">
@@ -98,7 +92,6 @@ export default function (props: SettingProps) {
                 items={microphoneList}
               />
               <MicrophoneVolume />
-              {/* <VoiceVolume volume={volume}/> */}
             </FormControl>
             <FormControl className={classes.formControl}>
               <FormSelect 

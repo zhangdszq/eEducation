@@ -1,6 +1,5 @@
+import { roomStore } from './../stores/room';
 import {useEffect, useRef, useMemo} from 'react';
-import {useRootContext} from '../store';
-import { UserRole } from '../reducers/types';
 
 export default function useChatControl () {
 
@@ -13,24 +12,19 @@ export default function useChatControl () {
     }
   }, []);
 
-  const {store} = useRootContext();
+  const me = roomStore.state.me;
+  const course = roomStore.state.course;
 
-  const muteControl = useMemo(() => {
-    return store.user.role === UserRole.teacher;
-  }, [store.user.role]);
+  const muteControl = me.role === 'teacher';
 
-  const muteChat: boolean = useMemo(() => {
-    return Boolean(store.room.muteChat);
-  }, [store.room.muteChat]);
+  const muteChat = Boolean(course.muteChat);
 
-  const chat: boolean = useMemo(() => {
-    return Boolean(store.user.chat);
-  }, [store.user.chat]);
+  const chat =  Boolean(me.chat);
 
   const disableChat: boolean = useMemo(() => {
-    if (store.user.role !== UserRole.teacher && (muteChat || !chat)) return true;
+    if (me.role === 'student' && (muteChat || !chat)) return true;
     return false;
-  }, [muteChat, chat, store.user.role]);
+  }, [muteChat, chat, me.role]);
 
   return {
     chat,
@@ -39,17 +33,15 @@ export default function useChatControl () {
     muteChat,
     handleMute (type: string) {
       if (!lock.current) {
-        if (store.global.rtmClient) {
-          lock.current = true;
-          store.global.rtmClient.updateChannelAttrs(store, {
-            mute_chat: type === 'mute' ? 1 : 0
-          }).then(() => {
-            lock.current = false
-          }).catch((err: any) => {
-            lock.current = false
-            console.warn(err);
-          })
-        }
+        lock.current = true;
+        roomStore.updateAttrsBy(me.uid, {
+          mute_chat: type === 'mute' ? 1 : 0
+        }).then(() => {
+          console.log("update success");
+        }).catch(console.warn)
+        .finally(() => {
+          lock.current = false;
+        })
       }
 
     }

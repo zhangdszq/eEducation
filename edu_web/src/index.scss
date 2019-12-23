@@ -299,14 +299,15 @@ body {
     height: 100%;
     display: flex;
     overflow: hidden;
-    div {
+    .student-placeholder,
+    .teacher-placeholder {
       border-top-left-radius: 8px;
       border-bottom-left-radius: 8px;
-    }
-    .teacher-placeholder,
-    .student-placeholder {
       display: flex;
-      flex: 1;
+      flex: 1 1;
+      position: absolute;
+      height: 100%;
+      width: 100%;
       &::before {
         height: 100%;
         width: 100%;

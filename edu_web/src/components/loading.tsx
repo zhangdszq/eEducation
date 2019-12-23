@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useRootContext } from '../store';
+import { useGlobalState } from '../containers/root-container';
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -34,9 +34,9 @@ export const Loading: React.FC<{}> = () => {
 
 export default function LoadContainer () {
 
-  const {store} = useRootContext();
+  const state = useGlobalState();
 
-  const loading = useMemo(() => store.global.loading, [store.global.loading]);
+  const loading = state.loading;
 
   return (
     loading ? <Loading /> : null

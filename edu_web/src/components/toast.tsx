@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useRootContext } from '../store';
 import './toast.scss';
+import {useGlobalState} from '../containers/root-container';
+import { isEmpty } from 'lodash';
 
 export interface SnackbarMessage {
   message: string;
@@ -15,7 +16,8 @@ export default function ConsecutiveSnackbars({
   duration = 1500
 }: SnackbarsProps) {
 
-  const {store} = useRootContext();
+  const globalState = useGlobalState();
+
   const queueRef = React.useRef<SnackbarMessage[]>([]);
   const [messages, setMessages] = useState<SnackbarMessage[]>([]);
   const timerRef = useRef<any>(null);
@@ -31,14 +33,14 @@ export default function ConsecutiveSnackbars({
   }, [messages]);
 
   useEffect(() => {
-    if (queueRef.current && store.ui.toast.message) {
+    if (queueRef.current && globalState.toast.message) {
       queueRef.current.push({
-        message: store.ui.toast.message,
+        message: globalState.toast.message,
         key: +Date.now()
       })
       setMessages([...queueRef.current]);
     }
-  }, [store.ui.toast]);
+  }, [globalState.toast]);
 
   return (
     <div className="notice-message-container">

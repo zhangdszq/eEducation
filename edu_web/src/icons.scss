@@ -2,13 +2,14 @@
   display: flex;
   justify-content: space-between;
   min-width: 46px;
+  align-items: center;
 }
 
 .icon {
   cursor: pointer;
   display: flex;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
 }
 
 .icon:hover {
@@ -22,7 +23,11 @@
 
 .icon-voice,
 .icon-speaker,
-.icon-speaker-on {
+.icon-speaker-on,
+.icon-speaker-off,
+.icons-camera-mute-s,
+.icons-camera-unmute-s
+{
   display: flex;
   width: 24px;
   height: 24px;

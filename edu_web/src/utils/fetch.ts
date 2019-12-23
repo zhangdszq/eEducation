@@ -1,17 +1,11 @@
-const fetchConfig = {
-  timeout: 5000,
-  headers: {},
-}
+const FETCH_TIMEOUT = 5000
 
 export async function AgoraFetch (input: RequestInfo, init?: RequestInit): Promise<any> {
   return new Promise((resolve, reject) => {
-    fetch(input, init).then(resolve, reject);
-    if (fetchConfig.timeout) {
-      const err = new Error("Connection timed out");
-      setTimeout(reject, fetchConfig.timeout, err);
+    fetch(input, init).then(resolve, reject)
+    if (FETCH_TIMEOUT) {
+      const err = new Error("request timeout")
+      setTimeout(reject, FETCH_TIMEOUT, err)
     }
-  });
+  })
 }
-// export const AgoraFetch = (...args: any[]) => {
-//   fetch(args)
-// }

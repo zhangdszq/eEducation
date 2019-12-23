@@ -1,10 +1,9 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import Icon from './icon';
 import './video-player.scss';
-import { useRootContext } from '../store';
-import { UserRole } from '../reducers/types';
-import { usePlatform } from '../containers/platform-container';
 import { AgoraElectronStream, StreamType, nativeRTCClient as nativeClient } from '../utils/agora-electron-client';
+import { useRoomState } from '../containers/root-container';
+import { platform } from '../utils/platform';
 
 const contentMode = 0;
 
@@ -43,11 +42,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   close
 }) => {
 
-  const { store } = useRootContext();
-  const { platform } = usePlatform();
-  const isTeacher = useMemo(() => {
-    return store.user.role === UserRole.teacher
-  }, [store.user.role]);
+  
 
   const loadVideo = useRef<boolean>(false);
   const loadAudio = useRef<boolean>(false);
@@ -60,10 +55,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   useEffect(() => {
     if (!domId || !stream || !nativeClient) return;
-    const _stream = stream as AgoraElectronStream;
     if (platform === 'electron') {
+      const _stream = stream as AgoraElectronStream;
       const dom = document.getElementById(domId);
       if (!dom) return;
+      console.log("[agora-electron] video player", dom, streamID, contentMode);
       if (preview) {
         // set for preview
         AgoraRtcEngine.setupLocalVideo(dom);
@@ -74,13 +70,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         // AgoraRtcEngine.muteLocalVideoStream(nativeClient.published);
         // AgoraRtcEngine.muteLocalAudioStream(nativeClient.published);
         return () => {
+          console.log("[agora-electron] stop preview", dom, streamID, contentMode);
           AgoraRtcEngine.stopPreview();
           AgoraRtcEngine.setClientRole(2);
         }
       }
       if (_stream.type === StreamType.local) {
-        console.log("video-player play " ,AgoraRtcEngine.setupViewContentMode(streamID, contentMode));
-        console.log("video-player setupLocalVideo ", AgoraRtcEngine.setupLocalVideo(dom));
+        console.log("[agora-electron] video-player play " ,AgoraRtcEngine.setupViewContentMode(streamID, contentMode));
+        console.log("[agora-electron] video-player setupLocalVideo ", AgoraRtcEngine.setupLocalVideo(dom));
         return () => {
           // AgoraRtcEngine.destroyRenderView(streamID, dom, (err: any) => { console.warn(err.message) });
         }
@@ -114,7 +111,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       }
     }
-  }, [domId, stream, AgoraRtcEngine, nativeClient]);
+  }, [domId, stream, AgoraRtcEngine]);
 
 useEffect(() => {
   if (platform === 'web') {
@@ -130,7 +127,7 @@ useEffect(() => {
       if (stream.isPlaying()) {
         stream.stop();
       }
-      // local && stream && stream.close();
+      local && stream && stream.close();
     }
   }
 }, [domId, stream]);
@@ -161,16 +158,19 @@ useEffect(() => {
     // prevent already muted video
     if (!loadAudio.current) {
       if (!audio) {
-        AgoraRtcEngine.muteLocalAudioStream(true);
+        const res = AgoraRtcEngine.muteLocalAudioStream(true);
+        console.log("[agora-electron] muteLocalAudioStream(true); ", res);
       }
       loadAudio.current = true;
       return;
     }
 
     if (audio) {
-      AgoraRtcEngine.muteLocalAudioStream(false);
+      const res = AgoraRtcEngine.muteLocalAudioStream(false);
+      console.log("[agora-electron] muteLocalAudioStream(false); ", res);
     } else {
-      AgoraRtcEngine.muteLocalAudioStream(true);
+      const res = AgoraRtcEngine.muteLocalAudioStream(true);
+      console.log("[agora-electron] muteLocalAudioStream(true); ", res);
     }
 }
 }, [stream, audio, AgoraRtcEngine]);
@@ -200,16 +200,19 @@ useEffect(() => {
       // prevent already muted video
       if (!loadVideo.current) {
         if (!video) {
-          AgoraRtcEngine.muteLocalVideoStream(true);
+          const res = AgoraRtcEngine.muteLocalVideoStream(true);
+          console.log("[agora-electron] muteLocalVideoStream(true); ", res);
         }
         loadVideo.current = true;
         return;
       }
 
       if (video) {
-        AgoraRtcEngine.muteLocalVideoStream(false);
+        const res = AgoraRtcEngine.muteLocalVideoStream(false);
+        console.log("[agora-electron] muteLocalVideoStream(false); ", res);
       } else {
-        AgoraRtcEngine.muteLocalVideoStream(true);
+        const res = AgoraRtcEngine.muteLocalVideoStream(true);
+        console.log("[agora-electron] muteLocalVideoStream(true); ", res);
       }
   }
 }, [stream, video, AgoraRtcEngine]);
@@ -232,15 +235,17 @@ const onClose = (evt: any) => {
   }
 }
 
+const me = useRoomState().me;
+
 return (
-  <div id={`${domId}`} className={`${className ? className : (preview ? 'preview-video' : `agora-video-view ${Boolean(video) === false && stream ? 'show-placeholder' : ''}`)}`}>
+  <div className={`${className ? className : (preview ? 'preview-video' : `agora-video-view ${Boolean(video) === false && stream ? 'show-placeholder' : ''}`)}`}>
     {close ? <div className="icon-close" onClick={onClose}></div> : null}
-    <div className={role === 'teacher' ? 'teacher-placeholder' : 'student-placeholder'}></div>
+    {className !== 'screen-sharing' ? <div className={role === 'teacher' ? 'teacher-placeholder' : 'student-placeholder'}></div> : null }
     {preview ? null :
       account ?
         <div className="video-profile">
           <span className="account">{account}</span>
-          {isTeacher || store.user.id === id ?
+          {me.uid === id || me.role === 'teacher' ?
             <span className="media-btn">
               <Icon onClick={onAudioClick} className={audio ? "icon-speaker-on" : "icon-speaker-off"} data={"audio"} />
               <Icon onClick={onVideoClick} className={video ? "icons-camera-unmute-s" : "icons-camera-mute-s"} data={"video"} />
@@ -248,6 +253,7 @@ return (
         </div>
         : null
     }
+    <div id={`${domId}`} className={`agora-rtc-video ${local && platform === 'electron' ? 'rotateY180deg' : ''}`}></div>
   </div>
 )
 }

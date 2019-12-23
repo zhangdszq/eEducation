@@ -1,9 +1,9 @@
-import React, { useMemo, useRef } from 'react';
+import React, {useRef } from 'react';
 import './student-list.scss';
 import Icon from './icon';
-import { User, UserRole } from '../reducers/types';
-import { useRootContext } from '../store';
-import { RoomMessage } from '../utils/agora-rtm-client';
+import { useRoomState } from '../containers/root-container';
+import {roomStore, AgoraUser} from '../stores/room';
+import { get } from 'lodash';
 
 interface CustomIconProps {
   value: boolean
@@ -35,8 +35,8 @@ function CustomIcon ({
 }
 
 interface StudentListProps {
-  list: User[]
-  role: UserRole
+  list: AgoraUser[]
+  role: string
 }
 
 export default function StudentList ({
@@ -44,81 +44,47 @@ export default function StudentList ({
   role
 }: StudentListProps) {
 
-  const {store} = useRootContext();
+  const state = useRoomState();
 
-  const rtmClient = useMemo(() => {
-    return store.global.rtmClient
-  }, [store.global.rtmClient]);
+  const me = state.me;
 
-  const me = useMemo(() => {
-    return store.user;
-  }, [store.user]);
-
-  const ref = useRef<any>(null);
+  const lock = useRef<any>(false);
 
   const handleClick = (evt: any, id: string, type: string) => {
-    if (rtmClient && me) {
-      const targetUser = store.room.users.get(id);
-      if (!targetUser) return;
-
-      if (targetUser.id === me.id) {
-        if (ref.current === null) {
-          if (['chat', 'audio', 'video'].indexOf(type) !== -1) {
-            ref.current = true;
-            rtmClient.updateChannelAttrs(store, {
-              // @ts-ignore
-              [`${type}`]: +(!Boolean(targetUser[type])) as number
-            }).then(() => {
-              ref.current = null;
-            }).catch((err: any) => {
-              console.warn(err);
-              ref.current = null;
-            })
-          }
-        }
-      }
-
-      if (role === 'teacher') {
-        if (ref.current === null) {
-          if (['chat', 'audio', 'video'].indexOf(type) !== -1) {
-            ref.current = true;
-            const body = {
-              cmd: 0,
-            }
-            // @ts-ignore
-            const mediaState: number = targetUser[type];
-            if (type === 'audio') {
-              body.cmd = mediaState ? RoomMessage.muteAudio : RoomMessage.unmuteAudio
-            }
-            if (type === 'video') {
-              body.cmd = mediaState ? RoomMessage.muteVideo : RoomMessage.unmuteVideo
-            }
-            if (type === 'chat') {
-              body.cmd = mediaState ? RoomMessage.muteChat : RoomMessage.unmuteChat
-            }
-
-            rtmClient.sendPeerMessage(id, body).then(() => {
-              ref.current = null;
-            }).catch((err: any) => {
-              console.warn(err);
-              ref.current = null;
-            })
-          }
-        }
+    if (!roomStore.state || !me ) return;
+    const targetUser = roomStore.state.users.get(id);
+    if (!targetUser) return;
+    if (!lock.current) {
+      const val = Boolean(get(targetUser, type));
+      lock.current = true;
+      if (val) {
+        roomStore.mute(targetUser.uid, type)
+        .then(() => {
+        }).catch(console.warn)
+        .finally(() => {
+          lock.current = false;
+        });
+      } else {
+        roomStore.unmute(targetUser.uid, type)
+        .then(() => {
+        }).catch(console.warn)
+        .finally(() => {
+          lock.current = false;
+        });
       }
     }
   }
 
   return (
     <div className="student-list">
-      {list.map((item: User, key: number) => (
+      {list.map((item: AgoraUser, key: number) => (
         <div key={key} className="item">
           <div className="nickname">{item.account}</div>
           <div className="attrs-group">
             {/* <CustomIcon value={item.attrs.connect} icon="connect" onClick={handleClick} /> */}
-            <CustomIcon type="chat" id={item.id} value={Boolean(item.chat)} icon="chat" onClick={handleClick} />
-            <CustomIcon type="audio" id={item.id} value={Boolean(item.audio)} icon="audio" onClick={handleClick} />
-            <CustomIcon type="video" id={item.id} value={Boolean(item.video)} icon="video" onClick={handleClick} />
+            <CustomIcon type="chat" id={item.uid} value={Boolean(item.chat)} icon="chat" onClick={handleClick} />
+            <CustomIcon type="audio" id={item.uid} value={Boolean(item.audio)} icon="audio" onClick={handleClick} />
+            <CustomIcon type="video" id={item.uid} value={Boolean(item.video)} icon="video" onClick={handleClick} />
           </div>
         </div>
       ))}
