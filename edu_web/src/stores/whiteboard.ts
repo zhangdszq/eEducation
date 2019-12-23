@@ -8,6 +8,8 @@ import GlobalStorage from '../utils/custom-storage';
 import { isEmpty, get } from 'lodash';
 import { roomStore } from './room';
 
+const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
+
 interface SceneFile {
   name: string
   type: string
@@ -86,7 +88,12 @@ class Whiteboard extends EventEmitter {
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
     deviceType: DeviceType.Desktop,
     handToolKey: " ",
-    plugins: [WhiteVideoPlugin]
+    plugins: [WhiteVideoPlugin],
+    loggerOptions: {
+      disableReportLog: ENABLE_LOG ? false : true,
+      reportLevelMask: "info",
+      printLevelMask: "info",
+    }
   });
 
   constructor() {
