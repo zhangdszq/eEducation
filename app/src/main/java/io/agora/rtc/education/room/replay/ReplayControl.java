@@ -3,7 +3,6 @@ package io.agora.rtc.education.room.replay;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +20,7 @@ import com.herewhite.sdk.domain.PlayerState;
 import com.herewhite.sdk.domain.SDKError;
 
 import io.agora.rtc.education.R;
+import io.agora.rtc.lib.util.TimeUtil;
 
 public class ReplayControl extends RelativeLayout implements View.OnClickListener, PlayerEventListener {
 
@@ -58,7 +58,9 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
     }
 
     public void setPlayer(Player player) {
-        this.mPlayer = player;
+        mPlayer = player;
+        mPlayer.play();
+        tvTotalTime.setText(TimeUtil.stringForTimeHMS(player.getPlayerTimeInfo().getTimeDuration() / 1000, "%02d:%02d:%02d"));
     }
 
     private void playOrPause() {
@@ -106,7 +108,6 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void onPhaseChanged(final PlayerPhase playerPhase) {
-        Log.d("test", "onPhaseChanged " + playerPhase.name());
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -130,12 +131,17 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void onLoadFirstFrame() {
-        Log.d("test", "onLoadFirstFrame");
+        mPlayer.pause();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                setVisibility(VISIBLE);
+            }
+        });
     }
 
     @Override
     public void onSliceChanged(String s) {
-
     }
 
     @Override
@@ -144,18 +150,17 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void onStoppedWithError(SDKError sdkError) {
-        Log.e("test", "onStoppedWithError " + sdkError.toString());
     }
 
     @Override
     public void onScheduleTimeChanged(final long l) {
-        Log.d("test", "onScheduleTimeChanged " + l);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (mPlayer != null) {
                     float percent = (float) l / mPlayer.getPlayerTimeInfo().getTimeDuration();
                     sbTime.setProgress((int) (percent * 100));
+                    tvCurrentTime.setText(TimeUtil.stringForTimeHMS(l / 1000, "%02d:%02d:%02d"));
                 }
             }
         });
@@ -163,12 +168,10 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void onCatchErrorWhenAppendFrame(SDKError sdkError) {
-
     }
 
     @Override
     public void onCatchErrorWhenRender(SDKError sdkError) {
-
     }
 
 }
