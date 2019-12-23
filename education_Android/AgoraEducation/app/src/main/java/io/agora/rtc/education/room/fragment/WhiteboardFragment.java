@@ -132,7 +132,6 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
     private void resetLayoutVisible(boolean isReplay) {
         mViewRoot.findViewById(R.id.layout_tools).setVisibility(!isReplay ? View.VISIBLE : View.GONE);
         mViewRoot.findViewById(R.id.layout_scene_control).setVisibility(!isReplay ? View.VISIBLE : View.GONE);
-        mControl.setVisibility(isReplay ? View.VISIBLE : View.GONE);
     }
 
     public void acceptLink(boolean isAccept) {
