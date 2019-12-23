@@ -134,8 +134,9 @@
 
 - (NSString *)getUserID{
     NSDate *datenow = [NSDate date];
-    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970])];
-    NSString *uid = [NSString stringWithFormat:@"%@",[timeSp substringFromIndex:4]];
+    
+    long lTime = (long)([datenow timeIntervalSince1970] * 1000) % 1000000;
+    NSString *uid = [NSString stringWithFormat:@"%ld", lTime];
     return uid;
 }
 
