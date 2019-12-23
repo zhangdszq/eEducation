@@ -109,23 +109,20 @@ static EducationManager *manager = nil;
 
 - (void)createWhiteReplayerWithModel:(ReplayerModel *)model completeSuccessBlock:(void (^) (WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock {
 
+    NSAssert(model.startTime && model.startTime.length == 13, @"startTime should be millisecond unit");
+    NSAssert(model.endTime && model.endTime.length == 13, @"endTime should be millisecond unit");
+    
     WEAK(self)
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:model.uuid token:^(NSString * _Nonnull token) {
 
         WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:model.uuid roomToken:token];
-        NSString *startTime = model.startTime;
-        NSString *endTime = model.endTime;
-        if(model.startTime.length == 13) {
-            startTime = [model.startTime substringToIndex:10];
-        }
-        if(model.endTime.length == 13){
-            endTime = [model.endTime substringToIndex:10];
-        }
-        NSInteger iStartTime = startTime.integerValue;
-        NSInteger iEndTime = endTime.integerValue;
+        
+        // make up
+        NSInteger iStartTime = [model.startTime substringToIndex:10].integerValue;
+        NSInteger iDuration = labs(model.endTime.integerValue - model.startTime.integerValue) * 0.001;
 
         playerConfig.beginTimestamp = @(iStartTime);
-        playerConfig.duration = @(labs(iEndTime - iStartTime));
+        playerConfig.duration = @(iDuration);
         
         [weakself.whiteManager createReplayerWithConfig:playerConfig completeSuccessBlock:^(WhitePlayer * _Nullable player) {
             
