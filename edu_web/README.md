@@ -58,15 +58,15 @@
 
 ### 环境搭建
 
-# 搭建之前先获取 agora appid和netless sdktoken
-  按照.env.example
-  修改为.env.local
-
-# 如果你的appid项目里启用了证书服务，请在代码里搜索以下注释寻找使用到token的地方，在这里加入获取token的业务逻辑。
+# 注意 
+#### 如果你的appid项目里启用了证书服务，请在代码里搜索以下注释寻找使用到token的地方，在这里加入获取token的业务逻辑。
 ```
 WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
 ```
 
+# 搭建之前先获取 agora appid和netless sdktoken
+  按照.env.example
+  修改为.env.local
 ```bash
 # 声网的APPID 通过声网开发者管理界面获取
 REACT_APP_AGORA_APP_ID=Agora APPID
@@ -79,8 +79,6 @@ REACT_APP_NETLESS_APP_API_ENTRY=https://cloudcapiv4.herewhite.com/room?token=
 REACT_APP_NETLESS_APP_JOIN_API=https://cloudcapiv4.herewhite.com/room/join?token=
 # 声网的云录制服务地址 （不推荐在前端或客户端直接集成）
 REACT_APP_AGORA_RECORDING_SERVICE_URL=https://api.agora.io/v1/apps/%s/cloud_recording/
-# Electron启动时候读取的create-react-app的URL地址
-ELECTRON_START_URL=http://localhost:3000
 # 下列OSS相关的信息不建议放在前端存储
 REACT_APP_AGORA_OSS_BUCKET_NAME=你的oss名字
 REACT_APP_AGORA_OSS_BUCKET_FOLDER=你的oss存储目录
