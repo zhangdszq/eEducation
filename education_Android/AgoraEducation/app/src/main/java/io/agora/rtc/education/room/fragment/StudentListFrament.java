@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -43,14 +44,13 @@ public class StudentListFrament extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_student_list, container, false);
+    protected View initUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_student_list, container, false);
 
-        mLvStudents = root.findViewById(R.id.lv_students);
+        mLvStudents = view.findViewById(R.id.lv_students);
         mAdapter = new StudentListAdapter();
         mLvStudents.setAdapter(mAdapter);
-        return root;
+        return view;
     }
 
     public void setList(ArrayList<User> users) {

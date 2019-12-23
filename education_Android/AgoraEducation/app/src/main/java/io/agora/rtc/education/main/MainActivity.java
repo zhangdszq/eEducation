@@ -36,9 +36,9 @@ import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
 
 public class MainActivity extends BaseActivity {
-    CardView layoutRoomType;
-    EditText edtRoomType;
-    private int userId;
+    private CardView layoutRoomType;
+    private EditText edtRoomType;
+    private long userId = System.currentTimeMillis() * 1000 % 1000000;
 
     @Override
     protected void initUI(@Nullable Bundle savedInstanceState) {
@@ -54,11 +54,11 @@ public class MainActivity extends BaseActivity {
         app.initRtmManager();
         app.initWorkerThread();
 
-        userId = SPUtil.get(SPKey.MY_USER_ID, 0);
-        if (userId < 1) {
-            userId = Math.abs((int) (System.nanoTime()));
-            SPUtil.put(SPKey.MY_USER_ID, userId);
-        }
+//        userId = SPUtil.get(SPKey.MY_USER_ID, 0);
+//        if (userId < 1) {
+//            userId = Math.abs((int) (System.nanoTime()));
+//            SPUtil.put(SPKey.MY_USER_ID, userId);
+//        }
         rtmManager().login(String.valueOf(userId));
     }
 

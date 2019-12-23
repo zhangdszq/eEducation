@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 
+import com.herewhite.sdk.Player;
 import com.herewhite.sdk.WhiteboardView;
 import com.herewhite.sdk.domain.Appliance;
 import com.herewhite.sdk.domain.RoomPhase;
@@ -22,10 +24,7 @@ import java.util.HashMap;
 
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
-import io.agora.rtc.education.data.ChannelDataReadOnly;
-import io.agora.rtc.education.data.bean.Teacher;
-import io.agora.rtc.education.im.IMCmd;
-import io.agora.rtc.education.im.IMStrategy;
+import io.agora.rtc.education.room.replay.ReplayControl;
 import io.agora.rtc.education.room.view.ColorSelectView;
 import io.agora.rtc.education.room.whiteboard.SceneHelper;
 import io.agora.rtc.education.room.whiteboard.WhiteboardDelegate;
@@ -48,8 +47,9 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
     private ImageView mIcNext;
     private ImageView mIcEnd;
     private ProgressBar mPbLoading;
-    private View root;
     private boolean mDidLeave = false;
+
+    private ReplayControl mControl;
 
     private static final String KEY_IS_SHOW_HAND = "is_show_hand";
     private boolean isShowHand = false;
@@ -73,26 +73,19 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (root != null) {
-            ViewGroup parent = (ViewGroup) root.getParent();
-            if (parent != null) {
-                parent.removeView(root);
-            }
-            return root;
-        }
-        root = inflater.inflate(R.layout.fragment_white_board, container, false);
+    protected View initUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_white_board, container, false);
 
-        mIcToolColor = root.findViewById(R.id.ic_tool_color);
-        mLayoutHandUp = root.findViewById(R.id.layout_hand_up);
-        mTvPage = root.findViewById(R.id.tv_page);
-        mIcFirst = root.findViewById(R.id.ic_first);
-        mIcPrevious = root.findViewById(R.id.ic_previous);
-        mIcNext = root.findViewById(R.id.ic_next);
-        mIcEnd = root.findViewById(R.id.ic_end);
-        mPbLoading = root.findViewById(R.id.pb_loading);
+        mIcToolColor = view.findViewById(R.id.ic_tool_color);
+        mLayoutHandUp = view.findViewById(R.id.layout_hand_up);
+        mTvPage = view.findViewById(R.id.tv_page);
+        mIcFirst = view.findViewById(R.id.ic_first);
+        mIcPrevious = view.findViewById(R.id.ic_previous);
+        mIcNext = view.findViewById(R.id.ic_next);
+        mIcEnd = view.findViewById(R.id.ic_end);
+        mPbLoading = view.findViewById(R.id.pb_loading);
+        mControl = view.findViewById(R.id.layout_replay_control);
 
         mIcFirst.setOnClickListener(this);
         mIcPrevious.setOnClickListener(this);
@@ -106,13 +99,13 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         }
 
         HashMap<String, ImageView> appliances = new HashMap<>();
-        appliances.put(Appliance.SELECTOR, (ImageView) root.findViewById(R.id.ic_tool_selecter));
-        appliances.put(Appliance.PENCIL, (ImageView) root.findViewById(R.id.ic_tool_pen));
-        appliances.put(Appliance.ERASER, (ImageView) root.findViewById(R.id.ic_tool_eraser));
-        appliances.put(Appliance.TEXT, (ImageView) root.findViewById(R.id.ic_tool_text));
+        appliances.put(Appliance.SELECTOR, (ImageView) view.findViewById(R.id.ic_tool_selecter));
+        appliances.put(Appliance.PENCIL, (ImageView) view.findViewById(R.id.ic_tool_pen));
+        appliances.put(Appliance.ERASER, (ImageView) view.findViewById(R.id.ic_tool_eraser));
+        appliances.put(Appliance.TEXT, (ImageView) view.findViewById(R.id.ic_tool_text));
         mWhiteboardDelegate.initApplianceToolBar(appliances);
 
-        mColorSelectView = root.findViewById(R.id.color_select_view);
+        mColorSelectView = view.findViewById(R.id.color_select_view);
         mColorSelectView.setChangedListener(new ColorSelectView.ColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
@@ -122,7 +115,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
             }
         });
 
-        mWhiteboardView = root.findViewById(R.id.white_board_view);
+        mWhiteboardView = view.findViewById(R.id.white_board_view);
 
         mWhiteboardDelegate.initWhiteSdk(mContext, mWhiteboardView);
 
@@ -130,22 +123,16 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onSceneIndexChanged(int index, int totalCount) {
                 mTvPage.setText(index + "/" + totalCount);
+                mWhiteboardDelegate.initCameraToContainer();
             }
         });
-
-        return root;
+        return view;
     }
 
-    private void initCameraToContainer() {
-
-        double width = (double) mWhiteboardView.getWidth();
-        double height = (double) mWhiteboardView.getHeight();
-        log.i("rectangle:" + width + ", " + height);
-        double ratio = 2d;
-        if (height != 0) {
-            ratio = width / height;
-        }
-        mWhiteboardDelegate.moveCameraToContainer(ratio * 720d, 720d);
+    private void resetLayoutVisible(boolean isReplay) {
+        mViewRoot.findViewById(R.id.layout_tools).setVisibility(!isReplay ? View.VISIBLE : View.GONE);
+        mViewRoot.findViewById(R.id.layout_scene_control).setVisibility(!isReplay ? View.VISIBLE : View.GONE);
+        mControl.setVisibility(isReplay ? View.VISIBLE : View.GONE);
     }
 
     public void acceptLink(boolean isAccept) {
@@ -172,11 +159,12 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
     public void joinRoom(String uuid, final JoinRoomCallBack callBack) {
         mUuid = uuid;
         mPbLoading.setVisibility(View.VISIBLE);
+        resetLayoutVisible(false);
 
         mWhiteboardDelegate.joinRoom(uuid, new WhiteboardDelegate.OnRoomStateChangedListener() {
             @Override
             public void onSuccess() {
-                initCameraToContainer();
+                mWhiteboardDelegate.initCameraToContainer();
                 callBack.onSuccess();
             }
 
@@ -188,24 +176,49 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
 
             @Override
             public void onRoomPhaseChange(RoomPhase phase) {
-                WhiteboardFragment.this.onRoomPhaseChange(phase);
+                if (phase == RoomPhase.connected) {
+                    showToast("连接成功");
+                    setButtonsEnable(true);
+
+                } else if (phase == RoomPhase.disconnected) {
+                    showToast("断开连接");
+                    setButtonsEnable(false);
+
+                } else if (phase == RoomPhase.reconnecting) {
+                    showToast("重新建立连接");
+                    setButtonsEnable(false);
+                }
             }
         });
     }
 
-    private void onRoomPhaseChange(RoomPhase phase) {
-        if (phase == RoomPhase.connected) {
-            showToast("连接成功");
-            setButtonsEnable(true);
+    public void replay(String uuid, long startTime, long endTime) {
+        mUuid = uuid;
+        mPbLoading.setVisibility(View.VISIBLE);
+        resetLayoutVisible(true);
 
-        } else if (phase == RoomPhase.disconnected) {
-            showToast("断开连接");
-            setButtonsEnable(false);
+        mWhiteboardView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mControl.setVisibility(View.VISIBLE);
+                }
+                return false;
+            }
+        });
 
-        } else if (phase == RoomPhase.reconnecting) {
-            showToast("重新建立连接");
-            setButtonsEnable(false);
-        }
+        mWhiteboardDelegate.replay(uuid, startTime, endTime, mControl, new WhiteboardDelegate.OnPlayerStateChangedListener() {
+            @Override
+            public void onSuccess(Player player) {
+                mPbLoading.setVisibility(View.GONE);
+                mControl.setPlayer(player);
+            }
+
+            @Override
+            public void onFailure(String err) {
+                mUuid = null;
+            }
+        });
     }
 
     private void showToast(String s) {
@@ -220,14 +233,19 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         mUuid = null;
     }
 
+    public void finishReplayPage() {
+        mWhiteboardDelegate.finishPlayerPage();
+        mUuid = null;
+    }
+
     private void setButtonsEnable(boolean enable) {
 //        if (!this.mDidLeave) {
-            mIcFirst.setEnabled(enable);
-            mIcPrevious.setEnabled(enable);
-            mIcNext.setEnabled(enable);
-            mIcEnd.setEnabled(enable);
-            mPbLoading.setVisibility(enable ? View.GONE : View.VISIBLE);
-            mWhiteboardDelegate.setApplianceBarEnable(enable);
+        mIcFirst.setEnabled(enable);
+        mIcPrevious.setEnabled(enable);
+        mIcNext.setEnabled(enable);
+        mIcEnd.setEnabled(enable);
+        mPbLoading.setVisibility(enable ? View.GONE : View.VISIBLE);
+        mWhiteboardDelegate.setApplianceBarEnable(enable);
 //        }
     }
 
@@ -243,6 +261,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
 
     public interface HandUpOperateListener {
         void onApply();
+
         void onCancel();
     }
 
