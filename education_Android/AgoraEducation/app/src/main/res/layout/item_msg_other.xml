@@ -23,5 +23,6 @@
         android:paddingStart="@dimen/dp_9"
         android:paddingTop="@dimen/dp_5"
         android:paddingEnd="@dimen/dp_9"
-        android:paddingBottom="@dimen/dp_5" />
+        android:paddingBottom="@dimen/dp_5"
+        android:textColor="@color/gray_666666" />
 </LinearLayout>
