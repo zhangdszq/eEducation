@@ -306,7 +306,6 @@ const items = [
       return
     }
 
-    console.log("set member whiteboard", name);
     room.setMemberState({currentApplianceName: name});
   }
 
@@ -343,7 +342,7 @@ const items = [
         }
       })
       .then(() => {
-        console.log("whiteboard.state.room.uuid", whiteboard.state.room.uuid);
+        console.log("join whiteboard success");
       }).catch(console.warn)
       .finally(() => {
         lock.current = false;
@@ -361,7 +360,7 @@ const items = [
         }
       })
       .then(() => {
-        console.log("whiteboard.state.room.uuid", whiteboard.state.room.uuid);
+        console.log("rejoin whiteboard success");
       }).catch(console.warn)
       .finally(() => {
         lock.current = false;
@@ -370,8 +369,8 @@ const items = [
 
   }, [me.boardId, course.boardId]);
 
-  const [uploadPhase, updateUploadPhase] = useState<string>('init');
-  const [convertPhase, updateConvertPhase] = useState<string>('init');
+  const [uploadPhase, updateUploadPhase] = useState<string>('');
+  const [convertPhase, updateConvertPhase] = useState<string>('');
 
   const UploadPanel = useCallback(() => {
     if (tool !== 'upload' || !room) return null;
@@ -382,7 +381,7 @@ const items = [
       onProgress={(phase: PPTProgressPhase, percent: number) => {
         if (phase === PPTProgressPhase.Uploading) {
           if (percent < 1) {
-            !ref.current && uploadPhase === 'init' && updateUploadPhase('uploading');
+            !ref.current && !uploadPhase && updateUploadPhase('uploading');
           } else {
             !ref.current && updateUploadPhase('upload_success');
           }
@@ -391,7 +390,7 @@ const items = [
 
         if (phase === PPTProgressPhase.Converting) {
           if (percent < 1) {
-            !ref.current && convertPhase === 'init' && updateConvertPhase('converting');
+            !ref.current && !convertPhase && updateConvertPhase('converting');
           } else {
             !ref.current && updateConvertPhase('convert_success');
           }

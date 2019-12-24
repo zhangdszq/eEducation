@@ -83,13 +83,8 @@ const DialogContainer = () => {
 
   const onConfirm = (type: string) => {
     if (type === 'exitRoom') {
-      roomStore.exitAll().then(() => {
-        console.log("exit all success");
-      }).catch(console.warn)
-      .finally(() => {
-        globalStore.removeDialog();
-        history.push('/');
-      })
+      globalStore.removeDialog();
+      history.push('/');
     }
     else if (type === 'apply') {
       Promise.all([
@@ -98,6 +93,7 @@ const DialogContainer = () => {
         ),
         roomStore.updateCourseLinkUid(roomStore.applyUid)
       ]).then(() => {
+        console.log("applyUid");
         globalStore.removeNotice();
         globalStore.removeDialog();
       }).catch(console.warn);

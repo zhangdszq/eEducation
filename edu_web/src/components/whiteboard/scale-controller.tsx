@@ -110,8 +110,8 @@ export default class ScaleController extends React.Component<ScaleControllerProp
           <div className="zoom-hold"></div>
           <div className="zoom-size">{Math.ceil(this.props.zoomScale * 100)} %</div>
           <div className="zoom-items">
-            <div className="item zoom-in" onClick={() => this.moveRuleIndex(-1)}></div>
-            <div className="item zoom-out" onClick={() => this.moveRuleIndex(+1)}></div>
+            <div className="item zoom-in" onClick={() => this.moveRuleIndex(-1)}>-</div>
+            <div className="item zoom-out" onClick={() => this.moveRuleIndex(+1)}>+</div>
           </div>
         </div>
       );

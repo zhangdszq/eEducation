@@ -42,12 +42,8 @@ export const PlatformContainer: React.FC<React.ComponentProps<any>> = ({ childre
 
   const handleClick = (type: string) => {
 
-    console.log("type", type);
-
     if (!ipc) return;
-
-    console.log("trigger click type", type);
-
+    
     switch (type) {
       case 'minimum': {
         ipc.send('minimum');

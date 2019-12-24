@@ -14,7 +14,6 @@ import { RootProvider } from '../containers/root-container';
 import SmallClass from './classroom/small-class';
 import OneToOne from './classroom/one-to-one';
 import BigClass from './classroom/big-class';
-import { UploadNoticeView } from '../components/whiteboard/upload/upload-notice';
 
 export default function () {
 
@@ -25,7 +24,6 @@ export default function () {
         <RootProvider>
           <Loading />
           <Toast />
-          <UploadNoticeView />
           <Route exact path="/">
             <Home />
           </Route>

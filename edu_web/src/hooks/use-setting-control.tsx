@@ -139,7 +139,6 @@ export default function useSettingControl () {
     }
   }, []);
   useEffect(() => {
-    console.log("device: " ,speakerId, cameraId, microphoneId);
     if (lock.current || !speakerId || !cameraId || !microphoneId) return;
     const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
     lock.current = true;
@@ -165,7 +164,6 @@ export default function useSettingControl () {
         microphoneId,
         speakerId,
       })
-      console.log("electron stream", stream);
       setStream(stream);
       lock.current = false;
     }
@@ -185,7 +183,6 @@ export default function useSettingControl () {
   }, [stream]);
 
   useEffect(() => {
-    console.log("use -setting -control", stream, platform);
     if (!stream) return;
     if (platform === 'electron') {
       console.log("[electron-client] add volume event listener");
