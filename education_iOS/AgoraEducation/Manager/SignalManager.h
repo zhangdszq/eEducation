@@ -24,9 +24,8 @@ typedef void(^ManagerBlock)(void);
 
 @optional
 - (void)onUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel;
-- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel;
-- (void)onUpdateStudentsAttribute:(NSArray<RolesStudentInfoModel *> *_Nullable)studentInfoModels;
-- (void)onMemberLeft:(NSString *_Nonnull)userId;
+- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel studentsAttribute:(NSArray<RolesStudentInfoModel *> *_Nullable)studentInfoModels;
+
 @end
 
 NS_ASSUME_NONNULL_BEGIN

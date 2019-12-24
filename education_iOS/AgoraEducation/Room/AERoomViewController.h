@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) EducationManager *educationManager;
 
-@property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
-@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
+//@property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
+//@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
 
 // white
 @property (nonatomic, strong) WhiteBoardView *boardView;
@@ -35,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;
-- (void)addShareScreenVideoWithUid:(NSInteger)uid;
-- (void)removeShareScreen;
 - (void)setWhiteBoardBrushColor;
 
 - (void)setBoardViewFrame:(CGRect)frame;

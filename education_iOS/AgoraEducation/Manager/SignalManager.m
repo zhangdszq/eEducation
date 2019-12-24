@@ -43,7 +43,6 @@ static SignalManager *manager = nil;
             if(successBlock != nil){
                 successBlock();
             }
-            
         } else {
             if(failBlock != nil){
                 failBlock();
@@ -238,18 +237,9 @@ static SignalManager *manager = nil;
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
 
     RolesInfoModel *rolesInfoModel = [self fixRolesInfoModelWithAttributes:attributes];
-    if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onUpdateTeactherAttribute:)]){
-        [self.messageDelegate onUpdateTeactherAttribute:rolesInfoModel.teactherModel];
-    }
-    
-    if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onUpdateStudentsAttribute:)]){
-        [self.messageDelegate onUpdateStudentsAttribute:rolesInfoModel.studentModels];
-    }
-}
-
-- (void)channel:(AgoraRtmChannel *)channel memberLeft:(AgoraRtmMember *)member {
-    if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onMemberLeft:)]){
-        [self.messageDelegate onMemberLeft: member.userId];
+    if(self.messageDelegate != nil && [self.messageDelegate respondsToSelector:@selector(onUpdateTeactherAttribute:studentsAttribute:)]){
+        
+        [self.messageDelegate onUpdateTeactherAttribute:rolesInfoModel.teactherModel studentsAttribute:rolesInfoModel.studentModels];
     }
 }
 

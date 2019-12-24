@@ -19,6 +19,7 @@
 
 #import "SignalManager.h"
 
+
 @interface AERoomViewController ()<EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate, WhitePlayDelegate>
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
@@ -110,19 +111,6 @@
     [self.teacherAttr removeObserver:self forKeyPath:@"class_state"];
 }
 
-- (void)addShareScreenVideoWithUid:(NSInteger)uid {
-    self.shareScreenView.hidden = NO;
-    self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
-    self.shareScreenCanvas.uid = uid;
-    self.shareScreenCanvas.view = self.shareScreenView;
-    self.shareScreenCanvas.renderMode = AgoraVideoRenderModeFit;
-    [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
-}
-
-- (void)removeShareScreen {
-    self.shareScreenView.hidden = YES;
-    self.shareScreenCanvas = nil;
-}
 
 - (void)setWhiteBoardBrushColor {
     WEAK(self)
