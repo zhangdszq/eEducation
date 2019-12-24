@@ -83,6 +83,8 @@
 		787E7A4723A9FEFF005F8F0C /* EducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4423A9FEFF005F8F0C /* EducationManager.m */; };
 		787E7A4823A9FEFF005F8F0C /* SignalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4523A9FEFF005F8F0C /* SignalManager.m */; };
 		787E7A4B23A9FF1E005F8F0C /* WhiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */; };
+		7886488C23B0A48400A6E15A /* RTCManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7886488B23B0A48400A6E15A /* RTCManager.m */; };
+		7886488F23B0A7BB00A6E15A /* RTCVideoCanvasModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7886488E23B0A7BB00A6E15A /* RTCVideoCanvasModel.m */; };
 		78F0C6DE2399FBCB00772378 /* MessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6DD2399FBCB00772378 /* MessageModel.m */; };
 		78F0C6E1239A2AB600772378 /* RolesInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6E0239A2AB600772378 /* RolesInfoModel.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraEducation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */; };
@@ -250,6 +252,10 @@
 		787E7A4623A9FEFF005F8F0C /* EducationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EducationManager.h; sourceTree = "<group>"; };
 		787E7A4923A9FF1E005F8F0C /* WhiteManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WhiteManager.h; sourceTree = "<group>"; };
 		787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WhiteManager.m; sourceTree = "<group>"; };
+		7886488A23B0A48400A6E15A /* RTCManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTCManager.h; sourceTree = "<group>"; };
+		7886488B23B0A48400A6E15A /* RTCManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTCManager.m; sourceTree = "<group>"; };
+		7886488D23B0A7BB00A6E15A /* RTCVideoCanvasModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTCVideoCanvasModel.h; sourceTree = "<group>"; };
+		7886488E23B0A7BB00A6E15A /* RTCVideoCanvasModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTCVideoCanvasModel.m; sourceTree = "<group>"; };
 		78F0C6DC2399FBCB00772378 /* MessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageModel.h; sourceTree = "<group>"; };
 		78F0C6DD2399FBCB00772378 /* MessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageModel.m; sourceTree = "<group>"; };
 		78F0C6DF239A2AB600772378 /* RolesInfoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RolesInfoModel.h; sourceTree = "<group>"; };
@@ -626,6 +632,10 @@
 				7820550723AA4FB400FF1930 /* ReplayerModel.m */,
 				787E7A4923A9FF1E005F8F0C /* WhiteManager.h */,
 				787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */,
+				7886488A23B0A48400A6E15A /* RTCManager.h */,
+				7886488B23B0A48400A6E15A /* RTCManager.m */,
+				7886488D23B0A7BB00A6E15A /* RTCVideoCanvasModel.h */,
+				7886488E23B0A7BB00A6E15A /* RTCVideoCanvasModel.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -899,8 +909,10 @@
 				78F0C6DE2399FBCB00772378 /* MessageModel.m in Sources */,
 				1AF1CD2E236700A400DA8B12 /* EEClassRoomTypeView.m in Sources */,
 				1A17499C236297BE00A65B10 /* EEChatTextFiled.m in Sources */,
+				7886488F23B0A7BB00A6E15A /* RTCVideoCanvasModel.m in Sources */,
 				1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */,
 				787E7A3A23A9FE97005F8F0C /* SliderView.m in Sources */,
+				7886488C23B0A48400A6E15A /* RTCManager.m in Sources */,
 				787E7A4823A9FEFF005F8F0C /* SignalManager.m in Sources */,
 				1A44BE7A22BF863000766274 /* main.m in Sources */,
 				1A6BC50E2360396B00FE8289 /* EEWhiteboardTool.m in Sources */,

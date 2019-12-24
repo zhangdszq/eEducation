@@ -12,13 +12,20 @@
 
 #import "SignalManager.h"
 #import "WhiteManager.h"
+#import "RTCManager.h"
 
-@interface EducationManager()<WhiteManagerDelegate>
+
+@interface EducationManager()<WhiteManagerDelegate, RTCManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
-@property (nonatomic, strong) WhiteManager *whiteManager;
 
+@property (nonatomic, strong) WhiteManager *whiteManager;
 @property (nonatomic, weak) id<WhitePlayDelegate> whitePlayerDelegate;
+
+@property (nonatomic, strong) RTCManager *rtcManager;
+@property (nonatomic, weak) id<RTCDelegate> rtcDelegate;
+@property (nonatomic, strong) NSMutableArray<RTCVideoSessionModel*> *rtcVideoSessionModels;
+
 
 @end
 
@@ -36,7 +43,6 @@ static EducationManager *manager = nil;
 
 - (instancetype)init {
     if(self = [super init]) {
-        self.whiteManager = [[WhiteManager alloc] init];
         
     }
     return self;
@@ -73,9 +79,135 @@ static EducationManager *manager = nil;
 //    [SignalManager.shareManager sendMessageWithValue:value];
 }
 
+#pragma mark RTCManager
+- (void)initRTCEngineKitWithAppid:(NSString *)appid clientRole:(RTCClientRole)role dataSourceDelegate:(id<RTCDelegate> _Nullable)rtcDelegate {
+    
+    self.rtcDelegate = rtcDelegate;
+    self.rtcVideoSessionModels = [NSMutableArray array];
+    
+    self.rtcManager = [[RTCManager alloc] init];
+    self.rtcManager.rtcManagerDelegate = self;
+    [self.rtcManager initEngineKit:appid];
+    [self.rtcManager setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
+    [self.rtcManager enableVideo];
+    [self.rtcManager startPreview];
+    [self.rtcManager enableWebSdkInteroperability:YES];
+    [self.rtcManager enableDualStreamMode:YES];
+    [self setRTCClientRole: role];
+}
+
+- (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock {
+    
+    return [self.rtcManager joinChannelByToken:token channelId:channelId info:info uid:uid joinSuccess:joinSuccessBlock];
+}
+
+- (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model {
+    
+    AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+    videoCanvas.uid = model.uid;
+    videoCanvas.view = model.videoView;
+    
+    if(model.renderMode == RTCVideoRenderModeFit) {
+        videoCanvas.renderMode = AgoraVideoRenderModeFit;
+    } else if(model.renderMode == RTCVideoRenderModeHidden){
+        videoCanvas.renderMode = AgoraVideoRenderModeHidden;
+    }
+
+    if(model.canvasType == RTCVideoCanvasTypeLocal) {
+        [self.rtcManager setupLocalVideo: videoCanvas];
+    } else if(model.canvasType == RTCVideoCanvasTypeRemote) {
+        [self.rtcManager setupRemoteVideo: videoCanvas];
+    }
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
+    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+    if(filteredArray.count > 0){
+        
+        RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
+        videoSessionModel.videoCanvas.view = nil;
+        videoSessionModel.videoCanvas = videoCanvas;
+    } else {
+        RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
+        videoSessionModel.uid = model.uid;
+        videoSessionModel.videoCanvas = videoCanvas;
+        [self.rtcVideoSessionModels addObject:videoSessionModel];
+    }
+}
+
+- (void)removeRTCVideoCanvas:(NSUInteger) uid {
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid != %d", uid];
+    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+    self.rtcVideoSessionModels = [NSMutableArray arrayWithArray:filteredArray];
+}
+
+- (void)setRTCClientRole:(RTCClientRole)role {
+    if(role == RTCClientRoleAudience){
+        [self.rtcManager setClientRole:(AgoraClientRoleAudience)];
+    } else if(role == RTCClientRoleBroadcaster){
+        [self.rtcManager setClientRole:(AgoraClientRoleBroadcaster)];
+    }
+}
+- (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType {
+    if(streamType == RTCVideoStreamTypeLow){
+        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeLow];
+    } else if(streamType == RTCVideoStreamTypeHigh){
+        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeHigh];
+    }
+    return -1;
+}
+- (int)enableRTCLocalVideo:(BOOL) enabled {
+    return [self.rtcManager muteLocalVideoStream:enabled];
+}
+- (int)enableRTCLocalAudio:(BOOL) enabled {
+    return [self.rtcManager muteLocalAudioStream:enabled];
+}
+
+#pragma mark RTCManagerDelegate
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nullable)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
+    
+    if([self.rtcDelegate respondsToSelector:@selector(rtcDidJoinedOfUid:)]) {
+        [self.rtcDelegate rtcDidJoinedOfUid:uid];
+    }
+}
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nullable)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+    if([self.rtcDelegate respondsToSelector:@selector(rtcDidOfflineOfUid:)]) {
+        [self.rtcDelegate rtcDidOfflineOfUid:uid];
+    }
+}
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+    
+    RTCNetworkGrade grade = RTCNetworkGradeUnknown;
+    
+    switch (type) {
+        case AgoraNetworkTypeUnknown:
+        case AgoraNetworkTypeMobile4G:
+        case AgoraNetworkTypeWIFI:
+            grade = RTCNetworkGradeHigh;
+            break;
+        case AgoraNetworkTypeMobile3G:
+        case AgoraNetworkTypeMobile2G:
+            grade = RTCNetworkGradeMiddle;
+            break;
+        case AgoraNetworkTypeLAN:
+        case AgoraNetworkTypeDisconnected:
+            grade = RTCNetworkGradeLow;
+            break;
+        default:
+            break;
+    }
+    
+    if([self.rtcDelegate respondsToSelector:@selector(rtcNetworkTypeGrade:)]) {
+        [self.rtcDelegate rtcNetworkTypeGrade:grade];
+    }
+}
+
 #pragma mark WhiteManager
 - (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate {
+    
     self.whitePlayerDelegate = whitePlayerDelegate;
+    
+    self.whiteManager = [[WhiteManager alloc] init];
     self.whiteManager.whiteManagerDelegate = self;
     [self.whiteManager initWhiteSDKWithBoardView:boardView config:[WhiteSdkConfiguration defaultConfig]];
 }
@@ -316,7 +448,14 @@ static EducationManager *manager = nil;
 }
 
 - (void)releaseResources {
+    
+    for (RTCVideoSessionModel *model in self.rtcVideoSessionModels){
+        model.videoCanvas.view = nil;
+    }
+    [self.rtcVideoSessionModels removeAllObjects];
+    
     [self.whiteManager releaseResources];
+    [self.rtcManager releaseResources];
 }
 
 @end

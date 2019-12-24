@@ -27,7 +27,7 @@
 #import "SignalManager.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<BCSegmentedDelegate,UIViewControllerTransitioningDelegate,WhiteCommonCallbackDelegate,AgoraRtcEngineDelegate,UITextFieldDelegate,WhiteRoomCallbackDelegate,AEClassRoomProtocol, SignalDelegate>
+@interface BCViewController ()<BCSegmentedDelegate ,UITextFieldDelegate,AEClassRoomProtocol, SignalDelegate, RTCDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -95,7 +95,7 @@
     SignalManager.shareManager.messageDelegate = self;
     [SignalManager.shareManager joinChannelWithName:self.rtmChannelName completeSuccessBlock:nil completeFailBlock:nil];
     
-    [self joinAgoraRtcChannel];
+    [self loadAgoraEngine];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -168,12 +168,22 @@
         }
             break;
         case RTMp2pTypeMuteChat:
-            self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-            self.chatTextFiled.contentTextFiled.enabled = NO;
+        {
+            currentStuModel.chat = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+//            self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+//            self.chatTextFiled.contentTextFiled.enabled = NO;
             break;
         case RTMp2pTypeUnMuteChat:
-            self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-            self.chatTextFiled.contentTextFiled.enabled = YES;
+        {
+            currentStuModel.chat = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [SignalManager.shareManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+//            self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
+//            self.chatTextFiled.contentTextFiled.enabled = YES;
             break;
         default:
             break;
@@ -222,15 +232,13 @@
     self.chatTextFiled.contentTextFiled.delegate = self;
 }
 
-- (void)joinAgoraRtcChannel {
-    self.rtcEngineKit = [AgoraRtcEngineKit sharedEngineWithAppId:kAgoraAppid delegate:self];
-    [self.rtcEngineKit setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
-    [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
-    [self.rtcEngineKit enableVideo];
-    [self.rtcEngineKit startPreview];
-    [self.rtcEngineKit enableWebSdkInteroperability:YES];
+- (void)loadAgoraEngine {
+    
+    [self.educationManager initRTCEngineKitWithAppid:kAgoraAppid clientRole:RTCClientRoleAudience dataSourceDelegate:self];
+    
     WEAK(self)
-    [self.rtcEngineKit joinChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+    [self.educationManager joinRTCChannelByToken:nil channelId:self.rtmChannelName info:nil uid:[self.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+        
         NSLog(@"join channel success");
         [weakself getRtmChannelAttrs];
         
@@ -250,20 +258,19 @@
     if ([keyPath isEqualToString:@"uid"]) {
         NSUInteger uid = [change[@"new"] integerValue];
         if (uid > 0 ) {
+            RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+            model.uid = uid;
+            model.videoView = self.teactherVideoView.teacherRenderView;
+            model.renderMode = RTCVideoRenderModeHidden;
+            model.canvasType = RTCVideoCanvasTypeRemote;
+            [self.educationManager setupRTCVideoCanvas: model];
+
             self.teacherInRoom = YES;
-//            self.teacherUid = [new integerValue];
             self.teactherVideoView.defaultImageView.hidden = YES;
-            AgoraRtcVideoCanvas *canvas = [[AgoraRtcVideoCanvas alloc] init];
-            canvas.uid = uid;
-            canvas.view = self.teactherVideoView.teacherRenderView;
-            [self.rtcEngineKit setupRemoteVideo:canvas];
         }
-//        else {
-//            self.teacherUid = 0;
-//        }
-    }else if ([keyPath isEqualToString:@"account"]) {
+    } else if ([keyPath isEqualToString:@"account"]) {
         [self.teactherVideoView updateAndsetTeacherName:self.teacherAttr.account];
-    }else if ([keyPath isEqualToString:@"link_uid"]) {
+    } else if ([keyPath isEqualToString:@"link_uid"]) {
         self.linkUserId = [new integerValue];
         if (self.linkUserId > 0) {
             
@@ -294,13 +301,13 @@
                 [self joinWhiteBoardRoomUUID:change[@"new"] disableDevice:true];
             }
         }else if ([keyPath isEqualToString:@"mute_chat"]) {
-            if ([change[@"new"] boolValue]) {
-                self.chatTextFiled.contentTextFiled.enabled = NO;
-                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-            }else {
-                self.chatTextFiled.contentTextFiled.enabled = YES;
-                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-            }
+//            if ([change[@"new"] boolValue]) {
+//                self.chatTextFiled.contentTextFiled.enabled = NO;
+//                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
+//            }else {
+//                self.chatTextFiled.contentTextFiled.enabled = YES;
+//                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
+//            }
         }
     }
 }
@@ -308,22 +315,24 @@
 - (void)addStudentVideoWithUid:(NSInteger)uid remoteVideo:(BOOL)remote {
     self.studentVideoView.hidden = NO;
     if (!self.studentCanvas || uid != self.studentCanvas.uid) {
-        [self.rtcEngineKit setClientRole:(AgoraClientRoleBroadcaster)];
+        
+        [self.educationManager setRTCClientRole:RTCClientRoleBroadcaster];
+        
+        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+        model.uid = uid;
+        model.videoView = self.studentVideoView.studentRenderView;
+        model.renderMode = RTCVideoRenderModeHidden;
+        model.canvasType = remote ? RTCVideoCanvasTypeRemote : RTCVideoCanvasTypeLocal;
+        [self.educationManager setupRTCVideoCanvas: model];
+        
         self.studentVideoView.defaultImageView.hidden = YES;
-        self.studentCanvas = [[AgoraRtcVideoCanvas alloc] init];
-        self.studentCanvas.uid = uid;
-        self.studentCanvas.view = self.studentVideoView.studentRenderView;
-        if (remote) {
-            [self.rtcEngineKit setupRemoteVideo:self.studentCanvas];
-        }else {
-            [self.rtcEngineKit setupLocalVideo:self.studentCanvas];
-        }
         [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup-x"] forState:(UIControlStateNormal)];
     }
 }
 
 - (void)removeStudentVideo {
-    [self.rtcEngineKit setClientRole:(AgoraClientRoleAudience)];
+    [self.educationManager setRTCClientRole:RTCClientRoleAudience];
+    
     self.studentVideoView.defaultImageView.hidden = NO;
     self.studentVideoView.hidden = YES;
     self.studentCanvas = nil;
@@ -547,7 +556,6 @@
                 NSLog(@"退出消息发送失败");
             }];
         }
-        [weakself.rtcEngineKit leaveChannel:nil];
         [weakself removeTeacherObserver];
         [weakself.educationManager releaseResources];
         [SignalManager.shareManager leaveChannel];
@@ -577,75 +585,9 @@
     return NO;
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
-    if (uid == [self.teacherAttr.uid integerValue]) {
-    } else if (uid == kWhiteBoardUid && !self.shareScreenCanvas) {
-        [self addShareScreenVideoWithUid:uid];
-    }
-}
-
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
-    if (uid == self.teacherAttr.uid.integerValue) {
-        self.teacherInRoom = NO;
-        self.teactherVideoView.defaultImageView.hidden = NO;
-        [self.teactherVideoView updateAndsetTeacherName:@""];
-        
-        if (self.segmentedIndex == 0) {
-            self.handUpButton.hidden = YES;
-            self.pageControlView.hidden = YES;
-        }
-        [self.teactherVideoView updateSpeakerImageWithMuted:YES];
-        self.teactherVideoView.defaultImageView.hidden = NO;
-        [self.teactherVideoView updateAndsetTeacherName:@""];
-        
-    } else if (uid == kWhiteBoardUid) {
-        [self removeShareScreen];
-    } else {
-        if(self.studentCanvas != nil && self.studentCanvas.uid == uid) {
-            [self removeStudentVideo];
-        }
-    }
-}
-
-//- (void)rtcEngine:(AgoraRtcEngineKit *)engine didAudioMuted:(BOOL)muted byUid:(NSUInteger)uid {
-//    if (uid == [self.teacherAttr.uid integerValue]) {
-//        [self.teactherVideoView updateSpeakerImageWithMuted:muted];
-//    }else {
-//        [self.studentVideoView updateAudioImageWithMuted:muted];
-//    }
-//}
-//
-//- (void)rtcEngine:(AgoraRtcEngineKit *)engine didVideoMuted:(BOOL)muted byUid:(NSUInteger)uid {
-//    if (uid == [self.teacherAttr.uid integerValue]) {
-//        self.teactherVideoView.defaultImageView.hidden = !muted;
-//    }else {
-//        [self.studentVideoView updateVideoImageWithMuted:muted];
-//    }
-//}
-
-- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
-    switch (type) {
-        case AgoraNetworkTypeUnknown:
-        case AgoraNetworkTypeMobile4G:
-        case AgoraNetworkTypeWIFI:
-            [self.navigationView updateSignalImageName:@"icon-signal3"];
-            break;
-        case AgoraNetworkTypeMobile3G:
-        case AgoraNetworkTypeMobile2G:
-            [self.navigationView updateSignalImageName:@"icon-signal2"];
-            break;
-        case AgoraNetworkTypeLAN:
-        case AgoraNetworkTypeDisconnected:
-            [self.navigationView updateSignalImageName:@"icon-signal1"];
-            break;
-        default:
-            break;
-    }
-}
-
 - (void)muteVideoStream:(BOOL)stream {
-
-    [self.rtcEngineKit enableLocalVideo:!stream];
+    [self.educationManager enableRTCLocalVideo:!stream];
+    
     self.studentVideoView.defaultImageView.hidden = stream ? NO : YES;
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
@@ -656,7 +598,7 @@
 
 - (void)muteAudioStream:(BOOL)stream {
     
-    [self.rtcEngineKit enableLocalAudio:!stream];
+    [self.educationManager enableRTCLocalAudio:!stream];
     
     AEStudentModel *currentStuModel = [SignalManager.shareManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;
@@ -681,26 +623,91 @@
         [self.segmentedView showBadgeWithCount:(self.unreadMessageCount)];
     }
 }
-- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel {
+- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel studentsAttribute:(NSArray<RolesStudentInfoModel *> *_Nullable)studentInfoModels {
+    
     [self updateTeacherStatusWithModel:teactherModel];
-}
-- (void)onUpdateStudentsAttribute:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+    
     self.studentList = studentInfoModels;
-
     if (self.studentCanvas!= nil) {
-        
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.userId];
         NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentList filteredArrayUsingPredicate:predicate];
         if(filteredArray.count > 0){
             
             AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+            BOOL muteChat = teactherModel != nil ? teactherModel.mute_chat : NO;
+            if(!muteChat) {
+                muteChat = canvasStudentModel.chat == 0 ? YES : NO;
+            }
+            self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
+            self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
+            
             [self.studentVideoView updateVideoImageWithMuted:canvasStudentModel.video == 0 ? YES : NO];
             [self.studentVideoView updateAudioImageWithMuted:canvasStudentModel.audio == 0 ? YES : NO];
-            if([canvasStudentModel.uid isEqualToString:self.userId]){
-                [self.rtcEngineKit enableLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
-                [self.rtcEngineKit enableLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
-            }
+
+            [self.educationManager enableRTCLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
+            [self.educationManager enableRTCLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
         }
+    }
+}
+
+#pragma mark RTCDelegate
+- (void)rtcDidJoinedOfUid:(NSUInteger)uid {
+    
+    if (uid == [self.teacherAttr.uid integerValue]) {
+        
+    } else if (uid == kWhiteBoardUid) {
+        [self addShareScreenVideoWithUid:uid];
+    }
+}
+
+- (void)addShareScreenVideoWithUid:(NSInteger)uid {
+    self.shareScreenView.hidden = NO;
+    
+    RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+    model.uid = uid;
+    model.videoView = self.shareScreenView;
+    model.renderMode = RTCVideoRenderModeFit;
+    model.canvasType = RTCVideoCanvasTypeRemote;
+    [self.educationManager setupRTCVideoCanvas:model];
+}
+
+- (void)rtcDidOfflineOfUid:(NSUInteger)uid {
+    if (uid == self.teacherAttr.uid.integerValue) {
+        self.teacherInRoom = NO;
+        self.teactherVideoView.defaultImageView.hidden = NO;
+        [self.teactherVideoView updateAndsetTeacherName:@""];
+        
+        if (self.segmentedIndex == 0) {
+            self.handUpButton.hidden = YES;
+            self.pageControlView.hidden = YES;
+        }
+        [self.teactherVideoView updateSpeakerImageWithMuted:YES];
+        self.teactherVideoView.defaultImageView.hidden = NO;
+        [self.teactherVideoView updateAndsetTeacherName:@""];
+        
+    } else if (uid == kWhiteBoardUid) {
+        self.shareScreenView.hidden = YES;
+    } else {
+        if(self.studentCanvas != nil && self.studentCanvas.uid == uid) {
+            [self removeStudentVideo];
+        }
+    }
+    [self.educationManager removeRTCVideoCanvas:uid];
+}
+- (void)rtcNetworkTypeGrade:(RTCNetworkGrade)grade {
+    
+    switch (grade) {
+        case RTCNetworkGradeHigh:
+            [self.navigationView updateSignalImageName:@"icon-signal3"];
+            break;
+        case RTCNetworkGradeMiddle:
+            [self.navigationView updateSignalImageName:@"icon-signal2"];
+            break;
+        case RTCNetworkGradeLow:
+            [self.navigationView updateSignalImageName:@"icon-signal1"];
+            break;
+        default:
+            break;
     }
 }
 @end

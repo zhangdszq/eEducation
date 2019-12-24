@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "WhiteManager.h"
 #import "ReplayerModel.h"
+#import "RTCVideoCanvasModel.h"
 
 @protocol WhitePlayDelegate <NSObject>
 
@@ -47,12 +48,33 @@
 
 @end
 
+@protocol RTCDelegate <NSObject>
+
+@optional
+- (void)rtcDidJoinedOfUid:(NSUInteger)uid;
+- (void)rtcDidOfflineOfUid:(NSUInteger)uid;
+- (void)rtcNetworkTypeGrade:(RTCNetworkGrade)grade;
+@end
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EducationManager : NSObject
 
 - (void)sendMessageWithValue:(NSString *)value;
 
+
+/* ==================================>RTCManager<================================ */
+- (void)initRTCEngineKitWithAppid:(NSString *)appid clientRole:(RTCClientRole)role dataSourceDelegate:(id<RTCDelegate> _Nullable)rtcDelegate;
+- (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock;
+- (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model;
+- (void)removeRTCVideoCanvas:(NSUInteger) uid;
+- (void)setRTCClientRole:(RTCClientRole)role;
+- (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType;
+- (int)enableRTCLocalVideo:(BOOL) enabled;
+- (int)enableRTCLocalAudio:(BOOL) enabled;
+
+
+/* ==================================>WhiteManager<================================ */
 - (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate;
 - (void)joinWhiteRoomWithUuid:(NSString*)uuid completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock;
 - (void)createWhiteReplayerWithModel:(ReplayerModel *)model completeSuccessBlock:(void (^) (WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock;
