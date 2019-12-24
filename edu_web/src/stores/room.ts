@@ -28,10 +28,6 @@ function canJoin({onlineStatus, roomType, channelCount, role}: {onlineStatus: an
   const teacher = get(onlineStatus, 'teacher', false);
   const totalCount: number = get(onlineStatus, 'totalCount', 0);
 
-  console.log("teacher, totalCount", teacher, totalCount);
-  console.log(" channelCount ", channelCount, maximum, result);
-
-
   if (role === 'teacher') {
     const isOnline = teacher;
     if (isOnline) {
@@ -128,10 +124,7 @@ export type AgoraMediaStream = {
   stream?: any
 }
 
-export class RoomMedia {
-  roomStore(payload: { uid: string; rid: string; role: string; roomName: string; roomType: number; video: number; audio: number; chat: number; account: string; token: string; boardId: string; linkId: number; sharedId: number; }, arg1: boolean) {
-    throw new Error("Method not implemented.");
-  }
+export class RoomStore {
   private subject: Subject<RoomState> | null;
   public state: RoomState;
   public rtmClient: AgoraRTMClient = new AgoraRTMClient();
@@ -175,25 +168,25 @@ export class RoomMedia {
       microphone: 0
     },
     messages: List<ChatMessage>(),
+    ...GlobalStorage.read('agora_room')
   }
 
   private applyLock: number = 0;
 
   public windowId: number = 0;
-  private _attrs: any = {};
+  public windowRefresh: boolean;
 
   constructor() {
     this.subject = null;
     this.state = this.defaultState;
+    this.windowRefresh = false;
   }
 
   initialize() {
     this.subject = new Subject<RoomState>();
     this.state = {
-      ...this.defaultState,
-      ...GlobalStorage.read('agora_room'),
+      ...this.defaultState
     }
-    this._attrs = {};
     this.applyLock = 0;
     this.subject.next(this.state);
   }
@@ -209,7 +202,6 @@ export class RoomMedia {
 
   unsubscribe() {
     this.subject && this.subject.unsubscribe();
-    this._attrs = {};
     this.subject = null;
   }
 
@@ -579,6 +571,7 @@ export class RoomMedia {
     })
     // let res = await this.updateMe({...me, linkId: linkId});
     this.applyLock = linkId;
+    console.log("current apply lock: ", this.applyLock);
     return res;
   }
 
@@ -756,8 +749,6 @@ export class RoomMedia {
         ...this.defaultState
       }
       this.commit(this.state);
-      console.log("reset room>>>");
-      GlobalStorage.clear('agora_room');
     }
   }
 
@@ -773,7 +764,7 @@ export class RoomMedia {
   }
 }
 
-export const roomStore = new RoomMedia();
+export const roomStore = new RoomStore();
 
 //@ts-ignore
 window.roomStore = roomStore;

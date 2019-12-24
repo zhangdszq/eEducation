@@ -291,34 +291,6 @@ export default class AgoraRTMClient {
     return accounts;
   }
 
-  async loginAndJoin(
-    {roomType, role, id, room, token} :SessionProps, pass: boolean): Promise<any> {
-    await this.login(id, token);
-    const channelMemberCount = await this.getChannelMemberCount([room]);
-    const channelCount = channelMemberCount[room];
-    let accounts = await this.getChannelAttributeBy(room);
-    const onlineStatus = await this.queryOnlineStatusBy(accounts); 
-    console.log(" onlineStatus: ", onlineStatus);
-    this._channelAttrsKey = role === 'teacher' ? 'teacher' : id;
-    const argsJoin = {
-      channelCount,
-      onlineStatus,
-      role,
-      accounts,
-      roomType};
-    const result = pass === false ? canJoin(argsJoin) : {permitted: true, reason: ''};
-    if (result.permitted) {
-      await this.join(room);
-      console.log(" argsJoin ", argsJoin);
-      return;
-    }
-    await this.logout();
-    throw {
-      type: 'not_permitted',
-      reason: result.reason
-    }
-  }
-
   async sendPeerMessage(peerId: string, body: MessageBody) {
     resolveMessage(peerId, body);
     console.log("[rtm-client] send peer message ", peerId, JSON.stringify(body));

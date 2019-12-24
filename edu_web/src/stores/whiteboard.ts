@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import WhiteVideoPlugin from '@netless/white-video-plugin';
+import WhiteAudioPlugin from '@netless/white-audio-plugin';
 import { Room, WhiteWebSdk, DeviceType, SceneState, RoomState } from 'white-web-sdk';
 import { Subject } from 'rxjs';
 import { WhiteboardAPI } from '../utils/api';
@@ -88,7 +89,7 @@ class Whiteboard extends EventEmitter {
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
     deviceType: DeviceType.Desktop,
     handToolKey: " ",
-    plugins: [WhiteVideoPlugin],
+    plugins: [WhiteVideoPlugin, WhiteAudioPlugin],
     loggerOptions: {
       disableReportLog: ENABLE_LOG ? false : true,
       reportLevelMask: "info",

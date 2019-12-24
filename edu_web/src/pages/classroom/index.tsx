@@ -19,6 +19,8 @@ export const roomTypes = [
   {value: 2, text: 'Large Class', path: 'big-class'},
 ];
 
+let exit = true;
+
 export function RoomPage({ children }: any) {
 
   const history = useHistory();
@@ -32,11 +34,10 @@ export function RoomPage({ children }: any) {
     const roomType = roomStore.state.course.roomType;
     const roomName = roomStore.state.course.roomName;
 
+    console.log('roomStore ', roomStore.state);
+
     if (!rid || !me.uid) {
-      // roomStore.exitAll().then(() => {
-      // }).catch(console.warn).finally(() => {
-        history.push('/');
-      // })
+      history.push('/');
     }
 
     const uid = me.uid;
@@ -101,14 +102,18 @@ export function RoomPage({ children }: any) {
 
   useEffect(() => {
     return () => {
+      globalStore.removeUploadNotice();
       roomStore.exitAll()
       .then(() => {
       })
-      .catch(console.warn).finally(() => {
+      .catch(console.warn)
+      .finally(() => {
+        !roomStore.windowRefresh 
+        && GlobalStorage.clear('agora_room')
+        && console.log("[index clear session storage");
       })
-      GlobalStorage.clear('agora_room');
     }
-  }, [location]);
+  }, []);
 
   const canPublish = useMemo(() => {
     return !isBigClass ||
@@ -213,6 +218,7 @@ export function RoomPage({ children }: any) {
         if (webClient.joined) {
           return;
         }
+        console.log("[agora-rtc] add event listener");
         webClient.rtc.on('onTokenPrivilegeWillExpire', (evt: any) => {
           // you need obtain the `newToken` token from server side 
           const newToken = '';

@@ -140,6 +140,17 @@ export class Root {
     this.commit(this.state);
   }
 
+  removeUploadNotice() {
+    this.state = {
+      ...this.state,
+      uploadNotice: {
+        type: '',
+        title: ''
+      }
+    }
+    this.commit(this.state);
+  }
+
   showToast({type, message}: {type: string, message: string}) {
     this.state = {
       ...this.state,

@@ -101,6 +101,10 @@ class AgoraRTCClient {
     for (let evtName of clientEvents) {
       this._clientEvents.push(evtName);
       this._client.on(evtName, (args: any) => {
+        if (evtName === "peer-leave") {
+          console.log("[agora-web] peer-leave: ", args);
+        }
+        
         this._bus.emit(evtName, args);
       });
     }

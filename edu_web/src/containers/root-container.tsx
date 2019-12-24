@@ -63,6 +63,11 @@ export const RootProvider: React.FC<any> = ({children}) => {
 
   const ref = useRef<boolean>(false);
 
+  window.onload = () => {
+    roomStore.windowRefresh = true;
+    console.log("[index] window onload", roomStore.windowRefresh);
+  }
+
   useEffect(() => {
     return () => {
       ref.current = true;
@@ -78,7 +83,6 @@ export const RootProvider: React.FC<any> = ({children}) => {
   useEffect(() => {
     if (!roomStore.state.rtm.joined) return;
     const rtmClient = roomStore.rtmClient;
-    console.log('rtmClient add Event Listeners');
     rtmClient.on('ConnectionStateChanged', ({ newState, reason }: { newState: string, reason: string }) => {
       console.log(`newState: ${newState} reason: ${reason}`);
       if (reason === 'LOGIN_FAILURE') {
@@ -94,12 +98,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
           type: 'rtmClient',
           message: 'kick'
         });
-        roomStore.exitAll().then(() => {
-          console.log("[exit rtm] success");
-        }).catch(console.warn).finally(() => {
-          history.push('/');
-          console.log("[rtc-client] exit all");
-        })
+        history.push('/');
         return;
       }
     });
@@ -119,6 +118,12 @@ export const RootProvider: React.FC<any> = ({children}) => {
     rtmClient.on("MemberJoined", (memberId: string) => {
     });
     rtmClient.on("MemberLeft", (memberId: string) => {
+      if (roomStore.state.applyUid === +memberId) {
+        roomStore.updateCourseLinkUid(roomStore.applyUid)
+        .then(() => {
+          globalStore.removeNotice();
+        }).catch(console.warn);
+      }
     });
     rtmClient.on("MemberCountUpdated", (count: number) => {
       !ref.current && roomStore.updateMemberCount(count);
@@ -136,7 +141,6 @@ export const RootProvider: React.FC<any> = ({children}) => {
     });
     return () => {
       rtmClient.removeAllListeners();
-      console.log("removeAllListeners");
     }
   }, [roomStore.state.rtm.joined]);
 

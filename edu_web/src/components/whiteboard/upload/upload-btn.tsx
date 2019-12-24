@@ -10,28 +10,29 @@ export type UploadBtnProps = {
   room: Room,
   uuid: string,
   roomToken: string,
-  whiteboardRef?: HTMLDivElement,
   onProgress?: PPTProgressListener,
   onFailure?: (err: any) => void,
 };
 
 export const UploadBtn: React.FC<UploadBtnProps> = ({
   room, uuid, roomToken,
-  whiteboardRef, onProgress, onFailure
+  onProgress, onFailure
 }) => {
   const uploadDynamic = async (event: any) => {
     try {
       const file = event.currentTarget.files[0];
-      const uploadManager = new UploadManager(ossClient, room);
-      const pptConverter = whiteboard.client.pptConverter(roomToken);
-      await uploadManager.convertFile(
-        file,
-        pptConverter,
-        PptKind.Dynamic,
-        ossConfig.folder,
-        uuid,
-        onProgress,
-      );
+      if (file) {
+        const uploadManager = new UploadManager(ossClient, room);
+        const pptConverter = whiteboard.client.pptConverter(roomToken);
+        await uploadManager.convertFile(
+          file,
+          pptConverter,
+          PptKind.Dynamic,
+          ossConfig.folder,
+          uuid,
+          onProgress,
+        );
+      }
     } catch (err) {
       onFailure && onFailure(err);
       console.warn(err)
@@ -41,15 +42,17 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
   const uploadStatic = async (event: any) => {
     try {
       const file = event.currentTarget.files[0];
-      const uploadManager = new UploadManager(ossClient, room);
-      const pptConverter = whiteboard.client.pptConverter(roomToken);
-      await uploadManager.convertFile(
-        file,
-        pptConverter,
-        PptKind.Static,
-        ossConfig.folder,
-        uuid,
-        onProgress);
+      if (file) {
+        const uploadManager = new UploadManager(ossClient, room);
+        const pptConverter = whiteboard.client.pptConverter(roomToken);
+        await uploadManager.convertFile(
+          file,
+          pptConverter,
+          PptKind.Static,
+          ossConfig.folder,
+          uuid,
+          onProgress);
+      }
     } catch (err) {
       onFailure && onFailure(err)
       console.warn(err)
@@ -59,17 +62,19 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
   const uploadImage = async (event: any) => {
     try {
       const file = event.currentTarget.files[0];
-      const uploadFileArray: File[] = [];
-      uploadFileArray.push(file);
-      const uploadManager = new UploadManager(ossClient, room);
-      const $whiteboard = document.getElementById('whiteboard') as HTMLDivElement;
-      if ($whiteboard) {
-        const { clientWidth, clientHeight } = $whiteboard;
-        await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
-      } else {
-        const clientWidth = window.innerWidth;
-        const clientHeight = window.innerHeight;
-        await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
+      if (file) {
+        const uploadFileArray: File[] = [];
+        uploadFileArray.push(file);
+        const uploadManager = new UploadManager(ossClient, room);
+        const $whiteboard = document.getElementById('whiteboard') as HTMLDivElement;
+        if ($whiteboard) {
+          const { clientWidth, clientHeight } = $whiteboard;
+          await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
+        } else {
+          const clientWidth = window.innerWidth;
+          const clientHeight = window.innerHeight;
+          await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
+        }
       }
     } catch (err) {
       onFailure && onFailure(err)
@@ -77,34 +82,56 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
     }
   }
 
-  const uploadVideo = async (event: any) => {
+  const uploadAudioVideo = async (event: any) => {
     const uploadManager = new UploadManager(ossClient, room);
-        const file = event.currentTarget.files[0];
-        console.log("file ", file);
+    const file = event.currentTarget.files[0];
+    if (file) {
+      try {
         const path = `/${ossConfig.folder}`
         const uuid = uuidv4();
-        const res = await uploadManager.addFile(`${path}/video-${file.name}${uuid}`, file, 
+        const res = await uploadManager.addFile(`${path}/video-${file.name}${uuid}`, file,
           onProgress
         );
         const isHttps = res.indexOf("https") !== -1;
         let url;
         if (isHttps) {
-            url = res;
+          url = res;
         } else {
-            url = res.replace("http", "https");
+          url = res.replace("http", "https");
         }
+        const fileType = file.name.split('.')[1];
         if (url && whiteboard.state.room) {
-          whiteboard.state.room.insertPlugin({
-            protocal: 'video',
-            centerX: 0,
-            centerY: 0,
-            width: 480,
-            height: 270,
-            props: {
-              videoUrl: url
-            }
-          });
+          if (fileType === 'mp4') {
+            const res = whiteboard.state.room.insertPlugin({
+              protocal: 'video',
+              centerX: 0,
+              centerY: 0,
+              width: 480,
+              height: 270,
+              props: {
+                videoUrl: url
+              }
+            });
+            console.log("[upload-btn] video resource after insert plugin, res: ", res);
+          }
+          if (fileType === 'mp3') {
+            const res = whiteboard.state.room.insertPlugin({
+              protocal: 'audio',
+              centerX: 0,
+              centerY: 0,
+              width: 480,
+              height: 270,
+              props: {
+                audioUrl: url
+              }
+            });
+            console.log("[upload-btn] audio resource after insert plugin, res: ", res);
+          }
         }
+      } catch(err) {
+        onFailure && onFailure(err);
+      }
+    }
   }
 
   return (
@@ -147,11 +174,11 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         <label htmlFor="upload-video">
           <div className="upload-static-resource"></div>
           <div className="text-container">
-            <div className="title">Upload video</div>
-            <div className="description">mp4</div>
+            <div className="title">Upload audio/video</div>
+            <div className="description">mp4,mp3</div>
           </div>
         </label>
-        <input id="upload-video" accept="video/*,.mp4" onChange={uploadVideo} type="file"></input>
+        <input id="upload-video" accept="video/*,.mp4,.mp3" onChange={uploadAudioVideo} type="file"></input>
       </div>
     </div>
   )
