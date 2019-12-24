@@ -1,5 +1,8 @@
 package io.agora.rtc.education.room.fragment;
 
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -10,18 +13,22 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
 import io.agora.rtc.education.base.BaseListAdapter;
+import io.agora.rtc.education.constant.IntentKey;
 import io.agora.rtc.education.im.ChannelMsg;
 import io.agora.rtc.education.im.IMStrategy;
+import io.agora.rtc.education.room.replay.ReplayActivity;
 
 public class ChatroomFragment extends BaseFragment {
 
     private ListView mLvMsg;
     private MsgListAdapter mAdapter;
     private EditText mEdtSendMsg;
-    private View mViewRoot;
     private IMStrategy mImStrategy;
 
     public static ChatroomFragment newInstance() {
@@ -30,22 +37,14 @@ public class ChatroomFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (mViewRoot != null) {
-            ViewGroup parent = (ViewGroup) mViewRoot.getParent();
-            if (parent != null) {
-                parent.removeView(mViewRoot);
-            }
-            return mViewRoot;
-        }
-        mViewRoot = inflater.inflate(R.layout.fragment_chatroom, container, false);
+    protected View initUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_chatroom, container, false);
 
-        mLvMsg = mViewRoot.findViewById(R.id.lv_msg);
+        mLvMsg = view.findViewById(R.id.lv_msg);
         mAdapter = new MsgListAdapter();
         mLvMsg.setAdapter(mAdapter);
 
-        mEdtSendMsg = mViewRoot.findViewById(R.id.edt_send_msg);
+        mEdtSendMsg = view.findViewById(R.id.edt_send_msg);
         mEdtSendMsg.setEnabled(false);
         mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -63,7 +62,7 @@ public class ChatroomFragment extends BaseFragment {
                 return false;
             }
         });
-        return mViewRoot;
+        return view;
     }
 
     public void setEditTextEnable(boolean isEnable) {
@@ -88,12 +87,37 @@ public class ChatroomFragment extends BaseFragment {
         this.mImStrategy = imStrategy;
     }
 
-    static class MsgListAdapter extends BaseListAdapter<ChannelMsg> {
+    private class MsgListAdapter extends BaseListAdapter<ChannelMsg> {
         @Override
-        protected void onBindViewHolder(BaseViewHolder viewHolder, ChannelMsg msg, int position) {
+        protected void onBindViewHolder(BaseViewHolder viewHolder, final ChannelMsg msg, int position) {
             ViewHolder holder = (ViewHolder) viewHolder;
+            Resources resources = holder.itemView.getContext().getResources();
             holder.tvName.setText(msg.account);
-            holder.tvContent.setText(msg.content);
+            if (TextUtils.isEmpty(msg.link)) {
+                holder.tvContent.setText(msg.content);
+                holder.tvContent.setTextColor(resources.getColor(R.color.gray_666666));
+                holder.tvContent.getPaint().setFlags(0);
+            } else {
+                holder.tvContent.setText(resources.getString(R.string.replay_recording));
+                holder.tvContent.setTextColor(resources.getColor(R.color.blue_1F3DE8));
+                holder.tvContent.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+            }
+            holder.tvContent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(msg.link)) {
+                        String[] strs = msg.link.split("/");
+                        String uuid = strs[2];
+                        long startTime = Long.parseLong(strs[3]);
+                        long endTime = Long.parseLong(strs[4]);
+                        Intent intent = new Intent(ChatroomFragment.this.mContext, ReplayActivity.class);
+                        intent.putExtra(IntentKey.WHITE_BOARD_UID, uuid);
+                        intent.putExtra(IntentKey.WHITE_BOARD_START_TIME, startTime);
+                        intent.putExtra(IntentKey.WHITE_BOARD_END_TIME, endTime);
+                        startActivity(intent);
+                    }
+                }
+            });
         }
 
         @Override

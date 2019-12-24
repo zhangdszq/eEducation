@@ -3,10 +3,12 @@ package io.agora.rtc.education.room.whiteboard;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.herewhite.sdk.AbstractRoomCallbacks;
-import com.herewhite.sdk.Displayer;
+import com.herewhite.sdk.Player;
+import com.herewhite.sdk.PlayerEventListener;
 import com.herewhite.sdk.Room;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
@@ -16,11 +18,15 @@ import com.herewhite.sdk.domain.AnimationMode;
 import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.DeviceType;
 import com.herewhite.sdk.domain.MemberState;
+import com.herewhite.sdk.domain.PlayerConfiguration;
+import com.herewhite.sdk.domain.PlayerPhase;
+import com.herewhite.sdk.domain.PptPage;
 import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RectangleConfig;
 import com.herewhite.sdk.domain.RoomPhase;
 import com.herewhite.sdk.domain.RoomState;
 import com.herewhite.sdk.domain.SDKError;
+import com.herewhite.sdk.domain.Scene;
 import com.herewhite.sdk.domain.SceneState;
 import com.herewhite.sdk.domain.ViewMode;
 
@@ -50,8 +56,15 @@ public class WhiteboardDelegate {
     public void initWhiteSdk(Context c, WhiteboardView mWhiteboardView) {
         WhiteSdkConfiguration configuration = new WhiteSdkConfiguration(DeviceType.touch, 10, 0.1);
         mWhiteSdk = new WhiteSdk(mWhiteboardView, c, configuration);
+        mWhiteboardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (mRoom != null) {
+                    mRoom.refreshViewSize();
+                }
+            }
+        });
     }
-
 
     public void setOnSceneChangeListener(SceneHelper.OnSceneChangeListener onSceneChangeListener) {
         mSceneHelper.setOnSceneChangeListener(onSceneChangeListener);
@@ -78,7 +91,6 @@ public class WhiteboardDelegate {
     }
 
     public interface OnRoomStateChangedListener {
-
         void onSuccess();
 
         void onFailure(String err);
@@ -86,8 +98,13 @@ public class WhiteboardDelegate {
         void onRoomPhaseChange(RoomPhase phase);
     }
 
-    public void joinRoom(String uuid, final OnRoomStateChangedListener callBack) {
+    public interface OnPlayerStateChangedListener {
+        void onSuccess(Player player);
 
+        void onFailure(String err);
+    }
+
+    public void joinRoom(String uuid, final OnRoomStateChangedListener callBack) {
         mDidLeave = false;
         WhiteboardAPI.getRoom(uuid, new WhiteboardAPI.Callback() {
             @Override
@@ -95,13 +112,13 @@ public class WhiteboardDelegate {
                 log.i("get room success");
                 RoomParams roomParams = new RoomParams(uuid, roomToken);
                 mWhiteSdk.joinRoom(roomParams, new AbstractRoomCallbacks() {
-
                     @Override
                     public void onPhaseChanged(final RoomPhase phase) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                callBack.onRoomPhaseChange(phase);
+                                if (callBack != null)
+                                    callBack.onRoomPhaseChange(phase);
                             }
                         });
                     }
@@ -137,7 +154,6 @@ public class WhiteboardDelegate {
                         }
                     }
                 }, new Promise<Room>() {
-
                     @Override
                     public void then(final Room room) {
                         log.i("join room success");
@@ -179,6 +195,64 @@ public class WhiteboardDelegate {
         });
     }
 
+    public void replay(String uuid, final long startTime, final long endTime, final PlayerEventListener listener, final OnPlayerStateChangedListener callBack) {
+        WhiteboardAPI.getRoom(uuid, new WhiteboardAPI.Callback() {
+            @Override
+            public void success(String uuid, String roomToken) {
+                log.i("get room success");
+                final PlayerConfiguration configuration = new PlayerConfiguration(uuid, roomToken);
+                configuration.setBeginTimestamp(startTime);
+                configuration.setDuration(endTime - startTime);
+                mWhiteSdk.createPlayer(configuration, listener, new Promise<Player>() {
+                    @Override
+                    public void then(final Player player) {
+                        log.i("create player success");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (callBack != null)
+                                    callBack.onSuccess(player);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void catchEx(final SDKError sdkError) {
+                        log.i("create player fail" + sdkError);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (callBack != null)
+                                    callBack.onFailure(sdkError.getMessage());
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void fail(final String errorMessage) {
+                log.i("get room fail:" + errorMessage);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callBack != null)
+                            callBack.onFailure(errorMessage);
+                    }
+                });
+            }
+        });
+    }
+
+    public void initCameraToContainer() {
+        Scene[] scenes = mRoom.getScenes();
+        int index = mRoom.getSceneState().getIndex();
+        PptPage ppt = scenes[index].getPpt();
+        if (ppt != null) {
+            moveCameraToContainer(ppt.getWidth(), ppt.getHeight());
+        }
+    }
+
     public void moveCameraToContainer(Double width, Double height) {
         mRoom.moveCameraToContainer(new RectangleConfig(width, height, AnimationMode.Immediately));
     }
@@ -207,6 +281,12 @@ public class WhiteboardDelegate {
             mRoom = null;
         }
         mHandler.removeCallbacksAndMessages(null);
+    }
+
+    public void finishPlayerPage() {
+        if (mWhiteSdk != null) {
+            mWhiteSdk.releasePlayer();
+        }
     }
 
     private void showToast(String s) {

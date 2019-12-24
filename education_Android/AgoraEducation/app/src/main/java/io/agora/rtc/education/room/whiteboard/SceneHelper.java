@@ -80,7 +80,6 @@ public class SceneHelper {
         return this.scenePath.substring(0, lastSemicolonIndex);
     }
 
-
     public void showPPT(int index) {
         if (this.room != null) {
             PPTData pptData = PPTData.pptDatas[index];
