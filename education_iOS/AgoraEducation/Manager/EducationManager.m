@@ -157,10 +157,10 @@ static EducationManager *manager = nil;
     return -1;
 }
 - (int)enableRTCLocalVideo:(BOOL) enabled {
-    return [self.rtcManager muteLocalVideoStream:enabled];
+    return [self.rtcManager muteLocalVideoStream:!enabled];
 }
 - (int)enableRTCLocalAudio:(BOOL) enabled {
-    return [self.rtcManager muteLocalAudioStream:enabled];
+    return [self.rtcManager muteLocalAudioStream:!enabled];
 }
 
 #pragma mark RTCManagerDelegate
