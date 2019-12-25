@@ -99,7 +99,7 @@
 
 - (void)createWhiteReplayerWithModel:(ReplayerModel *)replayerModel {
     
-    WEAK(self)
+    WEAK(self);
     
     // create white replayer
     [self.educationManager createWhiteReplayerWithModel:replayerModel completeSuccessBlock:^(WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer) {
@@ -231,7 +231,7 @@
     self.controlView.sliderView.value = value;
     float currentTime = [self timeTotleDuration] * value;
     
-    WEAK(self)
+    WEAK(self);
     [self seekToTimeInterval:currentTime completionHandler:^(BOOL finished) {
         if(finished) {
             NSString *currentTimeStr = [weakself convertTimeSecond: currentTime];
@@ -270,7 +270,7 @@
     
     if([self timeTotleDuration] > 0) {
         float currentTime = [self timeTotleDuration] * value;
-        WEAK(self)
+        WEAK(self);
         [self seekToTimeInterval:currentTime completionHandler:^(BOOL finished) {
             if(finished) {
                 NSString *currentTimeStr = [weakself convertTimeSecond: currentTime];
@@ -342,7 +342,7 @@
 - (void)whitePlayerDidFinish {
     [self.educationManager pauseWhite];
 
-    WEAK(self)
+    WEAK(self);
     [self seekToTimeInterval:0 completionHandler:^(BOOL finished) {
         if(finished) {
             [weakself setLoadingViewVisible:NO];

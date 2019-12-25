@@ -33,7 +33,7 @@
     [super layoutSubviews];
 }
 
-- (void)updateChannelName:(NSString *)name {
+- (void)updateClassName:(NSString *)name {
     [self.titleLabel setText:name];
 }
 

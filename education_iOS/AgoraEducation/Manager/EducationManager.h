@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "WhiteManager.h"
-#import "ReplayerModel.h"
+
+#import "SignalManager.h"
 #import "RTCVideoCanvasModel.h"
+#import "ReplayerModel.h"
+#import "AEP2pMessageModel.h"
 
 @protocol WhitePlayDelegate <NSObject>
 
@@ -49,18 +52,40 @@
 @end
 
 @protocol RTCDelegate <NSObject>
-
 @optional
 - (void)rtcDidJoinedOfUid:(NSUInteger)uid;
 - (void)rtcDidOfflineOfUid:(NSUInteger)uid;
 - (void)rtcNetworkTypeGrade:(RTCNetworkGrade)grade;
 @end
 
+#define NOTICE_KEY_ON_MESSAGE_DISCONNECT @"NOTICE_KEY_ON_MESSAGE_DISCONNECT"
+@protocol SignalDelegate <NSObject>
+@optional
+- (void)signalDidUpdateMessage:(AERoomMessageModel * _Nonnull)messageModel;
+- (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel;
+- (void)signalDidReceived:(AEP2pMessageModel * _Nonnull)signalModel;
+@end
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EducationManager : NSObject
 
-- (void)sendMessageWithValue:(NSString *)value;
+/* ==================================>SignalManager<================================ */
+@property (nonatomic, strong) AETeactherModel * _Nullable currentTeaModel;
+@property (nonatomic, strong) AEStudentModel * _Nullable currentStuModel;
+- (void)initSignalWithModel:(MessageModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
+- (void)initStudentWithUserName:(NSString *)userName;
+- (void)setSignalDelegate:(id<SignalDelegate>)delegate;
+- (void)joinSignalWithChannelName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
+
+- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block;
+- (void)updateGlobalStateWithValue:(NSString *)value completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
+- (void)queryOnlineStudentCountWithChannelName:(NSString *)channelName maxCount:(NSInteger)maxCount completeSuccessBlock:(void (^) (NSInteger count))successBlock completeFailBlock:(void (^) (void))failBlock;
+
+- (void)sendMessageWithContent:(NSString *)text userName:(NSString *)name;
+- (void)setSignalWithType:(RTMp2pType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock;
+
+- (void)releaseSignalResources;
 
 
 /* ==================================>RTCManager<================================ */
@@ -72,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType;
 - (int)enableRTCLocalVideo:(BOOL) enabled;
 - (int)enableRTCLocalAudio:(BOOL) enabled;
+- (void)releaseRTCResources;
 
 
 /* ==================================>WhiteManager<================================ */
@@ -90,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopWhite;
 - (NSTimeInterval)whiteTotleTimeDuration;
 - (void)currentWhiteScene:(void (^)(NSInteger sceneCount, NSInteger sceneIndex))completionBlock;
-
+- (void)releaseWhiteResources;
 
 - (void)releaseResources;
 

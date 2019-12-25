@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCManager : NSObject
 
-@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
+@property (nonatomic, strong) AgoraRtcEngineKit * _Nullable rtcEngineKit;
 
 @property (nonatomic, weak) id<RTCManagerDelegate> rtcManagerDelegate;
 
