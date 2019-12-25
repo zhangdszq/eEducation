@@ -32,10 +32,6 @@ public abstract class BaseFragment extends Fragment {
         return AGApplication.the().getRtcWorker();
     }
 
-//    protected RtmDemoAPI rtmDemoAPI() {
-//        return rtmManager().getRtmDemoAPI();
-//    }
-
     protected RtcEngine rtcEngine() {
         return AGApplication.the().getRtcWorker().getRtcEngine();
     }

@@ -1,6 +1,5 @@
 package io.agora.rtc.education.room.whiteboard;
 
-import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,13 +16,13 @@ public class AppliancesToolBar {
     private Room mRoom = null;
     private int mStrokeWidth = 4;
     private int mTextWidth = 8;
-    private int[] mColor = {0,0,0};
+    private int[] mColor = {0, 0, 0};
 
     public AppliancesToolBar(Map<String, ImageView> appliances) {
         mCurrentApplianceName = Appliance.ERASER;
         mAppliances = appliances;
 
-        for (Map.Entry<String, ImageView> e: mAppliances.entrySet()) {
+        for (Map.Entry<String, ImageView> e : mAppliances.entrySet()) {
             final String applianceName = e.getKey();
             View v = e.getValue();
             v.setOnClickListener(new View.OnClickListener() {
@@ -36,7 +35,7 @@ public class AppliancesToolBar {
         setViewsEnable(false);
     }
 
-    public void setState(String applianceName, int[] color) {
+    public void setState(String applianceName) {
         if (mCurrentApplianceName != null) {
             ImageView originalView = mAppliances.get(mCurrentApplianceName);
             if (originalView != null) {
@@ -46,7 +45,6 @@ public class AppliancesToolBar {
         }
 
         mCurrentApplianceName = applianceName;
-        mColor = color;
         ImageView currentView = mAppliances.get(mCurrentApplianceName);
         if (currentView != null) {
 //            currentView.setColorFilter(getColorInt(color));
@@ -63,7 +61,7 @@ public class AppliancesToolBar {
     }
 
     public static int getColorInt(int[] colorArray) {
-        return  0xff << 24 | (colorArray[0] & 0xff) << 16 | (colorArray[1] & 0xff) << 8 | (colorArray[2] & 0xff);
+        return 0xff << 24 | (colorArray[0] & 0xff) << 16 | (colorArray[1] & 0xff) << 8 | (colorArray[2] & 0xff);
     }
 
     public void setColor(int color) {
@@ -94,12 +92,13 @@ public class AppliancesToolBar {
 
     public void setRoom(Room room) {
         mRoom = room;
+        setColor(mColor);
         setViewsEnable(true);
     }
 
     public void setViewsEnable(boolean enable) {
         if (mAppliances != null) {
-            for (View View: mAppliances.values()) {
+            for (View View : mAppliances.values()) {
                 View.setEnabled(enable);
             }
         }
