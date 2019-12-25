@@ -22,6 +22,14 @@ export const ossClient = new OSS(ossConfig);
 
 console.log("[upload-btn] ", ossConfig, ossClient);
 
+const OSS_PREFIX = process.env.REACT_APP_AGORA_RECORDING_OSS_URL as string;
+
+export function getOSSUrl (mediaUrl: string): string {
+  const res = `${OSS_PREFIX}/${mediaUrl}`;
+  console.log("resolve: ", res, OSS_PREFIX);
+  return res;
+}
+
 export const handleRegion = (region: string): number => {
   switch (region) {
     case "CN_Hangzhou":

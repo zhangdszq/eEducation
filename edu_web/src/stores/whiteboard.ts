@@ -377,8 +377,7 @@ class Whiteboard extends EventEmitter {
     if (!this.state) return;
     await this.operator.query();
     const res = await this.operator.stop();
-    console.log("res", res);
-    const mediaUrl = get(res, 'serverResponse');
+    const mediaUrl = get(res, 'serverResponse.fileList');
     this.state = {
       ...this.state,
       recording: false,

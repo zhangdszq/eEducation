@@ -137,6 +137,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
         ts: +Date.now(),
         id: memberId,
       }
+      console.log("[rtmClient] ChannelMessage", msg);
       roomStore.updateChannelMessage(chatMessage);
     });
     return () => {

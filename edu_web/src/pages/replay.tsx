@@ -10,14 +10,7 @@ import { globalStore } from '../stores/global';
 import { WhiteboardAPI } from '../utils/api';
 import { whiteboard } from '../stores/whiteboard';
 import "video.js/dist/video-js.css";
-
-const OSS_PREFIX = process.env.REACT_APP_AGORA_RECORDING_OSS_URL as string;
-
-function resolveOSSURL (mediaUrl: string): string {
-  const res = `${OSS_PREFIX}/${mediaUrl}`;
-  console.log("resolve: ", res);
-  return res;
-}
+import { getOSSUrl } from '../utils/helper';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -294,7 +287,7 @@ export const Replay: React.FC<{}> = () => {
             beginTimestamp: +startTime,
             duration: duration,
             room: uuid,
-            mediaURL: resolveOSSURL(mediaUrl as string),
+            mediaURL: getOSSUrl(mediaUrl as string),
             roomToken: roomToken,
           }, {
             onCatchErrorWhenRender: error => {

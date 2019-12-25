@@ -4,6 +4,7 @@ import { roomStore } from '../../stores/room';
 import { whiteboard } from '../../stores/whiteboard';
 import moment from 'moment';
 import { globalStore } from '../../stores/global';
+import { getOSSUrl } from '../../utils/helper';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void
@@ -77,33 +78,50 @@ export default function Control({
   }
   
   const handleRecording = async (evt: any, type: string) => {
-    const roomState = roomStore.state;
-    const me = roomState.me;
-    if (lock.current || !me.uid) return;
-
-    if (whiteboard.state.recording) {
-      if (!canStop()) return;
-      let mediaUrl = await whiteboard.stopRecording();
-      console.log("MediaUrl: ", mediaUrl);
-      if (whiteboard.state.endTime 
-        && whiteboard.state.startTime) {
-        const {endTime, startTime, roomUUID} = whiteboard.clearRecording();
-        await roomStore.rtmClient.sendChannelMessage(JSON.stringify({
-          account: me.account,
-          link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`
-        }));
-        const message = {
-          account: me.account,
-          id: me.uid,
-          link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`,
-          text: '',
-          ts: +Date.now()
+    try {
+      const roomState = roomStore.state;
+      const me = roomState.me;
+      if (lock.current || !me.uid) return;
+  
+      if (whiteboard.state.recording) {
+        if (!canStop()) return;
+        let mediaUrl = await whiteboard.stopRecording();
+        globalStore.showToast({
+          type: 'recording',
+          message: 'stop recording success',
+        });
+        if (whiteboard.state.endTime 
+          && whiteboard.state.startTime) {
+          const {endTime, startTime, roomUUID} = whiteboard.clearRecording();
+          await roomStore.rtmClient.sendChannelMessage(JSON.stringify({
+            account: me.account,
+            url: getOSSUrl(mediaUrl),
+            link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`
+          }));
+          const message = {
+            account: me.account,
+            id: me.uid,
+            link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`,
+            text: '',
+            ts: +Date.now()
+          }
+          roomStore.updateChannelMessage(message);
+          return;
         }
-        roomStore.updateChannelMessage(message);
-        return;
+      } else {
+        await whiteboard.startRecording();
+        globalStore.showToast({
+          type: 'recording',
+          message: 'start recording success',
+        });
       }
-    } else {
-      await whiteboard.startRecording();
+    } catch(err) {
+      if (err.recordingErr) {
+        globalStore.showToast({
+          type: 'recordingErr',
+          message: err.recordingErr.message,
+        });
+      }
     }
   }
 

@@ -120,7 +120,12 @@ export class RecordOperator {
       if (typeof res.resourceId === "string") {
         this.resourceId = res.resourceId;
       } else {
-        throw new Error("acquire resource error");
+        throw {
+          recordingErr: {
+            message: 'acquire recording failed',
+          },
+          reason: 'resourceId is invalid',
+        }
       }
     }
 
@@ -132,7 +137,12 @@ export class RecordOperator {
 
     public async start(): Promise<any> {
       if (this.resourceId === undefined) {
-          throw new Error("call 'acquire' method acquire resource");
+        throw {
+          recordingErr: {
+            message: 'start recording failed',
+          },
+          reason: 'resourceId is undefined',
+        }
       }
       const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/mode/${this.mode}/start`, {
         method: 'POST',
@@ -154,17 +164,32 @@ export class RecordOperator {
       if (typeof res.sid === "string") {
           this.recordId = res.sid;
       } else {
-          throw new Error("start record error");
+        throw {
+          recordingErr: {
+            message: 'start recording failed',
+          },
+          reason: 'recordId is invalid',
+        }
       }
       return res;
     }
 
     public async stop(): Promise<any> {
       if (this.resourceId === undefined) {
-          throw new Error("call 'acquire' method acquire resource");
+        throw {
+          recordingErr: {
+            message: 'stop recording failed',
+          },
+          reason: 'resourceId is undefined',
+        }
       }
       if (this.recordId === undefined) {
-          throw new Error("call 'start' method start record");
+        throw {
+          recordingErr: {
+            message: 'stop recording failed',
+          },
+          reason: 'recordId is undefined',
+        }
       }
       try {
           const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/sid/${this.recordId}/mode/${this.mode}/stop`,
@@ -177,11 +202,7 @@ export class RecordOperator {
             body: JSON.stringify({
               cname: this.channelName,
               uid: this.uid,
-              clientRequest: {
-                  // token: this.token,
-                  // recordingConfig: this.recordingConfig,
-                  // storageConfig: this.storageConfig,
-              },
+              clientRequest: {},
             })
           });
           const json = await response.json();
@@ -195,10 +216,20 @@ export class RecordOperator {
 
     public async query(): Promise<any> {
         if (this.resourceId === undefined) {
-            throw new Error("call 'acquire' method acquire resource");
+            throw {
+              recordingErr: {
+                message: 'query recording failed',
+              },
+              reason: 'resourceId is undefined',
+            }
         }
         if (this.recordId === undefined) {
-            throw new Error("call 'start' method start record");
+          throw {
+            recordingErr: {
+              message: 'query recording failed',
+            },
+            reason: 'recordId is undefined',
+          }
         }
         const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/sid/${this.recordId}/mode/${this.mode}/query`, {
           method: 'GET',
