@@ -70,35 +70,40 @@ export default function Control({
     }
     return true;
   }
+
+  const onRecordButtonClick = (evt: any, type: string) => {
+    handleRecording(evt, type)
+    .then(() => {}).catch(console.warn);
+  }
   
-  const handleRecording = (evt: any, type: string) => {
+  const handleRecording = async (evt: any, type: string) => {
     const roomState = roomStore.state;
     const me = roomState.me;
     if (lock.current || !me.uid) return;
 
     if (whiteboard.state.recording) {
       if (!canStop()) return;
-      whiteboard.stopRecording();
+      let mediaUrl = await whiteboard.stopRecording();
+      console.log("MediaUrl: ", mediaUrl);
       if (whiteboard.state.endTime 
         && whiteboard.state.startTime) {
         const {endTime, startTime, roomUUID} = whiteboard.clearRecording();
-        roomStore.rtmClient.sendChannelMessage(JSON.stringify({
+        await roomStore.rtmClient.sendChannelMessage(JSON.stringify({
           account: me.account,
-          link: `/replay/${roomUUID}/${startTime}/${endTime}`
-        })).then(() => {
-          const message = {
-            account: me.account,
-            id: me.uid,
-            link: `/replay/${roomUUID}/${startTime}/${endTime}`,
-            text: '',
-            ts: +Date.now()
-          }
-          roomStore.updateChannelMessage(message);
-        })
+          link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`
+        }));
+        const message = {
+          account: me.account,
+          id: me.uid,
+          link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`,
+          text: '',
+          ts: +Date.now()
+        }
+        roomStore.updateChannelMessage(message);
         return;
       }
     } else {
-      whiteboard.startRecording();
+      await whiteboard.startRecording();
     }
   }
 
@@ -136,7 +141,7 @@ export default function Control({
           <>
             <ControlItem
               name={whiteboard.state.recording ? 'stop_recording' : 'recording'}
-              onClick={handleRecording}
+              onClick={onRecordButtonClick}
               active={false}
             />
             <ControlItem

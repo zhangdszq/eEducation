@@ -6,6 +6,11 @@ const createRoomApi = process.env.REACT_APP_NETLESS_APP_API_ENTRY as string;
 const joinRoomApi = process.env.REACT_APP_NETLESS_APP_JOIN_API;
 const sdkToken = process.env.REACT_APP_NETLESS_APP_TOKEN;
 
+
+const url = process.env.REACT_APP_AGORA_RECORDING_SERVICE_URL as string;
+const PREFIX = url.replace('%s', process.env.REACT_APP_AGORA_APP_ID as string);
+
+
 export const WhiteboardAPI = {
   async createRoom ({rid, limit, mode}: any) {
     let response = await AgoraFetch(`${createRoomApi}${sdkToken}`, {
@@ -50,6 +55,7 @@ export const WhiteboardAPI = {
           beginTimestamp: args.beginTimestamp,
           duration: args.duration,
           room: args.room,
+          mediaURL: args.mediaURL,
           roomToken: args.roomToken
         }, callback);
         retrying = false;
@@ -61,12 +67,152 @@ export const WhiteboardAPI = {
   }
 }
 
-export const RecordingAPI = {
-  async createRecording() {
+export class RecordOperator {
+    private readonly agoraAppId: string;
+    private readonly customerId: string;
+    private readonly customerCertificate: string;
+    private readonly channelName: string;
+    private readonly mode: string;
+    private readonly recordingConfig: any;
+    private readonly storageConfig: any;
+    private recordId?: string;
+    public resourceId?: string;
+    private readonly uid: string;
+    private readonly token: string | undefined = undefined;
+    public constructor(
+        rtcBaseConfig: {
+            agoraAppId: string,
+            customerId: string,
+            customerCertificate: string,
+            channelName: string,
+            mode: string,
+            token: string | undefined,
+            uid: string,
+        },
+        recordingConfig: any,
+        storageConfig: any,
+        ) {
+        this.agoraAppId = rtcBaseConfig.agoraAppId;
+        this.customerId = rtcBaseConfig.customerId;
+        this.customerCertificate = rtcBaseConfig.customerCertificate;
+        this.channelName = rtcBaseConfig.channelName;
+        this.recordingConfig = recordingConfig;
+        this.storageConfig = storageConfig;
+        this.mode = rtcBaseConfig.mode;
+        this.uid = rtcBaseConfig.uid;
+        this.token = rtcBaseConfig.token;
+    }
 
-  },
+    public async acquire(): Promise<void> {
+      let response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/acquire`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: this.basicAuthorization(this.customerId, this.customerCertificate),
+        },
+        body: JSON.stringify({
+          cname: this.channelName,
+          uid: this.uid,
+          clientRequest: {},
+        })
+      });
+      const res = await response.json();
+      if (typeof res.resourceId === "string") {
+        this.resourceId = res.resourceId;
+      } else {
+        throw new Error("acquire resource error");
+      }
+    }
 
-  async queryRecording() {
+    public async release(): Promise<void> {
+        this.resourceId = undefined;
+        this.recordId = undefined;
+    }
 
-  }
+
+    public async start(): Promise<any> {
+      if (this.resourceId === undefined) {
+          throw new Error("call 'acquire' method acquire resource");
+      }
+      const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/mode/${this.mode}/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: this.basicAuthorization(this.customerId, this.customerCertificate),
+        },
+        body: JSON.stringify({
+          cname: this.channelName,
+          uid: this.uid,
+          clientRequest: {
+              token: this.token,
+              recordingConfig: this.recordingConfig,
+              storageConfig: this.storageConfig,
+          },
+        })
+      });
+      const res = await response.json();
+      if (typeof res.sid === "string") {
+          this.recordId = res.sid;
+      } else {
+          throw new Error("start record error");
+      }
+      return res;
+    }
+
+    public async stop(): Promise<any> {
+      if (this.resourceId === undefined) {
+          throw new Error("call 'acquire' method acquire resource");
+      }
+      if (this.recordId === undefined) {
+          throw new Error("call 'start' method start record");
+      }
+      try {
+          const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/sid/${this.recordId}/mode/${this.mode}/stop`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: this.basicAuthorization(this.customerId, this.customerCertificate),
+            },
+            body: JSON.stringify({
+              cname: this.channelName,
+              uid: this.uid,
+              clientRequest: {
+                  // token: this.token,
+                  // recordingConfig: this.recordingConfig,
+                  // storageConfig: this.storageConfig,
+              },
+            })
+          });
+          const json = await response.json();
+          return json;
+      } catch (err) {
+          console.log("stop", err);
+      } finally {
+          await this.release();
+      }
+    }
+
+    public async query(): Promise<any> {
+        if (this.resourceId === undefined) {
+            throw new Error("call 'acquire' method acquire resource");
+        }
+        if (this.recordId === undefined) {
+            throw new Error("call 'start' method start record");
+        }
+        const response = await AgoraFetch(`${PREFIX}/v1/apps/${this.agoraAppId}/cloud_recording/resourceid/${this.resourceId}/sid/${this.recordId}/mode/${this.mode}/query`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: this.basicAuthorization(this.customerId, this.customerCertificate),
+          },
+        })
+        const json = await response.json();
+        return json;
+    }
+
+    private basicAuthorization(appId: string, appSecret: string): string {
+        const plainCredentials = `${appId}:${appSecret}`;
+        return `Basic ${btoa(plainCredentials)}`;
+    }
 }

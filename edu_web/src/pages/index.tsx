@@ -45,7 +45,7 @@ export default function () {
               <BigClass />
             </RoomPage>
           </Route>
-          <Route exact path="/replay/:uuid/:startTime/:endTime">
+          <Route exact path="/replay/:uuid/:startTime/:endTime/:mediaUrl">
             <ReplayContainer />
           </Route>
         </RootProvider>

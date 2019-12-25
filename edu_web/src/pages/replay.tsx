@@ -9,6 +9,15 @@ import { Progress } from '../components/progress/progress';
 import { globalStore } from '../stores/global';
 import { WhiteboardAPI } from '../utils/api';
 import { whiteboard } from '../stores/whiteboard';
+import "video.js/dist/video-js.css";
+
+const OSS_PREFIX = process.env.REACT_APP_AGORA_RECORDING_OSS_URL as string;
+
+function resolveOSSURL (mediaUrl: string): string {
+  const res = `${OSS_PREFIX}/${mediaUrl}`;
+  console.log("resolve: ", res);
+  return res;
+}
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -259,7 +268,7 @@ export const Replay: React.FC<{}> = () => {
     }
   }
 
-  const {uuid, startTime, endTime} = useParams();
+  const {uuid, startTime, endTime, mediaUrl} = useParams();
 
   const duration = useMemo(() => {
     if (!startTime || !endTime) return 0;
@@ -285,7 +294,7 @@ export const Replay: React.FC<{}> = () => {
             beginTimestamp: +startTime,
             duration: duration,
             room: uuid,
-            // mediaURL: state.mediaUrl,
+            mediaURL: resolveOSSURL(mediaUrl as string),
             roomToken: roomToken,
           }, {
             onCatchErrorWhenRender: error => {
@@ -407,7 +416,9 @@ export const Replay: React.FC<{}> = () => {
         </div>
       </div>
       <div className="video-container">
-        <div className="video-player"></div>
+        <div className="video-player">
+          <video id="white-sdk-video-js" className="video-js video-layout" style={{width: "100%", height: "100%", objectFit: "cover"}}></video>
+        </div>
         <div className="chat-holder"></div>
       </div>
     </div>
