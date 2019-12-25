@@ -13,15 +13,16 @@ import androidx.cardview.widget.CardView;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import io.agora.rtc.Constants;
 import io.agora.rtc.education.AGApplication;
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
 import io.agora.rtc.education.constant.Constant;
 import io.agora.rtc.education.constant.IntentKey;
-import io.agora.rtc.education.constant.SPKey;
 import io.agora.rtc.education.room.largeclass.LargeClassActivity;
 import io.agora.rtc.education.room.miniclass.MiniClassActivity;
 import io.agora.rtc.education.room.onetoone.OneToOneActivity;
@@ -29,16 +30,16 @@ import io.agora.rtc.education.setting.SettingActivity;
 import io.agora.rtc.lib.rtm.RtmManager;
 import io.agora.rtc.lib.util.AppUtil;
 import io.agora.rtc.lib.util.CryptoUtil;
-import io.agora.rtc.lib.util.SPUtil;
 import io.agora.rtc.lib.util.ToastUtil;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
+import io.agora.rtm.RtmClient;
 
 public class MainActivity extends BaseActivity {
     private CardView layoutRoomType;
     private EditText edtRoomType;
-    private long userId = System.currentTimeMillis() * 1000 % 1000000;
+    private int userId = (int) (System.currentTimeMillis() * 1000 % 1000000);
 
     @Override
     protected void initUI(@Nullable Bundle savedInstanceState) {
@@ -108,30 +109,48 @@ public class MainActivity extends BaseActivity {
         if (roomTypeInt == Constant.RoomType.BIG_CLASS) {
             startActivity(intent);
         } else {
-            rtmManager().getRtmClient().getChannelAttributes(roomNameReal, new ResultCallback<List<RtmChannelAttribute>>() {
+            final RtmClient client = rtmManager().getRtmClient();
+            client.getChannelAttributes(roomNameReal, new ResultCallback<List<RtmChannelAttribute>>() {
                 @Override
                 public void onSuccess(final List<RtmChannelAttribute> attributes) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            int studentCount = 0;
-                            for (RtmChannelAttribute attribute : attributes) {
-                                try {
-                                    int uid = Integer.parseInt(attribute.getKey());
-                                    if (uid != userId) {
+                    Set<String> uidSet = new HashSet<>();
+                    for (RtmChannelAttribute attribute : attributes) {
+                        String key = attribute.getKey();
+                        if (!TextUtils.equals(key, Constant.RTM_CHANNEL_KEY_TEACHER)) {
+                            uidSet.add(key);
+                        }
+                    }
+                    if (uidSet.size() == 0) {
+                        startActivity(intent);
+                    } else {
+                        client.queryPeersOnlineStatus(uidSet, new ResultCallback<Map<String, Boolean>>() {
+                            @Override
+                            public void onSuccess(Map<String, Boolean> stringBooleanMap) {
+                                int studentCount = 0;
+                                for (Map.Entry<String, Boolean> entity : stringBooleanMap.entrySet()) {
+                                    if (entity.getValue()) {
                                         studentCount++;
                                     }
-                                } catch (NumberFormatException e) {
+                                }
+                                if ((roomTypeInt == Constant.RoomType.ONE_TO_ONE && studentCount == 0)
+                                        || (roomTypeInt == Constant.RoomType.SMALL_CLASS && studentCount < 16)) {
+                                    startActivity(intent);
+                                } else {
+                                    ToastUtil.showShort(R.string.the_room_is_full);
                                 }
                             }
-                            if ((roomTypeInt == Constant.RoomType.ONE_TO_ONE && studentCount == 0)
-                                    || (roomTypeInt == Constant.RoomType.SMALL_CLASS && studentCount < 16)) {
-                                startActivity(intent);
-                            } else {
-                                ToastUtil.showShort(R.string.the_room_is_full);
+
+                            @Override
+                            public void onFailure(ErrorInfo errorInfo) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ToastUtil.showShort(R.string.get_channel_attr_failed);
+                                    }
+                                });
                             }
-                        }
-                    });
+                        });
+                    }
                 }
 
                 @Override
@@ -200,4 +219,5 @@ public class MainActivity extends BaseActivity {
         edtRoomType.setText(getString(R.string.one_to_one));
         layoutRoomType.setVisibility(View.GONE);
     }
+
 }

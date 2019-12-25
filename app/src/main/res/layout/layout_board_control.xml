@@ -60,6 +60,8 @@
         android:layout_height="@dimen/dp_129"
         android:layout_alignBottom="@id/layout_tools"
         android:layout_marginStart="@dimen/dp_6"
+        android:layout_marginEnd="@dimen/dp_6"
+        android:layout_marginBottom="@dimen/dp_6"
         android:layout_toEndOf="@id/layout_tools"
         android:elevation="@dimen/dp_6"
         app:cardCornerRadius="@dimen/dp_6" />

@@ -19,7 +19,6 @@ import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.DeviceType;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.PlayerConfiguration;
-import com.herewhite.sdk.domain.PlayerPhase;
 import com.herewhite.sdk.domain.PptPage;
 import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RectangleConfig;
@@ -131,12 +130,10 @@ public class WhiteboardDelegate {
 
                         if (memberState != null) {
                             final String applianceName = memberState.getCurrentApplianceName();
-                            final int[] sdkColor = memberState.getStrokeColor();
-
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mAppliancesToolBar.setState(applianceName, sdkColor);
+                                    mAppliancesToolBar.setState(applianceName);
                                 }
                             });
                         }
@@ -267,8 +264,7 @@ public class WhiteboardDelegate {
         } else {
             MemberState memberState = room.getMemberState();
             String applianceName = memberState.getCurrentApplianceName();
-            int[] sdkColor = memberState.getStrokeColor();
-            mAppliancesToolBar.setState(applianceName, sdkColor);
+            mAppliancesToolBar.setState(applianceName);
 
             mSceneHelper.setSceneState(room.getSceneState());
         }
@@ -298,4 +294,5 @@ public class WhiteboardDelegate {
     public void setApplianceBarEnable(boolean enable) {
         mAppliancesToolBar.setViewsEnable(enable);
     }
+
 }

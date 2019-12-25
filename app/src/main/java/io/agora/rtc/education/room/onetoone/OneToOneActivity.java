@@ -30,7 +30,6 @@ import io.agora.rtc.education.im.P2PMessage;
 import io.agora.rtc.education.im.rtm.RtmStrategy;
 import io.agora.rtc.education.room.fragment.ChatroomFragment;
 import io.agora.rtc.education.room.fragment.WhiteboardFragment;
-import io.agora.rtc.education.room.largeclass.LargeClassActivity;
 import io.agora.rtc.education.room.view.SpeakerView;
 import io.agora.rtc.education.room.view.TimeView;
 import io.agora.rtc.education.room.view.UserVideoItem;
@@ -68,6 +67,11 @@ public class OneToOneActivity extends BaseActivity {
 
         @Override
         public void onRtcStats(RtcStats stats) {
+            if (stats.rxPacketLossRate > 30 || stats.txPacketLossRate > 30) {
+                mIcWifi.setColorFilter(getResources().getColor(R.color.red_FF0D19));
+            } else {
+                mIcWifi.clearColorFilter();
+            }
         }
 
         @Override
@@ -226,12 +230,7 @@ public class OneToOneActivity extends BaseActivity {
 
         @Override
         public void onChannelMessageReceived(final ChannelMsg channelMsg, RtmChannelMember channelMember) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mChatroomFragment.addMessage(channelMsg);
-                }
-            });
+            mChatroomFragment.addMessage(channelMsg);
         }
     };
 
@@ -357,12 +356,12 @@ public class OneToOneActivity extends BaseActivity {
             @Override
             public void clickCancel() {
             }
-        }, getString(R.string.confirm_leave_room_content))
-                .show(getSupportFragmentManager(), "leave");
+        }, getString(R.string.confirm_leave_room_content)).show(getSupportFragmentManager(), "leave");
     }
 
     public void onClickShowChat(View view) {
         view.setSelected(!view.isSelected());
         mLayoutChatRoom.setVisibility(view.isSelected() ? View.GONE : View.VISIBLE);
     }
+
 }
