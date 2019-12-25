@@ -15,46 +15,36 @@ typedef NSString *RoleType NS_STRING_ENUM;
 FOUNDATION_EXPORT RoleType const _Nonnull RoleTypeTeacther;
 
 typedef void(^QueryRolesInfoBlock)(RolesInfoModel * _Nullable);
-typedef void(^ManagerBlock)(void);
 
-#define NOTICE_KEY_ON_MESSAGE_DISCONNECT @"NOTICE_KEY_ON_MESSAGE_DISCONNECT"
-#define NOTICE_KEY_ON_SIGNAL_RECEIVED @"NOTICE_KEY_ON_SIGNAL_RECEIVED"
-
-@protocol SignalDelegate <NSObject>
-
+@protocol RTMDelegate <NSObject>
 @optional
-- (void)onUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel;
-- (void)onUpdateTeactherAttribute:(AETeactherModel *_Nullable)teactherModel;
-- (void)onUpdateStudentsAttribute:(NSArray<RolesStudentInfoModel *> *_Nullable)studentInfoModels;
-- (void)onMemberLeft:(NSString *_Nonnull)userId;
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason;
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId;
+- (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member;
+- (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes;
 @end
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalManager : NSObject
 
-@property(nonatomic, weak) id<SignalDelegate> _Nullable messageDelegate;
+@property (nonatomic, weak) id<RTMDelegate> _Nullable rtmDelegate;
+@property (nonatomic, strong) MessageModel * _Nullable messageModel;
+@property (nonatomic, strong) NSString * _Nullable channelName;
 
-@property(nonatomic, strong) MessageModel *messageModel;
-@property(nonatomic, strong) AETeactherModel * _Nullable currentTeaModel;
-@property(nonatomic, strong) AEStudentModel * _Nullable currentStuModel;
+- (void)initWithMessageModel:(MessageModel*)model completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
+- (void)joinChannelWithName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
 
-+ (instancetype)shareManager;
+- (void)getChannelAllAttributes:(NSString *)channelName completeBlock:(void (^) (NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes))block;
+- (void)updateChannelAttributesWithChannelName:(NSString *)channelName channelAttribute:(AgoraRtmChannelAttribute *)attribute completeSuccessBlock:(void (^) (void))successBlock completeFailBlock:(void (^) (void))failBlock;
 
-- (void)initWithMessageModel:(MessageModel*)model completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock;
+- (void)queryPeersOnlineStatus:(NSArray<NSString*> *_Nonnull)peerIds completion:(AgoraRtmQueryPeersOnlineBlock _Nullable)completionBlock;
 
-- (void)joinChannelWithName:(NSString *)channelName completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock;
+- (void)sendMessage:(NSString *)value completeSuccessBlock:(void (^) (void))successBlock completeFailBlock:(void (^) (void))failBlock;
+- (void)sendMessage:(NSString *)value toPeer:(NSString *)peerId completeSuccessBlock:(void (^) (void))successBlock completeFailBlock:(void (^) (void))failBlock;
 
-- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block;
-
-- (void)updateGlobalStateWithValue:(NSString *)value  completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock;
-
-- (void)sendMessageWithValue:(NSString *)value;
-
-- (void)setSignalWithValue:(NSString *)value toPeer:(NSString *)peerId completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock;
-
-- (void)leaveChannel;
-
+- (void)releaseResources;
 
 @end
 

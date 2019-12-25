@@ -19,7 +19,12 @@
 
 #import "SignalManager.h"
 
-@interface AERoomViewController ()<EEPageControlDelegate,EEWhiteboardToolDelegate, SignalDelegate, WhitePlayDelegate>
+@implementation RoomParamsModel
+
+@end
+
+@interface AERoomViewController ()<EEPageControlDelegate, EEWhiteboardToolDelegate, SignalDelegate, WhitePlayDelegate>
+
 @property (nonatomic, strong) AETeactherModel *teacherAttr;
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
@@ -34,36 +39,33 @@
 @end
 
 @implementation AERoomViewController
-- (void)setParams:(NSDictionary *)params {
-    _params = params;
- 
-    self.channelName = params[@"channelName"];
-    self.userName = params[@"userName"];
-    self.userId = params[@"userId"];
-    self.rtmChannelName = params[@"rtmChannelName"];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view.
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    
     if (@available(iOS 11, *)) {
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    
     self.view.backgroundColor = [UIColor whiteColor];
-
+    
     self.pageControlView.delegate = self;
     self.whiteboardTool.delegate = self;
     
-    self.educationManager = [EducationManager new];
+    [self.educationManager setSignalDelegate:self];
+    [self.educationManager initStudentWithUserName:self.paramsModel.userName];
+    
+    WEAK(self);
+    [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
+        NSArray *colorArray = [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
+        [weakself.educationManager setWhiteStrokeColor:colorArray];
+    }];
 }
 
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice {
     
-    WEAK(self)
+    WEAK(self);
     [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:self];
     [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
         
@@ -78,6 +80,63 @@
     } completeFailBlock:^(NSError * _Nullable error) {
         
     }];
+}
+
+- (void)handleSignalWithModel:(AEP2pMessageModel * _Nonnull)signalModel {
+    
+    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    
+    switch (signalModel.cmd) {
+        case RTMp2pTypeMuteAudio:
+        {
+            currentStuModel.audio = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteAudio:
+        {
+            currentStuModel.audio = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeMuteVideo:
+        {
+            currentStuModel.video = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteVideo:
+        {
+            currentStuModel.video = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeApply:
+        case RTMp2pTypeReject:
+        case RTMp2pTypeAccept:
+        case RTMp2pTypeCancel:
+            break;
+        case RTMp2pTypeMuteChat:
+        {
+            currentStuModel.chat = 0;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        case RTMp2pTypeUnMuteChat:
+        {
+            currentStuModel.chat = 1;
+            NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 - (void)setBoardViewFrame:(CGRect)frame {
@@ -110,39 +169,25 @@
     [self.teacherAttr removeObserver:self forKeyPath:@"class_state"];
 }
 
-- (void)addShareScreenVideoWithUid:(NSInteger)uid {
-    self.shareScreenView.hidden = NO;
-    self.shareScreenCanvas = [[AgoraRtcVideoCanvas alloc] init];
-    self.shareScreenCanvas.uid = uid;
-    self.shareScreenCanvas.view = self.shareScreenView;
-    self.shareScreenCanvas.renderMode = AgoraVideoRenderModeFit;
-    [self.rtcEngineKit setupRemoteVideo:self.shareScreenCanvas];
-}
-
-- (void)removeShareScreen {
-    self.shareScreenView.hidden = YES;
-    self.shareScreenCanvas = nil;
-}
-
-- (void)setWhiteBoardBrushColor {
-    WEAK(self)
+- (void)initWhiteBoardBrushColorBlock {
+    WEAK(self);
     [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
         NSArray *colorArray  =  [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
         [weakself.educationManager setWhiteStrokeColor:colorArray];
     }];
 }
 
-#pragma mark ---------------------------------------- Delegate ----------------------------------------
-- (void)whiteRoomStateChanged {
-    WEAK(self)
-    [self.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
-        weakself.sceneCount = sceneCount;
-        weakself.sceneIndex = sceneIndex;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-        [weakself.educationManager moveWhiteToContainer:sceneIndex];
-    }];
+- (void)dealloc
+{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    NSLog(@"AERoomViewController is Dealloc");
 }
 
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
+#pragma mark EEPageControlDelegate
 - (void)previousPage {
     if (self.sceneIndex > 0) {
         self.sceneIndex--;
@@ -173,6 +218,14 @@
     }];
 }
 
+- (void)firstPage {
+    self.sceneIndex = 0;
+    WEAK(self);
+    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+    }];
+}
+
 -(void)setWhiteSceneIndex:(NSInteger)sceneIndex completionSuccessBlock:(void (^ _Nullable)(void ))successBlock {
     
     [self.educationManager setWhiteSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
@@ -186,14 +239,7 @@
     }];
 }
 
-- (void)firstPage {
-    self.sceneIndex = 0;
-    WEAK(self);
-    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-    }];
-}
-
+#pragma mark EEWhiteboardToolDelegate
 - (void)selectWhiteboardToolIndex:(NSInteger)index {
     
     NSArray<NSString *> *applianceNameArray = @[ApplianceSelector, AppliancePencil, ApplianceText, ApplianceEraser];
@@ -205,6 +251,7 @@
     }
     
     BOOL bHidden = self.colorShowView.hidden;
+    // select color
     if (index == 4) {
         self.colorShowView.hidden = !bHidden;
     } else if (!bHidden) {
@@ -212,14 +259,15 @@
     }
 }
 
-- (void)dealloc
-{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    NSLog(@"AERoomViewController is Dealloc");
-}
-
-- (BOOL)prefersStatusBarHidden {
-    return YES;
+#pragma mark WhitePlayDelegate
+- (void)whiteRoomStateChanged {
+    WEAK(self);
+    [self.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
+        weakself.sceneCount = sceneCount;
+        weakself.sceneIndex = sceneIndex;
+        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
+        [weakself.educationManager moveWhiteToContainer:sceneIndex];
+    }];
 }
 
 @end

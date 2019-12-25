@@ -60,8 +60,10 @@
 }
 
 + (void)POSTWhiteBoardRoomWithUuid:(NSString *)uuid token:(void (^)(NSString *token))token failure:(void (^)(NSString *msg))failure{
+    
+    NSString *urlString = @"https://cloudcapiv4.herewhite.com/room/join";
     AgoraHttpRequest *request = [[AgoraHttpRequest alloc] init];
-    NSString *url = [NSString stringWithFormat:@"%@?uuid=%@&token=%@",kPOSTJoinWhiteBoardUrl,uuid,kWhiteBoardToken];
+    NSString *url = [NSString stringWithFormat:@"%@?uuid=%@&token=%@",urlString,uuid,kWhiteBoardToken];
     [request post:url params:nil success:^(id responseObj) {
         if ([responseObj[@"code"] integerValue] == 200) {
             if (token) {
