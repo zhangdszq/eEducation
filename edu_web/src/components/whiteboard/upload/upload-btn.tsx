@@ -120,7 +120,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
               centerX: 0,
               centerY: 0,
               width: 480,
-              height: 270,
+              height: 86,
               props: {
                 audioUrl: url
               }

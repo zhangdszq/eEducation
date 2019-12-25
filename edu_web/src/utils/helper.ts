@@ -22,6 +22,89 @@ export const ossClient = new OSS(ossConfig);
 
 console.log("[upload-btn] ", ossConfig, ossClient);
 
+export const handleRegion = (region: string): number => {
+  switch (region) {
+    case "CN_Hangzhou":
+      return 0;
+    case "oss-cn-hangzhou":
+      return 0;
+    case "CN_Shanghai":
+      return 1;
+    case "oss-cn-shanghai":
+      return 1;
+    case "CN_Qingdao":
+      return 2;
+    case "oss-cn-qingdao":
+      return 2;
+    case "CN_Beijin":
+      return 3;
+    case "oss-cn-beijing":
+      return 3;
+    case "CN_Zhangjiakou":
+      return 4;
+    case "oss-cn-zhangjiakou":
+      return 4;
+    case "CN_Huhehaote":
+      return 5;
+    case "oss-cn-huhehaote":
+      return 5;
+    case "CN_Shenzhen":
+      return 6;
+    case "oss-cn-shenzhen":
+      return 6;
+    case "CN_Hongkong":
+      return 7;
+    case "oss-cn-hongkong":
+      return 7;
+    case "US_West_1":
+      return 8;
+    case "oss-us-west-1":
+      return 8;
+    case "US_East_1":
+      return 9;
+    case "oss-us-east-1":
+      return 9;
+    case "AP_Southeast_1":
+      return 10;
+    case "oss-ap-southeast-1":
+      return 10;
+    case "AP_Southeast_2":
+      return 11;
+    case "oss-ap-southeast-2":
+      return 11;
+    case "AP_Southeast_3":
+      return 12;
+    case "oss-ap-southeast-3":
+      return 12;
+    case "AP_Southeast_5":
+      return 13;
+    case "oss-ap-southeast-5":
+      return 13;
+    case "AP_Northeast_1":
+      return 14;
+    case "oss-ap-northeast-1":
+      return 14;
+    case "AP_South_1":
+      return 15;
+    case "oss-ap-south-1":
+      return 15;
+    case "EU_Central_1":
+      return 16;
+    case "oss-eu-central-1":
+      return 16;
+    case "EU_West_1":
+      return 17;
+    case "oss-eu-west-1":
+      return 17;
+    case "EU_East_1":
+      return 18;
+    case "oss-me-east-1":
+      return 18;
+    default:
+      return 0;
+  }
+}
+
 export function resolveMessage(peerId: string, { cmd, text }: { cmd: number, text?: string }) {
   let type = '';
   switch (cmd) {

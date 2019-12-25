@@ -1,15 +1,20 @@
+import { APP_ID } from './../utils/agora-rtm-client';
 import { EventEmitter } from 'events';
 import WhiteVideoPlugin from '@netless/white-video-plugin';
 import WhiteAudioPlugin from '@netless/white-audio-plugin';
 import { Room, WhiteWebSdk, DeviceType, SceneState, RoomState } from 'white-web-sdk';
 import { Subject } from 'rxjs';
-import { WhiteboardAPI } from '../utils/api';
+import { WhiteboardAPI, RecordOperator } from '../utils/api';
 import {Map} from 'immutable';
 import GlobalStorage from '../utils/custom-storage';
 import { isEmpty, get } from 'lodash';
 import { roomStore } from './room';
+import { handleRegion } from '../utils/helper';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
+const RECORDING_UID = 1;
+
+// console.log("api log: ", process.env.REACT_APP_AGORA_RECORDING_SERVICE_URL);
 
 interface SceneFile {
   name: string
@@ -324,8 +329,42 @@ class Whiteboard extends EventEmitter {
     this.removeAllListeners();
   }
 
-  startRecording () {
+  private operator: any = null;
+
+  async startRecording (token?: string) {
     if (!this.state) return;
+    this.operator = new RecordOperator(
+      {
+        agoraAppId: APP_ID,
+        customerId: process.env.REACT_APP_AGORA_CUSTOMER_ID as string,
+        customerCertificate: process.env.REACT_APP_AGORA_CUSTOMER_CERTIFICATE as string,
+        channelName: roomStore.state.course.rid,
+        // WARN: here is cloud recording mode
+        mode: 'mix',
+        token,
+        uid: `${RECORDING_UID}`,
+      },
+      {
+        audioProfile: 1,
+        transcodingConfig: {
+            width: 240,
+            height: 180,
+            bitrate: 120,
+            fps: 15,
+            // "mixedVideoLayout": 1,
+            // "maxResolutionUid": "1",
+        },
+      },
+      {
+          vendor: 2,
+          region: handleRegion(process.env.REACT_APP_AGORA_OSS_BUCKET_REGION as string),
+          bucket: process.env.REACT_APP_AGORA_OSS_BUCKET_NAME as string,
+          accessKey: process.env.REACT_APP_AGORA_OSS_BUCKET_KEY as string,
+          secretKey: process.env.REACT_APP_AGORA_OSS_BUCKET_SECRET as string,
+      },
+    );
+    await this.operator.acquire();
+    await this.operator.start();
     this.state = {
       ...this.state,
       recording: true,
@@ -334,14 +373,19 @@ class Whiteboard extends EventEmitter {
     this.commit(this.state);
   }
 
-  stopRecording () {
+  async stopRecording () {
     if (!this.state) return;
+    await this.operator.query();
+    const res = await this.operator.stop();
+    console.log("res", res);
+    const mediaUrl = get(res, 'serverResponse');
     this.state = {
       ...this.state,
       recording: false,
       endTime: +Date.now(),
     };
     this.commit(this.state);
+    return mediaUrl;
   }
 
   clearRecording () {
