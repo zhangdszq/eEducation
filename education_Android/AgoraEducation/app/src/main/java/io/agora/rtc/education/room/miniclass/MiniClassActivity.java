@@ -1,9 +1,7 @@
 package io.agora.rtc.education.room.miniclass;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.SurfaceView;
 import android.view.View;
@@ -58,7 +56,6 @@ public class MiniClassActivity extends BaseActivity {
     private RecyclerView mRcvVideos;
     private View mLine1;
     private View mLine2;
-    private FrameLayout mFlChatRoom;
     private ConstraintLayout mLayoutIm;
     private FrameLayout mLayoutWhiteboard;
     private TextView mTvBtnChatRoom;
@@ -73,6 +70,7 @@ public class MiniClassActivity extends BaseActivity {
     private RtcDelegate mRtcDelegate;
     private IMStrategy mImStrategy;
     private ChannelDataReadOnly mChannelData;
+    private List<Integer> uidList = new ArrayList<>();
 
     private IRtcEngineEventHandler mRtcHandler = new IRtcEngineEventHandler() {
         @Override
@@ -107,6 +105,9 @@ public class MiniClassActivity extends BaseActivity {
                         mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
                     }
                 });
+            } else {
+                uidList.add(uid);
+                refreshVideoItemRcvAdapter();
             }
         }
 
@@ -121,6 +122,9 @@ public class MiniClassActivity extends BaseActivity {
                         mLayoutWhiteboard.setVisibility(View.VISIBLE);
                     }
                 });
+            } else {
+                uidList.remove(Integer.valueOf(uid));
+                refreshVideoItemRcvAdapter();
             }
         }
 
@@ -157,61 +161,8 @@ public class MiniClassActivity extends BaseActivity {
 
         @Override
         public void onChannelAttributesUpdated() {
-            final ArrayList<User> users = new ArrayList<>();
-
-            Teacher teacher = mChannelData.getTeacher();
-            if (teacher != null) {
-                users.add(teacher);
-            }
-            ArrayList<Student> students = mChannelData.getStudents();
-            if (students != null && !students.isEmpty()) {
-                users.addAll(students);
-            }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (users.isEmpty() || !(users.get(0) instanceof Teacher)) {
-                        ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
-                        mChatroomFragment.setEditTextEnable(true);
-                    } else {
-                        Teacher teacher = (Teacher) users.get(0);
-                        if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
-                            mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
-                                @Override
-                                public void onSuccess() {
-                                    ToastUtil.showShort("join whiteboard room success.");
-                                }
-
-                                @Override
-                                public void onFailure(String err) {
-                                    ToastUtil.showShort("join whiteboard room fail: " + err);
-                                    finish();
-                                }
-                            });
-                        }
-
-                        if (!mTimeView.isStarted() && teacher.class_state == 1) {
-                            mTimeView.start();
-                        } else if (mTimeView.isStarted() && teacher.class_state == 0) {
-                            mTimeView.stop();
-                        }
-
-                        mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
-                    }
-
-                    List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
-                    mAdapter.setList(users);
-
-                    if (updatePositions == null) {
-                        mAdapter.notifyDataSetChanged();
-                    } else {
-                        for (int i : updatePositions) {
-                            mAdapter.notifyItemChanged(i, new byte[0]);
-                        }
-                    }
-                    mStudentListFrament.setList(users);
-                }
-            });
+            refreshBoard();
+            refreshVideoItemRcvAdapter();
         }
 
         @Override
@@ -240,14 +191,81 @@ public class MiniClassActivity extends BaseActivity {
 
         @Override
         public void onChannelMessageReceived(final ChannelMsg channelMsg, RtmChannelMember channelMember) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mChatroomFragment.addMessage(channelMsg);
-                }
-            });
+            mChatroomFragment.addMessage(channelMsg);
         }
     };
+
+    private void refreshBoard() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Teacher teacher = mChannelData.getTeacher();
+                if (teacher == null) {
+                    ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
+                    mChatroomFragment.setEditTextEnable(true);
+                } else {
+                    if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
+                        mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
+                            @Override
+                            public void onSuccess() {
+                                ToastUtil.showShort("join whiteboard room success.");
+                            }
+
+                            @Override
+                            public void onFailure(String err) {
+                                ToastUtil.showShort("join whiteboard room fail: " + err);
+                                finish();
+                            }
+                        });
+                    }
+
+                    if (!mTimeView.isStarted() && teacher.class_state == 1) {
+                        mTimeView.start();
+                    } else if (mTimeView.isStarted() && teacher.class_state == 0) {
+                        mTimeView.stop();
+                    }
+
+                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
+                }
+            }
+        });
+    }
+
+    private void refreshVideoItemRcvAdapter() {
+        final ArrayList<User> users = new ArrayList<>();
+        Teacher teacher = mChannelData.getTeacher();
+        if (teacher != null) {
+            if (uidList.contains(teacher.uid)) {
+                users.add(teacher);
+            }
+        }
+        ArrayList<Student> students = mChannelData.getStudents();
+        if (students != null) {
+            for (Student student : students) {
+                if (uidList.contains(student.uid)) {
+                    users.add(student);
+                } else if (student.uid == getIntent().getIntExtra(IntentKey.USER_ID, 0)) {
+                    users.add(student);
+                }
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
+                mAdapter.setList(users);
+
+                if (updatePositions == null) {
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    for (int i : updatePositions) {
+                        mAdapter.notifyItemChanged(i, new byte[0]);
+                    }
+                }
+                mStudentListFrament.setList(users);
+            }
+        });
+    }
 
     private List<Integer> checkoutUpdatePositions(ArrayList<User> users1, List<User> users2) {
         if (users1 == null || users2 == null || users1.size() != users2.size()) {
@@ -283,7 +301,6 @@ public class MiniClassActivity extends BaseActivity {
         mRcvVideos = findViewById(R.id.rcv_videos);
         mLine1 = findViewById(R.id.line_1);
         mLine2 = findViewById(R.id.line_2);
-        mFlChatRoom = findViewById(R.id.fl_chat_room);
         mLayoutIm = findViewById(R.id.layout_im);
         mLayoutWhiteboard = findViewById(R.id.layout_whiteboard);
         mTvBtnChatRoom = findViewById(R.id.tv_btn_chat_room);
@@ -312,7 +329,6 @@ public class MiniClassActivity extends BaseActivity {
                 .show(mChatroomFragment)
                 .commit();
 
-
         Intent intent = getIntent();
         Student myAttr = new Student();
         myAttr.audio = 1;
@@ -337,7 +353,7 @@ public class MiniClassActivity extends BaseActivity {
         mImStrategy.joinChannel(room);
         mRtcDelegate.joinChannel(room, myAttr);
 
-        this.mAdapter = new VideoItemRcvAdapter(myAttr.uid);
+        mAdapter = new VideoItemRcvAdapter(myAttr.uid);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRcvVideos.setLayoutManager(layoutManager);
         mRcvVideos.setAdapter(mAdapter);
@@ -352,7 +368,6 @@ public class MiniClassActivity extends BaseActivity {
         transaction.hide(mStudentListFrament).hide(mChatroomFragment)
                 .show(isShow ? mChatroomFragment : mStudentListFrament).commit();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -369,8 +384,7 @@ public class MiniClassActivity extends BaseActivity {
             @Override
             public void clickCancel() {
             }
-        }, getString(R.string.confirm_leave_room_content))
-                .show(getSupportFragmentManager(), "leave");
+        }, getString(R.string.confirm_leave_room_content)).show(getSupportFragmentManager(), "leave");
     }
 
     @Override
@@ -410,4 +424,5 @@ public class MiniClassActivity extends BaseActivity {
     public void onClickTabStudent(View view) {
         showChatRoom(false);
     }
+
 }

@@ -66,7 +66,6 @@ public class LargeClassActivity extends BaseActivity {
     private WhiteboardFragment mWhiteboardFragment;
     private ChatroomFragment mChatroomFragment;
 
-    private boolean isLandscape;
     private RtcDelegate mRtcDelegate;
     private IMStrategy mImStrategy;
     private ChannelDataReadOnly mChannelData;
@@ -190,7 +189,7 @@ public class LargeClassActivity extends BaseActivity {
                     }
 
                     SurfaceView surfaceView = mVideoItemTeacher.getSurfaceView();
-                    if (surfaceView == null || surfaceView.getTag() == null || teacher.uid != (int)surfaceView.getTag()) {
+                    if (surfaceView == null || surfaceView.getTag() == null || teacher.uid != (int) surfaceView.getTag()) {
                         surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
                         surfaceView.setTag(teacher.uid);
                         mVideoItemTeacher.setVideoView(surfaceView);
@@ -210,7 +209,7 @@ public class LargeClassActivity extends BaseActivity {
                             mVideoItemStudent.setVisibility(View.VISIBLE);
 
                             SurfaceView surfaceViewStudent = mVideoItemStudent.getSurfaceView();
-                            if (surfaceViewStudent == null || surfaceViewStudent.getTag() == null || linkUid != (int)surfaceViewStudent.getTag()) {
+                            if (surfaceViewStudent == null || surfaceViewStudent.getTag() == null || linkUid != (int) surfaceViewStudent.getTag()) {
                                 surfaceViewStudent = RtcEngine.CreateRendererView(LargeClassActivity.this);
                                 surfaceViewStudent.setTag(linkUid);
                                 surfaceViewStudent.setZOrderMediaOverlay(true);
@@ -285,12 +284,7 @@ public class LargeClassActivity extends BaseActivity {
 
         @Override
         public void onChannelMessageReceived(final ChannelMsg channelMsg, RtmChannelMember channelMember) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mChatroomFragment.addMessage(channelMsg);
-                }
-            });
+            mChatroomFragment.addMessage(channelMsg);
         }
 
     };
@@ -372,7 +366,7 @@ public class LargeClassActivity extends BaseActivity {
         if (mFlShareVideo.getChildCount() > 0 && (mLineWhiteboard == null || mLineWhiteboard.getVisibility() == View.VISIBLE)) {
             mFlWhiteboard.setVisibility(View.INVISIBLE);
             mFlShareVideo.setVisibility(View.VISIBLE);
-        } else if (mLineChatroom != null && mLineChatroom.getVisibility() == View.VISIBLE){
+        } else if (mLineChatroom != null && mLineChatroom.getVisibility() == View.VISIBLE) {
             mFlShareVideo.setVisibility(View.INVISIBLE);
             mFlWhiteboard.setVisibility(View.INVISIBLE);
         } else {
@@ -382,7 +376,6 @@ public class LargeClassActivity extends BaseActivity {
     }
 
     private void initCommonUI() {
-
         ViewGroup parentChatRoom = (ViewGroup) mFlChatroom.getParent();
         if (parentChatRoom != null) {
             parentChatRoom.removeAllViews();
@@ -442,7 +435,6 @@ public class LargeClassActivity extends BaseActivity {
                 muteLocalVideo(isToMute);
             }
         });
-
     }
 
     private void updateRoomName() {
@@ -466,7 +458,6 @@ public class LargeClassActivity extends BaseActivity {
     }
 
     private void initLayoutLandscape() {
-        isLandscape = true;
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_large_class_lanscape);
         mIcWifi = findViewById(R.id.ic_wifi);
@@ -490,7 +481,6 @@ public class LargeClassActivity extends BaseActivity {
     }
 
     private void initLayoutPortrait() {
-        isLandscape = false;
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_large_class_portrait);
         mTvRoomName = findViewById(R.id.tv_title_room);
@@ -571,8 +561,7 @@ public class LargeClassActivity extends BaseActivity {
             @Override
             public void clickCancel() {
             }
-        }, getString(R.string.confirm_leave_room_content))
-                .show(getSupportFragmentManager(), "leave");
+        }, getString(R.string.confirm_leave_room_content)).show(getSupportFragmentManager(), "leave");
     }
 
 }
