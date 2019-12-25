@@ -7,17 +7,15 @@
 //
 
 #import "EducationManager.h"
-#import "AERTMMessageBody.h"
-#import "AgoraHttpRequest.h"
+#import "GenerateSignalBody.h"
+#import "HttpManager.h"
+#import "JsonParseUtil.h"
 
 #import "SignalManager.h"
 #import "WhiteManager.h"
 #import "RTCManager.h"
 
-//#import "AETeactherModel.h"
-//#import "AEStudentModel.h"
-
-@interface EducationManager()<RTMDelegate, WhiteManagerDelegate, RTCManagerDelegate>
+@interface EducationManager()<SignalManagerDelegate, WhiteManagerDelegate, RTCManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
 @property (nonatomic, weak) id<SignalDelegate> signalDelegate;
@@ -35,7 +33,7 @@
 
 #pragma mark SignalManager
 
-- (void)initSignalWithModel:(MessageModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
+- (void)initSignalWithModel:(SignalModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
     
     self.signalDelegate = signalDelegate;
 
@@ -50,7 +48,7 @@
 }
 
 - (void)initStudentWithUserName:(NSString *)userName {
-    self.currentStuModel = [AEStudentModel new];
+    self.currentStuModel = [StudentModel new];
     self.currentStuModel.uid = self.signalManager.messageModel.uid;
     self.currentStuModel.account = userName;
     self.currentStuModel.video = 1;
@@ -133,11 +131,11 @@
 
 - (void)sendMessageWithContent:(NSString *)text userName:(NSString *)name {
     
-    NSString *messageBody = [AERTMMessageBody sendP2PMessageWithName:name content:text];
+    NSString *messageBody = [GenerateSignalBody messageWithName:name content:text];
     [self.signalManager sendMessage:messageBody completeSuccessBlock:^{
         
         if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateMessage:)]) {
-            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
+            SignalRoomModel *messageModel = [[SignalRoomModel alloc] init];
             messageModel.content = text;
             messageModel.account = name;
             messageModel.isSelfSend = YES;
@@ -149,15 +147,15 @@
     }];
 }
 
-- (void)setSignalWithType:(RTMp2pType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock {
+- (void)setSignalWithType:(SignalP2PType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock {
     
     NSString *msgText = @"";
     switch (type) {
-        case RTMp2pTypeCancel:
-            msgText = [AERTMMessageBody studentCancelLink];;
+        case SignalP2PTypeCancel:
+            msgText = [GenerateSignalBody studentCancelLink];;
             break;
-        case RTMp2pTypeApply:
-            msgText = [AERTMMessageBody studentApplyLink];
+        case SignalP2PTypeApply:
+            msgText = [GenerateSignalBody studentApplyLink];
             break;
         default:
             break;
@@ -169,9 +167,9 @@
     NSString *peerId = self.currentTeaModel.uid;
     
     [self.signalManager sendMessage:msgText toPeer:peerId completeSuccessBlock:^{
-        
-        successBlock();
-        
+        if(successBlock != nil) {
+            successBlock();
+        }
     } completeFailBlock:^{
         
     }];
@@ -190,22 +188,22 @@
         return rolesInfoModel;
     }
     
-    AETeactherModel *teaModel;
+    TeactherModel *teaModel;
     NSMutableArray<RolesStudentInfoModel*> *stuArray = [NSMutableArray array];
 
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
         
-        NSDictionary *valueDict = [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
+        NSDictionary *valueDict = [JsonParseUtil dictionaryWithJsonString:channelAttr.value];
         
         if ([channelAttr.key isEqualToString:RoleTypeTeacther]) {
             
             if(teaModel == nil){
-                teaModel = [AETeactherModel new];
+                teaModel = [TeactherModel new];
             }
             [teaModel modelWithDict:valueDict];
         
         } else {
-            AEStudentModel *model = [AEStudentModel yy_modelWithDictionary:valueDict];
+            StudentModel *model = [StudentModel yy_modelWithDictionary:valueDict];
             
             RolesStudentInfoModel *infoModel = [RolesStudentInfoModel new];
             infoModel.studentModel = model;
@@ -228,7 +226,7 @@
     return rolesInfoModel;
 }
 
-#pragma mark RTMDelegate
+#pragma mark SignalManagerDelegate
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
     // 状态丢失
     if(state == AgoraRtmConnectionStateDisconnected) {
@@ -238,8 +236,8 @@
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId {
     
     if (self.currentTeaModel && [peerId isEqualToString:self.currentTeaModel.uid]) {
-        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
-        AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
+        NSDictionary *dict = [JsonParseUtil dictionaryWithJsonString:message.text];
+        SignalP2PModel *model = [SignalP2PModel yy_modelWithDictionary:dict];
 
         if([self.signalDelegate respondsToSelector:@selector(signalDidReceived:)]) {
             [self.signalDelegate signalDidReceived:model];
@@ -249,8 +247,8 @@
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
 
     if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateMessage:)]) {
-        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
-        AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
+        NSDictionary *dict = [JsonParseUtil dictionaryWithJsonString:message.text];
+        SignalRoomModel *messageModel = [SignalRoomModel yy_modelWithDictionary:dict];
         messageModel.isSelfSend = NO;
         [self.signalDelegate signalDidUpdateMessage:messageModel];
     }
@@ -412,7 +410,7 @@
 - (void)joinWhiteRoomWithUuid:(NSString*)uuid completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock {
     
     WEAK(self);
-    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
+    [HttpManager POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
 
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
         [weakself.whiteManager joinWhiteRoomWithWhiteRoomConfig:roomConfig completeSuccessBlock:^(WhiteRoom * _Nullable room) {
@@ -442,7 +440,7 @@
     NSAssert(model.endTime && model.endTime.length == 13, @"endTime should be millisecond unit");
     
     WEAK(self);
-    [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:model.uuid token:^(NSString * _Nonnull token) {
+    [HttpManager POSTWhiteBoardRoomWithUuid:model.uuid token:^(NSString * _Nonnull token) {
 
         WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:model.uuid roomToken:token];
         

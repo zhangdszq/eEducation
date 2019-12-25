@@ -6,11 +6,11 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import "AERoomViewController.h"
+#import "BaseRoomViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MCViewController : AERoomViewController
+@interface MCViewController : BaseRoomViewController
 
 @end
 

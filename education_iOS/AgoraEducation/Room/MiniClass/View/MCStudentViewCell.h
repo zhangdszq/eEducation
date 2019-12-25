@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AEStudentModel.h"
+#import "StudentModel.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentViewCell : UITableViewCell
 @property (nonatomic, copy) NSString *userId;
-@property (nonatomic, copy) AEStudentModel *studentModel;
+@property (nonatomic, copy) StudentModel *studentModel;
 @property (weak, nonatomic) IBOutlet UIButton *muteAudioButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *muteVideoButton;

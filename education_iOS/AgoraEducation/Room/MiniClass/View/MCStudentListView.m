@@ -62,7 +62,7 @@
     }
 
     RolesStudentInfoModel *infoModel = self.studentArray[indexPath.row];
-    AEStudentModel *stuModel = infoModel.studentModel;
+    StudentModel *stuModel = infoModel.studentModel;
     stuModel.uid = infoModel.attrKey;
     cell.userId = self.userId;
     cell.studentModel = stuModel;
