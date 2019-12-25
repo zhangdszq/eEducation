@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.herewhite.sdk.Player;
 import com.herewhite.sdk.WhiteboardView;
 import com.herewhite.sdk.domain.Appliance;
@@ -191,7 +192,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         });
     }
 
-    public void replay(String uuid, long startTime, long endTime) {
+    public void replay(String uuid, final PlayerView videoView, final String url, long startTime, long endTime) {
         mUuid = uuid;
         mPbLoading.setVisibility(View.VISIBLE);
         resetLayoutVisible(true);
@@ -210,7 +211,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onSuccess(Player player) {
                 mPbLoading.setVisibility(View.GONE);
-                mControl.setPlayer(player);
+                mControl.setPlayer(player, videoView, url);
             }
 
             @Override
@@ -234,6 +235,7 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
 
     public void finishReplayPage() {
         mWhiteboardDelegate.finishPlayerPage();
+        mControl.release();
         mUuid = null;
     }
 

@@ -32,8 +32,7 @@ public class ChatroomFragment extends BaseFragment {
     private IMStrategy mImStrategy;
 
     public static ChatroomFragment newInstance() {
-        ChatroomFragment fragment = new ChatroomFragment();
-        return fragment;
+        return new ChatroomFragment();
     }
 
     @Override
@@ -65,22 +64,32 @@ public class ChatroomFragment extends BaseFragment {
         return view;
     }
 
-    public void setEditTextEnable(boolean isEnable) {
-        if (mEdtSendMsg != null) {
-            mEdtSendMsg.setEnabled(isEnable);
-            if (isEnable) {
-                mEdtSendMsg.setHint(R.string.hint_im_message);
-            } else {
-                mEdtSendMsg.setHint(R.string.chat_muting);
+    public void setEditTextEnable(final boolean isEnable) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mEdtSendMsg != null) {
+                    mEdtSendMsg.setEnabled(isEnable);
+                    if (isEnable) {
+                        mEdtSendMsg.setHint(R.string.hint_im_message);
+                    } else {
+                        mEdtSendMsg.setHint(R.string.chat_muting);
+                    }
+                }
             }
-        }
+        });
     }
 
-    public void addMessage(ChannelMsg channelMsg) {
-        if (mLvMsg != null) {
-            mAdapter.addItem(channelMsg);
-            mAdapter.notifyDataSetChanged();
-        }
+    public void addMessage(final ChannelMsg channelMsg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mLvMsg != null) {
+                    mAdapter.addItem(channelMsg);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     public void setImStrategy(IMStrategy imStrategy) {
@@ -106,14 +115,15 @@ public class ChatroomFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     if (!TextUtils.isEmpty(msg.link)) {
-                        String[] strs = msg.link.split("/");
-                        String uuid = strs[2];
-                        long startTime = Long.parseLong(strs[3]);
-                        long endTime = Long.parseLong(strs[4]);
+                        String[] strings = msg.link.split("/");
+                        String uuid = strings[2];
+                        long startTime = Long.parseLong(strings[3]);
+                        long endTime = Long.parseLong(strings[4]);
                         Intent intent = new Intent(ChatroomFragment.this.mContext, ReplayActivity.class);
                         intent.putExtra(IntentKey.WHITE_BOARD_UID, uuid);
                         intent.putExtra(IntentKey.WHITE_BOARD_START_TIME, startTime);
                         intent.putExtra(IntentKey.WHITE_BOARD_END_TIME, endTime);
+                        intent.putExtra(IntentKey.WHITE_BOARD_URL, msg.url);
                         startActivity(intent);
                     }
                 }
