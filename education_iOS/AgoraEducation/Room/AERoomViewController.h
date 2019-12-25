@@ -10,34 +10,34 @@
 #import "EducationManager.h"
 #import "AEStudentModel.h"
 
+@interface RoomParamsModel : NSObject
+
+@property (nonatomic, copy) NSString * _Nonnull className;
+@property (nonatomic, copy) NSString * _Nonnull userName;
+@property (nonatomic, copy) NSString * _Nonnull userId;
+@property (nonatomic, copy) NSString * _Nonnull channelName;
+
+@end
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AERoomViewController : UIViewController
-@property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, copy) NSString *channelName;
-@property (nonatomic, copy) NSString *userName;
-@property (nonatomic, copy) NSString *userId;
-@property (nonatomic, copy) NSString *rtmChannelName;
 
-
+@property (nonatomic, strong) RoomParamsModel *paramsModel;
 @property (nonatomic, strong) EducationManager *educationManager;
 
-//@property (nonatomic, strong, nullable) AgoraRtcVideoCanvas *shareScreenCanvas;
-//@property (nonatomic, strong) AgoraRtcEngineKit *rtcEngineKit;
-
-// white
 @property (nonatomic, strong) WhiteBoardView *boardView;
-
-//@property (nonatomic, strong) AEStudentModel *ownAttrs;
-//@property (nonatomic, assign)NSInteger teacherUid;
-
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
-- (void)addWhiteBoardViewToView:(UIView *)view;
+
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;
-- (void)setWhiteBoardBrushColor;
 
+- (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)setBoardViewFrame:(CGRect)frame;
+
+
+- (void)handleSignalWithModel:(AEP2pMessageModel * _Nonnull)signalModel;
 
 @end
 

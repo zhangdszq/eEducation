@@ -7,67 +7,85 @@
 //
 
 #import "MainViewController.h"
-#import "AgoraHttpRequest.h"
-#import "EyeCareModeUtil.h"
-#import "SettingViewController.h"
-#import "BCViewController.h"
 #import "EEClassRoomTypeView.h"
-#import "OneToOneViewController.h"
-#import <Foundation/Foundation.h>
-#import "AERTMMessageBody.h"
-#import "MCViewController.h"
+#import "SettingViewController.h"
 #import "AERoomViewController.h"
-#import "AEStudentModel.h"
+#import "AERTMMessageBody.h"
+#import "EyeCareModeUtil.h"
+#import "EducationManager.h"
 
-#import "SignalManager.h"
+typedef NS_ENUM(NSUInteger, SceneMode) {
+    SceneMode1V1 = 1,
+    SceneModeSmall = 2,
+    SceneModeBig = 3,
+};
 
-@interface MainViewController ()<AgoraRtmDelegate,EEClassRoomTypeDelegate,UITextFieldDelegate>
+@interface MainViewController ()<EEClassRoomTypeDelegate, SignalDelegate, UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView *baseView;
 @property (weak, nonatomic) IBOutlet UITextField *classNameTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *userNameTextFiled;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textViewBottomCon;
-
-@property (nonatomic, copy)   NSString *serverRtmId;
-@property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
-@property (nonatomic, copy)   NSString  *className;
-@property (nonatomic, copy)   NSString *userName;
-@property (nonatomic, copy)   NSString *uid;
-@property (nonatomic, strong) NSMutableArray *userArray;
-@property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
 @property (weak, nonatomic) IBOutlet UIButton *roomType;
 @property (weak, nonatomic) IBOutlet UIButton *joinButton;
 
-@property (nonatomic, assign) AgoraRtmConnectionState rtmConnectionState;
+@property (nonatomic, weak) EEClassRoomTypeView *classRoomTypeView;
+@property (nonatomic, strong) UIActivityIndicatorView * activityIndicator;
+
+@property (nonatomic, copy) NSString *uid;
+@property (nonatomic, strong) EducationManager *educationManager;
+
 @end
 
 @implementation MainViewController
-#pragma mark ---------------------- System methods --------------------
+
+#pragma mark LifeCycle
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.uid = [self generateUserID];
+    self.educationManager = [EducationManager new];
+    
+    [self setupGlobalState];
+    [self setUpView];
+    [self addTouchedRecognizer];
+    [self addNotification];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = YES;
+    [self.educationManager setSignalDelegate:self];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     if ([[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]) {
         [[EyeCareModeUtil sharedUtil] switchEyeCareMode:YES];
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    self.navigationController.navigationBarHidden = YES;
+- (BOOL)prefersStatusBarHidden {
+    return NO;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.uid = [self getUserID];
-    [self joinRtm];
-    [self setUpView];
-    [self addTouchedRecognizer];
-    [self addKeyboardNotification];
-    
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onMessageDisconnect) name:NOTICE_KEY_ON_MESSAGE_DISCONNECT object:nil];
+- (BOOL)shouldAutorotate {
+    return YES;
 }
 
--(void)onMessageDisconnect{
-    [self joinRtm];
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.educationManager releaseResources];
+}
+
+#pragma mark Private Function
 - (void)setUpView {
     self.activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:(UIActivityIndicatorViewStyleWhiteLarge)];
     [self.view addSubview:self.activityIndicator];
@@ -87,19 +105,17 @@
     UITapGestureRecognizer *touchedControl = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedBegan:)];
     [self.baseView addGestureRecognizer:touchedControl];
 }
-
-- (void)addKeyboardNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+- (void)touchedBegan:(UIGestureRecognizer *)recognizer {
+    [self.classNameTextFiled resignFirstResponder];
+    [self.userNameTextFiled resignFirstResponder];
+    self.classRoomTypeView.hidden  = YES;
 }
 
-- (void)joinRtm {
-
-    MessageModel *model = [MessageModel new];
-    model.appId = kAgoraAppid;
-    model.uid = self.uid;
-    model.userName = self.userNameTextFiled.text;
-    [SignalManager.shareManager initWithMessageModel:model completeSuccessBlock:nil completeFailBlock:nil];
+- (void)addNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHiden:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onMessageDisconnect) name:NOTICE_KEY_ON_MESSAGE_DISCONNECT object:nil];
 }
 
 - (void)keyboardWasShow:(NSNotification *)notification {
@@ -112,64 +128,48 @@
     self.textViewBottomCon.constant = 261;
 }
 
-- (void)touchedBegan:(UIGestureRecognizer *)recognizer {
-    [self.classNameTextFiled resignFirstResponder];
-    [self.userNameTextFiled resignFirstResponder];
-    self.classRoomTypeView.hidden  = YES;
+- (void)setupGlobalState {
+
+    MessageModel *model = [MessageModel new];
+    model.appId = kAgoraAppid;
+    model.token = kAgoraRTMtoken;
+    model.uid = self.uid;
+    [self.educationManager initSignalWithModel:model dataSourceDelegate:self completeSuccessBlock:nil completeFailBlock:nil];
 }
 
-- (void)setButtonStyle:(UIButton *)button {
-    if (button.selected == YES) {
-        [button setBackgroundColor:[UIColor colorWithHexString:@"006EDE"]];
-        [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-        [button.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:16]];
-
-    }else {
-        [button setBackgroundColor:[UIColor whiteColor]];
-        button.layer.borderColor = [UIColor colorWithHexString:@"CCCCCC"].CGColor;
-        button.layer.borderWidth = 1;
-        [button setTitleColor:[UIColor colorWithHexString:@"CCCCCC"] forState:(UIControlStateNormal)];
-    }
-}
-
-- (NSString *)getUserID{
+- (NSString *)generateUserID {
     NSDate *datenow = [NSDate date];
-    
     long lTime = (long)([datenow timeIntervalSince1970] * 1000) % 1000000;
     NSString *uid = [NSString stringWithFormat:@"%ld", lTime];
     return uid;
 }
 
+#pragma mark Click Event
 - (IBAction)popupRoomType:(UIButton *)sender {
     self.classRoomTypeView.hidden = NO;
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
-
-    [self.activityIndicator startAnimating];
-    [sender setEnabled:NO];
+    
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![AERTMMessageBody judgeClassRoomText:self.classNameTextFiled.text] || ![AERTMMessageBody judgeClassRoomText:self.userNameTextFiled.text]) {
+        
         [EEAlertView showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
-        [self.activityIndicator stopAnimating];
-        [sender setEnabled:YES];
-    }else {
-        self.className = self.classNameTextFiled.text;
-        self.userName = self.userNameTextFiled.text;
-        
-        SignalManager.shareManager.messageModel.userName = self.userName;
-        
-        if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
-            [self presentMiniClassViewController];
-        } else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
-            [self presentBigClassController];
-        } else if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
-            [self presentOneToOneViewController];
-        } else {
-            [EEAlertView showAlertWithController:self title:@"请选择房间类型"];
-            [self.activityIndicator stopAnimating];
-            [sender setEnabled:YES];
-        }
+        return;
     }
+    
+    SceneMode mode = SceneMode1V1;
+    if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
+        mode = SceneMode1V1;
+    } else if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
+        mode = SceneModeSmall;
+    } else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
+        mode = SceneModeBig;
+    } else {
+        [EEAlertView showAlertWithController:self title:@"请选择房间类型"];
+        return;
+    }
+    
+    [self joinClassRoomWithMode:mode];
 }
 
 - (IBAction)settingAction:(UIButton *)sender {
@@ -177,94 +177,94 @@
     [self.navigationController pushViewController:settingVC animated:YES];
 }
 
-- (void)presentBigClassController {
-    [self.activityIndicator stopAnimating];
-    [self.joinButton setEnabled:YES];
-    NSString *rtcChannelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:self.className]];
-    [self joinClassRoomWithIdentifier:@"bcroom"  rtmChannelName:rtcChannelName teacherUid:0];
-}
-
-- (void)presentMiniClassViewController {
-    WEAK(self)
-    NSString *rtcChannelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:self.className]];
-    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
-
-        [weakself.activityIndicator stopAnimating];
-        [weakself.joinButton setEnabled:YES];
-        NSInteger studentCount = rolesInfoModel.studentModels.count;
-        NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
-
-        if (studentCount < 16) {
-            [weakself joinClassRoomWithIdentifier:@"mcRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
-        } else {
-            [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
+- (void)joinClassRoomWithMode:(SceneMode)sceneMode {
+        
+    NSString *className = self.classNameTextFiled.text;
+    NSString *userName = self.userNameTextFiled.text;
+    
+    NSString *channelName = @"";
+    NSInteger maxUserCount = 0;
+    NSString *vcIdentifier = @"";
+    
+    switch (sceneMode) {
+        case SceneMode1V1:
+        {
+            channelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:className]];
+            maxUserCount = 1;
+            vcIdentifier = @"oneToOneRoom";
         }
-    }];
-}
+            break;
+        case SceneModeSmall:
+        {
+            channelName = [NSString stringWithFormat:@"1%@",[AERTMMessageBody MD5WithString:className]];
+            maxUserCount = 16;
+            vcIdentifier = @"mcRoom";
+        }
+            break;
+        case SceneModeBig:
+        {
+            channelName = [NSString stringWithFormat:@"2%@",[AERTMMessageBody MD5WithString:className]];
+            maxUserCount = NSIntegerMax;
+            vcIdentifier = @"bcroom";
+        }
+            break;
+        default:
+            break;
+    }
+    
+    RoomParamsModel *paramsModel = [RoomParamsModel new];
+    paramsModel.className = className;
+    paramsModel.userName = userName;
+    paramsModel.userId = self.uid;
+    paramsModel.channelName = channelName;
+    if(maxUserCount == NSIntegerMax) {
+        [self joinRoomVCWithModel: paramsModel vcIdentifier: vcIdentifier];
+        return;
+    }
 
-- (void)presentOneToOneViewController {
-    NSString *rtcChannelName = [NSString stringWithFormat:@"0%@",[AERTMMessageBody MD5WithString:self.className]];
-    WEAK(self)
-    [SignalManager.shareManager queryGlobalStateWithChannelName:rtcChannelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+    [self.activityIndicator startAnimating];
+    [self.joinButton setEnabled:NO];
+    
+    WEAK(self);
+    [self.educationManager queryOnlineStudentCountWithChannelName:channelName maxCount:maxUserCount completeSuccessBlock:^(NSInteger count) {
         
         [weakself.activityIndicator stopAnimating];
         [weakself.joinButton setEnabled:YES];
-        NSInteger studentCount = rolesInfoModel.studentModels.count;
-        NSInteger teacherUid = rolesInfoModel.teactherModel.uid.intValue;
-
-        if (studentCount < 1) {
-            [weakself joinClassRoomWithIdentifier:@"oneToOneRoom" rtmChannelName:rtcChannelName teacherUid:teacherUid];
+        
+        if (count < maxUserCount) {
+            [weakself joinRoomVCWithModel: paramsModel vcIdentifier: vcIdentifier];
+            
         } else {
             [EEAlertView showAlertWithController:self title:@"人数已满,请换个房间"];
         }
+        
+    } completeFailBlock:^{
+        
+        [EEAlertView showAlertWithController:self title:@"请求失败"];
+        
+        [weakself.activityIndicator stopAnimating];
+        [weakself.joinButton setEnabled:YES];
     }];
 }
 
-- (void)joinClassRoomWithIdentifier:(NSString *)identifier  rtmChannelName:(NSString *)rtmChannelName teacherUid:(NSInteger)teacherUid {
+- (void)joinRoomVCWithModel:(RoomParamsModel *)paramsModel vcIdentifier:(NSString *) identifier {
     UIStoryboard *story = [UIStoryboard storyboardWithName:@"Room" bundle:[NSBundle mainBundle]];
     AERoomViewController *viewController = [story instantiateViewControllerWithIdentifier:identifier];
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    viewController.params = @{
-        @"channelName": self.className,
-        @"userName": self.userName,
-        @"userId" : self.uid,
-        @"rtmChannelName":rtmChannelName,
-    };
-    
+    viewController.paramsModel = paramsModel;
+    viewController.educationManager = self.educationManager;
     [self presentViewController:viewController animated:YES completion:nil];
 }
 
-- (void)joinClassRoomError {
-    [self.activityIndicator stopAnimating];
-    [EEAlertView showAlertWithController:self title:@"没有网络"];
-}
-
-#pragma MARK -----------------------  AgoraRtmDelegate -------------------------
-- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
-    NSLog(@"rtmConnectionState--- %ld",(long)state);
-    self.rtmConnectionState = state;
-}
-
+#pragma mark EEClassRoomTypeDelegate
 - (void)selectRoomTypeName:(NSString *)name {
     [self.roomType setTitle:name forState:(UIControlStateNormal)];
     self.classRoomTypeView.hidden = YES;
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return NO;
-}
-
-#pragma mark  --------  Mandatory landscape -------
-- (BOOL)shouldAutorotate {
-    return YES;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationPortrait;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskPortrait;
+#pragma mark Notification
+-(void)onMessageDisconnect{
+    [self setupGlobalState];
 }
 
 @end

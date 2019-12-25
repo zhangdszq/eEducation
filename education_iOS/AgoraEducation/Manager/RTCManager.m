@@ -83,6 +83,7 @@
 }
 
 -(void)dealloc {
+    self.rtcEngineKit = nil;
     [self releaseResources];
 }
 

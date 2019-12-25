@@ -85,6 +85,7 @@
 		787E7A4B23A9FF1E005F8F0C /* WhiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4A23A9FF1E005F8F0C /* WhiteManager.m */; };
 		7886488C23B0A48400A6E15A /* RTCManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7886488B23B0A48400A6E15A /* RTCManager.m */; };
 		7886488F23B0A7BB00A6E15A /* RTCVideoCanvasModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7886488E23B0A7BB00A6E15A /* RTCVideoCanvasModel.m */; };
+		78D7305A23B30C4400D2146C /* SceneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7305923B30C4400D2146C /* SceneModel.m */; };
 		78F0C6DE2399FBCB00772378 /* MessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6DD2399FBCB00772378 /* MessageModel.m */; };
 		78F0C6E1239A2AB600772378 /* RolesInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F0C6E0239A2AB600772378 /* RolesInfoModel.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraEducation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */; };
@@ -256,6 +257,8 @@
 		7886488B23B0A48400A6E15A /* RTCManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTCManager.m; sourceTree = "<group>"; };
 		7886488D23B0A7BB00A6E15A /* RTCVideoCanvasModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTCVideoCanvasModel.h; sourceTree = "<group>"; };
 		7886488E23B0A7BB00A6E15A /* RTCVideoCanvasModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTCVideoCanvasModel.m; sourceTree = "<group>"; };
+		78D7305823B30C4400D2146C /* SceneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneModel.h; sourceTree = "<group>"; };
+		78D7305923B30C4400D2146C /* SceneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneModel.m; sourceTree = "<group>"; };
 		78F0C6DC2399FBCB00772378 /* MessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageModel.h; sourceTree = "<group>"; };
 		78F0C6DD2399FBCB00772378 /* MessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageModel.m; sourceTree = "<group>"; };
 		78F0C6DF239A2AB600772378 /* RolesInfoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RolesInfoModel.h; sourceTree = "<group>"; };
@@ -396,6 +399,8 @@
 				1A44BE5A22BF863000766274 /* Main.storyboard */,
 				1A44BE6222BF863000766274 /* MainViewController.h */,
 				1A44BE5C22BF863000766274 /* MainViewController.m */,
+				78D7305823B30C4400D2146C /* SceneModel.h */,
+				78D7305923B30C4400D2146C /* SceneModel.m */,
 				1A1749972361A7F000A65B10 /* MainNavigationController.h */,
 				1A1749982361A7F000A65B10 /* MainNavigationController.m */,
 				1AF1CD2C236700A400DA8B12 /* EEClassRoomTypeView.h */,
@@ -868,6 +873,7 @@
 				1A61CB88238806EB003D9E81 /* AEP2pMessageModel.m in Sources */,
 				1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */,
 				1A296C6222DEFCE6008AC68A /* MCStudentVideoCell.m in Sources */,
+				78D7305A23B30C4400D2146C /* SceneModel.m in Sources */,
 				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
 				1A44BE7D22BF863000766274 /* Configs.m in Sources */,
 				1A226C53236BE5450024D984 /* EEColorShowView.m in Sources */,

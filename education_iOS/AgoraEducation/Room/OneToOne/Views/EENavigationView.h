@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
 - (void)startTimer;
 - (void)stopTimer;
-- (void)updateChannelName:(NSString *)name;
+- (void)updateClassName:(NSString *)name;
 - (void)updateSignalImageName:(NSString *)name;
 @end
 
