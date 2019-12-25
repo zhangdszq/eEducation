@@ -8,4 +8,5 @@ public class IntentKey {
     public static final String WHITE_BOARD_UID = "white_board_uid";
     public static final String WHITE_BOARD_START_TIME = "white_board_start_time";
     public static final String WHITE_BOARD_END_TIME = "white_board_end_time";
+    public static final String WHITE_BOARD_URL = "white_board_url";
 }
