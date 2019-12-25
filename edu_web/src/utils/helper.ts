@@ -20,8 +20,6 @@ export const ossConfig: OSSConfig = {
 
 export const ossClient = new OSS(ossConfig);
 
-console.log("[upload-btn] ", ossConfig, ossClient);
-
 const OSS_PREFIX = process.env.REACT_APP_AGORA_RECORDING_OSS_URL as string;
 
 export function getOSSUrl (mediaUrl: string): string {

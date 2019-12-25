@@ -19,12 +19,14 @@
   * agora-electron-sdk  （声网官方electron-sdk）
   * white-web-sdk （netless官方白板sdk）
   * ali-oss（可替换成你自己的oss client）
+  * 声网云录制 （不推荐直接在客户端集成）
 
 ### 所用技术
   * typescript ^3.6.4
   * react & react hooks & rxjs
   * electron 5.0.8 & electron-builder
   * material-ui
+
 
 ### 开发环境
   * mac or windows
@@ -79,6 +81,8 @@ REACT_APP_NETLESS_APP_API_ENTRY=https://cloudcapiv4.herewhite.com/room?token=
 REACT_APP_NETLESS_APP_JOIN_API=https://cloudcapiv4.herewhite.com/room/join?token=
 # 声网的云录制服务地址 （不推荐在前端或客户端直接集成）
 REACT_APP_AGORA_RECORDING_SERVICE_URL=https://api.agora.io/v1/apps/%s/cloud_recording/
+# 存放云录制OSS的CDN地址
+REACT_APP_AGORA_RECORDING_OSS_URL=云录制OSS地址
 # 下列OSS相关的信息不建议放在前端存储
 REACT_APP_AGORA_OSS_BUCKET_NAME=你的oss名字
 REACT_APP_AGORA_OSS_BUCKET_FOLDER=你的oss存储目录
