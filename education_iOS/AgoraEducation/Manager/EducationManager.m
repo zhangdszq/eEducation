@@ -12,77 +12,406 @@
 
 #import "SignalManager.h"
 #import "WhiteManager.h"
+#import "RTCManager.h"
 
-@interface EducationManager()<WhiteManagerDelegate>
+//#import "AETeactherModel.h"
+//#import "AEStudentModel.h"
+
+@interface EducationManager()<RTMDelegate, WhiteManagerDelegate, RTCManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
-@property (nonatomic, strong) WhiteManager *whiteManager;
+@property (nonatomic, weak) id<SignalDelegate> signalDelegate;
 
+@property (nonatomic, strong) WhiteManager *whiteManager;
 @property (nonatomic, weak) id<WhitePlayDelegate> whitePlayerDelegate;
+
+@property (nonatomic, strong) RTCManager *rtcManager;
+@property (nonatomic, weak) id<RTCDelegate> rtcDelegate;
+@property (nonatomic, strong) NSMutableArray<RTCVideoSessionModel*> *rtcVideoSessionModels;
 
 @end
 
-static EducationManager *manager = nil;
-
 @implementation EducationManager
 
-+ (instancetype)shareManager{
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        manager = [[self alloc]init];
-    });
-    return manager;
+#pragma mark SignalManager
+
+- (void)initSignalWithModel:(MessageModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
+    
+    self.signalDelegate = signalDelegate;
+
+    self.signalManager = [[SignalManager alloc] init];
+    self.signalManager.rtmDelegate = self;
+    self.signalManager.messageModel = model;
+    [self.signalManager initWithMessageModel:model completeSuccessBlock:successBlock completeFailBlock:failBlock];
 }
 
-- (instancetype)init {
-    if(self = [super init]) {
-        self.whiteManager = [[WhiteManager alloc] init];
+- (void)setSignalDelegate:(id<SignalDelegate>)delegate {
+    _signalDelegate = delegate;
+}
+
+- (void)initStudentWithUserName:(NSString *)userName {
+    self.currentStuModel = [AEStudentModel new];
+    self.currentStuModel.uid = self.signalManager.messageModel.uid;
+    self.currentStuModel.account = userName;
+    self.currentStuModel.video = 1;
+    self.currentStuModel.audio = 1;
+    self.currentStuModel.chat = 1;
+}
+
+- (void)joinSignalWithChannelName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
+
+    self.signalManager.channelName = channelName;
+    [self.signalManager joinChannelWithName:channelName completeSuccessBlock:successBlock completeFailBlock:failBlock];
+}
+
+- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block {
+    
+    WEAK(self);
+    [self.signalManager getChannelAllAttributes:channelName completeBlock:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes) {
         
+        if(block != nil){
+            RolesInfoModel *rolesInfoModel = [weakself fixRolesInfoModelWithAttributes:attributes];
+            block(rolesInfoModel);
+            return;
+        }
+    }];
+}
+
+- (void)updateGlobalStateWithValue:(NSString *)value completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
+    
+    AgoraRtmChannelAttribute *setAttr = [[AgoraRtmChannelAttribute alloc] init];
+    setAttr.key = self.signalManager.messageModel.uid;
+    setAttr.value = value;
+    
+    NSString *channelName = self.signalManager.channelName;
+    [self.signalManager updateChannelAttributesWithChannelName:channelName channelAttribute:setAttr completeSuccessBlock:successBlock completeFailBlock:failBlock];
+}
+
+- (void)queryOnlineStudentCountWithChannelName:(NSString *)channelName maxCount:(NSInteger)maxCount completeSuccessBlock:(void (^) (NSInteger count))successBlock completeFailBlock:(void (^) (void))failBlock {
+    
+    [self queryGlobalStateWithChannelName:channelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
+        
+        if(rolesInfoModel == nil || rolesInfoModel.studentModels == nil) {
+            if(failBlock != nil){
+                failBlock();
+            }
+        }
+        
+        NSInteger studentCount = rolesInfoModel.studentModels.count;
+        if(studentCount >= maxCount){
+            
+            NSMutableArray<NSString *> *uIds = [NSMutableArray array];
+            for(RolesStudentInfoModel *model in rolesInfoModel.studentModels){
+                [uIds addObject:model.attrKey];
+            }
+            [self.signalManager queryPeersOnlineStatus:uIds completion:^(NSArray<AgoraRtmPeerOnlineStatus *> *peerOnlineStatus, AgoraRtmQueryPeersOnlineErrorCode errorCode) {
+                
+                if(errorCode == AgoraRtmQueryPeersOnlineErrorOk) {
+                    
+                    NSInteger count = 0;
+                    for (AgoraRtmPeerOnlineStatus *status in peerOnlineStatus){
+                        if(status.isOnline) {
+                            count++;
+                        }
+                    }
+                    if(successBlock != nil){
+                        successBlock(count);
+                    }
+                } else {
+                    if(failBlock != nil){
+                        failBlock();
+                    }
+                }
+            }];
+        } else {
+            if(successBlock != nil){
+                successBlock(studentCount);
+            }
+        }
+    }];
+}
+
+- (void)sendMessageWithContent:(NSString *)text userName:(NSString *)name {
+    
+    NSString *messageBody = [AERTMMessageBody sendP2PMessageWithName:name content:text];
+    [self.signalManager sendMessage:messageBody completeSuccessBlock:^{
+        
+        if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateMessage:)]) {
+            AERoomMessageModel *messageModel = [[AERoomMessageModel alloc] init];
+            messageModel.content = text;
+            messageModel.account = name;
+            messageModel.isSelfSend = YES;
+            [self.signalDelegate signalDidUpdateMessage:messageModel];
+        }
+        
+    } completeFailBlock:^{
+        
+    }];
+}
+
+- (void)setSignalWithType:(RTMp2pType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock {
+    
+    NSString *msgText = @"";
+    switch (type) {
+        case RTMp2pTypeCancel:
+            msgText = [AERTMMessageBody studentCancelLink];;
+            break;
+        case RTMp2pTypeApply:
+            msgText = [AERTMMessageBody studentApplyLink];
+            break;
+        default:
+            break;
     }
-    return self;
+    
+    if (msgText.length == 0 || self.currentTeaModel == nil) {
+        return;
+    }
+    NSString *peerId = self.currentTeaModel.uid;
+    
+    [self.signalManager sendMessage:msgText toPeer:peerId completeSuccessBlock:^{
+        
+        successBlock();
+        
+    } completeFailBlock:^{
+        
+    }];
 }
 
-- (void)initWithMessageModel:(MessageModel*)model completeSuccessBlock:(ManagerBlock _Nullable)successBlock completeFailBlock:(ManagerBlock _Nullable)failBlock {
-    
-    self.signalManager = [SignalManager alloc];
-    
-//    self.messageModel = model;
-//    self.agoraRtmKit = [[AgoraRtmKit alloc] initWithAppId:model.appId delegate:self];
-//    [self.agoraRtmKit loginByToken:model.token user:model.uid completion:^(AgoraRtmLoginErrorCode errorCode) {
-//        if (errorCode == AgoraRtmLoginErrorOk) {
-//            NSLog(@"rtm login success");
-//            if(successBlock != nil){
-//                successBlock();
-//            }
-//
-//        } else {
-//            if(failBlock != nil){
-//                failBlock();
-//            }
-//        }
-//    }];
+- (void)releaseSignalResources {
+    self.currentStuModel = nil;
+    self.currentTeaModel = nil;
+    [self.signalManager releaseResources];
 }
 
-- (void)sendMessageWithValue:(NSString *)value {
+- (RolesInfoModel *)fixRolesInfoModelWithAttributes:(NSArray<AgoraRtmChannelAttribute *> * _Nullable) attributes {
     
+    if(attributes == nil){
+        RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
+        return rolesInfoModel;
+    }
     
-//    SignalManager.shareManager.currentStuModel =
-//
-//
-//    NSString *value = [AERTMMessageBody sendP2PMessageWithName:self.userName content:content];
-//    [SignalManager.shareManager sendMessageWithValue:value];
+    AETeactherModel *teaModel;
+    NSMutableArray<RolesStudentInfoModel*> *stuArray = [NSMutableArray array];
+
+    for (AgoraRtmChannelAttribute *channelAttr in attributes) {
+        
+        NSDictionary *valueDict = [JsonAndStringConversions dictionaryWithJsonString:channelAttr.value];
+        
+        if ([channelAttr.key isEqualToString:RoleTypeTeacther]) {
+            
+            if(teaModel == nil){
+                teaModel = [AETeactherModel new];
+            }
+            [teaModel modelWithDict:valueDict];
+        
+        } else {
+            AEStudentModel *model = [AEStudentModel yy_modelWithDictionary:valueDict];
+            
+            RolesStudentInfoModel *infoModel = [RolesStudentInfoModel new];
+            infoModel.studentModel = model;
+            infoModel.attrKey = channelAttr.key;
+            
+            [stuArray addObject:infoModel];
+            
+            if([model.uid isEqualToString: self.signalManager.messageModel.uid]) {
+                self.currentStuModel = model;
+            }
+        }
+    }
+    
+    self.currentTeaModel = teaModel;
+    
+    RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
+    rolesInfoModel.teactherModel = teaModel;
+    rolesInfoModel.studentModels = stuArray;
+    
+    return rolesInfoModel;
 }
+
+#pragma mark RTMDelegate
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
+    // 状态丢失
+    if(state == AgoraRtmConnectionStateDisconnected) {
+        [NSNotificationCenter.defaultCenter postNotificationName:NOTICE_KEY_ON_MESSAGE_DISCONNECT object:nil];
+    }
+}
+- (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId {
+    
+    if (self.currentTeaModel && [peerId isEqualToString:self.currentTeaModel.uid]) {
+        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
+        AEP2pMessageModel *model = [AEP2pMessageModel yy_modelWithDictionary:dict];
+
+        if([self.signalDelegate respondsToSelector:@selector(signalDidReceived:)]) {
+            [self.signalDelegate signalDidReceived:model];
+        }
+    }
+}
+- (void)channel:(AgoraRtmChannel * _Nonnull)channel messageReceived:(AgoraRtmMessage * _Nonnull)message fromMember:(AgoraRtmMember * _Nonnull)member {
+
+    if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateMessage:)]) {
+        NSDictionary *dict = [JsonAndStringConversions dictionaryWithJsonString:message.text];
+        AERoomMessageModel *messageModel = [AERoomMessageModel yy_modelWithDictionary:dict];
+        messageModel.isSelfSend = NO;
+        [self.signalDelegate signalDidUpdateMessage:messageModel];
+    }
+}
+- (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
+    
+    if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateGlobalState:)]) {
+        RolesInfoModel *rolesInfoModel = [self fixRolesInfoModelWithAttributes:attributes];
+        [self.signalDelegate signalDidUpdateGlobalState:rolesInfoModel];
+    }
+}
+
+
+
+#pragma mark RTCManager
+- (void)initRTCEngineKitWithAppid:(NSString *)appid clientRole:(RTCClientRole)role dataSourceDelegate:(id<RTCDelegate> _Nullable)rtcDelegate {
+    
+    self.rtcDelegate = rtcDelegate;
+    self.rtcVideoSessionModels = [NSMutableArray array];
+    
+    self.rtcManager = [[RTCManager alloc] init];
+    self.rtcManager.rtcManagerDelegate = self;
+    [self.rtcManager initEngineKit:appid];
+    [self.rtcManager setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
+    [self.rtcManager enableVideo];
+    [self.rtcManager startPreview];
+    [self.rtcManager enableWebSdkInteroperability:YES];
+    [self.rtcManager enableDualStreamMode:YES];
+    [self setRTCClientRole: role];
+}
+
+- (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock {
+    
+    return [self.rtcManager joinChannelByToken:token channelId:channelId info:info uid:uid joinSuccess:joinSuccessBlock];
+}
+
+- (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model {
+    
+    AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
+    videoCanvas.uid = model.uid;
+    videoCanvas.view = model.videoView;
+    
+    if(model.renderMode == RTCVideoRenderModeFit) {
+        videoCanvas.renderMode = AgoraVideoRenderModeFit;
+    } else if(model.renderMode == RTCVideoRenderModeHidden){
+        videoCanvas.renderMode = AgoraVideoRenderModeHidden;
+    }
+
+    if(model.canvasType == RTCVideoCanvasTypeLocal) {
+        [self.rtcManager setupLocalVideo: videoCanvas];
+    } else if(model.canvasType == RTCVideoCanvasTypeRemote) {
+        [self.rtcManager setupRemoteVideo: videoCanvas];
+    }
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
+    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+    if(filteredArray.count > 0){
+        
+        RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
+        videoSessionModel.videoCanvas.view = nil;
+        videoSessionModel.videoCanvas = videoCanvas;
+    } else {
+        RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
+        videoSessionModel.uid = model.uid;
+        videoSessionModel.videoCanvas = videoCanvas;
+        [self.rtcVideoSessionModels addObject:videoSessionModel];
+    }
+}
+
+- (void)removeRTCVideoCanvas:(NSUInteger) uid {
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid != %d", uid];
+    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+    self.rtcVideoSessionModels = [NSMutableArray arrayWithArray:filteredArray];
+}
+
+- (void)setRTCClientRole:(RTCClientRole)role {
+    if(role == RTCClientRoleAudience){
+        [self.rtcManager setClientRole:(AgoraClientRoleAudience)];
+    } else if(role == RTCClientRoleBroadcaster){
+        [self.rtcManager setClientRole:(AgoraClientRoleBroadcaster)];
+    }
+}
+- (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType {
+    if(streamType == RTCVideoStreamTypeLow){
+        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeLow];
+    } else if(streamType == RTCVideoStreamTypeHigh){
+        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeHigh];
+    }
+    return -1;
+}
+- (int)enableRTCLocalVideo:(BOOL) enabled {
+    return [self.rtcManager muteLocalVideoStream:!enabled];
+}
+- (int)enableRTCLocalAudio:(BOOL) enabled {
+    return [self.rtcManager muteLocalAudioStream:!enabled];
+}
+
+- (void)releaseRTCResources {
+    for (RTCVideoSessionModel *model in self.rtcVideoSessionModels){
+        model.videoCanvas.view = nil;
+    }
+    [self.rtcVideoSessionModels removeAllObjects];
+    [self.rtcManager releaseResources];
+}
+
+#pragma mark RTCManagerDelegate
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nullable)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
+    
+    if([self.rtcDelegate respondsToSelector:@selector(rtcDidJoinedOfUid:)]) {
+        [self.rtcDelegate rtcDidJoinedOfUid:uid];
+    }
+}
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nullable)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+    if([self.rtcDelegate respondsToSelector:@selector(rtcDidOfflineOfUid:)]) {
+        [self.rtcDelegate rtcDidOfflineOfUid:uid];
+    }
+}
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+    
+    RTCNetworkGrade grade = RTCNetworkGradeUnknown;
+    
+    switch (type) {
+        case AgoraNetworkTypeUnknown:
+        case AgoraNetworkTypeMobile4G:
+        case AgoraNetworkTypeWIFI:
+            grade = RTCNetworkGradeHigh;
+            break;
+        case AgoraNetworkTypeMobile3G:
+        case AgoraNetworkTypeMobile2G:
+            grade = RTCNetworkGradeMiddle;
+            break;
+        case AgoraNetworkTypeLAN:
+        case AgoraNetworkTypeDisconnected:
+            grade = RTCNetworkGradeLow;
+            break;
+        default:
+            break;
+    }
+    
+    if([self.rtcDelegate respondsToSelector:@selector(rtcNetworkTypeGrade:)]) {
+        [self.rtcDelegate rtcNetworkTypeGrade:grade];
+    }
+}
+
+
+
 
 #pragma mark WhiteManager
 - (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate {
+    
     self.whitePlayerDelegate = whitePlayerDelegate;
+    
+    self.whiteManager = [[WhiteManager alloc] init];
     self.whiteManager.whiteManagerDelegate = self;
     [self.whiteManager initWhiteSDKWithBoardView:boardView config:[WhiteSdkConfiguration defaultConfig]];
 }
 
 - (void)joinWhiteRoomWithUuid:(NSString*)uuid completeSuccessBlock:(void (^) (WhiteRoom * _Nullable room))successBlock completeFailBlock:(void (^) (NSError * _Nullable error))failBlock {
     
-    WEAK(self)
+    WEAK(self);
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
 
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
@@ -112,7 +441,7 @@ static EducationManager *manager = nil;
     NSAssert(model.startTime && model.startTime.length == 13, @"startTime should be millisecond unit");
     NSAssert(model.endTime && model.endTime.length == 13, @"endTime should be millisecond unit");
     
-    WEAK(self)
+    WEAK(self);
     [AgoraHttpRequest POSTWhiteBoardRoomWithUuid:model.uuid token:^(NSString * _Nonnull token) {
 
         WhitePlayerConfig *playerConfig = [[WhitePlayerConfig alloc] initWithRoom:model.uuid roomToken:token];
@@ -226,6 +555,10 @@ static EducationManager *manager = nil;
     }
 }
 
+- (void)releaseWhiteResources {
+    [self.whiteManager releaseResources];
+}
+
 #pragma mark WhiteManagerDelegate
 - (void)phaseChanged:(WhitePlayerPhase)phase {
     
@@ -316,7 +649,15 @@ static EducationManager *manager = nil;
 }
 
 - (void)releaseResources {
-    [self.whiteManager releaseResources];
+    
+    // release rtc
+    [self releaseRTCResources];
+    
+    // release white
+    [self releaseWhiteResources];
+    
+    // release signal
+    [self releaseSignalResources];
 }
 
 @end

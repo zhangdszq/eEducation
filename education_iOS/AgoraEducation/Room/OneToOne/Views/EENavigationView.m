@@ -46,7 +46,7 @@
     dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, globalQueue);
     _isCreat = YES;
-     WEAK(self)
+     WEAK(self);
     //每秒执行一次
     dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), 1.0*NSEC_PER_SEC, 0);
     dispatch_source_set_event_handler(timer, ^{
@@ -68,7 +68,7 @@
     }
 }
 
-- (void)updateChannelName:(NSString *)name {
+- (void)updateClassName:(NSString *)name {
     [self.roomNameLabel setText:name];
 }
 

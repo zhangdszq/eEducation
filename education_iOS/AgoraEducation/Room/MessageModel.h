@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSString *appId;
 @property(nonatomic, strong) NSString *token;
 @property(nonatomic, strong) NSString *uid;
-@property(nonatomic, strong) NSString *userName;
 
 @end
 

@@ -56,6 +56,9 @@
     MCStudentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"studentCell"];
     if (!cell) {
         cell = [[[NSBundle mainBundle] loadNibNamed:@"MCStudentViewCell" owner:self options:nil] firstObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
+        [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
     }
 
     RolesStudentInfoModel *infoModel = self.studentArray[indexPath.row];
@@ -63,12 +66,6 @@
     stuModel.uid = infoModel.attrKey;
     cell.userId = self.userId;
     cell.studentModel = stuModel;
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-    [cell.muteAudioButton addTarget:self action:@selector(muteAudio:) forControlEvents:(UIControlEventTouchUpInside)];
-    [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
-//    cell.muteVideoButton.hidden = cell.studentModel.uid != self.userId ? YES : NO;
-//    cell.muteAudioButton.hidden = cell.studentModel.uid != self.userId ? YES : NO;
     return cell;
 }
 
