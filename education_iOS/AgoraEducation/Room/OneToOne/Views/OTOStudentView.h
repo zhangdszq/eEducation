@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "RoomProtocol.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OTOStudentView : UIView
-@property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
+@property (nonatomic, weak) id <RoomProtocol> delegate;
 @property (weak, nonatomic) IBOutlet UIView *videoRenderView;
 @property (weak, nonatomic) IBOutlet UIImageView *defaultImageView;
 

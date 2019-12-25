@@ -35,7 +35,7 @@
     
 }
 
-- (void)setStudentModel:(AEStudentModel *)studentModel {
+- (void)setStudentModel:(StudentModel *)studentModel {
     _studentModel = studentModel;
     [self.nameLabel setText:studentModel.account];
     NSString *audioImageName = studentModel.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";

@@ -24,7 +24,7 @@
     return self;
 }
 
-- (void)setUserModel:(AEStudentModel *)userModel {
+- (void)setUserModel:(StudentModel *)userModel {
     _userModel = userModel;
     self.nameLable.text = userModel.account;
     self.backImageView.hidden = userModel.video ? YES : NO;

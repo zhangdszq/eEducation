@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
- 
+#import "RoomProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BCNavigationView : UIView
-@property (nonatomic, weak) id <AEClassRoomProtocol> delegate;
+@property (nonatomic, weak) id <RoomProtocol> delegate;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *wifiSignalImage;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *titleLabelBottomConstraint;
