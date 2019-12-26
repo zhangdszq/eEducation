@@ -49,7 +49,9 @@
 
 @property (nonatomic, strong) TeactherModel *teacherAttr;
 
-@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentListArray;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentTotleListArray;
+@property (nonatomic, strong) NSMutableArray<RolesStudentInfoModel*> *studentListArray;
+@property (nonatomic, strong) NSMutableArray<NSString*> *studentId;
 
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @end
@@ -71,7 +73,10 @@
     self.navigationView.delegate = self;
     [self.navigationView updateClassName:self.paramsModel.className];
     
-    self.studentListArray = [NSArray array];
+    self.studentListArray = [NSMutableArray array];
+    self.studentId = [NSMutableArray array];
+    [self.studentId addObject: self.paramsModel.userId];
+    
     self.studentListView.userId = self.paramsModel.userId;
     
     [self setupRTC];
@@ -335,6 +340,15 @@
     NSLog(@"MCViewController dealloc");
 }
 
+- (void)ergodicStudentListArray {
+    self.studentListArray = [NSMutableArray array];
+    for (RolesStudentInfoModel *studentInfoModel in self.studentTotleListArray) {
+        if([self.studentId containsObject:studentInfoModel.attrKey]){
+            [self.studentListArray addObject:studentInfoModel];
+        }
+    }
+}
+
 #pragma mark SignalDelegate
 - (void)signalDidReceived:(SignalP2PModel *)signalModel {
     [self handleSignalWithModel:signalModel];
@@ -348,7 +362,8 @@
     
     [self updateTeacherStatusWithModel: teactherModel];
     
-    self.studentListArray = studentInfoModels;
+    self.studentTotleListArray = studentInfoModels;
+    [self ergodicStudentListArray];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
@@ -375,6 +390,14 @@
     
     } else if (uid == kWhiteBoardUid){
         [self addShareScreenVideoWithUid:uid];
+        
+    } else {
+        NSString *uidStr = [NSString stringWithFormat:@"%lu", (unsigned long)uid];
+        [self.studentId addObject: uidStr];
+        
+        [self ergodicStudentListArray];
+        [self.studentListView updateStudentArray:self.studentListArray];
+        [self.studentVideoListView updateStudentArray:self.studentListArray];
     }
 }
 
@@ -385,8 +408,10 @@
     } else if (uid == kWhiteBoardUid) {
          self.shareScreenView.hidden = YES;
     } else {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey != %d", uid];
-        self.studentListArray = [self.studentListArray filteredArrayUsingPredicate:predicate];
+        NSString *uidStr = [NSString stringWithFormat:@"%lu", (unsigned long)uid];
+        [self.studentId removeObject: uidStr];
+        
+        [self ergodicStudentListArray];
         [self.studentListView updateStudentArray:self.studentListArray];
         [self.studentVideoListView updateStudentArray:self.studentListArray];
     }
