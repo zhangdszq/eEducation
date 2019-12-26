@@ -12,68 +12,27 @@
 #import "SignalManager.h"
 #import "RTCVideoCanvasModel.h"
 #import "ReplayerModel.h"
-#import "AEP2pMessageModel.h"
+#import "SignalP2PModel.h"
 
-@protocol WhitePlayDelegate <NSObject>
+#import "RTCDelegate.h"
+#import "SignalDelegate.h"
+#import "WhitePlayDelegate.h"
 
-@optional
+#import "RTCVideoSessionModel.h"
+#import "RTCVideoCanvasModel.h"
+#import "RolesInfoModel.h"
 
-/** 进度时间变化 */
-- (void)whitePlayerTimeChanged:(NSTimeInterval)time;
-
-/**
- 进入缓冲状态，WhitePlayer，NativePlayer 任一进入缓冲，都会回调。
- */
-- (void)whitePlayerStartBuffering;
-
-/**
- 结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
- */
-- (void)whitePlayerEndBuffering;
-
-/**
- 播放结束
- */
-- (void)whitePlayerDidFinish;
-
-/**
- 播放失败
-
- @param error 错误原因
- */
-- (void)whitePlayerError:(NSError * _Nullable)error;
-
-/**
- 房间中RoomState属性，发生变化时，会触发该回调。
- @param modifyState 发生变化的 RoomState 内容
- */
-- (void)whiteRoomStateChanged;
-
-@end
-
-@protocol RTCDelegate <NSObject>
-@optional
-- (void)rtcDidJoinedOfUid:(NSUInteger)uid;
-- (void)rtcDidOfflineOfUid:(NSUInteger)uid;
-- (void)rtcNetworkTypeGrade:(RTCNetworkGrade)grade;
-@end
-
+typedef void(^QueryRolesInfoBlock)(RolesInfoModel * _Nullable);
 #define NOTICE_KEY_ON_MESSAGE_DISCONNECT @"NOTICE_KEY_ON_MESSAGE_DISCONNECT"
-@protocol SignalDelegate <NSObject>
-@optional
-- (void)signalDidUpdateMessage:(AERoomMessageModel * _Nonnull)messageModel;
-- (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel;
-- (void)signalDidReceived:(AEP2pMessageModel * _Nonnull)signalModel;
-@end
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EducationManager : NSObject
 
 /* ==================================>SignalManager<================================ */
-@property (nonatomic, strong) AETeactherModel * _Nullable currentTeaModel;
-@property (nonatomic, strong) AEStudentModel * _Nullable currentStuModel;
-- (void)initSignalWithModel:(MessageModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
+@property (nonatomic, strong) TeactherModel * _Nullable currentTeaModel;
+@property (nonatomic, strong) StudentModel * _Nullable currentStuModel;
+- (void)initSignalWithModel:(SignalModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
 - (void)initStudentWithUserName:(NSString *)userName;
 - (void)setSignalDelegate:(id<SignalDelegate>)delegate;
 - (void)joinSignalWithChannelName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
@@ -83,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)queryOnlineStudentCountWithChannelName:(NSString *)channelName maxCount:(NSInteger)maxCount completeSuccessBlock:(void (^) (NSInteger count))successBlock completeFailBlock:(void (^) (void))failBlock;
 
 - (void)sendMessageWithContent:(NSString *)text userName:(NSString *)name;
-- (void)setSignalWithType:(RTMp2pType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock;
+- (void)setSignalWithType:(SignalP2PType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock;
 
 - (void)releaseSignalResources;
 

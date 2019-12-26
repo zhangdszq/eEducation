@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AEStudentModel.h"
+#import "StudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentVideoCell : UICollectionViewCell
 @property (nonatomic, weak) UIView *videoCanvasView;
-@property (nonatomic, copy) AEStudentModel *userModel;
+@property (nonatomic, copy) StudentModel *userModel;
 
 @end
 

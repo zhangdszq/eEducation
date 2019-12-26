@@ -13,21 +13,21 @@
 #import "EEChatTextFiled.h"
 #import "BCStudentVideoView.h"
 #import <Whiteboard/Whiteboard.h>
-#import "AgoraHttpRequest.h"
+#import "HttpManager.h"
 #import "MainViewController.h"
-#import "AERTMMessageBody.h"
-#import "AERoomMessageModel.h"
+#import "GenerateSignalBody.h"
+#import "SignalRoomModel.h"
 #import "EEColorShowView.h"
-#import "AERTMMessageBody.h"
-#import "AEStudentModel.h"
-#import "AETeactherModel.h"
+#import "GenerateSignalBody.h"
+#import "StudentModel.h"
+#import "TeactherModel.h"
 #import "EEMessageView.h"
-#import "AEP2pMessageModel.h"
+#import "SignalP2PModel.h"
 
 #import "SignalManager.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<BCSegmentedDelegate ,UITextFieldDelegate,AEClassRoomProtocol, SignalDelegate, RTCDelegate>
+@interface BCViewController ()<BCSegmentedDelegate ,UITextFieldDelegate,RoomProtocol, SignalDelegate, RTCDelegate>
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationHeightCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *teacherVideoWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *handupButtonRightCon;
@@ -66,7 +66,7 @@
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
 @property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentList;
-@property (nonatomic, strong) AETeactherModel *teacherAttr;
+@property (nonatomic, strong) TeactherModel *teacherAttr;
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (nonatomic, assign) NSInteger unreadMessageCount;
 @property (nonatomic, assign) StudentLinkState linkState;
@@ -91,6 +91,12 @@
 }
 
 -(void)initData {
+    
+    self.segmentedView.delegate = self;
+    self.studentVideoView.delegate = self;
+    self.navigationView.delegate = self;
+    self.chatTextFiled.contentTextFiled.delegate = self;
+    
     self.studentList = [NSArray array];
     [self.navigationView updateClassName:self.paramsModel.className];
     
@@ -100,8 +106,8 @@
 
 - (void)setupRTC {
     
-    [self.educationManager initRTCEngineKitWithAppid:kAgoraAppid clientRole:RTCClientRoleAudience dataSourceDelegate:self];
-    [self.educationManager joinRTCChannelByToken:kAgoraRTCtoken channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:nil];
+    [self.educationManager initRTCEngineKitWithAppid:[KeyCenter agoraAppid] clientRole:RTCClientRoleAudience dataSourceDelegate:self];
+    [self.educationManager joinRTCChannelByToken:[KeyCenter agoraRTCToken] channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:nil];
 }
 
 - (void)setupSignal {
@@ -109,11 +115,11 @@
     WEAK(self);
     [self.educationManager joinSignalWithChannelName:self.paramsModel.channelName completeSuccessBlock:^{
         
-        AEStudentModel *currentStuModel = [weakself.educationManager.currentStuModel yy_modelCopy];
+        StudentModel *currentStuModel = [weakself.educationManager.currentStuModel yy_modelCopy];
         currentStuModel.audio = 0;
         currentStuModel.video = 0;
         currentStuModel.chat = 1;
-        NSString *value = [AERTMMessageBody setChannelAttrsWithValue: currentStuModel];
+        NSString *value = [GenerateSignalBody channelAttrsWithValue: currentStuModel];
         [weakself.educationManager updateGlobalStateWithValue:value completeSuccessBlock:^{
             
             [weakself getRtmChannelAttrs];
@@ -147,7 +153,7 @@
 //    }];
 }
 
--(void)updateTeacherStatusWithModel:(AETeactherModel*)model{
+-(void)updateTeacherStatusWithModel:(TeactherModel*)model{
  
     if(model != nil){
         [self.teacherAttr modelWithTeactherModel:model];
@@ -168,15 +174,19 @@
     self.handUpButton.layer.backgroundColor = [UIColor colorWithHexString:@"FFFFFF"].CGColor;
     self.handUpButton.layer.cornerRadius = 6;
 
-    [AERTMMessageBody addShadowWithView:self.handUpButton alpha:0.1];
+//    [GenerateSignalBody addShadowWithView:self.handUpButton alpha:0.1];
     self.tipLabel.layer.backgroundColor = [UIColor colorWithHexString:@"000000" alpha:0.7].CGColor;
     self.tipLabel.layer.cornerRadius = 6;
-    [AERTMMessageBody addShadowWithView:self.tipLabel alpha:0.25];
-    self.segmentedView.delegate = self;
-    self.studentVideoView.delegate = self;
-    self.navigationView.delegate = self;
-    self.chatTextFiled.contentTextFiled.delegate = self;
+//    [GenerateSignalBody addShadowWithView:self.tipLabel alpha:0.25];
 }
+
+//- (void)addShadowWithView:(UIView *)view alpha:(CGFloat)alpha {
+//    view.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:alpha].CGColor;
+//    view.layer.shadowOffset = CGSizeMake(0,2);
+//    view.layer.shadowOpacity = 2;
+//    view.layer.shadowRadius = 4;
+//    view.layer.masksToBounds = YES;
+//}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -204,7 +214,7 @@
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", new];
             NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentList filteredArrayUsingPredicate:predicate];
             if(filteredArray.count > 0){
-//                AEStudentModel *studentModel = filteredArray.firstObject.studentModel;
+//                StudentModel *studentModel = filteredArray.firstObject.studentModel;
 //                [self.studentVideoView updateVideoImageWithMuted:NO];
 //                [self.studentVideoView updateAudioImageWithMuted:NO];
                 if (self.linkUserId == [self.paramsModel.userId integerValue]) {
@@ -321,14 +331,14 @@
 
 - (void)studentApplyLink {
     WEAK(self);
-    [self.educationManager setSignalWithType:RTMp2pTypeApply completeSuccessBlock:^{
+    [self.educationManager setSignalWithType:SignalP2PTypeApply completeSuccessBlock:^{
         weakself.linkState = StudentLinkStateApply;
     }];
 }
 
 - (void)studentCancelLink {
     WEAK(self);
-    [self.educationManager setSignalWithType:RTMp2pTypeCancel completeSuccessBlock:^{
+    [self.educationManager setSignalWithType:SignalP2PTypeCancel completeSuccessBlock:^{
         weakself.linkState = StudentLinkStateIdle;
         [weakself removeStudentVideo];
     }];
@@ -336,10 +346,10 @@
 
 - (void)teacherAcceptLink {
     WEAK(self);
-    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    StudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = 1;
     currentStuModel.video = 1;
-    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
     [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:^{
         
         weakself.linkState = StudentLinkStateAccept;
@@ -462,10 +472,10 @@
 
 - (void)closeRoom {
     WEAK(self);
-    [EEAlertView showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
         
         if (weakself.linkState == StudentLinkStateAccept) {
-            [weakself.educationManager setSignalWithType:RTMp2pTypeCancel completeSuccessBlock:nil];
+            [weakself.educationManager setSignalWithType:SignalP2PTypeCancel completeSuccessBlock:nil];
         }
         [weakself removeTeacherObserver];
         [weakself.educationManager releaseResources];
@@ -499,9 +509,9 @@
     
     self.studentVideoView.defaultImageView.hidden = stream ? NO : YES;
     
-    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    StudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
     currentStuModel.video = !stream ? 1 : 0;
-    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
     [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
@@ -509,9 +519,9 @@
     
     [self.educationManager enableRTCLocalAudio:!stream];
     
-    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    StudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;
-    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
     [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
@@ -525,22 +535,22 @@
 }
 
 #pragma mark SignalDelegate
-- (void)signalDidReceived:(AEP2pMessageModel *)signalModel {
+- (void)signalDidReceived:(SignalP2PModel *)signalModel {
 
     [self handleSignalWithModel:signalModel];
     
     switch (signalModel.cmd) {
-        case RTMp2pTypeReject:
+        case SignalP2PTypeReject:
         {
             self.linkState = StudentLinkStateReject;
         }
             break;
-        case RTMp2pTypeAccept:
+        case SignalP2PTypeAccept:
         {
             [self teacherAcceptLink];
         }
             break;
-        case RTMp2pTypeCancel:
+        case SignalP2PTypeCancel:
         {
             self.whiteboardTool.hidden = YES;
             self.linkState = StudentLinkStateIdle;
@@ -553,7 +563,7 @@
     }
 }
 
-- (void)signalDidUpdateMessage:(AERoomMessageModel *)messageModel {
+- (void)signalDidUpdateMessage:(SignalRoomModel *)messageModel {
     
     [self.messageView addMessageModel:messageModel];
     if (self.messageView.hidden == YES) {
@@ -562,7 +572,7 @@
     }
 }
 - (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel {
-    AETeactherModel *teactherModel = infoModel.teactherModel;
+    TeactherModel *teactherModel = infoModel.teactherModel;
     NSArray<RolesStudentInfoModel *> *studentInfoModels = infoModel.studentModels;
 
     [self updateTeacherStatusWithModel:teactherModel];
@@ -572,7 +582,7 @@
     NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentList filteredArrayUsingPredicate:predicate];
     if(filteredArray.count > 0){
         
-        AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+        StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
         BOOL muteChat = teactherModel != nil ? teactherModel.mute_chat : NO;
         if(!muteChat) {
             muteChat = canvasStudentModel.chat == 0 ? YES : NO;

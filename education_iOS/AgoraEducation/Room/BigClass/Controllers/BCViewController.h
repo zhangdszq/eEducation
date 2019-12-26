@@ -6,12 +6,12 @@
 //  Copyright © 2019 yangmoumou. All rights reserved.
 //
 
-#import "AERoomViewController.h"
+#import "BaseRoomViewController.h"
 #import "BCNavigationView.h"
 #import "EETeacherVideoView.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BCViewController : AERoomViewController
+@interface BCViewController : BaseRoomViewController
 @end
 
 NS_ASSUME_NONNULL_END
