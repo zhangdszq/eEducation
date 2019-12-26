@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by yangmoumou on 2019/10/30.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 // 1V1 注意分享屏幕就可以
 

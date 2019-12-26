@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by yangmoumou on 2019/11/23.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import "BaseRoomViewController.h"
@@ -65,6 +65,9 @@
     [self.educationManager initWhiteSDK:self.boardView dataSourceDelegate:self];
     [self.educationManager joinWhiteRoomWithUuid:uuid completeSuccessBlock:^(WhiteRoom * _Nullable room) {
         
+        CMTime cmTime = CMTimeMakeWithSeconds(0, 100);
+        [weakself.educationManager seekWhiteToTime:cmTime completionHandler:^(BOOL finished) {
+        }];
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
             weakself.sceneCount = sceneCount;
