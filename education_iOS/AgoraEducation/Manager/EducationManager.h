@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by SRS on 2019/12/9.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refreshWhiteViewSize;
 - (void)moveWhiteToContainer:(NSInteger)sceneIndex;
 - (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler;
-- (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler;
+- (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^ _Nonnull)(BOOL finished))completionHandler;
 - (void)playWhite;
 - (void)pauseWhite;
 - (void)stopWhite;
