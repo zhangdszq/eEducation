@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.agora.rtc.education.BuildConfig;
+import io.agora.rtc.education.R;
 import io.agora.rtc.lib.util.LogUtil;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.RemoteInvitation;
@@ -25,12 +26,14 @@ import io.agora.rtm.SendMessageOptions;
 public class RtmManager {
     private final LogUtil log = new LogUtil("RtmManager");
 
+    private Context mContext;
     private RtmClient mRtmClient;
     private List<MyRtmClientListener> mListenerList = new ArrayList<>();
 
     private static RtmManager rtmManager;
 
     private RtmManager(Context context, String appId) {
+        mContext = context.getApplicationContext();
         init(context, appId);
     }
 
@@ -112,7 +115,7 @@ public class RtmManager {
      */
     public void login(final String uid) {
         changeLoginStatus(LOGIN_STATUS_LOGGING);
-        mRtmClient.login(null, uid, new ResultCallback<Void>() {
+        mRtmClient.login(mContext.getString(R.string.agora_rtm_token), uid, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void responseInfo) {
                 retryCount = 0;
@@ -272,7 +275,7 @@ public class RtmManager {
         log.d("send:" + msg);
     }
 
-    public void sendChannelMsg(RtmChannel rtmChannel, String msg, ResultCallback<Void> callback){
+    public void sendChannelMsg(RtmChannel rtmChannel, String msg, ResultCallback<Void> callback) {
         if (rtmChannel == null)
             return;
         RtmMessage rtmMessage = mRtmClient.createMessage();
