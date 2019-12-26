@@ -130,7 +130,7 @@ public class RtcWorkerThread extends HandlerThread {
 
 //                mRtcEngine.setParameters("{\"rtc.force_unified_communication_mode\":true}");//uc模式
 
-                mRtcEngine.joinChannel(null, channel, "", uid);
+                mRtcEngine.joinChannel(mContext.getString(R.string.agora_rtc_token), channel, "", uid);
                 log.d("joinChannel " + channel + " " + uid);
             }
         });
