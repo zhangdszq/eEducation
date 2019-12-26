@@ -12,7 +12,7 @@
 #import "EducationManager.h"
 
 #import "ReplayControlView.h"
-#import "AgoraHttpRequest.h"
+#import "HttpManager.h"
 #import "EduButton.h"
 #import "LoadingView.h"
 

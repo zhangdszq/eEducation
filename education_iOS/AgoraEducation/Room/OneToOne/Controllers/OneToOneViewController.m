@@ -12,22 +12,22 @@
 #import "EEWhiteboardTool.h"
 #import "EEPageControlView.h"
 #import "EEChatTextFiled.h"
-#import "AERoomMessageModel.h"
+#import "SignalRoomModel.h"
 #import "EEMessageView.h"
-#import "AETeactherModel.h"
-#import "AERTMMessageBody.h"
+#import "TeactherModel.h"
+#import "GenerateSignalBody.h"
 #import "OTOTeacherView.h"
 #import "OTOStudentView.h"
-#import "AERTMMessageBody.h"
-#import "AEStudentModel.h"
+#import "GenerateSignalBody.h"
+#import "StudentModel.h"
 #import <Whiteboard/Whiteboard.h>
 #import "EEColorShowView.h"
-#import "AgoraHttpRequest.h"
+#import "HttpManager.h"
 
 #import "SignalManager.h"
-#import "AEP2pMessageModel.h"
+#import "SignalP2PModel.h"
 
-@interface OneToOneViewController ()<UITextFieldDelegate, AEClassRoomProtocol, SignalDelegate, RTCDelegate>
+@interface OneToOneViewController ()<UITextFieldDelegate, RoomProtocol, SignalDelegate, RTCDelegate>
 @property (weak, nonatomic) IBOutlet EENavigationView *navigationView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatRoomViewWidthCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatRoomViewRightCon;
@@ -47,7 +47,7 @@
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (weak, nonatomic) IBOutlet UIView *shareScreenView;
 
-@property (nonatomic, strong) AETeactherModel *teacherAttr;
+@property (nonatomic, strong) TeactherModel *teacherAttr;
 
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
 @end
@@ -114,7 +114,7 @@
 //    }];
 }
 
--(void)updateTeacherStatusWithModel:(AETeactherModel*)model{
+-(void)updateTeacherStatusWithModel:(TeactherModel*)model{
     if(model != nil){
         [self.teacherAttr modelWithTeactherModel:model];
         self.teacherView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
@@ -132,7 +132,7 @@
     WEAK(self);
     [self.educationManager joinSignalWithChannelName:self.paramsModel.channelName completeSuccessBlock:^{
         
-        NSString *value = [AERTMMessageBody setChannelAttrsWithValue: weakself.educationManager.currentStuModel];
+        NSString *value = [GenerateSignalBody channelAttrsWithValue: weakself.educationManager.currentStuModel];
         [weakself.educationManager updateGlobalStateWithValue:value completeSuccessBlock:^{
             
             [weakself getRtmChannelAttrs];
@@ -144,7 +144,7 @@
 
 - (void)setupRTC {
     
-    [self.educationManager initRTCEngineKitWithAppid:kAgoraAppid clientRole:RTCClientRoleBroadcaster dataSourceDelegate:self];
+    [self.educationManager initRTCEngineKitWithAppid:[KeyCenter agoraAppid] clientRole:RTCClientRoleBroadcaster dataSourceDelegate:self];
     
     RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
     model.uid = 0;
@@ -153,7 +153,7 @@
     model.canvasType = RTCVideoCanvasTypeLocal;
     [self.educationManager setupRTCVideoCanvas: model];
     
-    [self.educationManager joinRTCChannelByToken:kAgoraRTCtoken channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:nil];
+    [self.educationManager joinRTCChannelByToken:[KeyCenter agoraRTCToken] channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:nil];
     
     self.studentView.defaultImageView.hidden = YES;
 }
@@ -229,7 +229,7 @@
 
 - (void)closeRoom {
     WEAK(self);
-    [EEAlertView showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
 
         [weakself.navigationView stopTimer];
         [weakself removeTeacherObserver];
@@ -239,16 +239,16 @@
 }
 
 - (void)muteVideoStream:(BOOL)stream {
-    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    StudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
     currentStuModel.video = !stream ? 1 : 0;
-    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
     [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
 - (void)muteAudioStream:(BOOL)stream {
-    AEStudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
+    StudentModel *currentStuModel = [self.educationManager.currentStuModel yy_modelCopy];
     currentStuModel.audio = !stream ? 1 : 0;
-    NSString *value = [AERTMMessageBody setChannelAttrsWithValue:currentStuModel];
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
     [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
 }
 
@@ -275,14 +275,14 @@
 }
 
 #pragma mark SignalDelegate
-- (void)signalDidReceived:(AEP2pMessageModel *)signalModel {
+- (void)signalDidReceived:(SignalP2PModel *)signalModel {
     [self handleSignalWithModel:signalModel];
 }
-- (void)signalDidUpdateMessage:(AERoomMessageModel *_Nonnull)roomMessageModel {
+- (void)signalDidUpdateMessage:(SignalRoomModel *_Nonnull)roomMessageModel {
     [self.messageListView addMessageModel:roomMessageModel];
 }
 - (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel {
-    AETeactherModel *teactherModel = infoModel.teactherModel;
+    TeactherModel *teactherModel = infoModel.teactherModel;
     NSArray<RolesStudentInfoModel *> *studentInfoModels = infoModel.studentModels;
 
     [self updateTeacherStatusWithModel:teactherModel];
@@ -291,7 +291,7 @@
     NSArray<RolesStudentInfoModel *> *filteredArray = [studentInfoModels filteredArrayUsingPredicate:predicate];
     if(filteredArray.count > 0){
         
-        AEStudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+        StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
         BOOL muteChat = teactherModel != nil ? teactherModel.mute_chat : NO;
         if(!muteChat) {
             muteChat = canvasStudentModel.chat == 0 ? YES : NO;
