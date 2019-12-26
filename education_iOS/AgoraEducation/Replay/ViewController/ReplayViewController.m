@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by SRS on 2019/12/10.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import "ReplayViewController.h"
@@ -15,7 +15,6 @@
 #import "HttpManager.h"
 #import "EduButton.h"
 #import "LoadingView.h"
-
 
 @interface ReplayViewController ()<ReplayControlViewDelegate, WhitePlayDelegate>
 
@@ -32,6 +31,8 @@
 @property (nonatomic, weak) WhiteBoardView *boardView;
 @property (nonatomic, weak) WhiteVideoView *videoView;
 
+@property (nonatomic, assign) BOOL playFinished;
+
 // can seek when has buffer for m3u8 video
 @property (nonatomic, assign) BOOL canSeek;
 
@@ -47,6 +48,8 @@
     [self setupView];
     [self initData];
     [self setupWhiteBoard];
+    
+    self.playFinished = NO;
 }
 
 - (void)initData {
@@ -104,6 +107,11 @@
     // create white replayer
     [self.educationManager createWhiteReplayerWithModel:replayerModel completeSuccessBlock:^(WhitePlayer * _Nullable whitePlayer, AVPlayer * _Nullable avPlayer) {
 
+        CMTime cmTime = CMTimeMakeWithSeconds(0, 100);
+        [weakself.educationManager seekWhiteToTime:cmTime completionHandler:^(BOOL finished) {
+            
+        }];
+        
         if(weakself.videoPath != nil && weakself.videoPath.length > 0 && avPlayer != nil) {
             [weakself.videoView setAVPlayer: avPlayer];
         }
@@ -159,13 +167,28 @@
     [self performSelector:@selector(hideControlView) withObject:nil afterDelay:3];
 }
 
+- (void)initPlay {
+    [self seekToTimeInterval:0 completionHandler:^(BOOL finished) {
+
+    }];
+}
+
 - (IBAction)onPlayClick:(id)sender {
-    
-    [self setPlayViewsVisible:YES];
-    [self.educationManager playWhite];
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControlView) object:nil];
     [self performSelector:@selector(hideControlView) withObject:nil afterDelay:3];
+    
+    [self setPlayViewsVisible:YES];
+    
+    WEAK(self);
+    if(self.playFinished) {
+        self.playFinished = NO;
+        [self seekToTimeInterval:0 completionHandler:^(BOOL finished) {
+            [weakself.educationManager playWhite];
+        }];
+    } else {
+        [self.educationManager playWhite];
+    }
 }
 
 - (IBAction)onBackClick:(id)sender {
@@ -293,8 +316,18 @@
     [self setPlayViewsVisible:play];
     
     if(play) {
-        [self.educationManager playWhite];
         [self performSelector:@selector(hideControlView) withObject:nil afterDelay:3];
+        
+        WEAK(self);
+        if(self.playFinished) {
+            self.playFinished = NO;
+            [self seekToTimeInterval:0 completionHandler:^(BOOL finished) {
+                [weakself.educationManager playWhite];
+            }];
+        } else {
+            [self.educationManager playWhite];
+        }
+        
     } else {
         [self.educationManager pauseWhite];
     }
@@ -342,19 +375,12 @@
 - (void)whitePlayerDidFinish {
     [self.educationManager pauseWhite];
 
-    WEAK(self);
-    [self seekToTimeInterval:0 completionHandler:^(BOOL finished) {
-        if(finished) {
-            [weakself setLoadingViewVisible:NO];
-            [weakself setPlayViewsVisible:NO];
-        
-            weakself.controlView.sliderView.value = 0;
-            NSString *totleTimeStr = [weakself convertTimeSecond: [weakself timeTotleDuration]];
-            NSString *currentTimeStr = [weakself convertTimeSecond: 0];
-            NSString *timeStr = [NSString stringWithFormat:@"%@ / %@", currentTimeStr, totleTimeStr];
-            weakself.controlView.timeLabel.text = timeStr;
-        }
-    }];
+    [self setLoadingViewVisible:NO];
+    [self setPlayViewsVisible:NO];
+    
+    self.playFinished = YES;
+    self.controlView.hidden = NO;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControlView) object:nil];
 }
 
 /**

@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by SRS on 2019/12/9.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import "EducationManager.h"
@@ -413,6 +413,7 @@
     [HttpManager POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
 
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
+        roomConfig.userPayload =@{@"identity": @"guest", @"userId": @"dsajdisajxaioskoixsasa"};
         [weakself.whiteManager joinWhiteRoomWithWhiteRoomConfig:roomConfig completeSuccessBlock:^(WhiteRoom * _Nullable room) {
             
             if(successBlock != nil){
@@ -509,16 +510,14 @@
 - (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler {
     [self.whiteManager setSceneIndex:index completionHandler:completionHandler];
 }
-- (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler {
+- (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^ _Nonnull)(BOOL finished))completionHandler {
     
     if(self.whiteManager.combinePlayer != nil) {
         [self.whiteManager seekToCombineTime:time completionHandler:completionHandler];
     } else {
         NSTimeInterval seekTime = CMTimeGetSeconds(time);
         [self.whiteManager.player seekToScheduleTime:seekTime];
-        if(completionHandler != nil){
-            completionHandler(YES);
-        }
+        completionHandler(YES);
     }
 }
 - (void)playWhite {

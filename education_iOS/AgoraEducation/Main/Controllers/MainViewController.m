@@ -3,7 +3,7 @@
 //  AgoraSmallClass
 //
 //  Created by yangmoumou on 2019/5/9.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import "MainViewController.h"
@@ -163,6 +163,9 @@ typedef NS_ENUM(NSUInteger, SceneMode) {
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
+    
+    self.classNameTextFiled.text = @"test2";
+    self.userNameTextFiled.text = @"jerry";
     
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
         
