@@ -3,7 +3,7 @@
 //  AgoraEducation
 //
 //  Created by yangmoumou on 2019/11/11.
-//  Copyright © 2019 yangmoumou. All rights reserved.
+//  Copyright © 2019 Agora. All rights reserved.
 //
 
 #import "EEMessageView.h"
@@ -52,18 +52,18 @@
     for (SignalRoomModel *messageModel in self.messageArray) {
         
         // for test
-//        messageModel.link = @"/replay/80d1a353c68b4db7a3284f9a02835c27/1576549172877/1576549193735";
+//        messageModel.link = @"/replay/80d1a353c68b4db7a3284f9a02835c27/1576549172877/1576549193735/sadfasdfsa";
         if(messageModel.link == nil){
             continue;
         }
         
-        NSString *regex = @"^/replay/*/*/*";
+        NSString *regex = @"^/replay/*/*/*/*";
         NSError *error;
         NSRegularExpression *regular = [NSRegularExpression regularExpressionWithPattern:regex options:NSRegularExpressionCaseInsensitive error:&error];
         NSArray *matches = [regular matchesInString:messageModel.link options:0 range:NSMakeRange(0, messageModel.link.length)];
         if(matches != nil && matches.count == 1) {
             NSArray *componentsArray = [messageModel.link componentsSeparatedByString:@"/"];
-            if(componentsArray != nil && componentsArray.count == 5) {
+            if(componentsArray != nil && componentsArray.count == 6) {
                 messageModel.roomid = componentsArray[2];
                 messageModel.startTime = componentsArray[3];
                 messageModel.endTime = componentsArray[4];
@@ -124,7 +124,7 @@
     vc.roomid = messageModel.roomid;
     vc.startTime = messageModel.startTime;
     vc.endTime = messageModel.endTime;
-    vc.videoPath = messageModel.videoPath;
+    vc.videoPath = messageModel.url;
     vc.modalPresentationStyle = UIModalPresentationFullScreen;
     UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
     UINavigationController *nvc = (UINavigationController*)window.rootViewController;
