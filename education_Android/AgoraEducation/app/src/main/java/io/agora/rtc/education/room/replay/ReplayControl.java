@@ -58,6 +58,7 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     private Player mPlayer;
     private PlayerSyncManager mManager;
+    private NativePlayerPhase mPhase = NativePlayerPhase.Idle;
     private PlayerView mVideoView;
     private ExoPlayer mVideoPlayer;
     private Handler mHandler;
@@ -293,6 +294,11 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
     }
 
     @Override
+    public NativePlayerPhase getPhase() {
+        return mPhase;
+    }
+
+    @Override
     public void startBuffering() {
 
     }
@@ -322,22 +328,21 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (mManager != null) {
-            NativePlayerPhase phase = NativePlayerPhase.Idle;
             switch (playbackState) {
                 case com.google.android.exoplayer2.Player.STATE_IDLE:
-                    phase = NativePlayerPhase.Idle;
+                    mPhase = NativePlayerPhase.Idle;
                     break;
                 case com.google.android.exoplayer2.Player.STATE_BUFFERING:
-                    phase = NativePlayerPhase.Buffering;
+                    mPhase = NativePlayerPhase.Buffering;
                     break;
                 case com.google.android.exoplayer2.Player.STATE_READY:
-                    phase = playWhenReady ? NativePlayerPhase.Playing : NativePlayerPhase.Pause;
+                    mPhase = playWhenReady ? NativePlayerPhase.Playing : NativePlayerPhase.Pause;
                     break;
                 case com.google.android.exoplayer2.Player.STATE_ENDED:
-                    phase = NativePlayerPhase.Pause;
+                    mPhase = NativePlayerPhase.Pause;
                     break;
             }
-            mManager.updateNativePhase(phase);
+            mManager.updateNativePhase(mPhase);
         }
     }
 
