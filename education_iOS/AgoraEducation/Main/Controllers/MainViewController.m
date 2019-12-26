@@ -164,9 +164,6 @@ typedef NS_ENUM(NSUInteger, SceneMode) {
 
 - (IBAction)joinRoom:(UIButton *)sender {
     
-    self.classNameTextFiled.text = @"test2";
-    self.userNameTextFiled.text = @"jerry";
-    
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
         
         [AlertViewUtil showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
