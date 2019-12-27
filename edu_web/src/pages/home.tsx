@@ -15,7 +15,7 @@ import MD5 from 'js-md5';
 import { globalStore } from '../stores/global';
 
 export const roomTypes = [
-  {value: 0, text: 'One-on-One', path: 'one-to-one'},
+  {value: 0, text: 'One-to-One', path: 'one-to-one'},
   {value: 1, text: 'Small Class', path: 'small-class'},
   {value: 2, text: 'Large Class', path: 'big-class'},
 ];

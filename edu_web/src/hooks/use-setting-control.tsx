@@ -6,7 +6,6 @@ import { AgoraElectronClient } from '../utils/agora-electron-client';
 import VideoPlayer from '../components/video-player';
 import { useRoomState } from '../containers/root-container';
 import { roomStore, MediaDeviceState } from '../stores/room';
-import { globalStore } from '../stores/global';
 
 export default function useSettingControl () {
 

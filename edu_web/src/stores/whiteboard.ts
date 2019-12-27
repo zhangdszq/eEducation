@@ -93,7 +93,7 @@ class Whiteboard extends EventEmitter {
 
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
     deviceType: DeviceType.Desktop,
-    handToolKey: " ",
+    // handToolKey: " ",
     plugins: [WhiteVideoPlugin, WhiteAudioPlugin],
     loggerOptions: {
       disableReportLog: ENABLE_LOG ? false : true,
@@ -145,7 +145,6 @@ class Whiteboard extends EventEmitter {
     const path = roomState.sceneState.scenePath;
     const ppt = roomState.sceneState.scenes[0].ppt;
 
-    console.log("[white] ppt ", ppt);
     const type = isEmpty(ppt) ? 'static' : 'dynamic';
     const currentPage = roomState.sceneState.index;
     const totalPage = roomState.sceneState.scenes.length;
@@ -286,7 +285,7 @@ class Whiteboard extends EventEmitter {
       uuid,
       roomToken,
       disableBezier: true,
-      userPayload 
+      userPayload
     }, {
       onPhaseChanged: phase => {},
       onRoomStateChanged: state => {
@@ -302,12 +301,10 @@ class Whiteboard extends EventEmitter {
       onKeyDown: event => {},
       onKeyUp: event => {},
       onHandToolActive: active => {},
-      onPPTLoadProgress: (uuid: string, progress: number) => {}
+      onPPTLoadProgress: (uuid: string, progress: number) => {},
     });
 
-    await roomStore.updateAttrsBy(roomStore.state.me.uid, {
-      whiteboard_uid: room.uuid
-    });
+    await roomStore.updateWhiteboardUid(room.uuid);
 
     this.state = {
       ...this.state,
@@ -405,3 +402,5 @@ class Whiteboard extends EventEmitter {
 }
 
 export const whiteboard = new Whiteboard();
+//@ts-ignore
+window.netlessStore = whiteboard;

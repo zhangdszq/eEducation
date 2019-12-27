@@ -222,29 +222,6 @@ export default class AgoraRTMClient {
     return JSON.stringify(json);
   }
 
-  async updateRoomAttrs(store: {userAttrs: any, teacher: any, whiteboard: any}) {
-    const {userAttrs, teacher, whiteboard} = store;
-    let channelAttrs: any = {};
-    let updateKey = 'teacher';
-    if (userAttrs.role === 'teacher') {
-      channelAttrs.teacher = {
-        account: userAttrs.account,
-        role: userAttrs.role,
-        uid: userAttrs.uid,
-        ...teacher,
-      }
-      if (whiteboard.uid !== '') {
-        channelAttrs.teacher.whiteboard_uid = whiteboard.uid;
-      }
-    } else {
-      updateKey = `${userAttrs.uid}`;
-      channelAttrs[userAttrs.uid] = {
-        ...userAttrs
-      }
-    }
-    await this.updateChannelAttrsByKey(updateKey, channelAttrs);
-  }
-
   async getChannelMemberCount(ids: string[]) {
     return this._client.getChannelMemberCount(ids);
   }

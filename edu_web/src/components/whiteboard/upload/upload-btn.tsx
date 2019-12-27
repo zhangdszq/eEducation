@@ -3,7 +3,7 @@ import OSS from "ali-oss";
 import uuidv4 from 'uuid/v4';
 import { PPTProgressListener, UploadManager } from "../../../utils/upload-manager";
 import { PptKind, Room } from "white-web-sdk";
-import { ossConfig, ossClient } from '../../../utils/helper';
+import { ossConfig, ossClient, resolveFileInfo } from '../../../utils/helper';
 import { whiteboard } from '../../../stores/whiteboard';
 
 export type UploadBtnProps = {
@@ -87,9 +87,10 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
     const file = event.currentTarget.files[0];
     if (file) {
       try {
+        const {fileName, fileType} = resolveFileInfo(file);
         const path = `/${ossConfig.folder}`
         const uuid = uuidv4();
-        const res = await uploadManager.addFile(`${path}/video-${file.name}${uuid}`, file,
+        const res = await uploadManager.addFile(`${path}/video-${fileName}${uuid}`, file,
           onProgress
         );
         const isHttps = res.indexOf("https") !== -1;
@@ -99,9 +100,9 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         } else {
           url = res.replace("http", "https");
         }
-        const fileType = file.name.split('.')[1];
+        const type = fileType.split(".")[1];
         if (url && whiteboard.state.room) {
-          if (fileType === 'mp4') {
+          if (type === 'mp4') {
             const res = whiteboard.state.room.insertPlugin({
               protocal: 'video',
               centerX: 0,
@@ -114,7 +115,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
             });
             console.log("[upload-btn] video resource after insert plugin, res: ", res);
           }
-          if (fileType === 'mp3') {
+          if (type === 'mp3') {
             const res = whiteboard.state.room.insertPlugin({
               protocal: 'audio',
               centerX: 0,
@@ -167,7 +168,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
             <div className="description">ppt, pptx, word, pdf support</div>
           </div>
         </label>
-        <input id="upload-static" accept="image/*,.doc, .docx,.ppt, .pptx,.pdf" onChange={uploadStatic} type="file"></input>
+        <input id="upload-static" accept=".doc,.docx,.ppt,.pptx,.pdf" onChange={uploadStatic} type="file"></input>
       </div>
       <div className="slice-dash"></div>
       <div className="upload-items">

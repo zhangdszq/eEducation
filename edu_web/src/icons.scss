@@ -347,6 +347,16 @@
     background-image: url('./assets/icon-upload-file@2x.png');
   }
 
+  .hand_tool::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    content: ' ';
+    background-size: 20px;
+    background-image: url('./assets/hand_tool.png');
+  }
+
   // .folder::after {
   //   width: 100%;
   //   height: 100%;

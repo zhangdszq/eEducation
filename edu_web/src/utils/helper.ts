@@ -213,6 +213,15 @@ export function resolvePeerMessage(text: string) {
   return body;
 }
 
+export const resolveFileInfo = (file: any) => {
+  const fileName = encodeURI(file.name);
+  const fileType = fileName.substring(fileName.length, fileName.lastIndexOf('.'));
+  return {
+    fileName,
+    fileType
+  }
+}
+
 export function resolveChannelAttrs(json: object) {
   const teacherJson = jsonParse(_.get(json, 'teacher.value'));
   const room: any = {
