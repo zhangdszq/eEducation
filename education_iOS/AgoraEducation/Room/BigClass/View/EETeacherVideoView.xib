@@ -46,7 +46,7 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </label>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-speaker3-max" translatesAutoresizingMaskIntoConstraints="NO" id="mOG-4A-akB">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-speakeroff-dark" translatesAutoresizingMaskIntoConstraints="NO" id="mOG-4A-akB">
                     <rect key="frame" x="330" y="120" width="30" height="30"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="30" id="0BH-9l-z1y"/>
@@ -74,7 +74,7 @@
         </view>
     </objects>
     <resources>
-        <image name="icon-speaker3-max" width="30" height="30"/>
+        <image name="icon-speakeroff-dark" width="30" height="30"/>
         <image name="icon-teacher" width="80" height="80"/>
     </resources>
 </document>

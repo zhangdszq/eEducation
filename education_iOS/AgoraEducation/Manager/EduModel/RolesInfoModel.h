@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TeactherModel.h"
+#import "TeacherModel.h"
 #import "StudentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RolesInfoModel : NSObject
 
-@property(nonatomic, strong) TeactherModel *teactherModel;
+@property(nonatomic, strong) TeacherModel *teacherModel;
 @property(nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentModels;
 
 @end

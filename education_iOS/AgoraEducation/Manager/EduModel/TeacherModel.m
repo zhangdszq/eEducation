@@ -6,9 +6,26 @@
 //  Copyright © 2019 Agora. All rights reserved.
 //
 
-#import "TeactherModel.h"
+#import "TeacherModel.h"
 
-@implementation TeactherModel
+@implementation TeacherModel
+
+- (instancetype)init {
+    if(self = [super init]) {
+        
+        self.account = @"";
+        self.uid = @"";
+        self.whiteboard_uid = @"";
+        self.link_uid = @"";
+        self.shared_uid = @"";
+        
+        self.mute_chat = YES;
+        self.video = NO;
+        self.audio = NO;
+        self.class_state = NO;
+    }
+    return self;
+}
 
 - (void)modelWithDict:(NSDictionary *)dict {
     
@@ -30,7 +47,7 @@
    }
 }
 
-- (void)modelWithTeactherModel:(TeactherModel *)model {
+- (void)modelWithteacherModel:(TeacherModel *)model {
     
     if(model.account){
         self.account = model.account;

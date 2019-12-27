@@ -188,7 +188,7 @@
         return rolesInfoModel;
     }
     
-    TeactherModel *teaModel;
+    TeacherModel *teaModel;
     NSMutableArray<RolesStudentInfoModel*> *stuArray = [NSMutableArray array];
 
     for (AgoraRtmChannelAttribute *channelAttr in attributes) {
@@ -198,7 +198,7 @@
         if ([channelAttr.key isEqualToString:RoleTypeTeacther]) {
             
             if(teaModel == nil){
-                teaModel = [TeactherModel new];
+                teaModel = [TeacherModel new];
             }
             [teaModel modelWithDict:valueDict];
         
@@ -220,7 +220,7 @@
     self.currentTeaModel = teaModel;
     
     RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
-    rolesInfoModel.teactherModel = teaModel;
+    rolesInfoModel.teacherModel = teaModel;
     rolesInfoModel.studentModels = stuArray;
     
     return rolesInfoModel;
@@ -318,11 +318,19 @@
     }
 }
 
+- (void)clearLocalVideoCanvas {
+    [self.rtcManager setupLocalVideo: nil];
+}
+
 - (void)removeRTCVideoCanvas:(NSUInteger) uid {
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid != %d", uid];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid];
     NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-    self.rtcVideoSessionModels = [NSMutableArray arrayWithArray:filteredArray];
+    if(filteredArray > 0) {
+        RTCVideoSessionModel *model = filteredArray.firstObject;
+        model.videoCanvas.view = nil;
+        [self.rtcVideoSessionModels removeObject:model];
+    }
 }
 
 - (void)setRTCClientRole:(RTCClientRole)role {
@@ -363,6 +371,9 @@
     }
 }
 - (void)rtcEngine:(AgoraRtcEngineKit *_Nullable)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+    
+    [self removeRTCVideoCanvas:uid];
+    
     if([self.rtcDelegate respondsToSelector:@selector(rtcDidOfflineOfUid:)]) {
         [self.rtcDelegate rtcDidOfflineOfUid:uid];
     }

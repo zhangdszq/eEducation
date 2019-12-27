@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EducationManager : NSObject
 
 /* ==================================>SignalManager<================================ */
-@property (nonatomic, strong) TeactherModel * _Nullable currentTeaModel;
+@property (nonatomic, strong) TeacherModel * _Nullable currentTeaModel;
 @property (nonatomic, strong) StudentModel * _Nullable currentStuModel;
 - (void)initSignalWithModel:(SignalModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
 - (void)initStudentWithUserName:(NSString *)userName;
@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock;
 - (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model;
 - (void)removeRTCVideoCanvas:(NSUInteger) uid;
+- (void)clearLocalVideoCanvas;
 - (void)setRTCClientRole:(RTCClientRole)role;
 - (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType;
 - (int)enableRTCLocalVideo:(BOOL) enabled;

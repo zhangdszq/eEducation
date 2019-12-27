@@ -40,7 +40,7 @@
 		78D730A823B3833500D2146C /* RTCVideoCanvasModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7309D23B3833500D2146C /* RTCVideoCanvasModel.m */; };
 		78D730A923B3833500D2146C /* ReplayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7309E23B3833500D2146C /* ReplayerModel.m */; };
 		78D730AA23B3833500D2146C /* RTCVideoSessionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7309F23B3833500D2146C /* RTCVideoSessionModel.m */; };
-		78D730AB23B3833500D2146C /* TeactherModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D730A023B3833500D2146C /* TeactherModel.m */; };
+		78D730AB23B3833500D2146C /* TeacherModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D730A023B3833500D2146C /* TeacherModel.m */; };
 		78D730AC23B3833500D2146C /* StudentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D730A123B3833500D2146C /* StudentModel.m */; };
 		78D730B223B383E600D2146C /* SignalModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D730B023B383E500D2146C /* SignalModel.m */; };
 		78D730B523B383FB00D2146C /* GenerateSignalBody.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D730B423B383FA00D2146C /* GenerateSignalBody.m */; };
@@ -188,10 +188,10 @@
 		78D7309D23B3833500D2146C /* RTCVideoCanvasModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTCVideoCanvasModel.m; sourceTree = "<group>"; };
 		78D7309E23B3833500D2146C /* ReplayerModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayerModel.m; sourceTree = "<group>"; };
 		78D7309F23B3833500D2146C /* RTCVideoSessionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTCVideoSessionModel.m; sourceTree = "<group>"; };
-		78D730A023B3833500D2146C /* TeactherModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TeactherModel.m; sourceTree = "<group>"; };
+		78D730A023B3833500D2146C /* TeacherModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TeacherModel.m; sourceTree = "<group>"; };
 		78D730A123B3833500D2146C /* StudentModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StudentModel.m; sourceTree = "<group>"; };
 		78D730A223B3833500D2146C /* RTCVideoCanvasModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCVideoCanvasModel.h; sourceTree = "<group>"; };
-		78D730A323B3833500D2146C /* TeactherModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeactherModel.h; sourceTree = "<group>"; };
+		78D730A323B3833500D2146C /* TeacherModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeacherModel.h; sourceTree = "<group>"; };
 		78D730A423B3833500D2146C /* ReplayerModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayerModel.h; sourceTree = "<group>"; };
 		78D730A523B3833500D2146C /* SignalRoomModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalRoomModel.h; sourceTree = "<group>"; };
 		78D730B023B383E500D2146C /* SignalModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalModel.m; sourceTree = "<group>"; };
@@ -633,8 +633,8 @@
 				78D7309923B3833500D2146C /* SignalRoomModel.m */,
 				78D7309C23B3833500D2146C /* StudentModel.h */,
 				78D730A123B3833500D2146C /* StudentModel.m */,
-				78D730A323B3833500D2146C /* TeactherModel.h */,
-				78D730A023B3833500D2146C /* TeactherModel.m */,
+				78D730A323B3833500D2146C /* TeacherModel.h */,
+				78D730A023B3833500D2146C /* TeacherModel.m */,
 			);
 			path = EduModel;
 			sourceTree = "<group>";
@@ -961,7 +961,7 @@
 				1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */,
 				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
 				78D730B523B383FB00D2146C /* GenerateSignalBody.m in Sources */,
-				78D730AB23B3833500D2146C /* TeactherModel.m in Sources */,
+				78D730AB23B3833500D2146C /* TeacherModel.m in Sources */,
 				78D730AC23B3833500D2146C /* StudentModel.m in Sources */,
 				78D730F523B3889D00D2146C /* EEColorShowView.m in Sources */,
 				78D730A623B3833500D2146C /* SignalRoomModel.m in Sources */,
