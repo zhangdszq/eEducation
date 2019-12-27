@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TeactherModel : NSObject
+@interface TeacherModel : NSObject
 
 @property (nonatomic, copy) NSString *account;
 @property (nonatomic, copy) NSString *uid;
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL class_state;
 
 - (void)modelWithDict:(NSDictionary *)dict;
-- (void)modelWithTeactherModel:(TeactherModel *)model;
+- (void)modelWithteacherModel:(TeacherModel *)model;
 @end
 
 NS_ASSUME_NONNULL_END

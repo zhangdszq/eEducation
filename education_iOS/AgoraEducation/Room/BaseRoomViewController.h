@@ -22,15 +22,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EducationManager *educationManager;
 
 @property (nonatomic, strong) WhiteBoardView *boardView;
+
 - (void)joinWhiteBoardRoomUUID:(NSString *)uuid disableDevice:(BOOL)disableDevice;
+
+- (void)handleSignalWithModel:(SignalP2PModel * _Nonnull)signalModel;
+
+
+
 
 - (void)addTeacherObserver;
 - (void)removeTeacherObserver;
 
 - (void)addWhiteBoardViewToView:(UIView *)view;
 - (void)setBoardViewFrame:(CGRect)frame;
-
-- (void)handleSignalWithModel:(SignalP2PModel * _Nonnull)signalModel;
 
 @end
 

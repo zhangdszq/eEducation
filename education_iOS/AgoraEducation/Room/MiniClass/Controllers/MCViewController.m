@@ -13,7 +13,7 @@
 #import "EEWhiteboardTool.h"
 #import "EEColorShowView.h"
 #import "EEPageControlView.h"
-#import "TeactherModel.h"
+#import "TeacherModel.h"
 #import "StudentModel.h"
 #import "EEChatTextFiled.h"
 #import "SignalRoomModel.h"
@@ -47,7 +47,7 @@
 @property (weak, nonatomic) IBOutlet MCStudentListView *studentListView;
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
-@property (nonatomic, strong) TeactherModel *teacherAttr;
+@property (nonatomic, strong) TeacherModel *teacherAttr;
 
 @property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentTotleListArray;
 @property (nonatomic, strong) NSMutableArray<RolesStudentInfoModel*> *studentListArray;
@@ -111,7 +111,7 @@
 //    WEAK(self);
 //    [self.educationManager queryGlobalStateWithChannelName:self.paramsModel.channelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
 //
-//        [weakself updateTeacherStatusWithModel:rolesInfoModel.teactherModel];
+//        [weakself updateTeacherStatusWithModel:rolesInfoModel.teacherModel];
 //
 //        weakself.studentListArray = rolesInfoModel.studentModels;
 //        [weakself.studentListView updateStudentArray:weakself.studentListArray];
@@ -119,10 +119,10 @@
 //    }];
 }
 
--(void)updateTeacherStatusWithModel:(TeactherModel*)model{
+-(void)updateTeacherStatusWithModel:(TeacherModel*)model{
  
     if(model != nil){
-        [self.teacherAttr modelWithTeactherModel:model];
+        [self.teacherAttr modelWithteacherModel:model];
         self.teacherVideoView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
         NSString *imageName = self.teacherAttr.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
         [self.teacherVideoView updateSpeakerImageName:imageName];
@@ -149,16 +149,16 @@
             NSUInteger uid = [new integerValue];
             if (uid > 0 ) {
                 
-                RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
-                model.uid = uid;
-                model.videoView = self.teacherVideoView.videoRenderView;
-                model.renderMode = RTCVideoRenderModeHidden;
-                model.canvasType = RTCVideoCanvasTypeRemote;
-                [self.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
-                [self.educationManager setupRTCVideoCanvas: model];
- 
-                self.teacherVideoView.defaultImageView.hidden = YES;
-                [self.teacherVideoView updateUserName:self.teacherAttr.account];
+//                RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+//                model.uid = uid;
+//                model.videoView = self.teacherVideoView.videoRenderView;
+//                model.renderMode = RTCVideoRenderModeHidden;
+//                model.canvasType = RTCVideoCanvasTypeRemote;
+//                [self.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
+//                [self.educationManager setupRTCVideoCanvas: model];
+//
+//                self.teacherVideoView.defaultImageView.hidden = YES;
+//                [self.teacherVideoView updateUserName:self.teacherAttr.account];
             }else {
                 [self.teacherVideoView updateUserName:@""];
                 self.teacherVideoView.defaultImageView.hidden = NO;
@@ -357,21 +357,23 @@
     [self.messageView addMessageModel:roomMessageModel];
 }
 - (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel {
-    TeactherModel *teactherModel = infoModel.teactherModel;
+    TeacherModel *teacherModel = infoModel.teacherModel;
     NSArray<RolesStudentInfoModel *> *studentInfoModels = infoModel.studentModels;
     
-    [self updateTeacherStatusWithModel: teactherModel];
+    [self updateTeacherStatusWithModel: teacherModel];
     
     self.studentTotleListArray = studentInfoModels;
+    
     [self ergodicStudentListArray];
     [self.studentListView updateStudentArray:self.studentListArray];
     [self.studentVideoListView updateStudentArray:self.studentListArray];
+    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
     NSArray<RolesStudentInfoModel *> *filteredArray = [self.studentListArray filteredArrayUsingPredicate:predicate];
     if(filteredArray.count > 0){
         
         StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
-        BOOL muteChat = teactherModel != nil ? teactherModel.mute_chat : NO;
+        BOOL muteChat = teacherModel != nil ? teacherModel.mute_chat : NO;
         if(!muteChat) {
             muteChat = canvasStudentModel.chat == 0 ? YES : NO;
         }
@@ -387,8 +389,19 @@
 - (void)rtcDidJoinedOfUid:(NSUInteger)uid {
     
     if (uid == [self.teacherAttr.uid integerValue]) {
-    
-    } else if (uid == kWhiteBoardUid){
+        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+        model.uid = uid;
+        model.videoView = self.teacherVideoView.videoRenderView;
+        model.renderMode = RTCVideoRenderModeHidden;
+        model.canvasType = RTCVideoCanvasTypeRemote;
+        [self.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
+        [self.educationManager setupRTCVideoCanvas: model];
+
+        self.teacherVideoView.defaultImageView.hidden = YES;
+        [self.teacherVideoView updateUserName:self.teacherAttr.account];
+        
+    } else if (uid == kShareScreenUid) {
+        
         [self addShareScreenVideoWithUid:uid];
         
     } else {
@@ -405,7 +418,7 @@
     if (uid == self.teacherAttr.uid.integerValue) {
         [self.teacherVideoView updateUserName:@""];
         self.teacherVideoView.defaultImageView.hidden = NO;
-    } else if (uid == kWhiteBoardUid) {
+    } else if (uid == kShareScreenUid) {
          self.shareScreenView.hidden = YES;
     } else {
         NSString *uidStr = [NSString stringWithFormat:@"%lu", (unsigned long)uid];

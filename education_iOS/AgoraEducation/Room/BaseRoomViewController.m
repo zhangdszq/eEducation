@@ -7,28 +7,22 @@
 //
 
 #import "BaseRoomViewController.h"
-#import "TeactherModel.h"
-#import "HttpManager.h"
+#import "TeacherModel.h"
 #import "EEPageControlView.h"
-#import "EEWhiteboardTool.h"
 #import "EEColorShowView.h"
 #import "EEWhiteboardTool.h"
 #import "SignalP2PModel.h"
 #import "GenerateSignalBody.h"
-#import "EEChatTextFiled.h"
-
 #import "SignalManager.h"
 
 @interface BaseRoomViewController ()<EEPageControlDelegate, EEWhiteboardToolDelegate, SignalDelegate, WhitePlayDelegate>
 
-@property (nonatomic, strong) TeactherModel *teacherAttr;
+@property (nonatomic, strong) TeacherModel *teacherAttr;
+
+// white
 @property (nonatomic, weak) EEPageControlView *pageControlView;
 @property (nonatomic, weak) EEWhiteboardTool *whiteboardTool;
 @property (nonatomic, weak) EEColorShowView *colorShowView;
-@property (nonatomic, weak) UIView *shareScreenView;
-@property (nonatomic, weak) EEChatTextFiled *chatTextFiled;
-
-// white
 @property (nonatomic, assign) NSInteger sceneIndex;
 @property (nonatomic, assign) NSInteger sceneCount;
 
@@ -148,7 +142,7 @@
 }
 
 - (void)addTeacherObserver {
-    self.teacherAttr = [[TeactherModel alloc] init];
+    self.teacherAttr = [[TeacherModel alloc] init];
     [self.teacherAttr addObserver:self forKeyPath:@"shared_uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
     [self.teacherAttr addObserver:self forKeyPath:@"uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
     [self.teacherAttr addObserver:self forKeyPath:@"whiteboard_uid" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];

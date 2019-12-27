@@ -5,26 +5,22 @@
 //  Created by yangmoumou on 2019/10/30.
 //  Copyright © 2019 Agora. All rights reserved.
 //
-// 1V1 注意分享屏幕就可以
 
 #import "OneToOneViewController.h"
+
 #import "EENavigationView.h"
 #import "EEWhiteboardTool.h"
 #import "EEPageControlView.h"
 #import "EEChatTextFiled.h"
-#import "SignalRoomModel.h"
 #import "EEMessageView.h"
-#import "TeactherModel.h"
-#import "GenerateSignalBody.h"
+#import "EEColorShowView.h"
 #import "OTOTeacherView.h"
 #import "OTOStudentView.h"
-#import "GenerateSignalBody.h"
-#import "StudentModel.h"
-#import <Whiteboard/Whiteboard.h>
-#import "EEColorShowView.h"
-#import "HttpManager.h"
 
-#import "SignalManager.h"
+#import "GenerateSignalBody.h"
+#import "TeacherModel.h"
+#import "StudentModel.h"
+#import "SignalRoomModel.h"
 #import "SignalP2PModel.h"
 
 @interface OneToOneViewController ()<UITextFieldDelegate, RoomProtocol, SignalDelegate, RTCDelegate>
@@ -47,9 +43,9 @@
 @property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (weak, nonatomic) IBOutlet UIView *shareScreenView;
 
-@property (nonatomic, strong) TeactherModel *teacherAttr;
-
+@property (nonatomic, strong) TeacherModel *teacherModel;
 @property (nonatomic, assign) BOOL isChatTextFieldKeyboard;
+
 @end
 
 @implementation OneToOneViewController
@@ -59,7 +55,6 @@
 
     [self setupView];
     [self initData];
-    [self addTeacherObserver];
     [self addNotification];
 }
 
@@ -68,23 +63,24 @@
     self.studentView.delegate = self;
     self.navigationView.delegate = self;
     self.chatTextFiled.contentTextFiled.delegate = self;
-    
     [self.navigationView updateClassName:self.paramsModel.className];
-    [self.studentView updateUserName:self.paramsModel.userName];
+    
+    self.teacherModel = [TeacherModel new];
     
     [self setupRTC];
     [self setupSignal];
 }
 
 - (void)setupView {
-    [self addWhiteBoardViewToView:self.whiteboardView];
-
-    self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
-    NSLayoutConstraint *boardViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
-    NSLayoutConstraint *boardViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.boardView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.whiteboardView addConstraints:@[boardViewTopConstraint, boardViewLeftConstraint, boardViewRightConstraint, boardViewBottomConstraint]];
+    
+    WhiteBoardView *boardView = [[WhiteBoardView alloc] init];
+    [self.whiteboardBaseView addSubview:boardView];
+    boardView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint *boardViewTopConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewLeftConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewRightConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+    NSLayoutConstraint *boardViewBottomConstraint = [NSLayoutConstraint constraintWithItem:boardView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.whiteboardBaseView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.whiteboardBaseView addConstraints:@[boardViewTopConstraint, boardViewLeftConstraint, boardViewRightConstraint, boardViewBottomConstraint]];
 }
 
 - (void)addNotification {
@@ -110,21 +106,61 @@
 - (void)getRtmChannelAttrs {
 //    WEAK(self);
 //    [self.educationManager queryGlobalStateWithChannelName:self.paramsModel.channelName completeBlock:^(RolesInfoModel * _Nullable rolesInfoModel) {
-//        [weakself updateTeacherStatusWithModel:rolesInfoModel.teactherModel];
+//        [weakself updateTeacherStatusWithModel:rolesInfoModel.teacherModel];
 //    }];
 }
 
--(void)updateTeacherStatusWithModel:(TeactherModel*)model{
-    if(model != nil){
-        [self.teacherAttr modelWithTeactherModel:model];
-        self.teacherView.defaultImageView.hidden = self.teacherAttr.video ? YES : NO;
-        [self.teacherView updateSpeakerEnabled:self.teacherAttr.audio];
-        [self.teacherView updateUserName:self.teacherAttr.account];
-        if (!self.teacherAttr.video) {
-            [self.teacherView.defaultImageView setImage:[UIImage imageNamed:@"video-close"]];
-        }else {
-            [self.teacherView.defaultImageView setHidden:YES];
+- (void)updateTeacherStatusWithModel:(TeacherModel*)currentModel{
+    
+    if(currentModel == nil) {
+        return;
+    }
+    
+    if(self.teacherModel.whiteboard_uid != currentModel.whiteboard_uid) {
+        [self joinWhiteBoardRoomUUID:currentModel.whiteboard_uid disableDevice:NO];
+    }
+    
+    if(self.teacherModel.class_state != currentModel.class_state) {
+        currentModel.class_state ? [self.navigationView startTimer] : [self.navigationView stopTimer];
+    }
+    
+    // update teacher views
+    self.teacherView.defaultImageView.hidden = currentModel.video ? YES : NO;
+    [self.teacherView updateSpeakerEnabled:currentModel.audio];
+    if (!currentModel.video) {
+        [self.teacherView.defaultImageView setImage:[UIImage imageNamed:@"video-close"]];
+    } else {
+        [self.teacherView.defaultImageView setHidden:YES];
+    }
+    
+    // reset value
+    self.teacherModel = [currentModel yy_modelCopy];
+}
+
+- (void)updateStudentStatusWithModel:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+
+    if(studentInfoModels == nil) {
+        return;
+    }
+
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
+    NSArray<RolesStudentInfoModel *> *filteredArray = [studentInfoModels filteredArrayUsingPredicate:predicate];
+    if(filteredArray.count > 0){
+        
+        StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
+        BOOL muteChat = self.teacherModel != nil ? self.teacherModel.mute_chat : NO;
+        if(!muteChat) {
+            muteChat = canvasStudentModel.chat == 0 ? YES : NO;
         }
+        self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
+        self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
+        
+        self.studentView.defaultImageView.hidden = canvasStudentModel.video == 0 ? NO : YES;
+        [self.studentView updateCameraImageWithLocalVideoMute:canvasStudentModel.video == 0 ? YES : NO];
+        [self.studentView updateMicImageWithLocalVideoMute:canvasStudentModel.audio == 0 ? YES : NO];
+        
+        [self.educationManager enableRTCLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
+        [self.educationManager enableRTCLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
     }
 }
 
@@ -146,53 +182,19 @@
     
     [self.educationManager initRTCEngineKitWithAppid:[KeyCenter agoraAppid] clientRole:RTCClientRoleBroadcaster dataSourceDelegate:self];
     
-    RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
-    model.uid = 0;
-    model.videoView = self.studentView.videoRenderView;
-    model.renderMode = RTCVideoRenderModeHidden;
-    model.canvasType = RTCVideoCanvasTypeLocal;
-    [self.educationManager setupRTCVideoCanvas: model];
-    
-    [self.educationManager joinRTCChannelByToken:[KeyCenter agoraRTCToken] channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:nil];
-    
-    self.studentView.defaultImageView.hidden = YES;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    NSString *new = [NSString stringWithFormat:@"%@",change[@"new"]];
-    NSString *old = [NSString stringWithFormat:@"%@",change[@"old"]];
-    if (![new isEqualToString:old]) {
-        if ([keyPath isEqualToString:@"whiteboard_uid"]) {
-            if (change[@"new"]) {
-                [self joinWhiteBoardRoomUUID:change[@"new"] disableDevice:false];
-            }
-        }else if ([keyPath isEqualToString:@"class_state"]) {
-            if ([new boolValue] == YES) {
-                [self.navigationView startTimer];
-            }else {
-                [self.navigationView stopTimer];
-            }
-        }else if ([keyPath isEqualToString:@"mute_chat"]) {
-//            if ([change[@"new"] boolValue]) {
-//                self.chatTextFiled.contentTextFiled.enabled = NO;
-//                self.chatTextFiled.contentTextFiled.placeholder = @" 禁言中";
-//            }else {
-//                self.chatTextFiled.contentTextFiled.enabled = YES;
-//                self.chatTextFiled.contentTextFiled.placeholder = @" 说点什么";
-//            }
-        }
-    }
-}
-
-- (void)addShareScreenVideoWithUid:(NSInteger)uid {
-    self.shareScreenView.hidden = NO;
-    
-    RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
-    model.uid = uid;
-    model.videoView = self.shareScreenView;
-    model.renderMode = RTCVideoRenderModeFit;
-    model.canvasType = RTCVideoCanvasTypeRemote;
-    [self.educationManager setupRTCVideoCanvas:model];
+    WEAK(self);
+    [self.educationManager joinRTCChannelByToken:[KeyCenter agoraRTCToken] channelId:self.paramsModel.channelName info:nil uid:[self.paramsModel.userId integerValue] joinSuccess:^(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed) {
+        
+        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+        model.uid = uid;
+        model.videoView = weakself.studentView.videoRenderView;
+        model.renderMode = RTCVideoRenderModeHidden;
+        model.canvasType = RTCVideoCanvasTypeLocal;
+        [weakself.educationManager setupRTCVideoCanvas: model];
+        
+        weakself.studentView.defaultImageView.hidden = YES;
+        [weakself.studentView updateUserName:weakself.paramsModel.userName];
+    }];
 }
 
 - (IBAction)chatRoomViewShowAndHide:(UIButton *)sender {
@@ -205,34 +207,11 @@
     sender.selected = !sender.selected;
 }
 
-#pragma mark UITextFieldDelegate
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    self.isChatTextFieldKeyboard = YES;
-    return YES;
-}
-
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
-    self.isChatTextFieldKeyboard =  NO;
-    return YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-
-    NSString *content = textField.text;
-    if (content.length > 0) {
-        [self.educationManager sendMessageWithContent:content userName:self.paramsModel.userName];
-    }
-    textField.text = nil;
-    [textField resignFirstResponder];
-    return NO;
-}
-
 - (void)closeRoom {
     WEAK(self);
     [AlertViewUtil showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
 
         [weakself.navigationView stopTimer];
-        [weakself removeTeacherObserver];
         [weakself.educationManager releaseResources];
         [weakself dismissViewControllerAnimated:YES completion:nil];
     }];
@@ -268,50 +247,28 @@
     return UIInterfaceOrientationMaskLandscapeRight;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    NSLog(@"OneToOneViewController is dealloc");
 }
 
 #pragma mark SignalDelegate
 - (void)signalDidReceived:(SignalP2PModel *)signalModel {
     [self handleSignalWithModel:signalModel];
 }
+
 - (void)signalDidUpdateMessage:(SignalRoomModel *_Nonnull)roomMessageModel {
     [self.messageListView addMessageModel:roomMessageModel];
 }
-- (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel {
-    TeactherModel *teactherModel = infoModel.teactherModel;
-    NSArray<RolesStudentInfoModel *> *studentInfoModels = infoModel.studentModels;
 
-    [self updateTeacherStatusWithModel:teactherModel];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
-    NSArray<RolesStudentInfoModel *> *filteredArray = [studentInfoModels filteredArrayUsingPredicate:predicate];
-    if(filteredArray.count > 0){
-        
-        StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
-        BOOL muteChat = teactherModel != nil ? teactherModel.mute_chat : NO;
-        if(!muteChat) {
-            muteChat = canvasStudentModel.chat == 0 ? YES : NO;
-        }
-        self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-        self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
-        
-        self.studentView.defaultImageView.hidden = canvasStudentModel.video == 0 ? NO : YES;
-        [self.studentView updateCameraImageWithLocalVideoMute:canvasStudentModel.video == 0 ? YES : NO];
-        [self.studentView updateMicImageWithLocalVideoMute:canvasStudentModel.audio == 0 ? YES : NO];
-        
-        [self.educationManager enableRTCLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
-        [self.educationManager enableRTCLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
-    }
+- (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel {
+    [self updateTeacherStatusWithModel:infoModel.teacherModel];
+    [self updateStudentStatusWithModel: infoModel.studentModels];
 }
 
 #pragma mark RTCDelegate
 - (void)rtcDidJoinedOfUid:(NSUInteger)uid {
     
-    if (uid == [self.teacherAttr.uid integerValue]) {
+    if (uid == [self.educationManager.currentTeaModel.uid integerValue]) {
         
         RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
         model.uid = uid;
@@ -321,26 +278,38 @@
         [self.educationManager setupRTCVideoCanvas:model];
 
         self.teacherView.defaultImageView.hidden = YES;
-        [self.teacherView updateUserName:self.teacherAttr.account];
-    }else if(uid == kWhiteBoardUid){
-        [self addShareScreenVideoWithUid:uid];
+        [self.teacherView updateUserName:self.educationManager.currentTeaModel.account];
+        
+    } else if(uid == kShareScreenUid){
+
+        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+        model.uid = uid;
+        model.videoView = self.shareScreenView;
+        model.renderMode = RTCVideoRenderModeFit;
+        model.canvasType = RTCVideoCanvasTypeRemote;
+        [self.educationManager setupRTCVideoCanvas:model];
+        
+        self.shareScreenView.hidden = NO;
     }
 }
 
 - (void)rtcDidOfflineOfUid:(NSUInteger)uid {
-//    if (uid == [self.teacherAttr.shared_uid integerValue]) {
-    if (uid == kWhiteBoardUid) {
-        self.shareScreenView.hidden = YES;
-    } else if (uid == [self.teacherAttr.uid integerValue]) {
+    
+    if (uid == [self.teacherModel.uid integerValue]) {
+        
         self.teacherView.defaultImageView.hidden = NO;
         [self.teacherView updateUserName:@""];
         [self.teacherView updateSpeakerEnabled:NO];
+        
+    } else if (uid == kShareScreenUid) {
+        
+        self.shareScreenView.hidden = YES;
+        
     } else {
+        
         self.studentView.defaultImageView.hidden = NO;
         [self.studentView updateUserName:@""];
     }
-    
-    [self.educationManager removeRTCVideoCanvas:uid];
 }
 - (void)rtcNetworkTypeGrade:(RTCNetworkGrade)grade {
     
@@ -357,5 +326,27 @@
         default:
             break;
     }
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    self.isChatTextFieldKeyboard = YES;
+    return YES;
+}
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
+    self.isChatTextFieldKeyboard =  NO;
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+
+    NSString *content = textField.text;
+    if (content.length > 0) {
+        [self.educationManager sendMessageWithContent:content userName:self.paramsModel.userName];
+    }
+    textField.text = nil;
+    [textField resignFirstResponder];
+    return NO;
 }
 @end

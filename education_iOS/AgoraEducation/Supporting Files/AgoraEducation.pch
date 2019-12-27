@@ -17,7 +17,7 @@
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define WEAK(object) __weak typeof(object) weak##object = object
 
-#define kWhiteBoardUid 7
+#define kShareScreenUid 7
 
 #endif /* AgoraSmallClass_pch */
 
