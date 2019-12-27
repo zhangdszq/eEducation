@@ -50,6 +50,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   const room = whiteboardState.room;
   const me = roomState.me;
   const course = roomState.course;
+  const rtmState = roomState.rtm;
   
   const ref = useRef<any>(false);
 
@@ -269,6 +270,9 @@ const items = [
   {
     name: 'upload'
   },
+  {
+    name: 'hand_tool'
+  },
   // {
   //   name: 'folder'
   // }
@@ -285,27 +289,39 @@ const items = [
 
   const [tool, setTool] = useState<string | any>('pencil');
 
+  const [selector, updateSelector] = useState<string>('');
+
   const handleToolClick = (evt: any, name: string) => {
     if (!room) return;
-    if (['upload', 'color_picker'].indexOf(name) !== -1 && name === tool) {
+    if (['upload', 'color_picker', 'hand_tool'].indexOf(name) !== -1 && name === tool) {
       setTool('');
+      if (name === 'hand_tool') {
+        room.handToolActive = false;
+        updateSelector('');
+      }
       return;
+    }
+    if (name !== 'hand_tool') {
+      room.handToolActive = false;
+      updateSelector('');
     }
     setTool(name);
-    if (name === 'color_picker') {
+    if (name === 'upload'
+      || name === 'folder'
+      || name === 'color_picker'
+      || name === 'add'
+      || name === 'hand_tool'
+    ) {
+      if (name === 'hand_tool') {
+        room.handToolActive = true;
+        updateSelector('hand');
+      } else {
+        if (name === 'add' && addNewPage) {
+          addNewPage();
+        }
+      }
       return;
     }
-    if (name === 'add' && addNewPage) {
-      addNewPage();
-      return;
-    }
-    if (name === 'upload') {
-      return;
-    }
-    if (name === 'folder') {
-      return
-    }
-
     room.setMemberState({currentApplianceName: name});
   }
 
@@ -331,6 +347,7 @@ const items = [
   }, []);
 
   useEffect(() => {
+    if (!rtmState.joined) return;
     if (!lock.current && !whiteboard.state.room) {
       lock.current = true;
       whiteboard.join({
@@ -367,7 +384,7 @@ const items = [
       })
     }
 
-  }, [me.boardId, course.boardId]);
+  }, [rtmState.joined, me.boardId, course.boardId]);
 
   const [uploadPhase, updateUploadPhase] = useState<string>('');
   const [convertPhase, updateConvertPhase] = useState<string>('');
@@ -379,6 +396,7 @@ const items = [
       uuid={room.uuid}
       roomToken={room.roomToken}
       onProgress={(phase: PPTProgressPhase, percent: number) => {
+        console.log("[onProgress] phase: ", phase, " percent: ", percent);
         if (phase === PPTProgressPhase.Uploading) {
           if (percent < 1) {
             !ref.current && !uploadPhase && updateUploadPhase('uploading');
@@ -399,7 +417,6 @@ const items = [
       }}
       onFailure={(err: any) => {
         // WARN: capture exception
-        console.warn("pptConvert [agora] err: " ,err, uploadPhase, convertPhase);
         if (uploadPhase === 'uploading') {
           updateUploadPhase('upload_failure');
           return;
@@ -475,6 +492,7 @@ const items = [
         />
         :
         <Whiteboard
+          className={selector}
           room={room}
         />
       }

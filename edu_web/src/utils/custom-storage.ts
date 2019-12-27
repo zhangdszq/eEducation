@@ -8,7 +8,8 @@ export class CustomStorage {
 
   read(key: string): any {
     try {
-      return JSON.parse(this.storage.getItem(key) as string);
+      let json = JSON.parse(this.storage.getItem(key) as string);
+      return json
     } catch(_) {
       return this.storage.getItem(key);
     }

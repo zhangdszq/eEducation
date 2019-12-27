@@ -3,6 +3,7 @@ import uuidv4 from 'uuid/v4';
 import {Room, PptConverter, PptKind, Ppt} from 'white-web-sdk';
 import MD5 from 'js-md5';
 import { whiteboard } from '../stores/whiteboard';
+import { resolveFileInfo } from './helper';
 
 export type imageSize = {
   width: number
@@ -66,25 +67,25 @@ export class UploadManager {
     uuid: string,
     onProgress?: PPTProgressListener,
   ): Promise<void> {
-    const fileType = rawFile.name.split(".").pop() as string;
+    const {fileType} = resolveFileInfo(rawFile);
     const path = `/${folder}/${uuid}${fileType}`;
     const pptURL = await this.addFile(path, rawFile, onProgress);
     let res: Ppt;
     if (kind === PptKind.Static) {
-            res = await pptConverter.convert({
-            url: pptURL,
-            kind: kind,
-            onProgressUpdated: progress => {
-                if (onProgress) {
-                    onProgress(PPTProgressPhase.Converting, progress);
-                }
-            },
+        res = await pptConverter.convert({
+          url: pptURL,
+          kind: kind,
+          onProgressUpdated: progress => {
+            if (onProgress) {
+              onProgress(PPTProgressPhase.Converting, progress);
+            }
+          },
         });
         const documentFile: PPTDataType = {
-            active: true,
-            id: `${uuidv4()}`,
-            pptType: PPTType.static,
-            data: res.scenes,
+          active: true,
+          id: `${uuidv4()}`,
+          pptType: PPTType.static,
+          data: res.scenes,
         };
         const scenePath = MD5(`/${uuid}/${documentFile.id}`);
         this.room.putScenes(`/${scenePath}`, res.scenes);
@@ -97,19 +98,19 @@ export class UploadManager {
     } else {
       console.log("convert no static ppt");
         res = await pptConverter.convert({
-            url: pptURL,
-            kind: kind,
-            onProgressUpdated: progress => {
-                if (onProgress) {
-                    onProgress(PPTProgressPhase.Converting, progress);
-                }
-            },
+          url: pptURL,
+          kind: kind,
+          onProgressUpdated: progress => {
+            if (onProgress) {
+              onProgress(PPTProgressPhase.Converting, progress);
+            }
+          },
         });
         const documentFile: PPTDataType = {
-            active: true,
-            id: `${uuidv4()}`,
-            pptType: PPTType.dynamic,
-            data: res.scenes,
+          active: true,
+          id: `${uuidv4()}`,
+          pptType: PPTType.dynamic,
+          data: res.scenes,
         };
         const scenePath = MD5(`/${uuid}/${documentFile.id}`);
         this.room.putScenes(`/${scenePath}`, res.scenes);
@@ -227,13 +228,13 @@ export class UploadManager {
       rawFile,
       {
         progress: (p: any) => {
-            if (onProgress) {
-                onProgress(PPTProgressPhase.Uploading, p);
-            }
+          if (onProgress) {
+            onProgress(PPTProgressPhase.Uploading, p);
+          }
         },
       });
       if (this.ossUploadCallback) {
-          this.ossUploadCallback(res);
+        this.ossUploadCallback(res);
       }
     if (res.res.status === 200) {
       return this.getFile(path);

@@ -63,11 +63,6 @@ export const RootProvider: React.FC<any> = ({children}) => {
 
   const ref = useRef<boolean>(false);
 
-  window.onload = () => {
-    roomStore.windowRefresh = true;
-    console.log("[index] window onload", roomStore.windowRefresh);
-  }
-
   useEffect(() => {
     return () => {
       ref.current = true;
@@ -165,7 +160,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
     window.state = globalState;
     //@ts-ignore
     window.whiteboard = whiteboardState;
-  }, [value]);
+  }, [value, location]);
   return (
     <RootContext.Provider value={value}>
       {children}

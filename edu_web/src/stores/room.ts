@@ -126,12 +126,30 @@ export type AgoraMediaStream = {
 
 export class RoomStore {
   private subject: Subject<RoomState> | null;
-  public state: RoomState;
+  public _state: RoomState;
+
+  get state () {
+    return this._state;
+  }
+
+  set state (newState) {
+    this._state = newState;
+  }
   public rtmClient: AgoraRTMClient = new AgoraRTMClient();
   public rtcClient: AgoraWebClient | AgoraElectronClient = isElectron ? new AgoraElectronClient () : new AgoraWebClient();
-  public readonly defaultState: RoomState = {
+  public readonly defaultState: RoomState = Object.freeze({
     rtmLock: false,
-    me: {} as AgoraUser,
+    me: {
+      account: "",
+      uid: "",
+      role: "",
+      video: 1,
+      audio: 1,
+      chat: 1,
+      linkId: 0,
+      sharedId: 0,
+      boardId: '',
+    },
     users: Map<string, AgoraUser>(),
     applyUid: 0,
     rtm: {
@@ -169,23 +187,23 @@ export class RoomStore {
     },
     messages: List<ChatMessage>(),
     ...GlobalStorage.read('agora_room')
-  }
+  });
 
   private applyLock: number = 0;
 
   public windowId: number = 0;
-  public windowRefresh: boolean;
 
   constructor() {
     this.subject = null;
-    this.state = this.defaultState;
-    this.windowRefresh = false;
+    this._state = {
+      ...this.defaultState
+    };
   }
 
   initialize() {
     this.subject = new Subject<RoomState>();
     this.state = {
-      ...this.defaultState
+      ...this.defaultState,
     }
     this.applyLock = 0;
     this.subject.next(this.state);
@@ -575,6 +593,15 @@ export class RoomStore {
     return res;
   }
 
+  async updateWhiteboardUid(uid: string) {
+    const me = this.state.me;
+    let res = await this.updateAttrsBy(me.uid, {
+      whiteboard_uid: uid
+    });
+    console.log("[update whiteboard uid] res", uid);
+    return res;
+  }
+
   updateChannelMessage(msg: ChatMessage) {
     this.state = {
       ...this.state,
@@ -585,7 +612,9 @@ export class RoomStore {
   }
 
   async updateAttrsBy(uid: string, attr: any) {
-    console.log("updateAttrsBy#attrs ", attr);
+    if (attr['whiteboard_uid']) {
+      console.log("[update whiteboard uid], ", attr['whiteboard_uid']);
+    }
     const user = this.state.users.get(uid);
     if (!user) return;
     const key = user.role === 'teacher' ? 'teacher' : uid;
@@ -611,7 +640,6 @@ export class RoomStore {
     if (attr) {
       Object.assign(attrs, attr);
     }
-    console.log("updateAttrsBy#attrs 2 ", attrs);
     let res = await this.rtmClient.updateChannelAttrsByKey(key, attrs);
     return res;
   }
@@ -651,13 +679,12 @@ export class RoomStore {
        shared_uid,
       })
     }
-    console.log("update channel Attrs by key >>>> ", key, " attrs " , attrs);
     let res = await this.rtmClient.updateChannelAttrsByKey(key, attrs);
     return res;
   }
 
   updateRoomAttrs ({teacher, accounts, room}: any) {
-    console.log("[rtm-attributes], room:  ", room, " teacher: ", teacher, "accounts ", accounts);
+    console.log("[agora-board], room:  ", room, " teacher: ", teacher, "accounts ", accounts);
     const users = accounts.reduce((acc: Map<string, AgoraUser>, it: any) => {
       return acc.set(it.uid, {
         role: it.role,
@@ -694,9 +721,8 @@ export class RoomStore {
       muteChat: room.mute_chat,
     })
 
-    
-    console.log("... me", this.state.me);
-    console.log("... this.state.me", me);
+    // console.log("... me", this.state.me);
+    // console.log("... this.state.me", me);
 
     this.state = {
       ...this.state,
@@ -745,6 +771,8 @@ export class RoomStore {
     } catch(err) {
       console.warn(err);
     } finally {
+      GlobalStorage.clear('agora_room');
+      this.state = {} as RoomState;
       this.state = {
         ...this.defaultState
       }

@@ -98,7 +98,6 @@
     "react-scripts": "3.2.0",
     "rxjs": "^6.5.3",
     "uuid": "^3.3.3",
-    "white-web-sdk": "2.3.18",
     "ali-oss": "^6.3.1",
     "typescript": "^3.6.4",
     "wait-on": "^3.3.0"
@@ -134,9 +133,10 @@
     ]
   },
   "devDependencies": {
+    "white-react-sdk": "2.3.18",
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
-    "@netless/white-video-plugin": "1.0.6",
-    "@netless/white-audio-plugin": "1.0.3",
+    "@netless/white-audio-plugin": "1.0.7",
+    "@netless/white-video-plugin": "1.1.6",
     "@types/ali-oss": "^6.0.4",
     "@types/node": "^12.12.22",
     "@types/react-color": "^3.0.1",

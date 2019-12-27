@@ -34,8 +34,6 @@ export function RoomPage({ children }: any) {
     const roomType = roomStore.state.course.roomType;
     const roomName = roomStore.state.course.roomName;
 
-    console.log('roomStore ', roomStore.state);
-
     if (!rid || !me.uid) {
       history.push('/');
     }
@@ -97,10 +95,9 @@ export function RoomPage({ children }: any) {
   const isBigClass = Boolean(location.pathname.match(/big-class/));
   const isSmallClass = Boolean(location.pathname.match(/small-class/));
   
-
-  const rtc = useRef<boolean>(false);
-
+  const prevRoute = useRef<string>(location.pathname);
   useEffect(() => {
+    console.log("[route] prevRoute: ", prevRoute.current);
     return () => {
       globalStore.removeUploadNotice();
       roomStore.exitAll()
@@ -108,12 +105,11 @@ export function RoomPage({ children }: any) {
       })
       .catch(console.warn)
       .finally(() => {
-        !roomStore.windowRefresh 
-        && GlobalStorage.clear('agora_room')
-        && console.log("[index clear session storage");
-      })
+      });
     }
-  }, []);
+  }, [location]);
+  
+  const rtc = useRef<boolean>(false);
 
   const canPublish = useMemo(() => {
     return !isBigClass ||
