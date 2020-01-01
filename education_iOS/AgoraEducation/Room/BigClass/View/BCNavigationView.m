@@ -19,18 +19,17 @@
     self = [super initWithCoder:coder];
     if (self) {
         [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil];
+        self.navigationView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.navigationView];
+        
+        NSLayoutConstraint *viewTopConstraint = [NSLayoutConstraint constraintWithItem:self.navigationView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+        NSLayoutConstraint *viewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.navigationView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+        NSLayoutConstraint *viewRightConstraint = [NSLayoutConstraint constraintWithItem:self.navigationView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+        NSLayoutConstraint *viewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.navigationView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+        [self addConstraints:@[viewTopConstraint, viewLeftConstraint, viewRightConstraint, viewBottomConstraint]];
+        
     }
     return self;
-}
-
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    self.navigationView.frame = self.bounds;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
 }
 
 - (void)updateClassName:(NSString *)name {

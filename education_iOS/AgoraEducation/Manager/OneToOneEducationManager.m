@@ -1,12 +1,12 @@
 //
-//  EducationManager.m
+//  OneToOneEducationManager.m
 //  AgoraEducation
 //
-//  Created by SRS on 2019/12/9.
+//  Created by SRS on 2019/12/31.
 //  Copyright © 2019 Agora. All rights reserved.
 //
 
-#import "EducationManager.h"
+#import "OneToOneEducationManager.h"
 #import "GenerateSignalBody.h"
 #import "HttpManager.h"
 #import "JsonParseUtil.h"
@@ -15,7 +15,7 @@
 #import "WhiteManager.h"
 #import "RTCManager.h"
 
-@interface EducationManager()<SignalManagerDelegate, WhiteManagerDelegate, RTCManagerDelegate>
+@interface OneToOneEducationManager()<SignalManagerDelegate, WhiteManagerDelegate, RTCManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
 @property (nonatomic, weak) id<SignalDelegate> signalDelegate;
@@ -25,14 +25,19 @@
 
 @property (nonatomic, strong) RTCManager *rtcManager;
 @property (nonatomic, weak) id<RTCDelegate> rtcDelegate;
-@property (nonatomic, strong) NSMutableArray<RTCVideoSessionModel*> *rtcVideoSessionModels;
 
 @end
 
-@implementation EducationManager
+@implementation OneToOneEducationManager
+
+-(void)initSessionModel {
+    self.teacherModel = [TeacherModel new];
+    self.studentModel = [StudentModel new];
+    self.rtcUids = [NSMutableSet set];
+    self.rtcVideoSessionModels = [NSMutableArray array];
+}
 
 #pragma mark SignalManager
-
 - (void)initSignalWithModel:(SignalModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
     
     self.signalDelegate = signalDelegate;
@@ -47,32 +52,10 @@
     _signalDelegate = delegate;
 }
 
-- (void)initStudentWithUserName:(NSString *)userName {
-    self.currentStuModel = [StudentModel new];
-    self.currentStuModel.uid = self.signalManager.messageModel.uid;
-    self.currentStuModel.account = userName;
-    self.currentStuModel.video = 1;
-    self.currentStuModel.audio = 1;
-    self.currentStuModel.chat = 1;
-}
-
 - (void)joinSignalWithChannelName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
 
     self.signalManager.channelName = channelName;
     [self.signalManager joinChannelWithName:channelName completeSuccessBlock:successBlock completeFailBlock:failBlock];
-}
-
-- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block {
-    
-    WEAK(self);
-    [self.signalManager getChannelAllAttributes:channelName completeBlock:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes) {
-        
-        if(block != nil){
-            RolesInfoModel *rolesInfoModel = [weakself fixRolesInfoModelWithAttributes:attributes];
-            block(rolesInfoModel);
-            return;
-        }
-    }];
 }
 
 - (void)updateGlobalStateWithValue:(NSString *)value completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock {
@@ -83,6 +66,19 @@
     
     NSString *channelName = self.signalManager.channelName;
     [self.signalManager updateChannelAttributesWithChannelName:channelName channelAttribute:setAttr completeSuccessBlock:successBlock completeFailBlock:failBlock];
+}
+
+- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block {
+    
+    WEAK(self);
+    [self.signalManager getChannelAllAttributes:channelName completeBlock:^(NSArray<AgoraRtmChannelAttribute *> * _Nullable attributes) {
+        
+        if(block != nil){
+            RolesInfoModel *rolesInfoModel = [weakself filterRolesInfoModelWithAttributes:attributes];
+            block(rolesInfoModel);
+            return;
+        }
+    }];
 }
 
 - (void)queryOnlineStudentCountWithChannelName:(NSString *)channelName maxCount:(NSInteger)maxCount completeSuccessBlock:(void (^) (NSInteger count))successBlock completeFailBlock:(void (^) (void))failBlock {
@@ -147,41 +143,11 @@
     }];
 }
 
-- (void)setSignalWithType:(SignalP2PType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock {
-    
-    NSString *msgText = @"";
-    switch (type) {
-        case SignalP2PTypeCancel:
-            msgText = [GenerateSignalBody studentCancelLink];;
-            break;
-        case SignalP2PTypeApply:
-            msgText = [GenerateSignalBody studentApplyLink];
-            break;
-        default:
-            break;
-    }
-    
-    if (msgText.length == 0 || self.currentTeaModel == nil) {
-        return;
-    }
-    NSString *peerId = self.currentTeaModel.uid;
-    
-    [self.signalManager sendMessage:msgText toPeer:peerId completeSuccessBlock:^{
-        if(successBlock != nil) {
-            successBlock();
-        }
-    } completeFailBlock:^{
-        
-    }];
-}
-
 - (void)releaseSignalResources {
-    self.currentStuModel = nil;
-    self.currentTeaModel = nil;
     [self.signalManager releaseResources];
 }
 
-- (RolesInfoModel *)fixRolesInfoModelWithAttributes:(NSArray<AgoraRtmChannelAttribute *> * _Nullable) attributes {
+- (RolesInfoModel *)filterRolesInfoModelWithAttributes:(NSArray<AgoraRtmChannelAttribute *> * _Nullable) attributes {
     
     if(attributes == nil){
         RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
@@ -196,11 +162,7 @@
         NSDictionary *valueDict = [JsonParseUtil dictionaryWithJsonString:channelAttr.value];
         
         if ([channelAttr.key isEqualToString:RoleTypeTeacther]) {
-            
-            if(teaModel == nil){
-                teaModel = [TeacherModel new];
-            }
-            [teaModel modelWithDict:valueDict];
+            teaModel = [TeacherModel yy_modelWithDictionary:valueDict];
         
         } else {
             StudentModel *model = [StudentModel yy_modelWithDictionary:valueDict];
@@ -212,12 +174,12 @@
             [stuArray addObject:infoModel];
             
             if([model.uid isEqualToString: self.signalManager.messageModel.uid]) {
-                self.currentStuModel = model;
+                self.studentModel = model;
             }
         }
     }
     
-    self.currentTeaModel = teaModel;
+    self.teacherModel = teaModel;
     
     RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
     rolesInfoModel.teacherModel = teaModel;
@@ -235,7 +197,7 @@
 }
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit messageReceived:(AgoraRtmMessage * _Nonnull)message fromPeer:(NSString * _Nonnull)peerId {
     
-    if (self.currentTeaModel && [peerId isEqualToString:self.currentTeaModel.uid]) {
+    if (self.teacherModel && [peerId isEqualToString:self.teacherModel.uid]) {
         NSDictionary *dict = [JsonParseUtil dictionaryWithJsonString:message.text];
         SignalP2PModel *model = [SignalP2PModel yy_modelWithDictionary:dict];
 
@@ -255,20 +217,28 @@
 }
 - (void)channel:(AgoraRtmChannel * _Nonnull)channel attributeUpdate:(NSArray< AgoraRtmChannelAttribute *> * _Nonnull)attributes {
     
-    if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateGlobalState:)]) {
-        RolesInfoModel *rolesInfoModel = [self fixRolesInfoModelWithAttributes:attributes];
-        [self.signalDelegate signalDidUpdateGlobalState:rolesInfoModel];
+    if([self.signalDelegate respondsToSelector:@selector(signalDidUpdateGlobalStateWithSourceModel:currentModel:)]) {
+        
+        RolesStudentInfoModel *rolesStudentInfoModel = [RolesStudentInfoModel new];
+        rolesStudentInfoModel.attrKey = self.studentModel.uid;
+        rolesStudentInfoModel.studentModel = self.studentModel;
+        NSArray<RolesStudentInfoModel*> *studentModels = @[rolesStudentInfoModel];
+        
+        RolesInfoModel *sourceRolesInfoModel = [RolesInfoModel new];
+        sourceRolesInfoModel.teacherModel = self.teacherModel;
+        sourceRolesInfoModel.studentModels = studentModels;
+        
+        RolesInfoModel *currentRolesInfoModel = [self filterRolesInfoModelWithAttributes:attributes];
+        
+        [self.signalDelegate signalDidUpdateGlobalStateWithSourceModel:sourceRolesInfoModel currentModel:currentRolesInfoModel];
     }
 }
-
-
 
 #pragma mark RTCManager
 - (void)initRTCEngineKitWithAppid:(NSString *)appid clientRole:(RTCClientRole)role dataSourceDelegate:(id<RTCDelegate> _Nullable)rtcDelegate {
     
     self.rtcDelegate = rtcDelegate;
-    self.rtcVideoSessionModels = [NSMutableArray array];
-    
+
     self.rtcManager = [[RTCManager alloc] init];
     self.rtcManager.rtcManagerDelegate = self;
     [self.rtcManager initEngineKit:appid];
@@ -306,7 +276,7 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
     NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
     if(filteredArray.count > 0){
-        
+
         RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
         videoSessionModel.videoCanvas.view = nil;
         videoSessionModel.videoCanvas = videoCanvas;
@@ -318,12 +288,8 @@
     }
 }
 
-- (void)clearLocalVideoCanvas {
-    [self.rtcManager setupLocalVideo: nil];
-}
-
 - (void)removeRTCVideoCanvas:(NSUInteger) uid {
-    
+
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid];
     NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
     if(filteredArray > 0) {
@@ -340,14 +306,7 @@
         [self.rtcManager setClientRole:(AgoraClientRoleBroadcaster)];
     }
 }
-- (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType {
-    if(streamType == RTCVideoStreamTypeLow){
-        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeLow];
-    } else if(streamType == RTCVideoStreamTypeHigh){
-        return [self.rtcManager setRemoteVideoStream:uid type:AgoraVideoStreamTypeHigh];
-    }
-    return -1;
-}
+
 - (int)enableRTCLocalVideo:(BOOL) enabled {
     return [self.rtcManager muteLocalVideoStream:!enabled];
 }
@@ -356,10 +315,6 @@
 }
 
 - (void)releaseRTCResources {
-    for (RTCVideoSessionModel *model in self.rtcVideoSessionModels){
-        model.videoCanvas.view = nil;
-    }
-    [self.rtcVideoSessionModels removeAllObjects];
     [self.rtcManager releaseResources];
 }
 
@@ -424,7 +379,6 @@
     [HttpManager POSTWhiteBoardRoomWithUuid:uuid token:^(NSString * _Nonnull token) {
 
         WhiteRoomConfig *roomConfig = [[WhiteRoomConfig alloc] initWithUuid:uuid roomToken:token];
-        roomConfig.userPayload =@{@"identity": @"guest", @"userId": @"dsajdisajxaioskoixsasa"};
         [weakself.whiteManager joinWhiteRoomWithWhiteRoomConfig:roomConfig completeSuccessBlock:^(WhiteRoom * _Nullable room) {
             
             if(successBlock != nil){
@@ -657,6 +611,12 @@
 }
 
 - (void)releaseResources {
+    
+    for (RTCVideoSessionModel *model in self.rtcVideoSessionModels){
+        model.videoCanvas.view = nil;
+        model.videoCanvas = nil;
+    }
+    [self initSessionModel];
     
     // release rtc
     [self releaseRTCResources];

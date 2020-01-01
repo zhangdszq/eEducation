@@ -124,9 +124,14 @@
 }
 
 - (void)releaseResources {
-    [self.player stop];
-    [self.room disconnect:nil];
+    if(self.player != nil) {
+        [self.player stop];
+    }
     
+    if(self.room != nil) {
+        [self.room disconnect:nil];
+    }
+
     self.player = nil;
     self.combinePlayer = nil;
     self.room = nil;

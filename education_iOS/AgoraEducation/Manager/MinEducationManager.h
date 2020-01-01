@@ -1,8 +1,8 @@
 //
-//  EducationManager.h
+//  MinEducationManager.h
 //  AgoraEducation
 //
-//  Created by SRS on 2019/12/9.
+//  Created by SRS on 2019/12/31.
 //  Copyright © 2019 Agora. All rights reserved.
 //
 
@@ -27,38 +27,32 @@ typedef void(^QueryRolesInfoBlock)(RolesInfoModel * _Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EducationManager : NSObject
+@interface MinEducationManager : NSObject
+
+/* ==================================>Session Model<================================ */
+@property (nonatomic, strong) TeacherModel * _Nullable teacherModel;
+@property (nonatomic, strong) StudentModel * _Nullable studentModel;
+@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentTotleListArray;
+@property (nonatomic, strong) NSMutableArray<RolesStudentInfoModel*> *studentListArray;
+@property (nonatomic, strong) NSMutableSet<NSString*> *rtcUids;
+@property (nonatomic, strong) NSMutableArray<RTCVideoSessionModel*> *rtcVideoSessionModels;
+- (void)initSessionModel;
 
 /* ==================================>SignalManager<================================ */
-@property (nonatomic, strong) TeacherModel * _Nullable currentTeaModel;
-@property (nonatomic, strong) StudentModel * _Nullable currentStuModel;
 - (void)initSignalWithModel:(SignalModel*)model dataSourceDelegate:(id<SignalDelegate> _Nullable)signalDelegate completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
-- (void)initStudentWithUserName:(NSString *)userName;
 - (void)setSignalDelegate:(id<SignalDelegate>)delegate;
 - (void)joinSignalWithChannelName:(NSString *)channelName completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
-
-- (void)queryGlobalStateWithChannelName:(NSString *)channelName completeBlock:(QueryRolesInfoBlock _Nonnull)block;
 - (void)updateGlobalStateWithValue:(NSString *)value completeSuccessBlock:(void (^ _Nullable) (void))successBlock completeFailBlock:(void (^ _Nullable) (void))failBlock;
 - (void)queryOnlineStudentCountWithChannelName:(NSString *)channelName maxCount:(NSInteger)maxCount completeSuccessBlock:(void (^) (NSInteger count))successBlock completeFailBlock:(void (^) (void))failBlock;
-
 - (void)sendMessageWithContent:(NSString *)text userName:(NSString *)name;
-- (void)setSignalWithType:(SignalP2PType)type completeSuccessBlock:(void (^ _Nullable) (void))successBlock;
-
-- (void)releaseSignalResources;
-
-
+ 
 /* ==================================>RTCManager<================================ */
 - (void)initRTCEngineKitWithAppid:(NSString *)appid clientRole:(RTCClientRole)role dataSourceDelegate:(id<RTCDelegate> _Nullable)rtcDelegate;
 - (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock;
 - (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model;
-- (void)removeRTCVideoCanvas:(NSUInteger) uid;
-- (void)clearLocalVideoCanvas;
-- (void)setRTCClientRole:(RTCClientRole)role;
 - (int)setRTCRemoteStreamWithUid:(NSUInteger)uid type:(RTCVideoStreamType)streamType;
 - (int)enableRTCLocalVideo:(BOOL) enabled;
 - (int)enableRTCLocalAudio:(BOOL) enabled;
-- (void)releaseRTCResources;
-
 
 /* ==================================>WhiteManager<================================ */
 - (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate;
@@ -83,3 +77,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
