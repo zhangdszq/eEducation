@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Agora Education</string>
+    <string name="powered_by_agora_io">Powered by agora.io</string>
+    <string name="hint_room_name">房间名</string>
+    <string name="hint_your_name">用户名</string>
+    <string name="hint_room_type">房间类型</string>
+    <string name="one_to_one">一对一</string>
+    <string name="mini_class">小班课</string>
+    <string name="large_class">大班课</string>
+    <string name="eye_care_mode">护眼模式</string>
+    <string name="Join">加入</string>
+    <string name="Setting">设置</string>
+    <string name="title_teaching_material">教材区</string>
+    <string name="title_chat_room">聊天区</string>
+    <string name="confirm_leave_room_content">确定离开房间？</string>
+    <string name="cancel">取消</string>
+    <string name="hint_im_message">说点什么</string>
+    <string name="confirm">确定</string>
+    <string name="Student">学生</string>
+    <string name="Room_name_should_not_be_empty">房间名不能为空</string>
+    <string name="Your_name_should_not_be_empty">用户名不能为空</string>
+    <string name="Room_type_should_not_be_empty">房间类型不能为空</string>
+    <string name="color_picker">颜色选择器</string>
+    <string name="No_enough_permissions">没有足够的权限</string>
+    <string name="There_is_no_teacher_in_this_classroom">老师不在线，无法使用白板</string>
+    <string name="get_channel_attr_failed">获取房间信息失败，请稍后重试！</string>
+    <string name="the_room_is_full">此房间人数已达上限！</string>
+    <string name="chat_muting">禁言中！</string>
+    <string name="replay_recording">replay recording</string>
+    <string name="time_default">00:00:00</string>
+    <string name="time_separator">&#160;/&#160;</string>
+</resources>
