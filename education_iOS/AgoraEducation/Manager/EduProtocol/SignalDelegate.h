@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalDidUpdateMessage:(SignalRoomModel * _Nonnull)messageModel;
 
-- (void)signalDidUpdateGlobalState:(RolesInfoModel * _Nullable)infoModel;
+- (void)signalDidUpdateGlobalStateWithSourceModel:(RolesInfoModel * _Nullable)sourceInfoModel currentModel:(RolesInfoModel * _Nullable)currentInfoModel;
 
 - (void)signalDidReceived:(SignalP2PModel * _Nonnull)signalModel;
 

@@ -32,7 +32,7 @@
     for (NSInteger i = 0; i < self.items.count; i++) {
         UIButton *itemButton = [[UIButton alloc] init];
         [itemButton setTitle:self.items[i] forState:(UIControlStateNormal)];
-        [itemButton setFrame:CGRectMake(i * kScreenWidth / 2, 0, kScreenWidth/2, self.frame.size.height)];
+        [itemButton setFrame:CGRectMake(i * kScreenWidth / 2, 0, kScreenWidth/2, 44)];
         UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(i * kScreenWidth / 2, 42, kScreenWidth/2, 2.f)];
         lineView.backgroundColor = [UIColor colorWithHexString:@"44A2FC"];
         [self addSubview:lineView];

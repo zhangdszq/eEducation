@@ -6,12 +6,17 @@
 //  Copyright © 2019 Agora. All rights reserved.
 //
 
-#import "BaseRoomViewController.h"
-#import "BCNavigationView.h"
-#import "EETeacherVideoView.h"
+#import <UIKit/UIKit.h>
+#import "BigEducationManager.h"
+#import "VCParamsModel.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BCViewController : BaseRoomViewController
+@interface BCViewController : UIViewController
+
+@property (nonatomic, strong) VCParamsModel *paramsModel;
+@property (nonatomic, strong) BigEducationManager *educationManager;
+
 @end
 
 NS_ASSUME_NONNULL_END

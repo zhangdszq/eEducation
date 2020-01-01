@@ -15,10 +15,8 @@
 		1A44BE7722BF863000766274 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A44BE5A22BF863000766274 /* Main.storyboard */; };
 		1A44BE7A22BF863000766274 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5E22BF863000766274 /* main.m */; };
 		1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6022BF863000766274 /* AppDelegate.m */; };
-		1A61CB8E2389405D003D9E81 /* BaseRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A61CB8D2389405D003D9E81 /* BaseRoomViewController.m */; };
 		1A70AFB22359F17500942742 /* SettingViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A70AFB12359F17500942742 /* SettingViewCell.m */; };
 		1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A87571123571CFE009C55A8 /* SettingViewController.m */; };
-		1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD4E994235EFB2700C415BF /* BCViewController.m */; };
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
 		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
 		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
@@ -30,7 +28,6 @@
 		787E7A3D23A9FE97005F8F0C /* EduButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3023A9FE97005F8F0C /* EduButton.m */; };
 		787E7A3F23A9FE97005F8F0C /* ReplayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787E7A3423A9FE97005F8F0C /* ReplayViewController.xib */; };
 		787E7A4023A9FE97005F8F0C /* ReplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A3523A9FE97005F8F0C /* ReplayViewController.m */; };
-		787E7A4723A9FEFF005F8F0C /* EducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A4423A9FEFF005F8F0C /* EducationManager.m */; };
 		78D7307223B3638B00D2146C /* SignalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7306423B3638B00D2146C /* SignalManager.m */; };
 		78D7307423B3638B00D2146C /* RTCManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7306723B3638B00D2146C /* RTCManager.m */; };
 		78D7307523B3638B00D2146C /* WhiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7306C23B3638B00D2146C /* WhiteManager.m */; };
@@ -83,7 +80,7 @@
 		78D7312623B388BE00D2146C /* EETeacherVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7311F23B388BE00D2146C /* EETeacherVideoView.m */; };
 		78D7312723B388BE00D2146C /* EETeacherVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D7312023B388BE00D2146C /* EETeacherVideoView.xib */; };
 		78D7312A23B388D200D2146C /* UIView+EEBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7312923B388D200D2146C /* UIView+EEBadge.m */; };
-		78D7312D23B3895800D2146C /* RoomParamsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7312C23B3895800D2146C /* RoomParamsModel.m */; };
+		78D7312D23B3895800D2146C /* VCParamsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7312C23B3895800D2146C /* VCParamsModel.m */; };
 		78D7313E23B38B5700D2146C /* EEClassRoomTypeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7313723B38B5700D2146C /* EEClassRoomTypeView.m */; };
 		78D7313F23B38B5700D2146C /* EEClassRoomTypeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78D7313823B38B5700D2146C /* EEClassRoomTypeView.xib */; };
 		78D7314023B38B5700D2146C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7313B23B38B5700D2146C /* MainViewController.m */; };
@@ -91,6 +88,10 @@
 		78D7314423B390DC00D2146C /* KeyCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D7314323B390DC00D2146C /* KeyCenter.m */; };
 		78D7314723B3964400D2146C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 78D7314523B3964300D2146C /* README.md */; };
 		78D7314823B3964400D2146C /* README.zh.md in Resources */ = {isa = PBXBuildFile; fileRef = 78D7314623B3964400D2146C /* README.zh.md */; };
+		78D731AA23BB103B00D2146C /* BigEducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D731A923BB103B00D2146C /* BigEducationManager.m */; };
+		78D731BA23BB610400D2146C /* MinEducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D731B923BB610400D2146C /* MinEducationManager.m */; };
+		78D731C023BB614D00D2146C /* OneToOneEducationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D731BF23BB614D00D2146C /* OneToOneEducationManager.m */; };
+		78D731C223BCE4EA00D2146C /* BCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D731C123BCE4EA00D2146C /* BCViewController.m */; };
 		933AE560CF5F0977F2647C18 /* Pods_AgoraEducation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */; };
 /* End PBXBuildFile section */
 
@@ -126,14 +127,11 @@
 		1A44BE6022BF863000766274 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1A44BE7E22BF874A00766274 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A61CB762386303B003D9E81 /* RoomProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomProtocol.h; sourceTree = "<group>"; };
-		1A61CB8C2389405D003D9E81 /* BaseRoomViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseRoomViewController.h; sourceTree = "<group>"; };
-		1A61CB8D2389405D003D9E81 /* BaseRoomViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseRoomViewController.m; sourceTree = "<group>"; };
 		1A70AFB02359F17500942742 /* SettingViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewCell.h; sourceTree = "<group>"; };
 		1A70AFB12359F17500942742 /* SettingViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewCell.m; sourceTree = "<group>"; };
 		1A87571023571CFE009C55A8 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		1A87571123571CFE009C55A8 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
-		1AD4E994235EFB2700C415BF /* BCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BCViewController.m; sourceTree = "<group>"; };
 		1AE0D0042283C5F20092AC5E /* AgoraEducation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraEducation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D01C2283C5F40092AC5E /* AgoraEducationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -163,8 +161,6 @@
 		787E7A3223A9FE97005F8F0C /* ReplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayViewController.h; sourceTree = "<group>"; };
 		787E7A3423A9FE97005F8F0C /* ReplayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReplayViewController.xib; sourceTree = "<group>"; };
 		787E7A3523A9FE97005F8F0C /* ReplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayViewController.m; sourceTree = "<group>"; };
-		787E7A4423A9FEFF005F8F0C /* EducationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EducationManager.m; sourceTree = "<group>"; };
-		787E7A4623A9FEFF005F8F0C /* EducationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EducationManager.h; sourceTree = "<group>"; };
 		78D7305B23B35ADB00D2146C /* AgoraEducation.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgoraEducation.pch; sourceTree = "<group>"; };
 		78D7306323B3638B00D2146C /* SignalManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalManager.h; sourceTree = "<group>"; };
 		78D7306423B3638B00D2146C /* SignalManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalManager.m; sourceTree = "<group>"; };
@@ -263,8 +259,8 @@
 		78D7312023B388BE00D2146C /* EETeacherVideoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EETeacherVideoView.xib; sourceTree = "<group>"; };
 		78D7312823B388D200D2146C /* UIView+EEBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+EEBadge.h"; sourceTree = "<group>"; };
 		78D7312923B388D200D2146C /* UIView+EEBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+EEBadge.m"; sourceTree = "<group>"; };
-		78D7312B23B3895800D2146C /* RoomParamsModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomParamsModel.h; sourceTree = "<group>"; };
-		78D7312C23B3895800D2146C /* RoomParamsModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomParamsModel.m; sourceTree = "<group>"; };
+		78D7312B23B3895800D2146C /* VCParamsModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VCParamsModel.h; sourceTree = "<group>"; };
+		78D7312C23B3895800D2146C /* VCParamsModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VCParamsModel.m; sourceTree = "<group>"; };
 		78D7313623B38B5700D2146C /* EEClassRoomTypeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEClassRoomTypeView.h; sourceTree = "<group>"; };
 		78D7313723B38B5700D2146C /* EEClassRoomTypeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEClassRoomTypeView.m; sourceTree = "<group>"; };
 		78D7313823B38B5700D2146C /* EEClassRoomTypeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EEClassRoomTypeView.xib; sourceTree = "<group>"; };
@@ -276,6 +272,13 @@
 		78D7314323B390DC00D2146C /* KeyCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyCenter.m; sourceTree = "<group>"; };
 		78D7314523B3964300D2146C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		78D7314623B3964400D2146C /* README.zh.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.zh.md; sourceTree = "<group>"; };
+		78D731A823BB103B00D2146C /* BigEducationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigEducationManager.h; sourceTree = "<group>"; };
+		78D731A923BB103B00D2146C /* BigEducationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BigEducationManager.m; sourceTree = "<group>"; };
+		78D731B823BB610400D2146C /* MinEducationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinEducationManager.h; sourceTree = "<group>"; };
+		78D731B923BB610400D2146C /* MinEducationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MinEducationManager.m; sourceTree = "<group>"; };
+		78D731BE23BB614D00D2146C /* OneToOneEducationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneToOneEducationManager.h; sourceTree = "<group>"; };
+		78D731BF23BB614D00D2146C /* OneToOneEducationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OneToOneEducationManager.m; sourceTree = "<group>"; };
+		78D731C123BCE4EA00D2146C /* BCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -317,7 +320,7 @@
 			isa = PBXGroup;
 			children = (
 				1AD4E993235EFB2700C415BF /* BCViewController.h */,
-				1AD4E994235EFB2700C415BF /* BCViewController.m */,
+				78D731C123BCE4EA00D2146C /* BCViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -393,10 +396,8 @@
 				1A399E4F236975F900F5A40F /* MiniClass */,
 				1A399E4C236975AD00F5A40F /* BigClass */,
 				1A05ADA6237E55630041F27B /* Room.storyboard */,
-				1A61CB8C2389405D003D9E81 /* BaseRoomViewController.h */,
-				1A61CB8D2389405D003D9E81 /* BaseRoomViewController.m */,
-				78D7312B23B3895800D2146C /* RoomParamsModel.h */,
-				78D7312C23B3895800D2146C /* RoomParamsModel.m */,
+				78D7312B23B3895800D2146C /* VCParamsModel.h */,
+				78D7312C23B3895800D2146C /* VCParamsModel.m */,
 				1A61CB762386303B003D9E81 /* RoomProtocol.h */,
 			);
 			path = Room;
@@ -560,8 +561,12 @@
 		787E7A4223A9FEFF005F8F0C /* Manager */ = {
 			isa = PBXGroup;
 			children = (
-				787E7A4623A9FEFF005F8F0C /* EducationManager.h */,
-				787E7A4423A9FEFF005F8F0C /* EducationManager.m */,
+				78D731A823BB103B00D2146C /* BigEducationManager.h */,
+				78D731A923BB103B00D2146C /* BigEducationManager.m */,
+				78D731B823BB610400D2146C /* MinEducationManager.h */,
+				78D731B923BB610400D2146C /* MinEducationManager.m */,
+				78D731BE23BB614D00D2146C /* OneToOneEducationManager.h */,
+				78D731BF23BB614D00D2146C /* OneToOneEducationManager.m */,
 				78D730B323B383FA00D2146C /* GenerateSignalBody.h */,
 				78D730B423B383FA00D2146C /* GenerateSignalBody.m */,
 				78D7308823B3677800D2146C /* EduModel */,
@@ -956,7 +961,7 @@
 				78D730EE23B3889D00D2146C /* EEMessageView.m in Sources */,
 				1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */,
 				787E7A3D23A9FE97005F8F0C /* EduButton.m in Sources */,
-				78D7312D23B3895800D2146C /* RoomParamsModel.m in Sources */,
+				78D7312D23B3895800D2146C /* VCParamsModel.m in Sources */,
 				78D730C323B384D400D2146C /* HttpManager.m in Sources */,
 				1A87571223571CFE009C55A8 /* SettingViewController.m in Sources */,
 				1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */,
@@ -966,12 +971,11 @@
 				78D730F523B3889D00D2146C /* EEColorShowView.m in Sources */,
 				78D730A623B3833500D2146C /* SignalRoomModel.m in Sources */,
 				78D730AA23B3833500D2146C /* RTCVideoSessionModel.m in Sources */,
-				1A61CB8E2389405D003D9E81 /* BaseRoomViewController.m in Sources */,
 				78D730F223B3889D00D2146C /* EENavigationView.m in Sources */,
+				78D731C023BB614D00D2146C /* OneToOneEducationManager.m in Sources */,
 				78D730B223B383E600D2146C /* SignalModel.m in Sources */,
 				787E7A4023A9FE97005F8F0C /* ReplayViewController.m in Sources */,
 				78D7309423B36A0500D2146C /* SignalP2PModel.m in Sources */,
-				1AD4E995235EFB2700C415BF /* BCViewController.m in Sources */,
 				78D730FC23B388A400D2146C /* OTOStudentView.m in Sources */,
 				1A70AFB22359F17500942742 /* SettingViewCell.m in Sources */,
 				78D730A923B3833500D2146C /* ReplayerModel.m in Sources */,
@@ -981,16 +985,18 @@
 				78D730E823B3889D00D2146C /* EEMessageViewCell.m in Sources */,
 				1A05ADA3237E4B3B0041F27B /* MCViewController.m in Sources */,
 				78D730CA23B3853200D2146C /* NSString+MD5.m in Sources */,
-				787E7A4723A9FEFF005F8F0C /* EducationManager.m in Sources */,
 				1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */,
 				78D7312123B388BE00D2146C /* BCNavigationView.m in Sources */,
 				1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */,
 				78D7312523B388BE00D2146C /* BCSegmentedView.m in Sources */,
+				78D731BA23BB610400D2146C /* MinEducationManager.m in Sources */,
 				78D7314023B38B5700D2146C /* MainViewController.m in Sources */,
+				78D731AA23BB103B00D2146C /* BigEducationManager.m in Sources */,
 				78D730D023B3871900D2146C /* JsonParseUtil.m in Sources */,
 				78D730F023B3889D00D2146C /* EEPageControlView.m in Sources */,
 				78D7310F23B388B100D2146C /* MCStudentVideoCell.m in Sources */,
 				787E7A3923A9FE97005F8F0C /* ReplayControlView.m in Sources */,
+				78D731C223BCE4EA00D2146C /* BCViewController.m in Sources */,
 				78D7314123B38B5700D2146C /* MainNavigationController.m in Sources */,
 				78D7311523B388B100D2146C /* MCSegmentedView.m in Sources */,
 				78D7314423B390DC00D2146C /* KeyCenter.m in Sources */,

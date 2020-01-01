@@ -9,7 +9,7 @@
 #import "ReplayViewController.h"
 #import <AVKit/AVKit.h>
 
-#import "EducationManager.h"
+#import "OneToOneEducationManager.h"
 
 #import "ReplayControlView.h"
 #import "HttpManager.h"
@@ -27,7 +27,7 @@
 @property (weak, nonatomic) IBOutlet UIView *teacherView;
 @property (weak, nonatomic) IBOutlet UIImageView *defaultTeacherImage;
 
-@property (nonatomic, strong) EducationManager *educationManager;
+@property (nonatomic, strong) OneToOneEducationManager *educationManager;
 @property (nonatomic, weak) WhiteBoardView *boardView;
 @property (nonatomic, weak) WhiteVideoView *videoView;
 
@@ -59,7 +59,7 @@
         self.canSeek = YES;
     }
     self.controlView.delegate = self;
-    self.educationManager = [EducationManager new];
+    self.educationManager = [OneToOneEducationManager new];
 }
 
 - (void)setupWhiteBoard {

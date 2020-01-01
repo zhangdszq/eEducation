@@ -9,7 +9,18 @@
 #import "StudentModel.h"
 
 @implementation StudentModel
+- (instancetype)init {
+    if(self = [super init]) {
+        
+        self.account = @"";
+        self.uid = @"";
 
+        self.video = NO;
+        self.audio = NO;
+        self.chat = NO;
+    }
+    return self;
+}
 @end
 
 

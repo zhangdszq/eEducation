@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL class_state;
 
-- (void)modelWithDict:(NSDictionary *)dict;
-- (void)modelWithteacherModel:(TeacherModel *)model;
 @end
 
 NS_ASSUME_NONNULL_END
