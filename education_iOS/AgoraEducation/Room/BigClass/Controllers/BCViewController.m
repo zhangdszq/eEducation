@@ -290,9 +290,8 @@
     self.tipLabel.layer.cornerRadius = 6;
 }
 
-//设备方向改变的处理
 - (void)handleDeviceOrientationChange:(NSNotification *)notification{
-//    [self.messageView updateTableView];
+
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
     switch (deviceOrientation) {
         case UIDeviceOrientationPortrait:
@@ -311,14 +310,13 @@
         }
             break;
         default:
-            NSLog(@"设备方向无法辨识");
             break;
     }
 }
 
 - (void)stateBarHidden:(BOOL)hidden {
     [self setNeedsStatusBarAppearanceUpdate];
-    self.isLandscape = hidden; // 横屏隐藏
+    self.isLandscape = hidden;
 }
 
 - (IBAction)handUpEvent:(UIButton *)sender {

@@ -174,7 +174,6 @@
 
 #pragma mark SignalManagerDelegate
 - (void)rtmKit:(AgoraRtmKit * _Nonnull)kit connectionStateChanged:(AgoraRtmConnectionState)state reason:(AgoraRtmConnectionChangeReason)reason {
-    // 状态丢失
     if(state == AgoraRtmConnectionStateDisconnected) {
         [NSNotificationCenter.defaultCenter postNotificationName:NOTICE_KEY_ON_MESSAGE_DISCONNECT object:nil];
     }
@@ -537,7 +536,7 @@
         }
     }
 }
-/** 出错暂停 */
+
 - (void)stoppedWithError:(NSError *)error {
     
     // use nativePlayerDidFinish when videoPath no empty
@@ -549,7 +548,7 @@
         [self.whitePlayerDelegate whitePlayerError: error];
     }
 }
-/** 进度时间变化 */
+
 - (void)scheduleTimeChanged:(NSTimeInterval)time {
     if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerTimeChanged:)]) {
         [self.whitePlayerDelegate whitePlayerTimeChanged: time];
@@ -562,18 +561,12 @@
     }
 }
 
-/**
- 结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
- */
 - (void)combinePlayerEndBuffering {
     if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerDidFinish)]) {
         [self.whitePlayerDelegate whitePlayerEndBuffering];
     }
 }
 
-/**
- NativePlayer 播放结束
- */
 - (void)nativePlayerDidFinish {
     
     if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerEndBuffering)]) {
@@ -581,11 +574,6 @@
     }
 }
 
-/**
-播放失败
-
-@param error 错误原因
- */
 - (void)combineVideoPlayerError:(NSError *)error {
     if([self.whitePlayerDelegate respondsToSelector:@selector(whitePlayerError:)]) {
         [self.whitePlayerDelegate whitePlayerError: error];
@@ -593,9 +581,8 @@
 }
 
 /**
- 房间中RoomState属性，发生变化时，会触发该回调。
- @param modifyState 发生变化的 RoomState 内容
- */
+The RoomState property in the room will trigger this callback when it changes.
+*/
 - (void)fireRoomStateChanged:(WhiteRoomState *_Nullable)modifyState {
     if (modifyState.sceneState) {
         if([self.whitePlayerDelegate respondsToSelector:@selector(whiteRoomStateChanged)]) {

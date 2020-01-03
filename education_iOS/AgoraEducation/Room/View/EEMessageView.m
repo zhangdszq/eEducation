@@ -51,8 +51,6 @@
     
     for (SignalRoomModel *messageModel in self.messageArray) {
         
-        // for test
-//        messageModel.link = @"/replay/80d1a353c68b4db7a3284f9a02835c27/1576549172877/1576549193735/sadfasdfsa";
         if(messageModel.link == nil){
             continue;
         }

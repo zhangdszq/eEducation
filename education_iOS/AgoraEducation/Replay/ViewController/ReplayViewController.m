@@ -220,14 +220,13 @@
 }
 
 #pragma mark ReplayControlViewDelegate
-// 滑块滑动开始
 - (void)sliderTouchBegan:(float)value {
     if(!self.canSeek) {
         return;
     }
     self.controlView.sliderView.isdragging = YES;
 }
-// 滑块滑动中
+
 - (void)sliderValueChanged:(float)value {
     if(!self.canSeek) {
         return;
@@ -240,7 +239,7 @@
         }];
     }
 }
-// 滑块滑动结束
+
 - (void)sliderTouchEnded:(float)value {
     if(!self.canSeek) {
         self.controlView.sliderView.isdragging = NO;
@@ -279,7 +278,6 @@
     return theLastTime;
 }
 
-// 滑杆点击
 - (void)sliderTapped:(float)value {
     
     if(!self.canSeek) {
@@ -308,7 +306,7 @@
         self.controlView.sliderView.isdragging = NO;
     }
 }
-// 播放暂停按钮点击
+
 - (void)playPauseButtonClicked:(BOOL)play {
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControlView) object:nil];
@@ -334,7 +332,6 @@
 }
 
 #pragma mark WhitePlayDelegate
-/** 进度时间变化 */
 - (void)whitePlayerTimeChanged:(NSTimeInterval)time {
     if(self.controlView.sliderView.isdragging){
         return;
@@ -350,18 +347,12 @@
     }
 }
 
-/**
- 进入缓冲状态，WhitePlayer，NativePlayer 任一进入缓冲，都会回调。
- */
 - (void)whitePlayerStartBuffering {
     if(self.playButton.hidden){
         [self setLoadingViewVisible:YES];
     }
 }
 
-/**
- 结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
- */
 - (void)whitePlayerEndBuffering {
     if(self.playButton.hidden){
         [self setLoadingViewVisible:NO];
@@ -369,9 +360,6 @@
     self.canSeek = YES;
 }
 
-/**
- 播放结束
- */
 - (void)whitePlayerDidFinish {
     [self.educationManager pauseWhite];
 
@@ -383,11 +371,6 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControlView) object:nil];
 }
 
-/**
- 播放失败
-
- @param error 错误原因
- */
 - (void)whitePlayerError:(NSError * _Nullable)error {
     NSLog(@"ReplayVideoViewController Stopped Err:%@", error);
 }
