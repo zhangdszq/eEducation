@@ -15,6 +15,7 @@ import io.agora.rtc.education.R;
 import io.agora.rtc.lib.util.TimeUtil;
 
 public class TimeView extends LinearLayout {
+
     public TimeView(Context context) {
         super(context);
         init(context);
@@ -39,6 +40,7 @@ public class TimeView extends LinearLayout {
     private TextView mTvTime;
 
     private Handler handler;
+
     private void init(Context c) {
         this.handler = new Handler();
         View.inflate(c, R.layout.view_time, this);
@@ -85,4 +87,5 @@ public class TimeView extends LinearLayout {
         handler.removeCallbacks(updateTimeRunnable);
         updateTimeRunnable.run();
     }
+
 }

@@ -27,7 +27,6 @@ import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseFragment;
 import io.agora.rtc.education.room.replay.ReplayControl;
 import io.agora.rtc.education.room.view.ColorSelectView;
-import io.agora.rtc.education.room.whiteboard.SceneHelper;
 import io.agora.rtc.education.room.whiteboard.WhiteboardDelegate;
 import io.agora.rtc.lib.util.LogUtil;
 import io.agora.rtc.lib.util.ToastUtil;
@@ -100,32 +99,26 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         }
 
         HashMap<String, ImageView> appliances = new HashMap<>();
-        appliances.put(Appliance.SELECTOR, (ImageView) view.findViewById(R.id.ic_tool_selecter));
-        appliances.put(Appliance.PENCIL, (ImageView) view.findViewById(R.id.ic_tool_pen));
-        appliances.put(Appliance.ERASER, (ImageView) view.findViewById(R.id.ic_tool_eraser));
-        appliances.put(Appliance.TEXT, (ImageView) view.findViewById(R.id.ic_tool_text));
+        appliances.put(Appliance.SELECTOR, view.findViewById(R.id.ic_tool_selecter));
+        appliances.put(Appliance.PENCIL, view.findViewById(R.id.ic_tool_pen));
+        appliances.put(Appliance.ERASER, view.findViewById(R.id.ic_tool_eraser));
+        appliances.put(Appliance.TEXT, view.findViewById(R.id.ic_tool_text));
         mWhiteboardDelegate.initApplianceToolBar(appliances);
 
         mColorSelectView = view.findViewById(R.id.color_select_view);
-        mColorSelectView.setChangedListener(new ColorSelectView.ColorChangedListener() {
-            @Override
-            public void onColorChanged(int color) {
-                mIcToolColor.setSelected(false);
-                mColorSelectView.setVisibility(View.GONE);
-                mWhiteboardDelegate.setApplianceColor(color);
-            }
+        mColorSelectView.setChangedListener(color -> {
+            mIcToolColor.setSelected(false);
+            mColorSelectView.setVisibility(View.GONE);
+            mWhiteboardDelegate.setApplianceColor(color);
         });
 
         mWhiteboardView = view.findViewById(R.id.white_board_view);
 
         mWhiteboardDelegate.initWhiteSdk(mContext, mWhiteboardView);
 
-        mWhiteboardDelegate.setOnSceneChangeListener(new SceneHelper.OnSceneChangeListener() {
-            @Override
-            public void onSceneIndexChanged(int index, int totalCount) {
-                mTvPage.setText(index + "/" + totalCount);
-                mWhiteboardDelegate.initCameraToContainer();
-            }
+        mWhiteboardDelegate.setOnSceneChangeListener((index, totalCount) -> {
+            mTvPage.setText(index + "/" + totalCount);
+            mWhiteboardDelegate.initCameraToContainer();
         });
         return view;
     }
@@ -197,14 +190,11 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
         mPbLoading.setVisibility(View.VISIBLE);
         resetLayoutVisible(true);
 
-        mWhiteboardView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    mControl.setVisibility(View.VISIBLE);
-                }
-                return false;
+        mWhiteboardView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                mControl.setVisibility(View.VISIBLE);
             }
+            return false;
         });
 
         mWhiteboardDelegate.replay(uuid, startTime, endTime, mControl, new WhiteboardDelegate.OnPlayerStateChangedListener() {

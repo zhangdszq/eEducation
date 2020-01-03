@@ -1,12 +1,10 @@
 package io.agora.rtc.education.setting;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
+
+import androidx.annotation.Nullable;
 
 import io.agora.rtc.education.R;
 import io.agora.rtc.education.base.BaseActivity;
@@ -23,15 +21,12 @@ public class SettingActivity extends BaseActivity {
         setContentView(R.layout.activity_setting);
         mSwitch = findViewById(R.id.switch_eye_care);
         mSwitch.setChecked(SPUtil.get(SPKey.KEY_IS_EYE_CARE, false));
-        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                EyeCare.setNeedShow(isChecked);
-                if (isChecked) {
-                    showEyeCareView();
-                } else {
-                    dismissEyeCareView();
-                }
+        mSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            EyeCare.setNeedShow(isChecked);
+            if (isChecked) {
+                showEyeCareView();
+            } else {
+                dismissEyeCareView();
             }
         });
     }
@@ -43,4 +38,5 @@ public class SettingActivity extends BaseActivity {
     public void onClickSwitch(View view) {
         mSwitch.setChecked(!mSwitch.isChecked());
     }
+
 }

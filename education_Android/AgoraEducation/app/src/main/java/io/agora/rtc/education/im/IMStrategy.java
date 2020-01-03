@@ -23,4 +23,5 @@ public interface IMStrategy {
     void sendMessage(String peerId, int cmd);
 
     void release();
+
 }
