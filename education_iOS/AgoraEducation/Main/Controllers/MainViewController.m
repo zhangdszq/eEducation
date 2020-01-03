@@ -9,7 +9,6 @@
 #import "MainViewController.h"
 #import "EEClassRoomTypeView.h"
 #import "SettingViewController.h"
-//#import "BaseRoomViewController.h"
 #import "GenerateSignalBody.h"
 #import "EyeCareModeUtil.h"
 
@@ -52,7 +51,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
-//    [self.educationManager setSignalDelegate:self];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -81,7 +79,6 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-//    [self.educationManager releaseResources];
 }
 
 #pragma mark Private Function
