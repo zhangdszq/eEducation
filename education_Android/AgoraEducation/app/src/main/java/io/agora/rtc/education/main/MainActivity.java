@@ -136,18 +136,13 @@ public class MainActivity extends BaseActivity {
                                         || (roomTypeInt == Constant.RoomType.SMALL_CLASS && studentCount < 16)) {
                                     startActivity(intent);
                                 } else {
-                                    ToastUtil.showShort(R.string.the_room_is_full);
+                                    runOnUiThread(() -> ToastUtil.showShort(R.string.the_room_is_full));
                                 }
                             }
 
                             @Override
                             public void onFailure(ErrorInfo errorInfo) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ToastUtil.showShort(R.string.get_channel_attr_failed);
-                                    }
-                                });
+                                runOnUiThread(() -> ToastUtil.showShort(R.string.get_channel_attr_failed));
                             }
                         });
                     }
@@ -155,12 +150,7 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onFailure(ErrorInfo errorInfo) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtil.showShort(R.string.get_channel_attr_failed);
-                        }
-                    });
+                    runOnUiThread(() -> ToastUtil.showShort(R.string.get_channel_attr_failed));
                 }
             });
         }

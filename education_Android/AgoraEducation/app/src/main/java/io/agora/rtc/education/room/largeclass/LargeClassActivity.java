@@ -89,16 +89,13 @@ public class LargeClassActivity extends BaseActivity {
         @Override
         public void onUserJoined(int uid, int elapsed) {
             if (uid == Constant.SHARE_UID) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int uid = Constant.SHARE_UID;
-                        mFlShareVideo.removeAllViews();
-                        SurfaceView surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
-                        mFlShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
-                        updateShareVideoUI();
-                    }
+                runOnUiThread(() -> {
+                    int uid1 = Constant.SHARE_UID;
+                    mFlShareVideo.removeAllViews();
+                    SurfaceView surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                    mFlShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    mRtcDelegate.bindRemoteRtcVideoFitMode(uid1, surfaceView);
+                    updateShareVideoUI();
                 });
             }
         }
@@ -106,12 +103,9 @@ public class LargeClassActivity extends BaseActivity {
         @Override
         public void onUserOffline(int uid, int reason) {
             if (uid == Constant.SHARE_UID) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mFlShareVideo.removeAllViews();
-                        updateShareVideoUI();
-                    }
+                runOnUiThread(() -> {
+                    mFlShareVideo.removeAllViews();
+                    updateShareVideoUI();
                 });
             }
         }
@@ -136,12 +130,7 @@ public class LargeClassActivity extends BaseActivity {
         @Override
         public void onChannelMemberCountUpdated(int i) {
             roomUserCount = i;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateRoomName();
-                }
-            });
+            runOnUiThread(() -> updateRoomName());
         }
 
         @Override
@@ -149,91 +138,83 @@ public class LargeClassActivity extends BaseActivity {
             if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
                     && mChannelData.getTeacher() != null
                     && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mWhiteboardFragment.finishRoomPage();
-                    }
-                });
+                runOnUiThread(() -> mWhiteboardFragment.finishRoomPage());
             }
         }
 
         @Override
         public void onChannelAttributesUpdated() {
             final Teacher teacher = mChannelData.getTeacher();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (teacher == null) {
-                        ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
-                        mChatroomFragment.setEditTextEnable(true);
-                        mVideoItemTeacher.showVideo(false);
-                        mVideoItemTeacher.setIcVideoSelect(false);
-                        mVideoItemTeacher.setIcAudioState(SpeakerView.STATE_CLOSED);
-                        mVideoItemTeacher.setName("");
-                        return;
-                    }
-                    if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
-                        mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
-                            @Override
-                            public void onSuccess() {
-                                ToastUtil.showShort("join whiteboard room success.");
-                            }
-
-                            @Override
-                            public void onFailure(String err) {
-                                ToastUtil.showShort("join whiteboard room fail: " + err);
-                                finish();
-                            }
-                        });
-                    }
-
-                    SurfaceView surfaceView = mVideoItemTeacher.getSurfaceView();
-                    if (surfaceView == null || surfaceView.getTag() == null || teacher.uid != (int) surfaceView.getTag()) {
-                        surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
-                        surfaceView.setTag(teacher.uid);
-                        mVideoItemTeacher.setVideoView(surfaceView);
-                        mRtcDelegate.bindRemoteRtcVideo(teacher.uid, surfaceView);
-                    }
-                    mVideoItemTeacher.showVideo(teacher.video == 1);
-                    mVideoItemTeacher.setIcVideoSelect(teacher.video == 1);
-                    mVideoItemTeacher.setIcAudioState(teacher.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
-                    mVideoItemTeacher.setName(teacher.account);
-
-                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
-
-                    if (teacher.link_uid != 0) {
-                        int linkUid = teacher.link_uid;
-                        Student student = mChannelData.getStudent(linkUid);
-                        if (student != null) {
-                            mVideoItemStudent.setVisibility(View.VISIBLE);
-
-                            SurfaceView surfaceViewStudent = mVideoItemStudent.getSurfaceView();
-                            if (surfaceViewStudent == null || surfaceViewStudent.getTag() == null || linkUid != (int) surfaceViewStudent.getTag()) {
-                                surfaceViewStudent = RtcEngine.CreateRendererView(LargeClassActivity.this);
-                                surfaceViewStudent.setTag(linkUid);
-                                surfaceViewStudent.setZOrderMediaOverlay(true);
-                                mVideoItemStudent.setVideoView(surfaceViewStudent);
-                                if (mChannelData.getMyAttr().uid == linkUid) {
-                                    mRtcDelegate.bindLocalRtcVideo(surfaceViewStudent);
-                                    mWhiteboardFragment.acceptLink(true);
-                                } else {
-                                    mRtcDelegate.bindRemoteRtcVideo(linkUid, surfaceViewStudent);
-                                }
-                                mVideoItemStudent.setVideoView(surfaceViewStudent);
-                            }
-                            mVideoItemStudent.showVideo(student.video == 1);
-                            mVideoItemStudent.setIcVideoSelect(student.video == 1);
-                            mVideoItemStudent.setIcAudioState(student.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
-                            mVideoItemStudent.setName(student.account);
+            runOnUiThread(() -> {
+                if (teacher == null) {
+                    ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
+                    mChatroomFragment.setEditTextEnable(true);
+                    mVideoItemTeacher.showVideo(false);
+                    mVideoItemTeacher.setIcVideoSelect(false);
+                    mVideoItemTeacher.setIcAudioState(SpeakerView.STATE_CLOSED);
+                    mVideoItemTeacher.setName("");
+                    return;
+                }
+                if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
+                    mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
+                        @Override
+                        public void onSuccess() {
+                            ToastUtil.showShort("join whiteboard room success.");
                         }
-                    } else {
-                        mVideoItemStudent.setVideoView(null);
-                        mVideoItemStudent.setVisibility(View.GONE);
-                        if (mWhiteboardFragment.isApplyingOrLinking()) {
-                            mWhiteboardFragment.acceptLink(false);
-                            mRtcDelegate.changeRoleToAudience();
+
+                        @Override
+                        public void onFailure(String err) {
+                            ToastUtil.showShort("join whiteboard room fail: " + err);
+                            finish();
                         }
+                    });
+                }
+
+                SurfaceView surfaceView = mVideoItemTeacher.getSurfaceView();
+                if (surfaceView == null || surfaceView.getTag() == null || teacher.uid != (int) surfaceView.getTag()) {
+                    surfaceView = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                    surfaceView.setTag(teacher.uid);
+                    mVideoItemTeacher.setVideoView(surfaceView);
+                    mRtcDelegate.bindRemoteRtcVideo(teacher.uid, surfaceView);
+                }
+                mVideoItemTeacher.showVideo(teacher.video == 1);
+                mVideoItemTeacher.setIcVideoSelect(teacher.video == 1);
+                mVideoItemTeacher.setIcAudioState(teacher.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
+                mVideoItemTeacher.setName(teacher.account);
+
+                mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
+
+                if (teacher.link_uid != 0) {
+                    int linkUid = teacher.link_uid;
+                    Student student = mChannelData.getStudent(linkUid);
+                    if (student != null) {
+                        mVideoItemStudent.setVisibility(View.VISIBLE);
+
+                        SurfaceView surfaceViewStudent = mVideoItemStudent.getSurfaceView();
+                        if (surfaceViewStudent == null || surfaceViewStudent.getTag() == null || linkUid != (int) surfaceViewStudent.getTag()) {
+                            surfaceViewStudent = RtcEngine.CreateRendererView(LargeClassActivity.this);
+                            surfaceViewStudent.setTag(linkUid);
+                            surfaceViewStudent.setZOrderMediaOverlay(true);
+                            mVideoItemStudent.setVideoView(surfaceViewStudent);
+                            if (mChannelData.getMyAttr().uid == linkUid) {
+                                mRtcDelegate.bindLocalRtcVideo(surfaceViewStudent);
+                                mWhiteboardFragment.acceptLink(true);
+                            } else {
+                                mRtcDelegate.bindRemoteRtcVideo(linkUid, surfaceViewStudent);
+                            }
+                            mVideoItemStudent.setVideoView(surfaceViewStudent);
+                        }
+                        mVideoItemStudent.showVideo(student.video == 1);
+                        mVideoItemStudent.setIcVideoSelect(student.video == 1);
+                        mVideoItemStudent.setIcAudioState(student.audio == 0 ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
+                        mVideoItemStudent.setName(student.account);
+                    }
+                } else {
+                    mVideoItemStudent.setVideoView(null);
+                    mVideoItemStudent.setVisibility(View.GONE);
+                    if (mWhiteboardFragment.isApplyingOrLinking()) {
+                        mWhiteboardFragment.acceptLink(false);
+                        mRtcDelegate.changeRoleToAudience();
                     }
                 }
             });
@@ -255,23 +236,15 @@ public class LargeClassActivity extends BaseActivity {
                     muteLocalVideo(false);
                     break;
                 case IMCmd.ACCEPT:
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mWhiteboardFragment.acceptLink(true);
-                            mRtcDelegate.changeRoleToBroadcaster();
-                            muteLocalAudio(false);
-                            muteLocalVideo(false);
-                        }
+                    runOnUiThread(() -> {
+                        mWhiteboardFragment.acceptLink(true);
+                        mRtcDelegate.changeRoleToBroadcaster();
+                        muteLocalAudio(false);
+                        muteLocalVideo(false);
                     });
                     break;
                 case IMCmd.REJECT:
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mWhiteboardFragment.acceptLink(false);
-                        }
-                    });
+                    runOnUiThread(() -> mWhiteboardFragment.acceptLink(false));
                     break;
                 case IMCmd.MUTE_CHAT:
                     muteLocalChat(true);
@@ -411,29 +384,18 @@ public class LargeClassActivity extends BaseActivity {
 
         updateShareVideoUI();
 
-        mIcExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLeaveDialog();
-            }
+        mIcExit.setOnClickListener(v -> showLeaveDialog());
+
+        mVideoItemStudent.setOnClickAudioListener(v -> {
+            boolean isToMute = mVideoItemStudent.getIcAudioState() != SpeakerView.STATE_CLOSED;
+            mVideoItemStudent.setIcAudioState(isToMute ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
+            muteLocalAudio(isToMute);
         });
 
-        mVideoItemStudent.setOnClickAudioListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isToMute = mVideoItemStudent.getIcAudioState() != SpeakerView.STATE_CLOSED;
-                mVideoItemStudent.setIcAudioState(isToMute ? SpeakerView.STATE_CLOSED : SpeakerView.STATE_OPENED);
-                muteLocalAudio(isToMute);
-            }
-        });
-
-        mVideoItemStudent.setOnClickVideoListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isToMute = mVideoItemStudent.isIcVideoSelected();
-                mVideoItemStudent.setIcVideoSelect(!isToMute);
-                muteLocalVideo(isToMute);
-            }
+        mVideoItemStudent.setOnClickVideoListener(v -> {
+            boolean isToMute = mVideoItemStudent.isIcVideoSelected();
+            mVideoItemStudent.setIcVideoSelect(!isToMute);
+            muteLocalVideo(isToMute);
         });
     }
 
@@ -493,24 +455,18 @@ public class LargeClassActivity extends BaseActivity {
 
         initCommonUI();
 
-        mTvBtnWhiteboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLineWhiteboard.setVisibility(View.VISIBLE);
-                mLineChatroom.setVisibility(View.GONE);
-                mFlChatroom.setVisibility(View.INVISIBLE);
-                updateShareVideoUI();
-            }
+        mTvBtnWhiteboard.setOnClickListener(v -> {
+            mLineWhiteboard.setVisibility(View.VISIBLE);
+            mLineChatroom.setVisibility(View.GONE);
+            mFlChatroom.setVisibility(View.INVISIBLE);
+            updateShareVideoUI();
         });
-        mTvBtnChatroom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLineChatroom.setVisibility(View.VISIBLE);
-                mLineWhiteboard.setVisibility(View.GONE);
-                mFlChatroom.setVisibility(View.VISIBLE);
-                mFlWhiteboard.setVisibility(View.INVISIBLE);
-                mFlShareVideo.setVisibility(View.GONE);
-            }
+        mTvBtnChatroom.setOnClickListener(v -> {
+            mLineChatroom.setVisibility(View.VISIBLE);
+            mLineWhiteboard.setVisibility(View.GONE);
+            mFlChatroom.setVisibility(View.VISIBLE);
+            mFlWhiteboard.setVisibility(View.INVISIBLE);
+            mFlShareVideo.setVisibility(View.GONE);
         });
         mIcWifi = null;
 

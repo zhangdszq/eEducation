@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import io.agora.rtc.education.R;
 
 public class ColorSelectView extends CardView {
+
     public ColorSelectView(@NonNull Context context) {
         super(context);
         init(context);
@@ -34,12 +35,9 @@ public class ColorSelectView extends CardView {
     private ArrayList<ColorView> colorViews = new ArrayList<>();
     private int selectIndex = -1;
 
-    private OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int index = (int) v.getTag();
-            select(index);
-        }
+    private OnClickListener onClickListener = v -> {
+        int index = (int) v.getTag();
+        select(index);
     };
 
     private void init(Context context) {

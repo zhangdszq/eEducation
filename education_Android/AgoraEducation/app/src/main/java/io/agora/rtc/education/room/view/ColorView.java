@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import io.agora.rtc.education.R;
 
 public class ColorView extends View implements Checkable {
+
     public ColorView(Context context) {
         super(context);
         init(context);
@@ -101,4 +102,5 @@ public class ColorView extends View implements Checkable {
         isChecked = !isChecked;
         invalidate();
     }
+
 }

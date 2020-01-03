@@ -25,12 +25,7 @@ public class AppliancesToolBar {
         for (Map.Entry<String, ImageView> e : mAppliances.entrySet()) {
             final String applianceName = e.getKey();
             View v = e.getValue();
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onClickApplianceView(applianceName);
-                }
-            });
+            v.setOnClickListener(view -> onClickApplianceView(applianceName));
         }
         setViewsEnable(false);
     }
@@ -114,4 +109,5 @@ public class AppliancesToolBar {
             mRoom.setMemberState(memberState);
         }
     }
+
 }

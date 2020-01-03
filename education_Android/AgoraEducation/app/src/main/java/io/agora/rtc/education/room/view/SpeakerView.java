@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import io.agora.rtc.education.R;
 
 public class SpeakerView extends AppCompatImageView {
+
     public SpeakerView(Context context) {
         super(context);
         init(context);
@@ -72,4 +73,5 @@ public class SpeakerView extends AppCompatImageView {
     public int getSpeakingState() {
         return speakingState;
     }
+
 }

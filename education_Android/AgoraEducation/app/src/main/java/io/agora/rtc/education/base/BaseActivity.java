@@ -29,14 +29,13 @@ public abstract class BaseActivity extends AppCompatActivity {
             app.initWorkerThread();
         }
         final View layout = findViewById(Window.ID_ANDROID_CONTENT);
-        layout.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        initData();
-                    }
-                });
+        layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                initData();
+            }
+        });
 
         initUI(savedInstanceState);
     }
@@ -94,4 +93,5 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected RtcWorkerThread rtcWorker() {
         return AGApplication.the().getRtcWorker();
     }
+
 }

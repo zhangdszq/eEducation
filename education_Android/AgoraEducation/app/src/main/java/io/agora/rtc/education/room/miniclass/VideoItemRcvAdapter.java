@@ -44,7 +44,7 @@ public class VideoItemRcvAdapter extends BaseRcvAdapter<VideoItemRcvAdapter.View
         item.setName(user.account);
         item.showVideo(user.video == 1);
         SurfaceView surfaceView = item.getSurfaceView();
-        if (surfaceView == null || user.getUid() != (int)(surfaceView.getTag())) {
+        if (surfaceView == null || user.getUid() != (int) (surfaceView.getTag())) {
             surfaceView = RtcEngine.CreateRendererView(holder.itemView.getContext());
             surfaceView.setTag(user.getUid());
             item.setVideoView(surfaceView);

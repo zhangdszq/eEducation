@@ -27,7 +27,7 @@
             android:layout_gravity="center_vertical"
             android:text="@string/eye_care_mode"
             android:textColor="@color/gray_333333"
-            android:textSize="@dimen/dp_16" />
+            android:textSize="@dimen/sp_16" />
     </FrameLayout>
 
     <ImageView
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:text="@string/Setting"
         android:textColor="@color/gray_191919"
-        android:textSize="@dimen/dp_16"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintBottom_toBottomOf="@id/ic_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

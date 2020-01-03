@@ -29,7 +29,7 @@ public class EyeCare {
         }
 
         private void init(Context context) {
-            setBackgroundColor(getResources().getColor(R.color.eye_care_color));
+            setBackgroundColor(context.getResources().getColor(R.color.eye_care_color));
         }
     }
 
@@ -40,4 +40,5 @@ public class EyeCare {
     public static void setNeedShow(boolean isNeed) {
         SPUtil.put(SPKey.KEY_IS_EYE_CARE, isNeed);
     }
+
 }

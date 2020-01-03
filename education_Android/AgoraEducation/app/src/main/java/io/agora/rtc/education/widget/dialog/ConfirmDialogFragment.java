@@ -48,19 +48,13 @@ public class ConfirmDialogFragment extends DialogFragment {
         if (EyeCare.isNeedShow()) {
             root.findViewById(R.id.view_eye_care).setVisibility(View.VISIBLE);
         }
-        root.findViewById(R.id.tv_dialog_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.clickCancel();
-                dismiss();
-            }
+        root.findViewById(R.id.tv_dialog_cancel).setOnClickListener(v -> {
+            listener.clickCancel();
+            dismiss();
         });
-        root.findViewById(R.id.tv_dialog_confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.clickConfirm();
-                dismiss();
-            }
+        root.findViewById(R.id.tv_dialog_confirm).setOnClickListener(v -> {
+            listener.clickConfirm();
+            dismiss();
         });
         TextView tvContent = root.findViewById(R.id.tv_content);
         tvContent.setText(content);
@@ -72,4 +66,5 @@ public class ConfirmDialogFragment extends DialogFragment {
 
         void clickCancel();
     }
+
 }

@@ -14,4 +14,5 @@ public interface ChannelDataReadOnly {
     Student getMyAttr();
 
     Student getStudent(int uid);
+
 }

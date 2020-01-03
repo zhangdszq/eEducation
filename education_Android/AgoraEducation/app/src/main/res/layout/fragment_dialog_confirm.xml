@@ -17,7 +17,7 @@
         android:minLines="1"
         android:padding="@dimen/dp_20"
         android:textColor="@color/black"
-        android:textSize="@dimen/dp_16"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +29,7 @@
         android:lines="1"
         android:text="@string/confirm"
         android:textColor="@color/blue_007AFF"
-        android:textSize="@dimen/dp_16"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintBottom_toBottomOf="@id/line2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/line2"
@@ -44,7 +44,7 @@
         android:lines="1"
         android:text="@string/cancel"
         android:textColor="@color/blue_007AFF"
-        android:textSize="@dimen/dp_16"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintBottom_toBottomOf="@id/line2"
         app:layout_constraintEnd_toStartOf="@id/line2"
         app:layout_constraintStart_toStartOf="parent"
