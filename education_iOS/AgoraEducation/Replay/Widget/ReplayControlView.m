@@ -67,7 +67,6 @@
 }
 
 #pragma mark SliderViewDelegate
-// 滑块滑动开始
 - (void)sliderTouchBegan:(float)value {
      self.sliderView.isdragging = YES;
     
@@ -75,20 +74,20 @@
         [self.delegate sliderTouchBegan:value];
     }
 }
-// 滑块滑动中
+
 - (void)sliderValueChanged:(float)value {
     
     if ([self.delegate respondsToSelector:@selector(sliderValueChanged:)]) {
         [self.delegate sliderValueChanged:value];
     }
 }
-// 滑块滑动结束
+
 - (void)sliderTouchEnded:(float)value {
     if ([self.delegate respondsToSelector:@selector(sliderTouchEnded:)]) {
         [self.delegate sliderTouchEnded:value];
     }
 }
-// 滑杆点击
+
 - (void)sliderTapped:(float)value {
     if ([self.delegate respondsToSelector:@selector(sliderTapped:)]) {
         [self.delegate sliderTapped:value];

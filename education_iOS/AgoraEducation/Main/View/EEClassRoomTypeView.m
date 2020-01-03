@@ -16,13 +16,6 @@
 
 @implementation EEClassRoomTypeView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 + (instancetype)initWithXib:(CGRect)frame {
     EEClassRoomTypeView *classRoomTypeView = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil].firstObject;
 
@@ -33,7 +26,7 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.roomNameArray = [NSMutableArray arrayWithObjects:@"一对一",@"小班课",@"大班课", nil];
+    self.roomNameArray = [NSMutableArray arrayWithObjects:@"One-to-One",@"Small Class",@"Large Class", nil];
     [self addSubview:self.typeTableView];
     self.typeTableView.layer.borderWidth = 1.f;
     self.typeTableView.layer.borderColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0].CGColor;
@@ -43,7 +36,6 @@
     self.typeTableView.layer.shadowOffset = CGSizeMake(0,2);
     self.typeTableView.layer.shadowOpacity = 2;
     self.typeTableView.layer.shadowRadius = 4;
-
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -77,7 +69,5 @@
     }
     return _typeTableView;
 }
-
-
 
 @end

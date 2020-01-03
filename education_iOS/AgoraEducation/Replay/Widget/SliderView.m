@@ -8,21 +8,19 @@
 
 #import "SliderView.h"
 
-/** 滑块的大小 */
+/** slider button size */
 static const CGFloat kSliderBtnWH = 19.0;
-/** 进度的高度 */
+/** progress height */
 static const CGFloat kProgressH = 1.0;
-/** 拖动slider动画的时间*/
+/** draging slider animate time*/
 static const CGFloat kAnimate = 0.3;
 
 @implementation SliderButton
 
-// 重写此方法将按钮的点击范围扩大
+// expand click range
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
     CGRect bounds = self.bounds;
-    // 扩大点击区域
     bounds = CGRectInset(bounds, -20, -20);
-    // 若点击的点在新的bounds里面。就返回yes
     return CGRectContainsPoint(bounds, point);
 }
 
@@ -30,13 +28,12 @@ static const CGFloat kAnimate = 0.3;
 
 @interface SliderView ()
 
-/** 进度背景 */
 @property (nonatomic, strong) UIImageView *bgProgressView;
-/** 缓存进度 */
+
 @property (nonatomic, strong) UIImageView *bufferProgressView;
-/** 滑动进度 */
+
 @property (nonatomic, strong) UIImageView *sliderProgressView;
-/** 滑块 */
+
 @property (nonatomic, strong) SliderButton *sliderBtn;
 
 @property (nonatomic, strong) UIView *loadingBarView;
@@ -128,9 +125,6 @@ static const CGFloat kAnimate = 0.3;
     self.sliderBtn.center = sliderBtnCenter;
 }
 
-/**
- 添加子视图
- */
 - (void)addSubViews {
     
     self.sliderBtn.userInteractionEnabled = NO;
@@ -144,11 +138,9 @@ static const CGFloat kAnimate = 0.3;
     [self addSubview:self.sliderBtn];
     [self addSubview:self.loadingBarView];
     
-    // 添加点击手势
     self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
     [self addGestureRecognizer:self.tapGesture];
     
-    // 添加滑动手势
     UIPanGestureRecognizer *sliderGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(sliderGesture:)];
     [self addGestureRecognizer:sliderGesture];
 }
@@ -259,7 +251,7 @@ static const CGFloat kAnimate = 0.3;
 
 - (void)setIsHideSliderBlock:(BOOL)isHideSliderBlock {
     _isHideSliderBlock = isHideSliderBlock;
-    // 隐藏滑块，滑杆不可点击
+    // Hide Slider
     if (isHideSliderBlock) {
         self.sliderBtn.hidden = YES;
         
@@ -367,11 +359,11 @@ static const CGFloat kAnimate = 0.3;
 }
 
 - (void)sliderBtnDragMoving:(UIButton *)btn point:(CGPoint)touchPoint {
-    // 点击的位置
+    // touch point
     CGPoint point = touchPoint;
-    // 获取进度值 由于btn是从 0-(self.width - btn.width)
+    // get process value
     CGFloat value = (point.x - CGRectGetWidth(btn.bounds) * 0.5) / CGRectGetWidth(self.bgProgressView.bounds);
-    // value的值需在0-1之间
+    // value between 0-1
     value = value >= 1.0 ? 1.0 : value <= 0.0 ? 0.0 : value;
     if (self.value == value) return;
     self.isForward = self.value < value;
@@ -383,7 +375,7 @@ static const CGFloat kAnimate = 0.3;
 
 - (void)tapped:(UITapGestureRecognizer *)tap {
     CGPoint point = [tap locationInView:self.bgProgressView];
-    // 获取进度
+    // get process
     CGFloat value = point.x * 1.0 / CGRectGetWidth(self.bgProgressView.bounds);
     value = value >= 1.0 ? 1.0 : value <= 0 ? 0 : value;
     self.value = value;

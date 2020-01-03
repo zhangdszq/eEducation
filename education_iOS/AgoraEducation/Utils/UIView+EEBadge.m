@@ -10,8 +10,12 @@
 
 
 static char badgeViewKey;
-static NSInteger const pointWidth = 18; //小红点的宽高
-static NSInteger const rightRange = 0; //距离控件右边的距离
+
+// The width and height of the small red dot
+static NSInteger const pointWidth = 18;
+
+// Distance to the right of the control
+static NSInteger const rightRange = 0;
 
 @implementation UIView (EEBadge)
 - (void)showBadgeWithTopMagin:(CGFloat)magin
@@ -46,7 +50,6 @@ static NSInteger const rightRange = 0; //距离控件右边的距离
 
 - (UILabel *)badge
 {
-    //通过runtime创建一个UILabel的属性
     return objc_getAssociatedObject(self, &badgeViewKey);
 }
 

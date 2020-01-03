@@ -11,13 +11,9 @@
 @protocol SliderViewDelegate <NSObject>
 
 @optional
-// 滑块滑动开始
 - (void)sliderTouchBegan:(float)value;
-// 滑块滑动中
 - (void)sliderValueChanged:(float)value;
-// 滑块滑动结束
 - (void)sliderTouchEnded:(float)value;
-// 滑杆点击
 - (void)sliderTapped:(float)value;
 
 @end
@@ -32,52 +28,51 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<SliderViewDelegate> delegate;
 
-/** 滑块 */
+/** slider */
 @property (nonatomic, strong, readonly) SliderButton *sliderBtn;
 
-/** 默认滑杆的颜色 */
+/** default slider color */
 @property (nonatomic, strong) UIColor *maximumTrackTintColor;
 
-/** 滑杆进度颜色 */
+/** slider track color */
 @property (nonatomic, strong) UIColor *minimumTrackTintColor;
 
-/** 缓存进度颜色 */
+/** buffer track color */
 @property (nonatomic, strong) UIColor *bufferTrackTintColor;
 
-/** loading进度颜色 */
+/** loading color */
 @property (nonatomic, strong) UIColor *loadingTintColor;
 
-/** 默认滑杆的图片 */
+/** default track image */
 @property (nonatomic, strong) UIImage *maximumTrackImage;
 
-/** 滑杆进度的图片 */
+/** track progress image */
 @property (nonatomic, strong) UIImage *minimumTrackImage;
 
-/** 缓存进度的图片 */
+/** buffer track image */
 @property (nonatomic, strong) UIImage *bufferTrackImage;
 
-/** 滑杆进度 */
+/** progress */
 @property (nonatomic, assign) float value;
 
-/** 缓存进度 */
+/** buffer progress */
 @property (nonatomic, assign) float bufferValue;
 
-/** 是否允许点击，默认是YES */
+/** allow tapped，default: YES */
 @property (nonatomic, assign) BOOL allowTapped;
 
-/** 是否允许点击，默认是YES */
+/** allow animate，default: YES */
 @property (nonatomic, assign) BOOL animate;
 
-/** 设置滑杆的高度 */
+/** slider height */
 @property (nonatomic, assign) CGFloat sliderHeight;
 
-/** 是否隐藏滑块（默认为NO） */
+/** hide slider（default: NO） */
 @property (nonatomic, assign) BOOL isHideSliderBlock;
 
-/// 是否正在拖动
 @property (nonatomic, assign) BOOL isdragging;
 
-/// 向前还是向后拖动
+/// dragging forward or back
 @property (nonatomic, assign) BOOL isForward;
 
 @property (nonatomic, assign) CGSize thumbSize;
@@ -92,10 +87,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)stopAnimating;
 
-// 设置滑块背景色
+// set slider background image
 - (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state;
 
-// 设置滑块图片
+// set slider image
 - (void)setThumbImage:(UIImage *)image forState:(UIControlState)state;
 
 @end
