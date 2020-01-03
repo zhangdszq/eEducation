@@ -69,18 +69,8 @@ public class StudentListFrament extends BaseFragment {
                 vH.ivBtnMuteVideo.setVisibility(View.VISIBLE);
                 vH.ivBtnMuteAudio.setSelected(user.audio == 1);
                 vH.ivBtnMuteVideo.setSelected(user.video == 1);
-                vH.ivBtnMuteAudio.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mImStrategy.muteLocalAudio(v.isSelected());
-                    }
-                });
-                vH.ivBtnMuteVideo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mImStrategy.muteLocalVideo(v.isSelected());
-                    }
-                });
+                vH.ivBtnMuteAudio.setOnClickListener(v -> mImStrategy.muteLocalAudio(v.isSelected()));
+                vH.ivBtnMuteVideo.setOnClickListener(v -> mImStrategy.muteLocalVideo(v.isSelected()));
             } else {
                 vH.ivBtnMuteVideo.setVisibility(View.GONE);
                 vH.ivBtnMuteAudio.setVisibility(View.GONE);

@@ -13,7 +13,7 @@
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:textColor="@color/gray_191919"
-        android:textSize="@dimen/dp_16"
+        android:textSize="@dimen/sp_16"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView

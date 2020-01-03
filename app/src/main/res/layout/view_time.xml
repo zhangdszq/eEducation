@@ -17,5 +17,5 @@
         android:layout_gravity="center_vertical"
         android:text="00:00:00"
         android:textColor="@color/gray_333333"
-        android:textSize="@dimen/dp_12" />
+        android:textSize="@dimen/sp_12" />
 </merge>

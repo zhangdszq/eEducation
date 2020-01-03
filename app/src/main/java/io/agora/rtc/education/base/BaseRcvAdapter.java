@@ -1,7 +1,5 @@
 package io.agora.rtc.education.base;
 
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 

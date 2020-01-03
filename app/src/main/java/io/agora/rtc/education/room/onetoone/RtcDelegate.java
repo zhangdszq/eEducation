@@ -21,9 +21,6 @@ public class RtcDelegate {
     }
 
     public void joinChannel(String channel, Student myAttr) {
-        rtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
-        rtcEngine.enableAudio();
-        rtcEngine.enableVideo();
         rtcEngine.muteLocalAudioStream(myAttr.audio == 0);
         rtcEngine.muteLocalVideoStream(myAttr.video == 0);
         VideoEncoderConfiguration config = new VideoEncoderConfiguration(
@@ -33,7 +30,7 @@ public class RtcDelegate {
                 VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE
         );
         rtcEngine.setVideoEncoderConfiguration(config);
-        rtcEngine.joinChannel(null, channel, "", myAttr.uid);
+        rtcWorker.joinChannel(Constants.CLIENT_ROLE_BROADCASTER, channel, myAttr.uid);
     }
 
     public void leaveChannel() {

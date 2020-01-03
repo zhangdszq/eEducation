@@ -175,12 +175,9 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
         super.setVisibility(visibility);
         if (mPlayer != null && visibility == VISIBLE) {
             if (mPlayer.getPlayerPhase() == PlayerPhase.playing) {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mPlayer.getPlayerPhase() == PlayerPhase.playing)
-                            setVisibility(GONE);
-                    }
+                mHandler.postDelayed(() -> {
+                    if (mPlayer.getPlayerPhase() == PlayerPhase.playing)
+                        setVisibility(GONE);
                 }, 2500);
             }
         }
@@ -201,23 +198,20 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
         if (mManager != null) {
             mManager.updateWhitePlayerPhase(playerPhase);
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                switch (playerPhase) {
-                    case playing:
-                        btnPlay.setVisibility(GONE);
-                        btnPlayPause.setImageResource(R.drawable.icon_pause);
-                        setVisibility(VISIBLE);
-                        break;
-                    case pause:
-                    case ended:
-                    case stopped:
-                        btnPlay.setVisibility(VISIBLE);
-                        btnPlayPause.setImageResource(R.drawable.icon_play);
-                        setVisibility(VISIBLE);
-                        break;
-                }
+        mHandler.post(() -> {
+            switch (playerPhase) {
+                case playing:
+                    btnPlay.setVisibility(GONE);
+                    btnPlayPause.setImageResource(R.drawable.icon_pause);
+                    setVisibility(VISIBLE);
+                    break;
+                case pause:
+                case ended:
+                case stopped:
+                    btnPlay.setVisibility(VISIBLE);
+                    btnPlayPause.setImageResource(R.drawable.icon_play);
+                    setVisibility(VISIBLE);
+                    break;
             }
         });
     }
@@ -229,12 +223,7 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
         } else if (mPlayer != null) {
             mPlayer.pause();
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                setVisibility(VISIBLE);
-            }
-        });
+        mHandler.post(() -> setVisibility(VISIBLE));
     }
 
     @Override
@@ -251,14 +240,11 @@ public class ReplayControl extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void onScheduleTimeChanged(final long l) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mPlayer != null) {
-                    float percent = (float) l / mPlayer.getPlayerTimeInfo().getTimeDuration();
-                    sbTime.setProgress((int) (percent * sbTime.getMax()));
-                    tvCurrentTime.setText(TimeUtil.stringForTimeHMS(l / 1000, "%02d:%02d:%02d"));
-                }
+        mHandler.post(() -> {
+            if (mPlayer != null) {
+                float percent = (float) l / mPlayer.getPlayerTimeInfo().getTimeDuration();
+                sbTime.setProgress((int) (percent * sbTime.getMax()));
+                tvCurrentTime.setText(TimeUtil.stringForTimeHMS(l / 1000, "%02d:%02d:%02d"));
             }
         });
     }
