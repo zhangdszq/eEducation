@@ -37,7 +37,7 @@
         lineView.backgroundColor = [UIColor colorWithHexString:@"44A2FC"];
         [self addSubview:lineView];
         lineView.tag = i + 100;
-        itemButton.tag = i + 1000; //tag设计不太好，因为如果你封装东西，可能整个加载u页面会有其他的设置
+        itemButton.tag = i + 1000;
         if (i == 0) {
             [itemButton setSelected:YES];
         }else {

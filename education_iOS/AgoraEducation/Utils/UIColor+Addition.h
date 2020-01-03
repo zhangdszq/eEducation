@@ -11,11 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UIColor (Addition)
-//设置RGB颜色
+// Set RGB color
 + (UIColor *)red:(NSInteger)red green:(NSInteger)green blue:(NSInteger)blue alpha:(CGFloat)alpha;
-//将颜色转换成RGB
+// Convert color to RGB
 + (NSArray *)convertColorToRGB:(UIColor *)color;
-//设置十六进制颜色
+// Set the hex color
 + (UIColor *)colorWithHex:(NSInteger)hex;
 + (UIColor*)colorWithHexString:(NSString *)hexString;
 +(UIColor *)colorWithHexString:(NSString *)hexString alpha:(CGFloat)alpha;
