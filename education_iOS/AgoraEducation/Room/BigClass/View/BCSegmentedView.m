@@ -18,7 +18,7 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        self.items = [NSArray arrayWithObjects:@"教材区",@"Chatroom", nil];
+        self.items = [NSArray arrayWithObjects:@"Materials area",@"Chatroom", nil];
     }
     return self;
 }

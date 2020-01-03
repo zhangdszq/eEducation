@@ -186,7 +186,7 @@
         muteChat = studentModel.chat == 0 ? YES : NO;
     }
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
 
     self.studentView.defaultImageView.hidden = studentModel.video == 0 ? NO : YES;
     [self.studentView updateCameraImageWithLocalVideoMute:studentModel.video == 0 ? YES : NO];
@@ -307,7 +307,7 @@
 
 - (void)closeRoom {
     WEAK(self);
-    [AlertViewUtil showAlertWithController:self title:@"是否退出房间？" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:@"Quit classroom？" sureHandler:^(UIAlertAction * _Nullable action) {
 
         [weakself.navigationView stopTimer];
         [weakself.educationManager releaseResources];
@@ -522,7 +522,7 @@
                 successBlock();
             }
         } else {
-            NSLog(@"设置场景Index失败：%@", error);
+            NSLog(@"Set scene index err：%@", error);
         }
     }];
 }

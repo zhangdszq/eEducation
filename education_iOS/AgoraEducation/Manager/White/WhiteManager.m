@@ -143,20 +143,30 @@
 }
 
 #pragma mark WhitePlayerEventDelegate
-/** 播放状态切换回调 */
+/**
+Playback status switching callback
+播放状态切换回调
+*/
 - (void)phaseChanged:(WhitePlayerPhase)phase {
     [self updateWhitePlayerPhase:phase];
     if([self.whiteManagerDelegate respondsToSelector:@selector(phaseChanged:)]) {
         [self.whiteManagerDelegate phaseChanged: phase];
     }
 }
-/** 出错暂停 */
+
+/**
+Pause on error
+出错暂停
+*/
 - (void)stoppedWithError:(NSError *)error {
     if([self.whiteManagerDelegate respondsToSelector:@selector(stoppedWithError:)]) {
         [self.whiteManagerDelegate stoppedWithError: error];
     }
 }
-/** 进度时间变化 */
+/**
+Progress time change
+进度时间变化
+*/
 - (void)scheduleTimeChanged:(NSTimeInterval)time {
     if([self.whiteManagerDelegate respondsToSelector:@selector(scheduleTimeChanged:)]) {
         [self.whiteManagerDelegate scheduleTimeChanged: time];
@@ -165,8 +175,9 @@
 
 #pragma mark WhiteCombineDelegate
 /**
- 进入缓冲状态，WhitePlayer，NativePlayer 任一进入缓冲，都会回调。
- */
+Entering the buffer state, any time WhitePlayer or NativePlayer enters the buffer, it will callback.
+进入缓冲状态，WhitePlayer，NativePlayer 任一进入缓冲，都会回调。
+*/
 - (void)combinePlayerStartBuffering {
     if([self.whiteManagerDelegate respondsToSelector:@selector(combinePlayerStartBuffering)]) {
         [self.whiteManagerDelegate combinePlayerStartBuffering];
@@ -174,8 +185,9 @@
 }
 
 /**
- 结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
- */
+When the buffer state is finished, the WhitePlayer and NativePlayer have completed buffering, and then they will call back.
+结束缓冲状态，WhitePlayer，NativePlayer 全部完成缓冲，才会回调。
+*/
 - (void)combinePlayerEndBuffering {
     if([self.whiteManagerDelegate respondsToSelector:@selector(combinePlayerEndBuffering)]) {
         [self.whiteManagerDelegate combinePlayerEndBuffering];
@@ -183,8 +195,9 @@
 }
 
 /**
- NativePlayer 播放结束
- */
+NativePlayer end of play
+NativePlayer 播放结束
+*/
 - (void)nativePlayerDidFinish {
     if([self.whiteManagerDelegate respondsToSelector:@selector(nativePlayerDidFinish)]) {
         [self.whiteManagerDelegate nativePlayerDidFinish];
@@ -192,10 +205,11 @@
 }
 
 /**
- videoPlayer 无法进行播放，需要重新创建 CombinePlayer 进行播放
+VideoPlayer unable to play, need to re-create CombinePlayer for playback
+VideoPlayer 无法进行播放，需要重新创建 CombinePlayer 进行播放
 
- @param error 错误原因
- */
+@param error 错误原因
+*/
 - (void)combineVideoPlayerError:(NSError *)error {
     if([self.whiteManagerDelegate respondsToSelector:@selector(combineVideoPlayerError:)]) {
         [self.whiteManagerDelegate combineVideoPlayerError: error];
@@ -204,9 +218,10 @@
 
 #pragma mark WhiteRoomCallbackDelegate
 /**
- 房间中RoomState属性，发生变化时，会触发该回调。
- @param modifyState 发生变化的 RoomState 内容
- */
+The RoomState property in the room will trigger this callback when it changes.
+房间中RoomState属性，发生变化时，会触发该回调。
+@param modifyState 发生变化的 RoomState 内容
+*/
 - (void)fireRoomStateChanged:(WhiteRoomState *)modifyState {
     if([self.whiteManagerDelegate respondsToSelector:@selector(fireRoomStateChanged:)]) {
         [self.whiteManagerDelegate fireRoomStateChanged: modifyState];
