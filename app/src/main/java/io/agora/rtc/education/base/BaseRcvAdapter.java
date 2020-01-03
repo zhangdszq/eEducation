@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseRcvAdapter<VH extends RecyclerView.ViewHolder, T> extends RecyclerView.Adapter<VH> {
+
     @NonNull
     protected List<T> mList = new ArrayList<>();
 
@@ -26,4 +27,5 @@ public abstract class BaseRcvAdapter<VH extends RecyclerView.ViewHolder, T> exte
     public T getItem(int position) {
         return mList.get(position);
     }
+
 }

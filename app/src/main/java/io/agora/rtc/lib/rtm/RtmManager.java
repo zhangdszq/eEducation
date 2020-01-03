@@ -127,7 +127,7 @@ public class RtmManager {
             @Override
             public void onFailure(ErrorInfo errorInfo) {
                 log.i("login failed");
-                // 如果error是rejected，可能已经在房间导致，尝试退出重登
+                // if error is rejected，maybe login already，try logout before login
                 if (retryCount > 1 || errorInfo.getErrorCode() != RtmStatusCode.LoginError.LOGIN_ERR_REJECTED) {
                     changeLoginStatus(LOGIN_STATUS_FAILURE);
                     String failStr = "login failed, info:" + errorInfo.toString();

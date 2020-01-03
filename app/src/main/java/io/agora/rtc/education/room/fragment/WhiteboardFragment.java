@@ -170,15 +170,15 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onRoomPhaseChange(RoomPhase phase) {
                 if (phase == RoomPhase.connected) {
-                    showToast("连接成功");
+                    showToast("connected");
                     setButtonsEnable(true);
 
                 } else if (phase == RoomPhase.disconnected) {
-                    showToast("断开连接");
+                    showToast("disconnected");
                     setButtonsEnable(false);
 
                 } else if (phase == RoomPhase.reconnecting) {
-                    showToast("重新建立连接");
+                    showToast("reconnecting");
                     setButtonsEnable(false);
                 }
             }
@@ -305,4 +305,5 @@ public class WhiteboardFragment extends BaseFragment implements View.OnClickList
                 break;
         }
     }
+
 }

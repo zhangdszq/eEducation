@@ -1,6 +1,7 @@
 package io.agora.rtc.education.im;
 
 public class P2PMessage {
+
     public P2PMessage() {
     }
 
@@ -15,4 +16,5 @@ public class P2PMessage {
 
     public int cmd;
     public String text;
+
 }

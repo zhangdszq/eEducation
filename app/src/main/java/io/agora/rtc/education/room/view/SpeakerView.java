@@ -48,9 +48,9 @@ public class SpeakerView extends AppCompatImageView {
     };
     private int showIndex = 0;
 
-    public static final int STATE_CLOSED = 0; //关闭
-    public static final int STATE_OPENED = 1; //开启
-    public static final int STATE_SPEAKING = 2; //正在说话
+    public static final int STATE_CLOSED = 0; // closed
+    public static final int STATE_OPENED = 1; // opened
+    public static final int STATE_SPEAKING = 2; // speaking
     private int speakingState = 0;
 
     /**
