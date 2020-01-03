@@ -312,7 +312,7 @@ public class LargeClassActivity extends BaseActivity {
             public void onApply() {
                 Teacher teacher = mChannelData.getTeacher();
                 if (teacher == null) {
-                    ToastUtil.showShort("老师不在房间，不能申请上麦！");
+                    ToastUtil.showShort("teacher is offline，cant apply to become host");
                     return;
                 }
                 String teacherUid = String.valueOf(teacher.getUid());

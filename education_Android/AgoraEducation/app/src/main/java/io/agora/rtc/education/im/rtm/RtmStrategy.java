@@ -126,16 +126,16 @@ public class RtmStrategy implements IMStrategy {
         }
 
         if (studentAttributesMap.isEmpty() || studentAttributesMap.get(String.valueOf(myAttr().uid)) == null) {
-            // 第一次得到数据不包含自己，等待有自己的数据后再渲染出来
+            // if data no contain my attribute, reset and return
             mRepository.resetData();
             return;
         }
 
         if (TextUtils.isEmpty(teacherJson)) {
-            // 老师不在房间
+            // teacher is offline
             mRepository.setTeacher(null);
         } else {
-            // 老师在房间
+            // teacher is online
             try {
                 mRepository.setTeacher(gson.fromJson(teacherJson, Teacher.class));
             } catch (Exception e) {

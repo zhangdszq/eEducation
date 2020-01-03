@@ -18,6 +18,7 @@ import io.agora.rtc.education.room.view.UserVideoItem;
 import io.agora.rtc.video.VideoCanvas;
 
 public class VideoItemRcvAdapter extends BaseRcvAdapter<VideoItemRcvAdapter.ViewHolder, User> {
+
     private int myUid;
 
     public VideoItemRcvAdapter(int myUid) {
@@ -59,9 +60,9 @@ public class VideoItemRcvAdapter extends BaseRcvAdapter<VideoItemRcvAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
         }
     }
+
 }

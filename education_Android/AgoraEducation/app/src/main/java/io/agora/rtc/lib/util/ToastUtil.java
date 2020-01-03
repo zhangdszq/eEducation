@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 public class ToastUtil {
+
     private static Context mContext;
 
     public static void init(Context context) {
@@ -66,4 +67,5 @@ public class ToastUtil {
             toast.show();
         });
     }
+
 }

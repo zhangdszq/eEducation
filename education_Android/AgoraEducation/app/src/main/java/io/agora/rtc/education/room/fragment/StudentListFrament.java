@@ -19,7 +19,6 @@ import io.agora.rtc.education.base.BaseListAdapter;
 import io.agora.rtc.education.data.bean.User;
 import io.agora.rtc.education.im.IMStrategy;
 
-
 public class StudentListFrament extends BaseFragment {
 
     private ListView mLvStudents;
@@ -39,8 +38,7 @@ public class StudentListFrament extends BaseFragment {
     }
 
     public static StudentListFrament newInstance() {
-        StudentListFrament fragment = new StudentListFrament();
-        return fragment;
+        return new StudentListFrament();
     }
 
     @Override
@@ -59,7 +57,6 @@ public class StudentListFrament extends BaseFragment {
     }
 
     private class StudentListAdapter extends BaseListAdapter<User> {
-
         @Override
         protected void onBindViewHolder(BaseViewHolder viewHolder, User user, int position) {
             final MyViewHolder vH = (MyViewHolder) viewHolder;
@@ -98,4 +95,5 @@ public class StudentListFrament extends BaseFragment {
             ivBtnMuteVideo = itemView.findViewById(R.id.iv_btn_mute_video);
         }
     }
+
 }
