@@ -11,11 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.education.AGApplication;
-import io.agora.rtc.lib.rtc.RtcWorkerThread;
-import io.agora.rtc.lib.rtm.RtmManager;
-
 public abstract class BaseFragment extends Fragment {
 
     protected Context mContext;
@@ -23,18 +18,6 @@ public abstract class BaseFragment extends Fragment {
     private FragmentStateListener mListener;
 
     protected abstract View initUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
-
-    protected RtmManager rtmManager() {
-        return AGApplication.the().getRtmManager();
-    }
-
-    protected RtcWorkerThread rtcWorker() {
-        return AGApplication.the().getRtcWorker();
-    }
-
-    protected RtcEngine rtcEngine() {
-        return AGApplication.the().getRtcWorker().getRtcEngine();
-    }
 
     @Nullable
     @Override

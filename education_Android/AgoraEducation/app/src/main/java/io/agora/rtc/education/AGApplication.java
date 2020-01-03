@@ -2,7 +2,6 @@ package io.agora.rtc.education;
 
 import android.app.Application;
 
-import io.agora.rtc.education.im.rtm.RtmStrategy;
 import io.agora.rtc.education.im.IMContext;
 import io.agora.rtc.education.room.whiteboard.WhiteboardAPI;
 import io.agora.rtc.lib.rtc.RtcWorkerThread;
@@ -10,7 +9,6 @@ import io.agora.rtc.lib.rtm.RtmManager;
 import io.agora.rtc.lib.util.LogUtil;
 import io.agora.rtc.lib.util.SPUtil;
 import io.agora.rtc.lib.util.ToastUtil;
-
 
 public class AGApplication extends Application {
 
@@ -80,4 +78,5 @@ public class AGApplication extends Application {
     public RtmManager getRtmManager() {
         return rtmManager;
     }
+
 }

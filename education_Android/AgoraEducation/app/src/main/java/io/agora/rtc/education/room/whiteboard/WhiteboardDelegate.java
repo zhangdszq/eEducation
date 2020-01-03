@@ -3,7 +3,6 @@ package io.agora.rtc.education.room.whiteboard;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.herewhite.sdk.AbstractRoomCallbacks;
@@ -55,12 +54,9 @@ public class WhiteboardDelegate {
     public void initWhiteSdk(Context c, WhiteboardView mWhiteboardView) {
         WhiteSdkConfiguration configuration = new WhiteSdkConfiguration(DeviceType.touch, 10, 0.1);
         mWhiteSdk = new WhiteSdk(mWhiteboardView, c, configuration);
-        mWhiteboardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (mRoom != null) {
-                    mRoom.refreshViewSize();
-                }
+        mWhiteboardView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (mRoom != null) {
+                mRoom.refreshViewSize();
             }
         });
     }
@@ -113,12 +109,9 @@ public class WhiteboardDelegate {
                 mWhiteSdk.joinRoom(roomParams, new AbstractRoomCallbacks() {
                     @Override
                     public void onPhaseChanged(final RoomPhase phase) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callBack != null)
-                                    callBack.onRoomPhaseChange(phase);
-                            }
+                        runOnUiThread(() -> {
+                            if (callBack != null)
+                                callBack.onRoomPhaseChange(phase);
                         });
                     }
 
@@ -130,49 +123,33 @@ public class WhiteboardDelegate {
 
                         if (memberState != null) {
                             final String applianceName = memberState.getCurrentApplianceName();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mAppliancesToolBar.setState(applianceName);
-                                }
-                            });
+                            runOnUiThread(() -> mAppliancesToolBar.setState(applianceName));
                         }
                         if (broadcastState != null) {
                             final ViewMode viewMode = broadcastState.getMode();//自己是否为主播
                             final boolean hasBroadcaster = broadcastState.getBroadcasterInformation() != null;// 房间内是否有主播
                         }
                         if (sceneState != null) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mSceneHelper.setSceneState(sceneState);
-                                }
-                            });
+                            runOnUiThread(() -> mSceneHelper.setSceneState(sceneState));
                         }
                     }
                 }, new Promise<Room>() {
                     @Override
                     public void then(final Room room) {
                         log.i("join room success");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setupRoom(room);
-                                if (callBack != null)
-                                    callBack.onSuccess();
-                            }
+                        runOnUiThread(() -> {
+                            setupRoom(room);
+                            if (callBack != null)
+                                callBack.onSuccess();
                         });
                     }
 
                     @Override
                     public void catchEx(final SDKError sdkError) {
                         log.i("join room fail" + sdkError);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callBack != null)
-                                    callBack.onFailure(sdkError.getMessage());
-                            }
+                        runOnUiThread(() -> {
+                            if (callBack != null)
+                                callBack.onFailure(sdkError.getMessage());
                         });
                     }
                 });
@@ -181,12 +158,9 @@ public class WhiteboardDelegate {
             @Override
             public void fail(final String errorMessage) {
                 log.i("get room fail:" + errorMessage);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callBack != null)
-                            callBack.onFailure(errorMessage);
-                    }
+                runOnUiThread(() -> {
+                    if (callBack != null)
+                        callBack.onFailure(errorMessage);
                 });
             }
         });
@@ -204,24 +178,18 @@ public class WhiteboardDelegate {
                     @Override
                     public void then(final Player player) {
                         log.i("create player success");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callBack != null)
-                                    callBack.onSuccess(player);
-                            }
+                        runOnUiThread(() -> {
+                            if (callBack != null)
+                                callBack.onSuccess(player);
                         });
                     }
 
                     @Override
                     public void catchEx(final SDKError sdkError) {
                         log.i("create player fail" + sdkError);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callBack != null)
-                                    callBack.onFailure(sdkError.getMessage());
-                            }
+                        runOnUiThread(() -> {
+                            if (callBack != null)
+                                callBack.onFailure(sdkError.getMessage());
                         });
                     }
                 });
@@ -230,12 +198,9 @@ public class WhiteboardDelegate {
             @Override
             public void fail(final String errorMessage) {
                 log.i("get room fail:" + errorMessage);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callBack != null)
-                            callBack.onFailure(errorMessage);
-                    }
+                runOnUiThread(() -> {
+                    if (callBack != null)
+                        callBack.onFailure(errorMessage);
                 });
             }
         });

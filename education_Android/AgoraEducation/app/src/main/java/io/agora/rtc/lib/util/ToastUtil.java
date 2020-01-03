@@ -8,7 +8,6 @@ import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
-
 public class ToastUtil {
     private static Context mContext;
 
@@ -54,20 +53,17 @@ public class ToastUtil {
         if (activity == null || activity.isFinishing()) {
             return;
         }
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (activity.isFinishing()) {
-                    return;
-                }
-                Toast toast = Toast.makeText(activity, msg, Toast.LENGTH_SHORT);
-                TextView textView = new TextView(activity);
-                textView.setTextColor(ContextCompat.getColor(activity, textColor));
-                textView.setTextSize(18);
-                textView.setText(msg);
-                toast.setView(textView);
-                toast.show();
+        activity.runOnUiThread(() -> {
+            if (activity.isFinishing()) {
+                return;
             }
+            Toast toast = Toast.makeText(activity, msg, Toast.LENGTH_SHORT);
+            TextView textView = new TextView(activity);
+            textView.setTextColor(ContextCompat.getColor(activity, textColor));
+            textView.setTextSize(18);
+            textView.setText(msg);
+            toast.setView(textView);
+            toast.show();
         });
     }
 }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import java.util.Set;
-
 public class SPUtil {
 
     private static SharedPreferences sp;
@@ -26,7 +24,7 @@ public class SPUtil {
         } else if (value instanceof Float) {
             sp.edit().putFloat(key, (Float) value).apply();
         } else if (value instanceof Long) {
-            sp.edit().putLong(key, (Long)value).apply();
+            sp.edit().putLong(key, (Long) value).apply();
         }
     }
 

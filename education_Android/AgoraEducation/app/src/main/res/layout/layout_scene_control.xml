@@ -36,7 +36,7 @@
             android:background="@drawable/btn_circle_f5f7f8"
             android:gravity="center"
             android:textColor="@color/gray_191919"
-            android:textSize="@dimen/dp_14" />
+            android:textSize="@dimen/sp_14" />
 
         <ImageView
             android:id="@+id/ic_next"
