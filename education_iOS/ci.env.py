@@ -6,17 +6,31 @@ import os
 def main():
     os.system("pod install")
 
-    appId = ""
+    agoraAppId = ""
+    agoraRTCToken = ""
+    agoraRTMToken = ""
+    whiteBoardToken = ""
     if "AGORA_APP_ID" in os.environ:
-        appId = os.environ["AGORA_APP_ID"]
+        agoraAppId = os.environ["AGORA_APP_ID"]
+    if "AGORA_RTC_TOKEN" in os.environ:
+        agoraRTCToken = os.environ["AGORA_RTC_TOKEN"]
+    if "AGORA_RTM_TOKEN" in os.environ:
+        agoraRTMToken = os.environ["AGORA_RTM_TOKEN"]
+    if "WHITE_BOARD_TOKEN" in os.environ:
+        whiteBoardToken = os.environ["WHITE_BOARD_TOKEN"]
 
-
-    f = open("./AgoraEducation/Supporting Files/Configs.m", 'r+')
+    f = open("./AgoraEducation/KeyCenter.m", 'r+')
     content = f.read()
-    appString = "@\"" + appId + "\""
-    tokenString = "@\"" + baseUrl + "\""
-    contentNew = re.sub(r'<#@"Agora AppID"#>', appString, content)
-    contentNew = re.sub(r'<#@"netless Token"#>', tokenString, contentNew)
+    agoraAppIdString = "@\"" + agoraAppId + "\""
+    agoraRTCTokenString = "@\"" + agoraRTCToken + "\""
+    agoraRTMTokenString = "@\"" + agoraRTMToken + "\""
+    whiteBoardTokenString = "@\"" + whiteBoardToken + "\""
+    
+    contentNew = re.sub(r'<#Your Agora App Id#>', agoraAppIdString, content)
+    contentNew = re.sub(r'<#Your Agora RTC Token#>', agoraRTCTokenString, contentNew)
+    contentNew = re.sub(r'<#Your Agora RTM Token#>', agoraRTMTokenString, contentNew)
+    contentNew = re.sub(r'<#Your White Token#>', whiteBoardTokenString, contentNew)
+    
     f.seek(0)
     f.write(contentNew)
     f.truncate()

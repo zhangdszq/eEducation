@@ -242,7 +242,7 @@
 
     BOOL muteChat = self.educationManager.teacherModel != nil ? self.educationManager.teacherModel.mute_chat : NO;
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
     
     if(studentModel == nil) {
         return;
@@ -252,7 +252,7 @@
         muteChat = studentModel.chat == 0 ? YES : NO;
     }
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" 禁言中" : @" 说点什么";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
     
     [self.studentVideoView updateVideoImageWithMuted:studentModel.video == 0 ? YES : NO];
     [self.studentVideoView updateAudioImageWithMuted:studentModel.audio == 0 ? YES : NO];
@@ -366,7 +366,7 @@
         weakself.linkState = StudentLinkStateAccept;
         
         weakself.tipLabel.hidden = NO;
-        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@接受了你的连麦申请!", weakself.educationManager.teacherModel.account]];
+        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@ accept your interactive request!", weakself.educationManager.teacherModel.account]];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakself.tipLabel.hidden = YES;
         });
@@ -460,7 +460,7 @@
 #pragma mark RoomProtocol
 - (void)closeRoom {
     WEAK(self);
-    [AlertViewUtil showAlertWithController:self title:@"是否退出房间?" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:@"Quit classroom?" sureHandler:^(UIAlertAction * _Nullable action) {
         
         if (weakself.linkState == StudentLinkStateAccept) {
             [weakself.educationManager setSignalWithType:SignalP2PTypeCancel completeSuccessBlock:nil];
@@ -701,7 +701,7 @@
                 successBlock();
             }
         } else {
-            NSLog(@"设置场景Index失败：%@", error);
+            NSLog(@"Set scene index err：%@", error);
         }
     }];
 }

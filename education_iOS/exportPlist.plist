@@ -8,7 +8,7 @@
 	<true/>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>io.agora.AgoraMiniClass</key>
+		<key>io.agora.AgoraEducation</key>
 		<string>AgoraAppsDevProfile</string>
 	</dict>
 </dict>

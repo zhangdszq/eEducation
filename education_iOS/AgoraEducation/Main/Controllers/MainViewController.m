@@ -151,28 +151,28 @@
     
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
         
-        [AlertViewUtil showAlertWithController:self title:@"用户名为11位及以内的数字或者英文字符"];
+        [AlertViewUtil showAlertWithController:self title:@"User name must be within 11 digits or English characters"];
         return;
     }
     
     NSString *className = self.classNameTextFiled.text;
-    if ([self.roomType.titleLabel.text isEqualToString:@"一对一"]) {
+    if ([self.roomType.titleLabel.text isEqualToString:@"One-to-One"]) {
         
         NSString *channelName = [NSString stringWithFormat:@"0%@", className.md5];
         [self join1V1RoomWithChannelName:channelName maxStudentCount:1 vcIdentifier:@"oneToOneRoom"];
 
-    } else if ([self.roomType.titleLabel.text isEqualToString:@"小班课"]) {
+    } else if ([self.roomType.titleLabel.text isEqualToString:@"Small Class"]) {
 
         NSString *channelName = [NSString stringWithFormat:@"1%@", className.md5];
         [self joinMinRoomWithChannelName:channelName maxStudentCount:16 vcIdentifier:@"mcRoom"];
         
-    } else if ([self.roomType.titleLabel.text isEqualToString:@"大班课"]) {
+    } else if ([self.roomType.titleLabel.text isEqualToString:@"Large Class"]) {
 
         NSString *channelName = [NSString stringWithFormat:@"2%@", className.md5];
         [self joinBigRoomWithChannelName:channelName vcIdentifier:@"bcroom"];
         
     } else {
-        [AlertViewUtil showAlertWithController:self title:@"请选择房间类型"];
+        [AlertViewUtil showAlertWithController:self title:@"Please select a room type"];
         return;
     }
 }
@@ -220,12 +220,12 @@
                [weakself presentViewController:vc animated:YES completion:nil];
                 
             } else {
-                [AlertViewUtil showAlertWithController:self title:@"人数已满,请换个房间"];
+                [AlertViewUtil showAlertWithController:self title:@"The number is full, please change room name"];
             }
             
         } completeFailBlock:^{
             
-            [AlertViewUtil showAlertWithController:weakself title:@"请求失败"];
+            [AlertViewUtil showAlertWithController:weakself title:@"Request failed"];
             
             [weakself.activityIndicator stopAnimating];
             [weakself.joinButton setEnabled:YES];
@@ -272,12 +272,12 @@
                 [weakself presentViewController:vc animated:YES completion:nil];
                 
             } else {
-                [AlertViewUtil showAlertWithController:self title:@"人数已满,请换个房间"];
+                [AlertViewUtil showAlertWithController:self title:@"Room is full, please change another room"];
             }
             
         } completeFailBlock:^{
             
-            [AlertViewUtil showAlertWithController:weakself title:@"请求失败"];
+            [AlertViewUtil showAlertWithController:weakself title:@"Request failed"];
             
             [weakself.activityIndicator stopAnimating];
             [weakself.joinButton setEnabled:YES];
