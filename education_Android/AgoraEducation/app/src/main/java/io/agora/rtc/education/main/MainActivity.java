@@ -37,6 +37,7 @@ import io.agora.rtm.RtmChannelAttribute;
 import io.agora.rtm.RtmClient;
 
 public class MainActivity extends BaseActivity {
+
     private CardView layoutRoomType;
     private EditText edtRoomType;
     private int userId = (int) (System.currentTimeMillis() * 1000 % 1000000);
@@ -84,7 +85,7 @@ public class MainActivity extends BaseActivity {
         }
 
         if (rtmManager().getLoginStatus() != RtmManager.LOGIN_STATUS_SUCCESS) {
-            ToastUtil.showShort("RTM登录未成功，请检查稍后重试！");
+            ToastUtil.showShort("RTM login not success，please check and try later！");
             rtmManager().login(String.valueOf(userId));
         }
 

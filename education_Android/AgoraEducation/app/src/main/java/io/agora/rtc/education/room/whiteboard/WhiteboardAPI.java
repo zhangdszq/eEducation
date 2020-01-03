@@ -8,20 +8,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.agora.rtc.lib.net.NetManager;
-import okhttp3.Call;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class WhiteboardAPI {
+
     private static final String HOST = "https://cloudcapiv4.herewhite.com";
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static String mSdkToken;
 
     public interface Callback {
         void success(String uuid, String roomToken);
+
         void fail(String errorMessage);
     }
 
@@ -32,7 +30,7 @@ public class WhiteboardAPI {
     public static void createRoom(String name, final Callback callback) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        params.put("limit", 0); // 0 表示没有限制
+        params.put("limit", 0); // 0 no limit
         params.put("mode", "historied");
 
         String url = HOST + "/room?token=" + mSdkToken;
@@ -72,4 +70,5 @@ public class WhiteboardAPI {
             }
         });
     }
+
 }

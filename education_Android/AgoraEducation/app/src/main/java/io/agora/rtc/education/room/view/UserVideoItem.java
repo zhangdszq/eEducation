@@ -60,21 +60,6 @@ public class UserVideoItem extends ConstraintLayout {
         return null;
     }
 
-//    public void changToLittleLayout() {
-//        Resources res = getContext().getResources();
-//        LayoutParams lp = (LayoutParams) info.getLayoutParams();
-//        lp.height = res.getDimensionPixelSize(R.dimen.dp_20);
-//        info.setLayoutParams(lp);
-//
-//        LayoutParams lpAudio = (LayoutParams) icAudio.getLayoutParams();
-//        int dp19 = res.getDimensionPixelSize(R.dimen.dp_19);
-//        lpAudio.width = dp19;
-//        lpAudio.height = dp19;
-//        icAudio.setLayoutParams(lpAudio);
-//
-//        tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimensionPixelSize(R.dimen.dp_12));
-//    }
-
     public void showVideo(boolean isShowVideo) {
         if (isShowVideo) {
             layoutVideo.setVisibility(View.VISIBLE);

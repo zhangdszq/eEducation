@@ -80,15 +80,4 @@ public class SceneHelper {
         return this.scenePath.substring(0, lastSemicolonIndex);
     }
 
-    public void showPPT(int index) {
-        if (this.room != null) {
-            PPTData pptData = PPTData.pptDatas[index];
-            String directory = "/defaultPPT" + pptData.getId();
-            String scenePath = directory + "/" + pptData.getScenes()[0].getName();
-
-            this.room.putScenes(directory, pptData.getScenes(), 0);
-            this.room.setScenePath(scenePath);
-        }
-    }
-
 }
