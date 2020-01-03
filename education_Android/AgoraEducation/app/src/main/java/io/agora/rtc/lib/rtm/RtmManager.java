@@ -24,7 +24,8 @@ import io.agora.rtm.RtmStatusCode;
 import io.agora.rtm.SendMessageOptions;
 
 public class RtmManager {
-    private final LogUtil log = new LogUtil("RtmManager");
+
+    private final LogUtil log = new LogUtil(this.getClass().getName());
 
     private Context mContext;
     private RtmClient mRtmClient;
@@ -188,7 +189,6 @@ public class RtmManager {
         }, null);
     }
 
-
     public RtmChannel createChannel(String channel, RtmChannelListener rtmChannelListener) {
         if (TextUtils.isEmpty(channel)) {
             return null;
@@ -282,4 +282,5 @@ public class RtmManager {
         rtmMessage.setText(msg);
         rtmChannel.sendMessage(rtmMessage, callback);
     }
+
 }

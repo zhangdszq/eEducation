@@ -90,20 +90,17 @@ public class MiniClassActivity extends BaseActivity {
         @Override
         public void onUserJoined(int uid, int elapsed) {
             if (uid == Constant.SHARE_UID) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int uid = Constant.SHARE_UID;
-                        mLayoutWhiteboard.setVisibility(View.INVISIBLE);
-                        if (mLayoutShareVideo.getVisibility() != View.VISIBLE) {
-                            mLayoutShareVideo.setVisibility(View.VISIBLE);
-                        }
-
-                        mLayoutShareVideo.removeAllViews();
-                        SurfaceView surfaceView = RtcEngine.CreateRendererView(MiniClassActivity.this);
-                        mLayoutShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        mRtcDelegate.bindRemoteRtcVideoFitMode(uid, surfaceView);
+                runOnUiThread(() -> {
+                    int uid1 = Constant.SHARE_UID;
+                    mLayoutWhiteboard.setVisibility(View.INVISIBLE);
+                    if (mLayoutShareVideo.getVisibility() != View.VISIBLE) {
+                        mLayoutShareVideo.setVisibility(View.VISIBLE);
                     }
+
+                    mLayoutShareVideo.removeAllViews();
+                    SurfaceView surfaceView = RtcEngine.CreateRendererView(MiniClassActivity.this);
+                    mLayoutShareVideo.addView(surfaceView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    mRtcDelegate.bindRemoteRtcVideoFitMode(uid1, surfaceView);
                 });
             } else {
                 uidList.add(uid);
@@ -114,13 +111,10 @@ public class MiniClassActivity extends BaseActivity {
         @Override
         public void onUserOffline(int uid, int reason) {
             if (uid == Constant.SHARE_UID) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLayoutShareVideo.removeAllViews();
-                        mLayoutShareVideo.setVisibility(View.GONE);
-                        mLayoutWhiteboard.setVisibility(View.VISIBLE);
-                    }
+                runOnUiThread(() -> {
+                    mLayoutShareVideo.removeAllViews();
+                    mLayoutShareVideo.setVisibility(View.GONE);
+                    mLayoutWhiteboard.setVisibility(View.VISIBLE);
                 });
             } else {
                 uidList.remove(Integer.valueOf(uid));
@@ -147,16 +141,6 @@ public class MiniClassActivity extends BaseActivity {
 
         @Override
         public void onMemberLeft(RtmChannelMember rtmChannelMember) {
-            if (rtmChannelMember != null && rtmChannelMember.getUserId() != null
-                    && mChannelData.getTeacher() != null
-                    && rtmChannelMember.getUserId().equals(String.valueOf(mChannelData.getTeacher().uid))) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mWhiteboardFragment.finishRoomPage();
-                    }
-                });
-            }
         }
 
         @Override
@@ -196,37 +180,34 @@ public class MiniClassActivity extends BaseActivity {
     };
 
     private void refreshBoard() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Teacher teacher = mChannelData.getTeacher();
-                if (teacher == null) {
-                    ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
-                    mChatroomFragment.setEditTextEnable(true);
-                } else {
-                    if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
-                        mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
-                            @Override
-                            public void onSuccess() {
-                                ToastUtil.showShort("join whiteboard room success.");
-                            }
+        runOnUiThread(() -> {
+            Teacher teacher = mChannelData.getTeacher();
+            if (teacher == null) {
+                ToastUtil.showShort(R.string.There_is_no_teacher_in_this_classroom);
+                mChatroomFragment.setEditTextEnable(true);
+            } else {
+                if (mWhiteboardFragment.getUuid() == null && !TextUtils.isEmpty(teacher.whiteboard_uid) && !teacher.whiteboard_uid.equals("0")) {
+                    mWhiteboardFragment.joinRoom(teacher.whiteboard_uid, new WhiteboardFragment.JoinRoomCallBack() {
+                        @Override
+                        public void onSuccess() {
+                            ToastUtil.showShort("join whiteboard room success.");
+                        }
 
-                            @Override
-                            public void onFailure(String err) {
-                                ToastUtil.showShort("join whiteboard room fail: " + err);
-                                finish();
-                            }
-                        });
-                    }
-
-                    if (!mTimeView.isStarted() && teacher.class_state == 1) {
-                        mTimeView.start();
-                    } else if (mTimeView.isStarted() && teacher.class_state == 0) {
-                        mTimeView.stop();
-                    }
-
-                    mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
+                        @Override
+                        public void onFailure(String err) {
+                            ToastUtil.showShort("join whiteboard room fail: " + err);
+                            finish();
+                        }
+                    });
                 }
+
+                if (!mTimeView.isStarted() && teacher.class_state == 1) {
+                    mTimeView.start();
+                } else if (mTimeView.isStarted() && teacher.class_state == 0) {
+                    mTimeView.stop();
+                }
+
+                mChatroomFragment.setEditTextEnable(teacher.mute_chat != 1 && mChannelData.getMyAttr().chat == 1);
             }
         });
     }
@@ -249,21 +230,18 @@ public class MiniClassActivity extends BaseActivity {
                 }
             }
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
-                mAdapter.setList(users);
+        runOnUiThread(() -> {
+            List<Integer> updatePositions = checkoutUpdatePositions(users, mAdapter.getList());
+            mAdapter.setList(users);
 
-                if (updatePositions == null) {
-                    mAdapter.notifyDataSetChanged();
-                } else {
-                    for (int i : updatePositions) {
-                        mAdapter.notifyItemChanged(i, new byte[0]);
-                    }
+            if (updatePositions == null) {
+                mAdapter.notifyDataSetChanged();
+            } else {
+                for (int i : updatePositions) {
+                    mAdapter.notifyItemChanged(i, new byte[0]);
                 }
-                mStudentListFrament.setList(users);
             }
+            mStudentListFrament.setList(users);
         });
     }
 
@@ -308,12 +286,7 @@ public class MiniClassActivity extends BaseActivity {
         mLayoutShareVideo = findViewById(R.id.layout_share_video);
 
         mTvRoomName.setText(getIntent().getStringExtra(IntentKey.ROOM_NAME));
-        mIcClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLeaveDialog();
-            }
-        });
+        mIcClose.setOnClickListener(v -> showLeaveDialog());
     }
 
     @Override

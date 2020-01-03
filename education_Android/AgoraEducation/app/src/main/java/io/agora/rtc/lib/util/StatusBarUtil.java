@@ -48,4 +48,5 @@ public class StatusBarUtil {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
     }
+
 }

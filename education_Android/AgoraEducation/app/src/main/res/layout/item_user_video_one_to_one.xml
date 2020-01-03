@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:textColor="@color/white"
-        android:textSize="@dimen/dp_14"
+        android:textSize="@dimen/sp_14"
         app:layout_constraintBottom_toBottomOf="@id/view_bg_info"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/view_bg_info" />

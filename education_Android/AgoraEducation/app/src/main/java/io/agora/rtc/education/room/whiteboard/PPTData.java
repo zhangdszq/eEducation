@@ -45,7 +45,7 @@ public class PPTData {
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/3c0014a06f4c47f88a568eee77996edc/29.slide",
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/3c0014a06f4c47f88a568eee77996edc/30.slide"
             }),
-            new PPTData(2, R.drawable.img_ppt2, true, 960, 540, new String[] {
+            new PPTData(2, R.drawable.img_ppt2, true, 960, 540, new String[]{
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/6d5bd36769d44dcb808bccda068f972b/1.slide",
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/6d5bd36769d44dcb808bccda068f972b/2.slide",
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/6d5bd36769d44dcb808bccda068f972b/3.slide",
@@ -59,7 +59,7 @@ public class PPTData {
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/6d5bd36769d44dcb808bccda068f972b/11.slide",
                     "pptx://white-cover.oss-cn-hangzhou.aliyuncs.com/dynamicConvert/6d5bd36769d44dcb808bccda068f972b/12.slide"
             }),
-            new PPTData(3, R.drawable.img_ppt3, false, 960, 540, new String[] {
+            new PPTData(3, R.drawable.img_ppt3, false, 960, 540, new String[]{
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/6c537d1380584f4b82a8b521336fcfbe/1.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/6c537d1380584f4b82a8b521336fcfbe/2.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/6c537d1380584f4b82a8b521336fcfbe/3.png",
@@ -102,7 +102,7 @@ public class PPTData {
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/6c537d1380584f4b82a8b521336fcfbe/40.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/6c537d1380584f4b82a8b521336fcfbe/41.png"
             }),
-            new PPTData(4, R.drawable.img_ppt4, false, 960, 540, new String[] {
+            new PPTData(4, R.drawable.img_ppt4, false, 960, 540, new String[]{
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/dbd36235042547f8888e9d82594c1b27/1.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/dbd36235042547f8888e9d82594c1b27/2.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/dbd36235042547f8888e9d82594c1b27/3.png",
@@ -142,7 +142,7 @@ public class PPTData {
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/dbd36235042547f8888e9d82594c1b27/37.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/dbd36235042547f8888e9d82594c1b27/38.png"
             }),
-            new PPTData(5, R.drawable.img_ppt5, false, 960, 540, new String[] {
+            new PPTData(5, R.drawable.img_ppt5, false, 960, 540, new String[]{
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/79b8340e6e814d919f47293376102013/1.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/79b8340e6e814d919f47293376102013/2.png",
                     "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/staticConvert/79b8340e6e814d919f47293376102013/3.png",
@@ -190,7 +190,7 @@ public class PPTData {
         this.isDynamicPPT = isDynamicPPT;
         this.scenes = new Scene[pptList.length];
 
-        for (int i = 0; i < pptList.length; ++ i) {
+        for (int i = 0; i < pptList.length; ++i) {
             Scene scene = new Scene();
             PptPage ppt = new PptPage(pptList[i], width, height);
 
@@ -216,4 +216,5 @@ public class PPTData {
     public Scene[] getScenes() {
         return scenes;
     }
+
 }

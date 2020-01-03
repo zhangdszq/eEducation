@@ -29,6 +29,7 @@ import io.agora.rtm.RtmMessage;
 import io.agora.rtm.SendMessageOptions;
 
 public class RtmStrategy implements IMStrategy {
+
     private RtmManager rtmManager;
     private EventListener eventListener;
     private RtmChannel rtmChannel;
@@ -342,4 +343,5 @@ public class RtmStrategy implements IMStrategy {
     public Student myAttr() {
         return mRepository.getMyAttr();
     }
+
 }

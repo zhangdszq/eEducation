@@ -1,9 +1,7 @@
 package io.agora.rtc.education.room.view;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import io.agora.rtc.education.R;
 
 public class UserVideoItem extends ConstraintLayout {
+
     public UserVideoItem(Context context) {
         super(context);
     }
@@ -120,4 +119,5 @@ public class UserVideoItem extends ConstraintLayout {
             icVideo.setOnClickListener(listener);
         }
     }
+
 }

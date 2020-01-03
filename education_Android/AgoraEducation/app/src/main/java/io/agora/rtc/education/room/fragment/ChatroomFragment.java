@@ -45,49 +45,40 @@ public class ChatroomFragment extends BaseFragment {
 
         mEdtSendMsg = view.findViewById(R.id.edt_send_msg);
         mEdtSendMsg.setEnabled(false);
-        mEdtSendMsg.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (!mEdtSendMsg.isEnabled() || mImStrategy == null) {
-                    return false;
-                }
-                String text = mEdtSendMsg.getText().toString();
-                if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && text.trim().length() > 0) {
-                    ChannelMsg msg = mImStrategy.sendChannelMessage(text);
-                    mEdtSendMsg.setText("");
-                    addMessage(msg);
-                    return true;
-                }
+        mEdtSendMsg.setOnKeyListener((v, keyCode, event) -> {
+            if (!mEdtSendMsg.isEnabled() || mImStrategy == null) {
                 return false;
             }
+            String text = mEdtSendMsg.getText().toString();
+            if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && text.trim().length() > 0) {
+                ChannelMsg msg = mImStrategy.sendChannelMessage(text);
+                mEdtSendMsg.setText("");
+                addMessage(msg);
+                return true;
+            }
+            return false;
         });
         return view;
     }
 
     public void setEditTextEnable(final boolean isEnable) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mEdtSendMsg != null) {
-                    mEdtSendMsg.setEnabled(isEnable);
-                    if (isEnable) {
-                        mEdtSendMsg.setHint(R.string.hint_im_message);
-                    } else {
-                        mEdtSendMsg.setHint(R.string.chat_muting);
-                    }
+        runOnUiThread(() -> {
+            if (mEdtSendMsg != null) {
+                mEdtSendMsg.setEnabled(isEnable);
+                if (isEnable) {
+                    mEdtSendMsg.setHint(R.string.hint_im_message);
+                } else {
+                    mEdtSendMsg.setHint(R.string.chat_muting);
                 }
             }
         });
     }
 
     public void addMessage(final ChannelMsg channelMsg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mLvMsg != null) {
-                    mAdapter.addItem(channelMsg);
-                    mAdapter.notifyDataSetChanged();
-                }
+        runOnUiThread(() -> {
+            if (mLvMsg != null) {
+                mAdapter.addItem(channelMsg);
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -111,21 +102,18 @@ public class ChatroomFragment extends BaseFragment {
                 holder.tvContent.setTextColor(resources.getColor(R.color.blue_1F3DE8));
                 holder.tvContent.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
             }
-            holder.tvContent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!TextUtils.isEmpty(msg.link)) {
-                        String[] strings = msg.link.split("/");
-                        String uuid = strings[2];
-                        long startTime = Long.parseLong(strings[3]);
-                        long endTime = Long.parseLong(strings[4]);
-                        Intent intent = new Intent(ChatroomFragment.this.mContext, ReplayActivity.class);
-                        intent.putExtra(IntentKey.WHITE_BOARD_UID, uuid);
-                        intent.putExtra(IntentKey.WHITE_BOARD_START_TIME, startTime);
-                        intent.putExtra(IntentKey.WHITE_BOARD_END_TIME, endTime);
-                        intent.putExtra(IntentKey.WHITE_BOARD_URL, msg.url);
-                        startActivity(intent);
-                    }
+            holder.tvContent.setOnClickListener(v -> {
+                if (!TextUtils.isEmpty(msg.link)) {
+                    String[] strings = msg.link.split("/");
+                    String uuid = strings[2];
+                    long startTime = Long.parseLong(strings[3]);
+                    long endTime = Long.parseLong(strings[4]);
+                    Intent intent = new Intent(ChatroomFragment.this.mContext, ReplayActivity.class);
+                    intent.putExtra(IntentKey.WHITE_BOARD_UID, uuid);
+                    intent.putExtra(IntentKey.WHITE_BOARD_START_TIME, startTime);
+                    intent.putExtra(IntentKey.WHITE_BOARD_END_TIME, endTime);
+                    intent.putExtra(IntentKey.WHITE_BOARD_URL, msg.url);
+                    startActivity(intent);
                 }
             });
         }
