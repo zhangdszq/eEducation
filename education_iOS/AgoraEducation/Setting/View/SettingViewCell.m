@@ -30,7 +30,7 @@
 
 - (void)setUpView {
     UILabel *contentLabel = [[UILabel alloc] init];
-    contentLabel.frame = CGRectMake(15, 16, 100, 24);
+    contentLabel.frame = CGRectMake(15, 16, 150, 24);
     contentLabel.textAlignment = NSTextAlignmentLeft;
     [self addSubview:contentLabel];
     self.contentLabel = contentLabel;

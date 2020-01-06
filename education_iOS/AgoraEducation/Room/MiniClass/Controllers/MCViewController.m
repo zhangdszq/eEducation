@@ -171,14 +171,14 @@
     [self.teacherVideoView updateSpeakerImageName: imageName];
 }
 
-- (void)updateStudentStatusWithModel:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+- (void)updateStudentStatus:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
 
     if(studentInfoModels == nil) {
         return;
     }
 
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
-    NSArray<RolesStudentInfoModel *> *filteredArray = [self.educationManager.studentListArray filteredArrayUsingPredicate:predicate];
+    NSArray<RolesStudentInfoModel *> *filteredArray = [studentInfoModels filteredArrayUsingPredicate:predicate];
     if(filteredArray.count > 0){
         
         StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
@@ -343,6 +343,20 @@
     }];
 }
 
+- (void)muteVideoStream:(BOOL)stream {
+    StudentModel *currentStuModel = [self.educationManager.studentModel yy_modelCopy];
+    currentStuModel.video = !stream ? 1 : 0;
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+    [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+}
+
+- (void)muteAudioStream:(BOOL)stream {
+    StudentModel *currentStuModel = [self.educationManager.studentModel yy_modelCopy];
+    currentStuModel.audio = !stream ? 1 : 0;
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+    [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+}
+
 #pragma mark  --------  Mandatory landscape -------
 - (BOOL)shouldAutorotate {
     return NO;
@@ -448,7 +462,7 @@
     [self updateTeacherStatusWithSourceModel:sourceInfoModel.teacherModel currentModel:currentInfoModel.teacherModel];
     
     self.educationManager.studentTotleListArray = currentInfoModel.studentModels;
-    [self updateStudentStatusWithModel:currentInfoModel.studentModels];
+    [self updateStudentStatus:currentInfoModel.studentModels];
     
     [self checkNeedRender];
 }
