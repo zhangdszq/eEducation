@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseListAdapter<T> extends BaseAdapter {
+
     private List<T> mList = new ArrayList<>();
 
     public List<T> getList() {
@@ -57,11 +58,12 @@ public abstract class BaseListAdapter<T> extends BaseAdapter {
 
     protected abstract BaseViewHolder onCreateViewHolder(int itemViewType, ViewGroup parent);
 
-    public static class BaseViewHolder{
+    public static class BaseViewHolder {
         public View itemView;
 
         public BaseViewHolder(View itemView) {
             this.itemView = itemView;
         }
     }
+
 }
