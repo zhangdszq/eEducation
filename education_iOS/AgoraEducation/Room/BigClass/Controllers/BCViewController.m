@@ -120,6 +120,20 @@
     } completeFailBlock:nil];
 }
 
+- (void)muteVideoStream:(BOOL)stream {
+    StudentModel *currentStuModel = [self.educationManager.studentModel yy_modelCopy];
+    currentStuModel.video = !stream ? 1 : 0;
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+    [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+}
+
+- (void)muteAudioStream:(BOOL)stream {
+    StudentModel *currentStuModel = [self.educationManager.studentModel yy_modelCopy];
+    currentStuModel.audio = !stream ? 1 : 0;
+    NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+    [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
+}
+
 - (void)checkNeedRender {
     
     for (NSString *uid in self.educationManager.rtcUids) {

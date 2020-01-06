@@ -85,12 +85,12 @@ NSString * const RoleTypeTeacther = @"teacher";
     
     [self.agoraRtmKit addOrUpdateChannel:channelName Attributes:attrArray Options:options completion:^(AgoraRtmProcessAttributeErrorCode errorCode) {
         if (errorCode == AgoraRtmAttributeOperationErrorOk) {
-            NSLog(@"学生频道属性更新成功");
+
             if(successBlock != nil){
                 successBlock();
             }
-        }else {
-            NSLog(@"学生频道属性更新失败");
+        } else {
+            
             if(failBlock != nil){
                 failBlock();
             }

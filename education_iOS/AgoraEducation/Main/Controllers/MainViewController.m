@@ -51,6 +51,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
+//    [self.educationManager setSignalDelegate:self];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -79,6 +80,7 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+//    [self.educationManager releaseResources];
 }
 
 #pragma mark Private Function
