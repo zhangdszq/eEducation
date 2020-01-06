@@ -224,20 +224,25 @@
         
         RolesStudentInfoModel *roleInfoModel = weakself.educationManager.studentListArray[indexPath.row];
         
-        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
-        model.uid = roleInfoModel.attrKey.integerValue;
-        model.videoView = imageView;
-        model.renderMode = RTCVideoRenderModeHidden;
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", roleInfoModel.attrKey.integerValue];
+        NSArray<RTCVideoSessionModel *> *filteredArray = [weakself.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
         
-        if ([roleInfoModel.attrKey isEqualToString:weakself.paramsModel.userId]) {
-            model.canvasType = RTCVideoCanvasTypeLocal;
-            [weakself.educationManager setupRTCVideoCanvas:model];
-        } else {
-            model.canvasType = RTCVideoCanvasTypeRemote;
-            [weakself.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
-            [weakself.educationManager setupRTCVideoCanvas:model];
+        if(filteredArray.count == 0 || filteredArray.firstObject.videoCanvas.view != imageView){
+            
+            RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+            model.uid = roleInfoModel.attrKey.integerValue;
+            model.videoView = imageView;
+            model.renderMode = RTCVideoRenderModeHidden;
+            
+            if ([roleInfoModel.attrKey isEqualToString:weakself.paramsModel.userId]) {
+                model.canvasType = RTCVideoCanvasTypeLocal;
+                [weakself.educationManager setupRTCVideoCanvas:model];
+            } else {
+                model.canvasType = RTCVideoCanvasTypeRemote;
+                [weakself.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
+                [weakself.educationManager setupRTCVideoCanvas:model];
+            }
         }
-
     }];
 }
 - (void)initSelectSegmentBlock {

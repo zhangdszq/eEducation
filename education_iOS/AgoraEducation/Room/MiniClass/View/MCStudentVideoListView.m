@@ -65,6 +65,7 @@
     return cell;
 }
 
+
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.studentArray.count;
 }
@@ -74,8 +75,28 @@
 }
 
 - (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)studentArray {
-    self.studentArray = [NSArray arrayWithArray:studentArray];
-    [self.videoListView reloadData];
+    
+    if(studentArray.count == 0 || self.studentArray.count != studentArray.count) {
+        self.studentArray = [NSArray arrayWithArray:studentArray];
+        [self.videoListView reloadData];
+    } else {
+
+        NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
+        
+        NSInteger count = studentArray.count;
+        for(NSInteger i = 0; i < count; i++) {
+            RolesStudentInfoModel *sourceModel = [self.studentArray objectAtIndex:i];
+            RolesStudentInfoModel *currentModel = [studentArray objectAtIndex:i];
+            if(![sourceModel.attrKey isEqualToString:currentModel.attrKey] || ![sourceModel.studentModel isEqual:currentModel.studentModel]) {
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                [indexPaths addObject:indexPath];
+            }
+        }
+        
+        self.studentArray = [NSArray arrayWithArray:studentArray];
+        [self.videoListView reloadItemsAtIndexPaths:indexPaths];
+    }
 }
 
 #pragma mark  ----  lazy ------

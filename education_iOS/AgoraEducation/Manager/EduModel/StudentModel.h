@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger audio;
 @property (nonatomic, assign) NSInteger chat;
 
+- (BOOL)isEqual:(id)otherObject;
+
 @end
 
 NS_ASSUME_NONNULL_END
