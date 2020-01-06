@@ -154,9 +154,9 @@ export class RecordOperator {
           cname: this.channelName,
           uid: this.uid,
           clientRequest: {
-              token: this.token,
-              recordingConfig: this.recordingConfig,
-              storageConfig: this.storageConfig,
+            token: this.token,
+            recordingConfig: this.recordingConfig,
+            storageConfig: this.storageConfig,
           },
         })
       });

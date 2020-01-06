@@ -315,6 +315,7 @@ const items = [
       if (name === 'hand_tool') {
         room.handToolActive = true;
         updateSelector('hand');
+        room.setMemberState({currentApplianceName: 'selector'});
       } else {
         if (name === 'add' && addNewPage) {
           addNewPage();

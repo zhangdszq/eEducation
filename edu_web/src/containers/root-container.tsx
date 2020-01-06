@@ -114,7 +114,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
     });
     rtmClient.on("MemberLeft", (memberId: string) => {
       if (roomStore.state.applyUid === +memberId) {
-        roomStore.updateCourseLinkUid(roomStore.applyUid)
+        roomStore.updateCourseLinkUid(0)
         .then(() => {
           globalStore.removeNotice();
         }).catch(console.warn);
