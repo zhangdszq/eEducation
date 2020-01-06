@@ -33,14 +33,19 @@
   * nodejs LTS
   * electron 5.0.8
 
-### electron下载慢的解决方案
+### electron & node-sass 下载慢的解决方案
   * mac
   ```
-  export ELECTRON_MIRROR="https://cdn.npm.taobao.org/dist/electron/"
+  export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
+  export ELECTRON_CUSTOM_DIR="5.0.8"
+  export SASS_BINARY_SITE="https://npm.taobao.org/mirrors/node-sass/"
+
   ```
   * windows
   ```
-  set ELECTRON_MIRROR=https://cdn.npm.taobao.org/dist/electron/
+  set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+  set ELECTRON_CUSTOM_DIR=5.0.8
+  set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
   ```
 
 ### electron环境注意事项

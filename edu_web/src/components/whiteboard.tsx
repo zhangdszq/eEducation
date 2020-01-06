@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import './whiteboard.scss';
-import { Room, RoomWhiteboard } from 'white-react-sdk';
+import { Room } from 'white-web-sdk';
+import { RoomWhiteboard } from 'white-react-sdk';
 import { whiteboard } from '../stores/whiteboard';
 interface WhiteBoardProps {
   room: Room
