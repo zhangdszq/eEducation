@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RTCVideoSessionModel : NSObject
 
 @property (nonatomic, assign) NSUInteger uid;
-@property (nonatomic, weak) AgoraRtcVideoCanvas *videoCanvas;
+@property (nonatomic, strong) AgoraRtcVideoCanvas *videoCanvas;
 
 @end
 
