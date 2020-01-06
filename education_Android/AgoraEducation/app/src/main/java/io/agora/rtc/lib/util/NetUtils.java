@@ -29,7 +29,7 @@ public class NetUtils {
     }
 
     /**
-     * 判断是否是wifi连接
+     * check is wifi
      */
     public static boolean isWifi(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
@@ -42,7 +42,7 @@ public class NetUtils {
     }
 
     /**
-     * 判断是否是Mobile连接
+     * check is mobile
      */
     public static boolean isMobile(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context

@@ -14,7 +14,6 @@ import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
 import com.herewhite.sdk.domain.AnimationMode;
-import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.DeviceType;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.PlayerConfiguration;
@@ -26,7 +25,6 @@ import com.herewhite.sdk.domain.RoomState;
 import com.herewhite.sdk.domain.SDKError;
 import com.herewhite.sdk.domain.Scene;
 import com.herewhite.sdk.domain.SceneState;
-import com.herewhite.sdk.domain.ViewMode;
 
 import java.util.Map;
 
@@ -118,17 +116,13 @@ public class WhiteboardDelegate {
                     @Override
                     public void onRoomStateChanged(RoomState modifyState) {
                         MemberState memberState = modifyState.getMemberState();
-                        BroadcastState broadcastState = modifyState.getBroadcastState();
                         final SceneState sceneState = modifyState.getSceneState();
 
                         if (memberState != null) {
                             final String applianceName = memberState.getCurrentApplianceName();
                             runOnUiThread(() -> mAppliancesToolBar.setState(applianceName));
                         }
-                        if (broadcastState != null) {
-                            final ViewMode viewMode = broadcastState.getMode();//自己是否为主播
-                            final boolean hasBroadcaster = broadcastState.getBroadcasterInformation() != null;// 房间内是否有主播
-                        }
+
                         if (sceneState != null) {
                             runOnUiThread(() -> mSceneHelper.setSceneState(sceneState));
                         }

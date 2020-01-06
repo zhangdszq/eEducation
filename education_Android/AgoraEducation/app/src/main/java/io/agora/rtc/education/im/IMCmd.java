@@ -1,6 +1,7 @@
 package io.agora.rtc.education.im;
 
 public interface IMCmd {
+
     int MUTE_AUDIO = 101;
     int UNMUTE_AUDIO = 102;
     int MUTE_VIDEO = 103;
@@ -11,4 +12,5 @@ public interface IMCmd {
     int CANCEL = 108;
     int MUTE_CHAT = 109;
     int UNMUTE_CAHT = 110;
+
 }

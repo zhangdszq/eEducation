@@ -11,6 +11,7 @@ import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
 public class RtcDelegate {
+
     private RtcWorkerThread rtcWorker;
     private RtcEngine rtcEngine;
 
@@ -66,4 +67,5 @@ public class RtcDelegate {
     public void release() {
         rtcWorker.setRtcEventHandler(null);
     }
+
 }

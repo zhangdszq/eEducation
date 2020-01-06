@@ -1,6 +1,7 @@
 package io.agora.rtc.education.data.bean;
 
 public class Student extends User {
+
     public int uid;
     public int chat;
 
@@ -8,4 +9,5 @@ public class Student extends User {
     public int getUid() {
         return uid;
     }
+
 }

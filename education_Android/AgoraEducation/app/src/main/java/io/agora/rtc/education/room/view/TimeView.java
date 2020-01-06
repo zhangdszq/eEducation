@@ -57,7 +57,7 @@ public class TimeView extends LinearLayout {
                 time++;
                 handler.postDelayed(updateTimeRunnable, 1000);
             } else {
-                mTvTime.setText("00:00:00");
+                mTvTime.setText(R.string.time_default);
             }
         }
     };
