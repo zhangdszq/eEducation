@@ -222,6 +222,10 @@
     WEAK(self);
     [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
         
+        if(indexPath.row >= weakself.educationManager.studentListArray.count){
+            return;
+        }
+        
         RolesStudentInfoModel *roleInfoModel = weakself.educationManager.studentListArray[indexPath.row];
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", roleInfoModel.attrKey.integerValue];
@@ -294,12 +298,14 @@
 - (void)checkNeedRender {
     
     NSString *teacherUid = self.educationManager.teacherModel.uid;
-    if([self.educationManager.rtcUids containsObject:self.educationManager.teacherModel.uid]){
+    if([self.educationManager.rtcUids containsObject:teacherUid]){
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", teacherUid.integerValue];
         NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
         if(filteredArray.count == 0){
             [self renderTeacherCanvas:teacherUid.integerValue];
         }
+    } else {
+        [self removeTeacherCanvas:teacherUid.integerValue];
     }
     
     [self reloadStudentViews];

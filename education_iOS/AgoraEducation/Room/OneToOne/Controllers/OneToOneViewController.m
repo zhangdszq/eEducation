@@ -238,22 +238,23 @@
 
 - (void)checkNeedRender {
     
-    for (NSString *uid in self.educationManager.rtcUids) {
-        if(uid.integerValue == [self.educationManager.teacherModel.uid integerValue]) {
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid.integerValue];
-            NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-            if(filteredArray.count == 0){
-                [self renderTeacherCanvas:uid.integerValue];
-            }
-            
-        } else if (uid.integerValue == [self.educationManager.studentModel.uid integerValue]) {
-
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid.integerValue];
-            NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-            if(filteredArray.count == 0){
-                [self renderStudentCanvas:uid.integerValue];
-            }
+    NSString *teacherUid = self.educationManager.teacherModel.uid;
+    if([self.educationManager.rtcUids containsObject:teacherUid]){
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", teacherUid.integerValue];
+        NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count == 0){
+            [self renderTeacherCanvas:teacherUid.integerValue];
+        }
+    } else {
+        [self removeTeacherCanvas:teacherUid.integerValue];
+    }
+    
+    NSString *studentUid = self.educationManager.studentModel.uid;
+    if([self.educationManager.rtcUids containsObject:studentUid]){
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", studentUid.integerValue];
+        NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count == 0){
+            [self renderStudentCanvas:studentUid.integerValue];
         }
     }
 }

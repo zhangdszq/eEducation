@@ -136,26 +136,26 @@
 
 - (void)checkNeedRender {
     
-    for (NSString *uid in self.educationManager.rtcUids) {
-        if(uid.integerValue == [self.educationManager.teacherModel.uid integerValue]) {
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid.integerValue];
-            NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-            if(filteredArray.count == 0){
-                [self renderTeacherCanvas:uid.integerValue];
-            }
-            
-        } else if (uid.integerValue == [self.educationManager.teacherModel.link_uid integerValue]) {
-
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", uid.integerValue];
-            NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-            if(filteredArray.count == 0){
-                
-                if (uid.integerValue == self.paramsModel.userId.integerValue) {
-                    [self renderStudentCanvas:uid.integerValue remoteVideo:NO];
-                } else {
-                    [self renderStudentCanvas:uid.integerValue remoteVideo:YES];
-                }
+    NSString *teacherUid = self.educationManager.teacherModel.uid;
+    if([self.educationManager.rtcUids containsObject:teacherUid]){
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", teacherUid.integerValue];
+        NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count == 0){
+            [self renderTeacherCanvas:teacherUid.integerValue];
+        }
+    } else {
+        [self removeTeacherCanvas:teacherUid.integerValue];
+    }
+    
+    NSString *studentUid = self.educationManager.teacherModel.link_uid;
+    if([self.educationManager.rtcUids containsObject:studentUid]){
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", studentUid.integerValue];
+        NSArray<RTCVideoSessionModel *> *filteredArray = [self.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count == 0){
+            if (studentUid.integerValue == self.paramsModel.userId.integerValue) {
+                [self renderStudentCanvas:studentUid.integerValue remoteVideo:NO];
+            } else {
+                [self renderStudentCanvas:studentUid.integerValue remoteVideo:YES];
             }
         }
     }
