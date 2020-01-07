@@ -33,6 +33,7 @@ class Sentry {
   }
 
   public async init() {
+    this.rtmController.initialize(this.appId);
     await this.login();
     // Recover registry for channel in memory cache
     const channelsInMemory = await this.cache.getChannels();
@@ -63,7 +64,7 @@ class Sentry {
 
     // do login
     log.info(`Sentry trying to login... App ID: ${this.appId}, uid: ${this.uid}`)
-    await this.rtmController.login(this.appId, this.uid);
+    await this.rtmController.login(null, this.uid);
     log.info("Sentry succeed to login")
     this.online = true;
   };

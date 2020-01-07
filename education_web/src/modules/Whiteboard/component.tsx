@@ -1,4 +1,4 @@
-import { RoomWhiteboard } from "white-react-sdk";
+import { RoomWhiteboard, Room } from "white-react-sdk";
 import "white-web-sdk/style/index.css";
 import { Spin, Pagination } from "antd";
 import StreamPlayer from "agora-stream-player";
@@ -21,7 +21,7 @@ interface WhiteboardComponentProps {
 const WhiteboardComponent: FunctionComponent<
   WhiteboardComponentProps
 > = props => {
-  const [room, setRoom] = useState<any>(null);
+  const [room, setRoom] = useState<Room|null>(null);
   const [stream, setStream] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -63,10 +63,9 @@ const WhiteboardComponent: FunctionComponent<
     const newTotalPage = totalPage + 1;
     setCurrentPage(newPageIndex);
     setTotalPage(newTotalPage);
-    room.insertNewPage(newPageIndex - 1);
-    room.setGlobalState({
-      currentSceneIndex: newPageIndex - 1
-    });
+    room.putScenes('/', [{}], newPageIndex - 1);
+    const currentScene = room.state.sceneState.scenes[newPageIndex - 1]
+    room.setScenePath('/'+currentScene.name);
   };
 
   const onChangePage = (index: number) => {
@@ -74,9 +73,8 @@ const WhiteboardComponent: FunctionComponent<
       return;
     }
     setCurrentPage(index);
-    room.setGlobalState({
-      currentSceneIndex: index - 1
-    });
+    const currentScene = room.state.sceneState.scenes[index - 1]
+    room.setScenePath('/'+currentScene.name);
   };
 
   const handleShareScreen = () => {
@@ -119,14 +117,7 @@ const WhiteboardComponent: FunctionComponent<
     WhiteboardAPI.on("roomStateChanged", (modifyState: any) => {
       if (modifyState.globalState) {
         // globalState changed
-        let newGlobalState = modifyState.globalState;
-        let currentSceneIndex = newGlobalState.currentSceneIndex;
-        if (currentSceneIndex + 1 > totalPage) {
-          setCurrentPage(currentSceneIndex + 1)
-          setTotalPage(currentSceneIndex + 1)
-        } else {
-          setCurrentPage(currentSceneIndex + 1)
-        }
+        return
       }
       if (modifyState.memberState) {
         // memberState changed
@@ -136,6 +127,14 @@ const WhiteboardComponent: FunctionComponent<
       if (modifyState.broadcastState) {
         // broadcastState changed
         // let broadcastState = modifyState.broadcastState;
+        return;
+      }
+      if (modifyState.sceneState) {
+        let newSceneState = modifyState.sceneState;
+        let currentSceneIndex = newSceneState.index;
+        let currentScenesCount = newSceneState.scenes.length;
+        setCurrentPage(currentSceneIndex+1)
+        setTotalPage(currentScenesCount)
         return;
       }
     });

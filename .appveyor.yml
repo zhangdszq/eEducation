@@ -1,12 +1,8 @@
 platform:
   - x64
 
-cache:
-  - '%APPDATA%\npm-cache'
-  - '%USERPROFILE%\.electron'
-
 install:
-  - ps: Install-Product node 8 x64
+  - ps: Install-Product node 11 x64
   - npm install
 
 build_script:
