@@ -1,3 +1,0 @@
-[submodule "education_server/agora-rtm-nodejs"]
-	path = education_server/agora-rtm-nodejs
-	url = https://github.com/AgoraIO-Community/Agora-RTM-Nodejs
