@@ -43,7 +43,7 @@ export default merge.smart(baseConfig, {
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true
+              sourceMap: false
             }
           }
         ]
@@ -59,7 +59,7 @@ export default merge.smart(baseConfig, {
             loader: 'css-loader',
             options: {
               modules: false,
-              sourceMap: true
+              sourceMap: false
             }
           }
         ]
@@ -74,14 +74,14 @@ export default merge.smart(baseConfig, {
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true,
+              sourceMap: false,
               importLoaders: 1
             }
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: false
             }
           }
         ]
@@ -98,13 +98,13 @@ export default merge.smart(baseConfig, {
             options: {
               modules: false,
               importLoaders: 1,
-              sourceMap: true
+              sourceMap: false
             }
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: false
             }
           }
         ]
@@ -172,7 +172,7 @@ export default merge.smart(baseConfig, {
       : [
           new TerserPlugin({
             parallel: true,
-            sourceMap: true,
+            sourceMap: false,
             cache: true
           }),
           new OptimizeCSSAssetsPlugin({

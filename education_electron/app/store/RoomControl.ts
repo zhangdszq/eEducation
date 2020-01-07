@@ -144,6 +144,16 @@ export default EasyState({
           uid: uid, content, username: name, local
         }]),
       }
+    },
+
+    clear(state, {}) {
+      return {
+        channelAttr: Map<string, string|number>(),
+        studentList: Map<string, any>(),
+        teacherList: Map<string, any>(),
+        audienceList: Map<string, any>(),
+        messageList: [] as Array<{uid: string, content: string, username: string, local: boolean}>
+      }
     }
   }
 });

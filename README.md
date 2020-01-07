@@ -72,7 +72,7 @@ e-Education Sample App built with Agora Electron SDK.
 - [Typescript](https://github.com/microsoft/TypeScript)
 - RTC SDK for [Web](https://docs.agora.io/en/Video/API%20Reference/web/index.html) and [Electron](https://github.com/AgoraIO/Electron-SDK)
 - RTM for [Web]() and [NodeJS](https://github.com/AgoraIO-Community/Agora-RTM-Nodejs)
-- [Recording Server](https://github.com/AgoraIO/Basic-Recording/tree/release/2.3.3/Agora-Restful-Recording-Nodejs)
+- [Recording Server](https://github.com/AgoraIO/Basic-Recording/tree/release/2.3.3/On-Premise-Recording-Nodejs)
 
 
 <!-- GETTING STARTED -->
@@ -100,7 +100,7 @@ Mac and Windows Client based on Agora RTM SDK (JS) and Media SDK (NodeJs based o
 Sentry server based on Agora RTM SDK (NodeJS based on c++ addon) to accept and solve command message and do in-memory-cache.  
 - whiteboard\_server (Will be merged into education_server)  
 RESTFul gateway for Herewhite whiteboard service.  
-- recording_server (Go to [this repo](https://github.com/AgoraIO/Basic-Recording/tree/release/2.3.3/Agora-Restful-Recording-Nodejs) for detail.)
+- recording_server (Go to [this repo](https://github.com/AgoraIO/Basic-Recording/tree/release/2.3.3/On-Premise-Recording-Nodejs) for detail.)
 
 <!-- CONTRIBUTING -->
 ## Contributing
