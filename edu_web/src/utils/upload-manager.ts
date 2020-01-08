@@ -33,7 +33,8 @@ export type NetlessImageFile = {
 
 export type TaskType = {
   uuid: string,
-  imageFile: NetlessImageFile};
+  imageFile: NetlessImageFile
+};
 
 export type PPTProgressListener = (phase: PPTProgressPhase, percent: number) => void;
 
@@ -51,12 +52,6 @@ export class UploadManager {
     this.ossClient = ossClient;
     this.room = room;
     this.ossUploadCallback = ossUploadCallback;
-  }
-
-  private getFileType = (fileName: string): string => {
-    const index1 = fileName.lastIndexOf(".");
-    const index2 = fileName.length;
-    return fileName.substring(index1, index2);
   }
   
   public async convertFile(

@@ -1,8 +1,8 @@
 import { APP_ID } from './../utils/agora-rtm-client';
 import { EventEmitter } from 'events';
-import WhiteVideoPlugin from '@netless/white-video-plugin';
-import WhiteAudioPlugin from '@netless/white-audio-plugin';
-import { Room, WhiteWebSdk, DeviceType, SceneState, RoomState } from 'white-web-sdk';
+import { videoPlugin } from '@netless/white-video-plugin';
+import { audioPlugin } from '@netless/white-audio-plugin';
+import { Room, WhiteWebSdk, DeviceType, SceneState, createPlugins } from 'white-web-sdk';
 import { Subject } from 'rxjs';
 import { WhiteboardAPI, RecordOperator } from '../utils/api';
 import {Map} from 'immutable';
@@ -13,8 +13,6 @@ import { handleRegion } from '../utils/helper';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
 const RECORDING_UID = 1;
-
-// console.log("api log: ", process.env.REACT_APP_AGORA_RECORDING_SERVICE_URL);
 
 interface SceneFile {
   name: string
@@ -46,6 +44,11 @@ const pathName = (path: string): string => {
       return RegExp.$1;
   }
 }
+
+export const plugins = createPlugins({"video": videoPlugin, "audio": audioPlugin});
+
+plugins.setPluginContext("video", {identity: 'guest'});
+plugins.setPluginContext("audio", {identity: 'guest'});
 
 export type WhiteboardState = {
   joined: boolean
@@ -92,9 +95,9 @@ class Whiteboard extends EventEmitter {
   }
 
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
-    deviceType: DeviceType.Desktop,
+    deviceType: DeviceType.Surface,
     // handToolKey: " ",
-    plugins: [WhiteVideoPlugin, WhiteAudioPlugin],
+    plugins,
     loggerOptions: {
       disableReportLog: ENABLE_LOG ? false : true,
       reportLevelMask: "info",
@@ -281,6 +284,11 @@ class Whiteboard extends EventEmitter {
   async join({rid, uid, userPayload}: JoinParams) {
     await this.leave();
     const {uuid, roomToken} = await this.connect(rid, uid);
+    const identity = userPayload.identity === 'host' ? 'host' : 'guest';
+
+    plugins.setPluginContext("video", {identity});
+    plugins.setPluginContext("audio", {identity});
+
     const room = await this.client.joinRoom({
       uuid,
       roomToken,

@@ -1,8 +1,26 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import VideoPlayer from './video-player';
 import './video-marquee.scss';
 import useStream from '../hooks/use-streams';
 import { AgoraMediaStream } from '../utils/types';
+
+const showScrollbar = () => {
+  const $marquee = document.querySelector(".video-marquee .agora-video-view");
+  if ($marquee) {
+    const clientWidth = $marquee.clientWidth;
+    const marqueeLength: number = document.querySelectorAll(".video-marquee .agora-video-view").length;
+    const videoMarqueeMark = document.querySelector('.video-marquee-mask')
+    if (clientWidth && videoMarqueeMark) {
+      const videoMarqueeWidth = videoMarqueeMark.clientWidth;
+      const width: number = clientWidth * marqueeLength;
+      // console.log("[video-marquee] videoMarqueeWidth: ", videoMarqueeWidth, ", width: ", width);
+      if (videoMarqueeWidth <= width) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 function VideoMarquee() {
 
@@ -21,6 +39,30 @@ function VideoMarquee() {
   const handleScrollRight = (evt: any) => {
     scrollLeft(marqueeEl.current, -1);
   }
+
+  const ref = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      ref.current = true;
+    }
+  }, []);
+
+  const [scrollBar, setScrollBar] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    if (!students.length) return;
+    !ref.current && setScrollBar(showScrollbar());
+  }, [students]);
+
+  useEffect(() => {
+    window.addEventListener('resize', (evt: any) => {
+      !ref.current && setScrollBar(showScrollbar());
+    });
+    return () => {
+      window.removeEventListener('resize', () => {});
+    }
+  }, []);
 
   return (
     <div className="video-marquee-container">
@@ -44,11 +86,12 @@ function VideoMarquee() {
       </div>
       <div className="video-marquee-mask">
         <div className="video-marquee" ref={marqueeEl}>
-        {students.length >= 7 ? <div className="scroll-btn-group">
+        {scrollBar ? 
+          <div className="scroll-btn-group">
             <div className="icon icon-left" onClick={handleScrollLeft}></div>
             <div className="icon icon-right" onClick={handleScrollRight}></div>
-        </div> : null}
-          {/* <StudentViews /> */}
+          </div> : null
+        }
           {students.map((student: AgoraMediaStream, key: number) => (
             <VideoPlayer
               role="student"

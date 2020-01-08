@@ -7,6 +7,7 @@
   overflow-y: auto;
   min-width: 280px;
   max-width: 280px;
+  height: calc(90% - .5rem);
 
   .item {
     flex: 1;

@@ -103,28 +103,26 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         const type = fileType.split(".")[1];
         if (url && whiteboard.state.room) {
           if (type === 'mp4') {
-            const res = whiteboard.state.room.insertPlugin({
-              protocal: 'video',
-              centerX: 0,
-              centerY: 0,
+            const res = whiteboard.state.room.insertPlugin('video', {
+              originX: 0,
+              originY: 0,
               width: 480,
               height: 270,
-              props: {
-                videoUrl: url
-              }
+              attributes: {
+                  pluginVideoUrl: url,
+              },
             });
             console.log("[upload-btn] video resource after insert plugin, res: ", res);
           }
           if (type === 'mp3') {
-            const res = whiteboard.state.room.insertPlugin({
-              protocal: 'audio',
-              centerX: 0,
-              centerY: 0,
+            const res = whiteboard.state.room.insertPlugin('audio', {
+              originX: 0,
+              originY: 0,
               width: 480,
               height: 86,
-              props: {
-                audioUrl: url
-              }
+              attributes: {
+                  pluginAudioUrl: url,
+              },
             });
             console.log("[upload-btn] audio resource after insert plugin, res: ", res);
           }

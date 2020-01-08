@@ -390,6 +390,10 @@ const items = [
   const [uploadPhase, updateUploadPhase] = useState<string>('');
   const [convertPhase, updateConvertPhase] = useState<string>('');
 
+  useEffect(() => {
+    console.log("[mediaboard] uploadPhase: ", uploadPhase, " convertPhase: ", convertPhase);
+  }, [uploadPhase, convertPhase]);
+
   const UploadPanel = useCallback(() => {
     if (tool !== 'upload' || !room) return null;
     return (<UploadBtn 
@@ -400,18 +404,18 @@ const items = [
         console.log("[onProgress] phase: ", phase, " percent: ", percent);
         if (phase === PPTProgressPhase.Uploading) {
           if (percent < 1) {
-            !ref.current && !uploadPhase && updateUploadPhase('uploading');
+            !uploadPhase && updateUploadPhase('uploading');
           } else {
-            !ref.current && updateUploadPhase('upload_success');
+            updateUploadPhase('upload_success');
           }
           return;
         }
 
         if (phase === PPTProgressPhase.Converting) {
           if (percent < 1) {
-            !ref.current && !convertPhase && updateConvertPhase('converting');
+            !convertPhase && updateConvertPhase('converting');
           } else {
-            !ref.current && updateConvertPhase('convert_success');
+            updateConvertPhase('convert_success');
           }
           return;
         }

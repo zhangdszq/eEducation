@@ -59,6 +59,7 @@ export class AgoraElectronClient {
   public readonly rtcEngine: any
   public published: boolean;
   public shared: boolean;
+  subscribeVideoSource: boolean = false;
 
   constructor() {
     this.rtcEngine = AgoraRtcEngine;
@@ -246,24 +247,29 @@ export class AgoraElectronClient {
       // to adjust render dimension to optimize performance
       console.log("[electron-debug] SHARE_ID", SHARE_ID, " TOKEN: ", token);
       shareClient.videoSourceJoin(token, this.rid, '', SHARE_ID);
-      shareClient.once('videoSourceJoinedSuccess', (uid: number) => {
-        console.log("[electron-debug] videoSource Joined", uid);
-        // shareClient.startScreenCapture2(windowId, 15, rect, 0);
-        shareClient.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15});
-        shareClient.startScreenCapturePreview();
-        // shareClient.videoSourceSetVideoProfile(43, false);
-        // shareClient.startScreenCapture2(windowId, 15, rect, 0);
-        // shareClient.startScreenCapturePreview();
-        this.shared = true;
+      if (!shareClient.subscribeVideoSource) {
+        shareClient.once('videoSourceJoinedSuccess', (uid: number) => {
+          shareClient.subscribeVideoSource = false;
+          console.log("[electron-debug] videoSource Joined", uid);
+          // shareClient.startScreenCapture2(windowId, 15, rect, 0);
+          shareClient.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15});
+          shareClient.startScreenCapturePreview();
+          // shareClient.videoSourceSetVideoProfile(43, false);
+          // shareClient.startScreenCapture2(windowId, 15, rect, 0);
+          // shareClient.startScreenCapturePreview();
+          this.shared = true;
 
-        const electronStream = new AgoraElectronStream(uid, StreamType.localVideoSource);
-        resolve(electronStream);
-        shareClient.off('videoSourceJoinedSuccess', () => {});
-      });
+          const electronStream = new AgoraElectronStream(uid, StreamType.localVideoSource);
+          resolve(electronStream);
+          shareClient.off('videoSourceJoinedSuccess', () => {});
+        });
 
-      setTimeout(() => {
-        reject();
-      }, 5000);
+        shareClient.subscribeVideoSource = true;
+
+        setTimeout(() => {
+          reject();
+        }, 5000);
+      }
     })
   }
 

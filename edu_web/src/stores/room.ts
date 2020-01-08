@@ -380,6 +380,7 @@ export class RoomStore {
   async handlePeerMessage(cmd: RoomMessage, peerId: string) {
     if (!peerId) return console.warn('state is not assigned');
     const myUid = this.state.me.uid;
+    console.log("Teacher: ", this.isTeacher(myUid) , ", peerId: ", this.isStudent(peerId));
     // student follow teacher peer message
     if (!this.isTeacher(myUid) && this.isTeacher(peerId)) {
 
@@ -455,14 +456,15 @@ export class RoomStore {
         }
         case RoomMessage.cancelCoVideo: {
           // WARN: LOCK
-          if (!this.applyLock) return;
-          roomStore.updateCourseLinkUid(0).then(() => {
-          }).catch(console.warn);
+          if (this.state.course.linkId && `${this.state.course.linkId}` === peerId) {
+            roomStore.updateCourseLinkUid(0).then(() => {
+            }).catch(console.warn);
 
-          globalStore.showToast({
-            type: 'co-video',
-            message: 'student canceled co-video'
-          });
+            globalStore.showToast({
+              type: 'co-video',
+              message: 'student canceled co-video'
+            });
+          }
           return;
         }
         default:

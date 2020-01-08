@@ -25,47 +25,6 @@ export interface MessageBody {
   text?: string
 }
 
-function canJoin({onlineStatus, roomType, channelCount, role}: {onlineStatus: any, role: string, channelCount: number, roomType: number}) {
-  const result = {
-    permitted: true,
-    reason: ''
-  }
-  const channelCountLimit = [2, 17, 17];
-
-  let maximum = channelCountLimit[roomType];
-  if (channelCount >= maximum) {
-    result.permitted = false;
-    result.reason = 'The number of students and teacher have reached upper limit';
-    return result;
-  }
-
-  const teacher = _.get(onlineStatus, 'teacher', false);
-  const totalCount: number = _.get(onlineStatus, 'totalCount', 0);
-
-  console.log("teacher, totalCount", teacher, totalCount);
-  console.log(" channelCount ", channelCount, maximum, result);
-
-
-  if (role === 'teacher') {
-    const isOnline = teacher;
-    if (isOnline) {
-      result.permitted = false;
-      result.reason = 'Teacher already existed';
-      return result;
-    }
-  }
-
-  if (role === 'student') {
-    if (totalCount+1 > maximum) {
-      result.permitted = false;
-      result.reason = 'Student have reached upper limit';
-      return result;
-    }
-  }
-
-  return result;
-}
-
 export type SessionProps = {
   roomType: number,
   role: string,

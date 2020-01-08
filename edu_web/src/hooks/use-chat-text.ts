@@ -42,7 +42,7 @@ export default function useChatText () {
     setValue(evt.target.value.slice(0, 100));
   }
   const list = useMemo(() => {
-    if (!roomState.me.uid || !roomState.rtc.users.count()) return [];
+    if (!roomState.me.uid || !roomState.rtc.users.count() && !roomState.rtc.localStream) return [];
     const my = roomState.users.get(roomState.me.uid);
     const users = [];
     if (my) {
@@ -55,7 +55,7 @@ export default function useChatText () {
       }
     }
     return users.filter((user: AgoraUser) => user.role === 'student');
-  }, [roomState.me.uid, roomState.rtc.users, roomState.users]);
+  }, [roomState.me.uid, roomState.rtc.users, roomState.users, roomState.rtc.localStream]);
 
   return {
     list,
