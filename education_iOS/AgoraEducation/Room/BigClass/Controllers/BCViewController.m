@@ -334,6 +334,12 @@
 }
 
 - (IBAction)handUpEvent:(UIButton *)sender {
+    
+    NSInteger link_uid = self.educationManager.teacherModel.link_uid.integerValue;
+    if(link_uid > 0 && link_uid != self.paramsModel.userId.integerValue) {
+        return;
+    }
+    
     switch (self.linkState) {
         case StudentLinkStateIdle:
             [self studentApplyLink];
