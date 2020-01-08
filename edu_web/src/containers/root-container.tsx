@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import {GlobalState, globalStore} from '../stores/global';
-import {RoomState, roomStore} from '../stores/room';
+import { GlobalState, globalStore} from '../stores/global';
+import { RoomState, roomStore} from '../stores/room';
 import { WhiteboardState, whiteboard } from '../stores/whiteboard';
 import { useHistory, useLocation } from 'react-router-dom';
 import { resolveMessage, resolvePeerMessage, resolveChannelAttrs, jsonParse } from '../utils/helper';

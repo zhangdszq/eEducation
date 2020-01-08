@@ -34,7 +34,7 @@ export default function () {
             <RoomPage >
               <OneToOne />
             </RoomPage>
-            </Route>
+          </Route>
           <Route exact path="/classroom/small-class">
             <RoomPage>
               <SmallClass />

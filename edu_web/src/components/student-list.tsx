@@ -51,7 +51,7 @@ export default function StudentList ({
   const lock = useRef<any>(false);
 
   const handleClick = (evt: any, id: string, type: string) => {
-    if (!roomStore.state || !me ) return;
+    if (!roomStore.state || !me) return;
     const targetUser = roomStore.state.users.get(id);
     if (!targetUser) return;
     if (!lock.current) {

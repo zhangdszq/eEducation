@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import './whiteboard.scss';
 import { Room } from 'white-web-sdk';
-import { RoomWhiteboard } from 'white-react-sdk';
 import { whiteboard } from '../stores/whiteboard';
 interface WhiteBoardProps {
   room: Room
@@ -15,7 +14,7 @@ export default function Whiteboard ({
 
   useEffect(() => {
     if (!room) return;
-    // room.bindHtmlElement(document.getElementById('whiteboard') as HTMLDivElement);
+    room.bindHtmlElement(document.getElementById('whiteboard') as HTMLDivElement);
     const $whiteboard = document.getElementById('whiteboard') as HTMLDivElement
     whiteboard.updateRoomState();
     if ($whiteboard) {
@@ -31,8 +30,8 @@ export default function Whiteboard ({
 
   return (
     <div className="whiteboard">
-      {room ? <RoomWhiteboard room={room} className={`whiteboard-canvas ${className}`}/> : null}
-      {/* <div id="whiteboard" className={`whiteboard-canvas ${className}`}></div> */}
+      {/* {room ? <RoomWhiteboard room={room} className={`whiteboard-canvas ${className}`}/> : null} */}
+      <div id="whiteboard" className={`whiteboard-canvas ${className}`}></div>
     </div>
   )
 }

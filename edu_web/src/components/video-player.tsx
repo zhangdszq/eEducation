@@ -146,10 +146,10 @@ useEffect(() => {
     }
 
     if (audio) {
-      console.log('strea unmute audio');
+      console.log('stream unmute audio');
       stream.unmuteAudio();
     } else {
-      console.log('strea mute audio');
+      console.log('stream mute audio');
       stream.muteAudio();
     }
   }
@@ -180,7 +180,7 @@ useEffect(() => {
     // prevent already muted video
     if (!loadVideo.current) {
       if (!video) {
-        console.log('strea mute video');
+        console.log('stream mute video');
         stream.muteVideo();
       }
       loadVideo.current = true;
@@ -188,10 +188,10 @@ useEffect(() => {
     }
 
     if (video) {
-      console.log('strea unmute video');
+      console.log('stream unmute video');
       stream.unmuteVideo();
     } else {
-      console.log('strea mute video');
+      console.log('stream mute video');
       stream.muteVideo();
     }
   }
