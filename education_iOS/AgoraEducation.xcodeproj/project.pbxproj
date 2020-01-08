@@ -279,6 +279,7 @@
 		78D731BE23BB614D00D2146C /* OneToOneEducationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneToOneEducationManager.h; sourceTree = "<group>"; };
 		78D731BF23BB614D00D2146C /* OneToOneEducationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OneToOneEducationManager.m; sourceTree = "<group>"; };
 		78D731C123BCE4EA00D2146C /* BCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCViewController.m; sourceTree = "<group>"; };
+		A5BFF93D50503E0756F47D98 /* Pods-AgoraEducation.qarelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.qarelease.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.qarelease.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -734,6 +735,7 @@
 			children = (
 				40B28313D80C71B4DA8D643D /* Pods-AgoraEducation.debug.xcconfig */,
 				4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */,
+				A5BFF93D50503E0756F47D98 /* Pods-AgoraEducation.qarelease.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1310,7 +1312,7 @@
 			};
 			name = Release;
 		};
-		78AED04223C57AE900A24DDB /* QARelease */ = {
+		78AED04623C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1363,7 +1365,7 @@
 			};
 			name = QARelease;
 		};
-		78AED04323C57AE900A24DDB /* QARelease */ = {
+		78AED04723C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */;
 			buildSettings = {
@@ -1386,7 +1388,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 5.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducationTest;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducationQA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = AgoraIOTest2019;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -1395,7 +1397,7 @@
 			};
 			name = QARelease;
 		};
-		78AED04423C57AE900A24DDB /* QARelease */ = {
+		78AED04823C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1413,7 +1415,7 @@
 			};
 			name = QARelease;
 		};
-		78AED04523C57AE900A24DDB /* QARelease */ = {
+		78AED04923C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -1438,7 +1440,7 @@
 			buildConfigurations = (
 				1AE0D02E2283C5F40092AC5E /* Debug */,
 				1AE0D02F2283C5F40092AC5E /* Release */,
-				78AED04223C57AE900A24DDB /* QARelease */,
+				78AED04623C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1448,7 +1450,7 @@
 			buildConfigurations = (
 				1AE0D0312283C5F40092AC5E /* Debug */,
 				1AE0D0322283C5F40092AC5E /* Release */,
-				78AED04323C57AE900A24DDB /* QARelease */,
+				78AED04723C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1458,7 +1460,7 @@
 			buildConfigurations = (
 				1AE0D0342283C5F40092AC5E /* Debug */,
 				1AE0D0352283C5F40092AC5E /* Release */,
-				78AED04423C57AE900A24DDB /* QARelease */,
+				78AED04823C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1468,7 +1470,7 @@
 			buildConfigurations = (
 				1AE0D0372283C5F40092AC5E /* Debug */,
 				1AE0D0382283C5F40092AC5E /* Release */,
-				78AED04523C57AE900A24DDB /* QARelease */,
+				78AED04923C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
