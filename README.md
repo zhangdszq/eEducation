@@ -43,7 +43,7 @@
 ## Demos
   * [Android](./education_Android/AgoraEducation/README.md)
   * [iOS](./education_iOS/AgoraEducation/README.md)
-  * [Web & Electron](./education_Web/README.md)
+  * [Web & Electron](./education_web/README.md)
 
 ## About The Project
 
