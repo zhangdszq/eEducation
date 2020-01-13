@@ -267,6 +267,36 @@
 }
 
 - (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model {
+
+    RTCVideoSessionModel *currentSessionModel;
+    RTCVideoSessionModel *removeSessionModel;
+    for (RTCVideoSessionModel *videoSessionModel in self.rtcVideoSessionModels) {
+        // view rerender
+        if(videoSessionModel.videoCanvas.view == model.videoView){
+            videoSessionModel.videoCanvas.view = nil;
+            if(videoSessionModel.uid == self.signalManager.messageModel.uid.integerValue) {
+                [self.rtcManager setupLocalVideo:videoSessionModel.videoCanvas];
+            } else {
+                [self.rtcManager setupRemoteVideo:videoSessionModel.videoCanvas];
+            }
+            removeSessionModel = videoSessionModel;
+        } else if(videoSessionModel.uid == model.uid){
+            videoSessionModel.videoCanvas.view = nil;
+            if(videoSessionModel.uid == self.signalManager.messageModel.uid.integerValue) {
+                [self.rtcManager setupLocalVideo:videoSessionModel.videoCanvas];
+            } else {
+                [self.rtcManager setupRemoteVideo:videoSessionModel.videoCanvas];
+            }
+            
+            currentSessionModel = videoSessionModel;
+        }
+    }
+    if(removeSessionModel != nil){
+        [self.rtcVideoSessionModels removeObject:removeSessionModel];
+    }
+    if(currentSessionModel != nil){
+        [self.rtcVideoSessionModels removeObject:currentSessionModel];
+    }
     
     AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
     videoCanvas.uid = model.uid;
@@ -277,26 +307,23 @@
     } else if(model.renderMode == RTCVideoRenderModeHidden){
         videoCanvas.renderMode = AgoraVideoRenderModeHidden;
     }
-
+    
     if(model.canvasType == RTCVideoCanvasTypeLocal) {
         [self.rtcManager setupLocalVideo: videoCanvas];
     } else if(model.canvasType == RTCVideoCanvasTypeRemote) {
         [self.rtcManager setupRemoteVideo: videoCanvas];
     }
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
-    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-    if(filteredArray.count > 0){
-
-        RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
-        videoSessionModel.videoCanvas.view = nil;
-        videoSessionModel.videoCanvas = videoCanvas;
-    } else {
+//    if(currentSessionModel != nil) {
+//        currentSessionModel.videoCanvas.view = nil;
+//        currentSessionModel.videoCanvas = videoCanvas;
+//        [self.rtcVideoSessionModels addObject:currentSessionModel];
+//    } else {
         RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
         videoSessionModel.uid = model.uid;
         videoSessionModel.videoCanvas = videoCanvas;
         [self.rtcVideoSessionModels addObject:videoSessionModel];
-    }
+//    }
 }
 
 - (void)removeRTCVideoCanvas:(NSUInteger) uid {
@@ -306,6 +333,11 @@
     if(filteredArray > 0) {
         RTCVideoSessionModel *model = filteredArray.firstObject;
         model.videoCanvas.view = nil;
+        if(uid == self.signalManager.messageModel.uid.integerValue) {
+            [self.rtcManager setupLocalVideo:model.videoCanvas];
+        } else {
+            [self.rtcManager setupRemoteVideo:model.videoCanvas];
+        }
         [self.rtcVideoSessionModels removeObject:model];
     }
 }
