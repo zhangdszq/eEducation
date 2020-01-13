@@ -1,9 +1,18 @@
-const { override, fixBabelImports } = require("customize-cra");
+const {
+  override,
+  addBabelPlugins,
+  addWebpackExternals,
+  useBabelRc
+} = require('customize-cra');
+
+const isDev = process.env.BROWSER === 'none';
 
 module.exports = override(
-  fixBabelImports("import", {
-    libraryName: "antd",
-    libraryDirectory: "es",
-    style: "css"
-  })
-);
+  isDev && addWebpackExternals({
+    "agora-electron-sdk": "commonjs2 agora-electron-sdk"
+  }),
+  addBabelPlugins(
+    '@babel/plugin-proposal-optional-chaining'
+  ),
+  useBabelRc()
+)
