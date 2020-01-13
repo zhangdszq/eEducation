@@ -1,6 +1,6 @@
 # 声网教育场景demo  
 
-* English Version: [English](README.md)  
+*English Version: [English](README.md)*  
 
 ### 在线预览
   [web demo](https://webdemo.agora.io/education_web/)
@@ -16,10 +16,10 @@
   |大班课场景：老师1v多学生，默认以观众身份进入频道，举手向老师发起连麦，老师接受连麦并且统一以后，连麦互动。| [big-class.tsx](./src/pages/classroom/big-class.tsx) | 1个老师默认连麦进入教室，学生进入无限制人数 |
 
 ### 使用的SDK
-  * agora-rtc-sdk （web版声网sdk）
+  * agora-rtc-sdk（web版声网sdk）
   * agora-rtm-sdk（web版声网实时消息sdk）
-  * agora-electron-sdk  （声网官方electron-sdk）
-  * white-web-sdk （netless官方白板sdk）
+  * agora-electron-sdk（声网官方electron-sdk）
+  * white-web-sdk（netless官方白板sdk）
   * ali-oss（可替换成你自己的oss client）
   * 声网云录制 （不推荐直接在客户端集成）
 

@@ -5,3 +5,7 @@ package-lock.json
 education_web
 *.dev
 release
+.env
+!.env.example
+*.~
+*.*~
