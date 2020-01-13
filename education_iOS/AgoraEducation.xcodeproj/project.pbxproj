@@ -1367,7 +1367,7 @@
 		};
 		78AED04723C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */;
+			baseConfigurationReference = A5BFF93D50503E0756F47D98 /* Pods-AgoraEducation.qarelease.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

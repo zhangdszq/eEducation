@@ -275,12 +275,9 @@
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
     NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-    if(filteredArray.count > 0){
-
-        RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
-        videoSessionModel.videoCanvas.view = nil;
-        videoSessionModel.videoCanvas = videoCanvas;
-    } else {
+    NSAssert(filteredArray.count == 0, @"uid already exist");
+    
+    if(filteredArray.count == 0) {
         RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
         videoSessionModel.uid = model.uid;
         videoSessionModel.videoCanvas = videoCanvas;
@@ -295,6 +292,11 @@
     if(filteredArray > 0) {
         RTCVideoSessionModel *model = filteredArray.firstObject;
         model.videoCanvas.view = nil;
+        if(uid == self.signalManager.messageModel.uid.integerValue) {
+            [self.rtcManager setupLocalVideo:model.videoCanvas];
+        } else {
+            [self.rtcManager setupRemoteVideo:model.videoCanvas];
+        }
         [self.rtcVideoSessionModels removeObject:model];
     }
 }

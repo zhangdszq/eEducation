@@ -33,6 +33,7 @@
 -(void)initSessionModel {
     self.teacherModel = [TeacherModel new];
     self.studentModel = [StudentModel new];
+    self.renderStudentModel = [StudentModel new];
     self.rtcUids = [NSMutableSet set];
     self.rtcVideoSessionModels = [NSMutableArray array];
 }
@@ -165,10 +166,18 @@
     
     self.teacherModel = teaModel;
     
+    if(self.teacherModel != nil && self.teacherModel.link_uid.integerValue > 0){
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.teacherModel.link_uid];
+        NSArray<RolesStudentInfoModel *> *filteredArray = [stuArray filteredArrayUsingPredicate:predicate];
+        if(filteredArray.count > 0){
+            self.renderStudentModel = filteredArray.firstObject.studentModel;
+        }
+    }
+    
     RolesInfoModel *rolesInfoModel = [RolesInfoModel new];
     rolesInfoModel.teacherModel = teaModel;
     rolesInfoModel.studentModels = stuArray;
-
+    
     return rolesInfoModel;
 }
 
@@ -267,12 +276,9 @@
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
     NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-    if(filteredArray.count > 0){
-
-        RTCVideoSessionModel *videoSessionModel = filteredArray.firstObject;
-        videoSessionModel.videoCanvas.view = nil;
-        videoSessionModel.videoCanvas = videoCanvas;
-    } else {
+    NSAssert(filteredArray.count == 0, @"uid already exist");
+    
+    if(filteredArray.count == 0) {
         RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
         videoSessionModel.uid = model.uid;
         videoSessionModel.videoCanvas = videoCanvas;
@@ -287,7 +293,11 @@
     if(filteredArray > 0) {
         RTCVideoSessionModel *model = filteredArray.firstObject;
         model.videoCanvas.view = nil;
-        model.videoCanvas = nil;
+        if(uid == self.signalManager.messageModel.uid.integerValue) {
+            [self.rtcManager setupLocalVideo:model.videoCanvas];
+        } else {
+            [self.rtcManager setupRemoteVideo:model.videoCanvas];
+        }
         [self.rtcVideoSessionModels removeObject:model];
     }
 }
@@ -352,9 +362,6 @@
         [self.rtcDelegate rtcNetworkTypeGrade:grade];
     }
 }
-
-
-
 
 #pragma mark WhiteManager
 - (void)initWhiteSDK:(WhiteBoardView *)boardView dataSourceDelegate:(id<WhitePlayDelegate> _Nullable)whitePlayerDelegate {
