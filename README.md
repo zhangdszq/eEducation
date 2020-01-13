@@ -35,7 +35,6 @@
 * [About the Project](#about-the-project)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
