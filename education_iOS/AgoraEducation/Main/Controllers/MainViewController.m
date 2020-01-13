@@ -148,8 +148,6 @@
 
 - (IBAction)joinRoom:(UIButton *)sender {
     
-    self.classNameTextFiled.text = @"qqq";
-    self.userNameTextFiled.text = @"jerry2";
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
         
         [AlertViewUtil showAlertWithController:self title:@"User name must be within 11 digits or English characters"];
