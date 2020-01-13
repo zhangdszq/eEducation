@@ -5,13 +5,18 @@ declare module 'agora-rtc-sdk' {
   export default AgoraRTC;
 }
 
-declare module 'agora-stream-player' {
-  const StreamPlayer: any;
-  export default StreamPlayer;
+declare module 'agora-rtm-sdk' {
+  const AgoraRTM: any;
+  export default AgoraRTM;
 }
 
-declare enum ClientRole {
-  AUDIENCE = 0,
-  STUDENT = 1,
-  TEACHER = 2
+declare module 'js-md5' {
+  const MD5: any;
+  export default MD5;
+}
+
+declare interface Device {
+  deviceId: string
+  label: string
+  kind: string
 }
