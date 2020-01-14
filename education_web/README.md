@@ -101,7 +101,17 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=your_oss_bucket_sk
   npm run pack:mac
 
 #### Package Electron for Win32
-  npm run pack:win
+  * npm i electron@5.0.8 --arch=ia32
+  * find and replace `agora_electron`:  
+  ```
+    "agora_electron": {
+      "electron_version": "5.0.8",
+      "prebuilt": true,
+      "platform": "win32"
+    },
+  ```  
+  * If you already did npm install, please clean node_modules & reinstall
+  * final step: npm run pack:win
 
 #### FAQ
   * [ISSUES](https://github.com/AgoraIO-Usecase/eEducation/issues/new)  
