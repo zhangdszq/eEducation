@@ -9,7 +9,7 @@ jobs:
     displayName: ${{ parameters.qaDisplayName }}
 
     pool:
-      vmImage: 'macOS-10.13'
+      vmImage: 'macos-latest'
 
     variables:
       - group: AgoraKeys
