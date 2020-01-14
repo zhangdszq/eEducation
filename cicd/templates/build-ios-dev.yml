@@ -27,6 +27,7 @@ jobs:
       - task: InstallAppleProvisioningProfile@1
         inputs:
           provProfileSecureFile: 'AgoraAppsDevProfile.mobileprovision'
+
       
       - script: cd ${{ parameters.workingDirectory }} && chmod +x build-dev.sh && ./build-dev.sh
 
