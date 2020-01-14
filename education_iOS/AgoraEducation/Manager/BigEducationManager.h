@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 /* ==================================>Session Model<================================ */
 @property (nonatomic, strong) TeacherModel * _Nullable teacherModel;
 @property (nonatomic, strong) StudentModel * _Nullable studentModel;
+@property (nonatomic, strong) StudentModel * _Nullable renderStudentModel;
 @property (nonatomic, strong) NSMutableSet<NSString*> *rtcUids;
 @property (nonatomic, strong) NSMutableArray<RTCVideoSessionModel*> *rtcVideoSessionModels;
 - (void)initSessionModel;

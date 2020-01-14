@@ -26,7 +26,7 @@
 
 #import "SignalManager.h"
 #import "SignalP2PModel.h"
-
+#import "MCStudentVideoCell.h"
 #import "KeyCenter.h"
 
 #define kLandscapeViewWidth    222
@@ -151,47 +151,34 @@
     }];
 }
 
-- (void)updateTeacherStatusWithSourceModel:(TeacherModel*)sourceModel currentModel:(TeacherModel*)currentModel {
-
-    if(sourceModel == nil || currentModel == nil) {
+- (void)updateTeacherViews:(TeacherModel*)teacherModel {
+    if(teacherModel == nil){
         return;
-    }
-
-    if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
-        [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:NO];
-    }
-
-    if(sourceModel.class_state != currentModel.class_state) {
-        currentModel.class_state ? [self.navigationView startTimer] : [self.navigationView stopTimer];
     }
     
     // update teacher views
-    self.teacherVideoView.defaultImageView.hidden = currentModel.video ? YES : NO;
-    NSString *imageName = currentModel.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
+    self.teacherVideoView.defaultImageView.hidden = teacherModel.video ? YES : NO;
+    NSString *imageName = teacherModel.audio ? @"icon-speaker3-max" : @"icon-speakeroff-dark";
     [self.teacherVideoView updateSpeakerImageName: imageName];
+    [self.teacherVideoView updateUserName:teacherModel.account];
 }
 
-- (void)updateStudentStatus:(NSArray<RolesStudentInfoModel *> *)studentInfoModels {
+- (void)updateChatViews {
+    BOOL muteChat = self.educationManager.teacherModel != nil ? self.educationManager.teacherModel.mute_chat : NO;
+    if(!muteChat) {
+        muteChat = self.educationManager.studentModel.chat == 0 ? YES : NO;
+    }
+    self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
+}
 
-    if(studentInfoModels == nil) {
+- (void)updateStudentViews:(StudentModel*)studentModel {
+    if(studentModel == nil){
         return;
     }
-
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"attrKey == %@", self.paramsModel.userId];
-    NSArray<RolesStudentInfoModel *> *filteredArray = [studentInfoModels filteredArrayUsingPredicate:predicate];
-    if(filteredArray.count > 0){
-        
-        StudentModel *canvasStudentModel = filteredArray.firstObject.studentModel;
-        BOOL muteChat = self.educationManager.teacherModel != nil ? self.educationManager.teacherModel.mute_chat : NO;
-        if(!muteChat) {
-            muteChat = canvasStudentModel.chat == 0 ? YES : NO;
-        }
-        self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-        self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
-        
-        [self.educationManager enableRTCLocalVideo:canvasStudentModel.video == 0 ? NO : YES];
-        [self.educationManager enableRTCLocalAudio:canvasStudentModel.audio == 0 ? NO : YES];
-    }
+    
+    [self.educationManager enableRTCLocalVideo:studentModel.video == 0 ? NO : YES];
+    [self.educationManager enableRTCLocalAudio:studentModel.audio == 0 ? NO : YES];
 }
 
 - (void)setupView {
@@ -220,35 +207,28 @@
 
 - (void)initStudentRenderBlock {
     WEAK(self);
-    [self.studentVideoListView setStudentVideoList:^(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath) {
-        
-        if(indexPath.row >= weakself.educationManager.studentListArray.count){
+    [self.studentVideoListView setStudentVideoList:^(MCStudentVideoCell * _Nonnull cell, NSString * _Nullable currentUid) {
+
+        if(currentUid == nil){
             return;
         }
-        
-        RolesStudentInfoModel *roleInfoModel = weakself.educationManager.studentListArray[indexPath.row];
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", roleInfoModel.attrKey.integerValue];
-        NSArray<RTCVideoSessionModel *> *filteredArray = [weakself.educationManager.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-        
-        if(filteredArray.count == 0 || filteredArray.firstObject.videoCanvas.view != imageView){
-            
-            RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
-            model.uid = roleInfoModel.attrKey.integerValue;
-            model.videoView = imageView;
-            model.renderMode = RTCVideoRenderModeHidden;
-            
-            if ([roleInfoModel.attrKey isEqualToString:weakself.paramsModel.userId]) {
-                model.canvasType = RTCVideoCanvasTypeLocal;
-                [weakself.educationManager setupRTCVideoCanvas:model];
-            } else {
-                model.canvasType = RTCVideoCanvasTypeRemote;
-                [weakself.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
-                [weakself.educationManager setupRTCVideoCanvas:model];
-            }
+               
+        RTCVideoCanvasModel *model = [RTCVideoCanvasModel new];
+        model.uid = currentUid.integerValue;
+        model.videoView = cell.videoCanvasView;
+        model.renderMode = RTCVideoRenderModeHidden;
+
+        if ([currentUid isEqualToString:weakself.paramsModel.userId]) {
+           model.canvasType = RTCVideoCanvasTypeLocal;
+           [weakself.educationManager setupRTCVideoCanvas:model];
+        } else {
+           model.canvasType = RTCVideoCanvasTypeRemote;
+           [weakself.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
+           [weakself.educationManager setupRTCVideoCanvas:model];
         }
     }];
 }
+
 - (void)initSelectSegmentBlock {
     WEAK(self);
     [self.segmentedView setSelectIndex:^(NSInteger index) {
@@ -304,6 +284,7 @@
         if(filteredArray.count == 0){
             [self renderTeacherCanvas:teacherUid.integerValue];
         }
+        [self updateTeacherViews:self.educationManager.teacherModel];
     } else {
         [self removeTeacherCanvas:teacherUid.integerValue];
     }
@@ -319,9 +300,6 @@
     model.canvasType = RTCVideoCanvasTypeRemote;
     [self.educationManager setRTCRemoteStreamWithUid:model.uid type:RTCVideoStreamTypeLow];
     [self.educationManager setupRTCVideoCanvas: model];
-
-    self.teacherVideoView.defaultImageView.hidden = YES;
-    [self.teacherVideoView updateUserName:self.educationManager.teacherModel.account];
 }
 
 - (void)removeTeacherCanvas:(NSUInteger)uid {
@@ -406,6 +384,8 @@
     
     [self.studentListView updateStudentArray:self.educationManager.studentListArray];
     [self.studentVideoListView updateStudentArray:self.educationManager.studentListArray];
+    
+    [self updateStudentViews:self.educationManager.studentModel];
 }
     
 #pragma mark SignalDelegate
@@ -470,11 +450,25 @@
 
 -(void)signalDidUpdateGlobalStateWithSourceModel:(RolesInfoModel *)sourceInfoModel currentModel:(RolesInfoModel *)currentInfoModel {
     
-    [self updateTeacherStatusWithSourceModel:sourceInfoModel.teacherModel currentModel:currentInfoModel.teacherModel];
+    // teacher
+    {
+        TeacherModel *sourceModel = sourceInfoModel.teacherModel;
+        TeacherModel *currentModel = currentInfoModel.teacherModel;
+        if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
+            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:NO];
+        }
+
+        if(sourceModel.class_state != currentModel.class_state) {
+            currentModel.class_state ? [self.navigationView startTimer] : [self.navigationView stopTimer];
+        }
+    }
     
-    self.educationManager.studentTotleListArray = currentInfoModel.studentModels;
-    [self updateStudentStatus:currentInfoModel.studentModels];
-    
+    // student
+    {
+        self.educationManager.studentTotleListArray = currentInfoModel.studentModels;
+    }
+
+    [self updateChatViews];
     [self checkNeedRender];
 }
 
