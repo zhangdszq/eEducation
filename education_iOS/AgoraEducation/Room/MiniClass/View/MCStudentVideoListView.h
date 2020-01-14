@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "RolesInfoModel.h"
+#import "MCStudentVideoCell.h"
 
-typedef void(^ StudentVideoList)(UIView * _Nullable imageView, NSIndexPath * _Nullable indexPath);
+typedef void(^ StudentVideoList)(MCStudentVideoCell * _Nonnull cell, NSString * _Nullable currentUid);
 
 NS_ASSUME_NONNULL_BEGIN
 

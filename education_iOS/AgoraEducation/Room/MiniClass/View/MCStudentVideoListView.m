@@ -58,10 +58,13 @@
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     MCStudentVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
-    cell.userModel = self.studentArray[indexPath.row].studentModel;
+    
+    StudentModel *currentModel = self.studentArray[indexPath.row].studentModel;
+    cell.userModel = currentModel;
     if (self.studentVideoList) {
-        self.studentVideoList(cell.videoCanvasView,indexPath);
+        self.studentVideoList(cell, [currentModel uid]);
     }
+
     return cell;
 }
 
@@ -82,18 +85,18 @@
     } else {
 
         NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
-        
+
         NSInteger count = studentArray.count;
         for(NSInteger i = 0; i < count; i++) {
             RolesStudentInfoModel *sourceModel = [self.studentArray objectAtIndex:i];
             RolesStudentInfoModel *currentModel = [studentArray objectAtIndex:i];
             if(![sourceModel.attrKey isEqualToString:currentModel.attrKey] || ![sourceModel.studentModel isEqual:currentModel.studentModel]) {
-                
+
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
                 [indexPaths addObject:indexPath];
             }
         }
-        
+
         self.studentArray = [NSArray arrayWithArray:studentArray];
         [self.videoListView reloadItemsAtIndexPaths:indexPaths];
     }
