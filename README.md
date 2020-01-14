@@ -73,7 +73,7 @@ To build and run the sample application, get an App ID:
 - education_Android
   Android client based on a list of Agora RTM/Media SDK, for more [details](./education_Android/AgoraEducation)
 - education_iOS
-  iOS client based on a list of Agora RTM/Media SDK, for more [details](./education_iOS/AgoraEducation)
+  iOS client based on a list of Agora RTM/Media SDK, for more [details](./education_iOS)
 - education_web
   Web & Electron client based on a list of Agora RTM/Media SDK [details](./education_web)
 
