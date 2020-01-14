@@ -23,11 +23,20 @@ jobs:
         inputs:
           certSecureFile: 'certificate.p12'
           certPwd: $(agora.passWord)
-
+          
+      - task: InstallAppleCertificate@2
+        inputs:
+          certSecureFile: 'TestCertificates2019.p12'
+          certPwd: $(agora.passWord)
 
       - task: InstallAppleProvisioningProfile@1
         inputs:
           provProfileSecureFile: 'AgoraAppsDevProfile.mobileprovision'
+          
+      - task: InstallAppleProvisioningProfile@1
+        inputs:
+          provProfileSecureFile:
+              'AgoraIOTest2019.mobileprovision'
       
       - script: cd ${{ parameters.workingDirectory }} && chmod +x build.sh && ./build.sh
 
