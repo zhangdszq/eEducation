@@ -1,12 +1,7 @@
 jobs:
-  - template: cicd/templates/build-ios-dev.yml
+  - template: cicd/templates/build-ios.yml
     parameters:
-      displayName: 'AgoraEducation_DEV'
-      workingDirectory: 'education_iOS'
-      scheme: 'AgoraEducation'
-      
-  - template: cicd/templates/build-ios-qa.yml
-    parameters:
-      displayName: 'AgoraEducation_QA'
+      devDisplayName: 'AgoraEducationDEV'
+      qaDisplayName: 'AgoraEducationQA'
       workingDirectory: 'education_iOS'
       scheme: 'AgoraEducation'
