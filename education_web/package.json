@@ -2,7 +2,7 @@
   "name": "agora-edu-web",
   "version": "5.0.0",
   "private": true,
-  "homepage": "https://webdemo.agora.io/education_web/us",
+  "homepage": "./",
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
