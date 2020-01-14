@@ -1,11 +1,12 @@
 jobs:
-  # - template: cicd/templates/build-android.yml
-  #   parameters:
-  #     displayName: 'AndroidOpenVideoCall'
-  #     workingDirectory: 'Group-Video/OpenVideoCall-Android'
-
-  - template: cicd/templates/build-ios.yml
+  - template: cicd/templates/build-ios-dev.yml
     parameters:
-      displayName: 'AgoraEducation'
+      displayName: 'AgoraEducation_DEV'
+      workingDirectory: 'education_iOS'
+      scheme: 'AgoraEducation'
+      
+  - template: cicd/templates/build-ios-qa.yml
+    parameters:
+      displayName: 'AgoraEducation_QA'
       workingDirectory: 'education_iOS'
       scheme: 'AgoraEducation'
