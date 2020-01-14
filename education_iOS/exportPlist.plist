@@ -10,6 +10,8 @@
 	<dict>
 		<key>io.agora.AgoraEducation</key>
 		<string>AgoraAppsDevProfile</string>
+		<key>io.agora.AgoraEducationQA</key>
+		<string>AgoraIOTest2019</string>
 	</dict>
 </dict>
 </plist>

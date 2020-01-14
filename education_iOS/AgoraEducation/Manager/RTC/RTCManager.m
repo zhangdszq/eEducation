@@ -78,8 +78,8 @@
 }
 
 - (void)releaseResources {
-    [self stopPreview];
     [self.rtcEngineKit leaveChannel:nil];
+    [self stopPreview];
 }
 
 -(void)dealloc {
