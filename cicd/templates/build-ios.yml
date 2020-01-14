@@ -11,7 +11,7 @@ jobs:
       vmImage: 'macOS-10.13'
 
     variables:
-      - group: AgoraEducation
+      - group: AgoraKeys
 
     steps:
       - script: cd ${{ parameters.workingDirectory }} && ls && python ci.env.py
