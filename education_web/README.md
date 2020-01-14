@@ -1,5 +1,5 @@
 # Agora Education Web & Electron demo  
-* Other Language: [简体中文](README.zh.md)  
+*Other Language: [简体中文](README.zh.md)*
 
 ### Preview
   [web demo](https://webdemo.agora.io/education_web/)
