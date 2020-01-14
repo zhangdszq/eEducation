@@ -1,0 +1,39 @@
+.chat-board {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: space-between;
+  .menu {
+    max-height: 45px;
+    min-height: 45px;
+    flex: 1;
+    user-select: none;
+  }
+  .message-panel {
+    display: flex;
+    // margin-top: 10px;
+    margin: 10px;
+    position: relative;
+  }
+  .chat-messages-container {
+    flex: 1;
+    position: relative;
+  }
+}
+
+.MuiButtonBase-root.chat-panel-btn {
+  right: 0px;
+  position: absolute;
+  line-height: 15px;
+  margin-left: 7px;
+  text-transform: none;
+  width: 64px;
+  height: 34px;
+  border-radius: 22px;
+  background: #44A2FC;
+  box-shadow: none;
+  &:hover {
+    box-shadow: none;
+    background: #82C2FF;
+  }
+}
