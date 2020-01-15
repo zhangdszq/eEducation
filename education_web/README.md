@@ -36,7 +36,7 @@
 
 ### For Windows Electron Developer
   * npm install electron@5.0.8 arch=ia32 manually  
-  ```
+  ```  
   npm install electron@5.0.8 --arch=ia32 --save-dev
   ```  
   * find the `agora_electron` from package.json, replace it with below code snippet  
@@ -46,7 +46,7 @@
       "prebuilt": true,
       "platform": "win32"
     },
-  ```
+  ```  
 
 ### Setup
 
