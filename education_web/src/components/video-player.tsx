@@ -6,6 +6,7 @@ import { useRoomState } from '../containers/root-container';
 import { platform } from '../utils/platform';
 
 const contentMode = 0;
+const fitContentMode = 1;
 
 interface VideoPlayerProps {
   domId?: string
@@ -82,8 +83,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       if (_stream.type === StreamType.localVideoSource) {
         AgoraRtcEngine.setupLocalVideoSource(dom);
-        AgoraRtcEngine.setupViewContentMode('videosource', contentMode);
-        AgoraRtcEngine.setupViewContentMode(streamID, contentMode);
+        AgoraRtcEngine.setupViewContentMode('videosource', fitContentMode);
+        AgoraRtcEngine.setupViewContentMode(streamID, fitContentMode);
         return () => {
           // AgoraRtcEngine.destroyRenderView('videosource');
           // AgoraRtcEngine.destroyRenderView(streamID, dom, (err: any) => { console.warn(err.message) });
@@ -100,8 +101,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       if (_stream.type === StreamType.remoteVideoSource) {
         AgoraRtcEngine.subscribe(streamID, dom);
-        AgoraRtcEngine.setupViewContentMode('videosource', contentMode);
-        AgoraRtcEngine.setupViewContentMode(streamID, contentMode);
+        AgoraRtcEngine.setupViewContentMode('videosource', fitContentMode);
+        AgoraRtcEngine.setupViewContentMode(streamID, fitContentMode);
         return () => {
           // AgoraRtcEngine.destroyRenderView('videosource');
           // AgoraRtcEngine.destroyRenderView(streamID, dom, (err: any) => { console.warn(err.message) });
