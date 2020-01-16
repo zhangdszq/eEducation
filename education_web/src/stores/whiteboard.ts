@@ -11,6 +11,7 @@ import { isEmpty, get } from 'lodash';
 import { roomStore } from './room';
 import { handleRegion } from '../utils/helper';
 import { globalStore } from './global';
+import { t } from '../utils/i18n';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
 const RECORDING_UID = 1;
@@ -414,15 +415,14 @@ class Whiteboard extends EventEmitter {
     if (lockBoard) {
       globalStore.showToast({
         type: 'notice-board',
-        message: 'whiteboard lock'
+        message: t('toast.whiteboard_lock')
       });
     } else {
       globalStore.showToast({
         type: 'notice-board',
-        message: 'whiteboard unlock'
+        message: t('toast.whiteboard_unlock')
       });
     }
-    console.log(">>> roomStore.state.me >>>>> ", roomStore.state.me);
     await roomStore.updateMe({
       ...roomStore.state.me,
       lockBoard

@@ -5,6 +5,7 @@ import Button from './custom-button';
 import FormSelect from './form-select';
 import SpeakerVolume from './volume/speaker';
 import useSettingControl from '../hooks/use-setting-control';
+import {t} from '../utils/i18n';
 
 import { usePlatform } from '../containers/platform-container';
 
@@ -78,7 +79,7 @@ export default function (props: SettingProps) {
           <div className="position-content flex-direction-column">
             <FormControl className={classes.formControl}>
               <FormSelect 
-                Label={"Camera"}
+                Label={t("device.camera")}
                 value={camera}
                 onChange={changeCamera}
                 items={cameraList}
@@ -86,7 +87,7 @@ export default function (props: SettingProps) {
             </FormControl>
             <FormControl className={classes.formControl}>
               <FormSelect 
-                Label={"Microphone"}
+                Label={t("device.microphone")}
                 value={microphone}
                 onChange={changeMicrophone}
                 items={microphoneList}
@@ -95,14 +96,14 @@ export default function (props: SettingProps) {
             </FormControl>
             <FormControl className={classes.formControl}>
               <FormSelect 
-                Label={"Speaker"}
+                Label={t("device.speaker")}
                 value={speaker}
                 onChange={changeSpeaker}
                 items={speakerList}
               />
               <SpeakerVolume volume={speakerVolume} onChange={changeSpeakerVolume} />
             </FormControl>
-            <Button name={"Finish"} onClick={(evt: any) => {
+            <Button name={t("device.finish")} onClick={(evt: any) => {
               save({
                 speakerVolume,
                 camera,

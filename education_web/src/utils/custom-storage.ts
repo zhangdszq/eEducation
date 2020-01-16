@@ -22,6 +22,11 @@ export class CustomStorage {
   clear(key: string) {
     this.storage.removeItem(key);
   }
+
+  getLanguage() {
+    const language = this.read('language') ? this.read('language') : navigator.language;
+    return {language};
+  }
 }
 
 const GlobalStorage = new CustomStorage();

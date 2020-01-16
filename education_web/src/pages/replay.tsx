@@ -11,6 +11,7 @@ import { WhiteboardAPI } from '../utils/api';
 import { whiteboard } from '../stores/whiteboard';
 import "video.js/dist/video-js.css";
 import { getOSSUrl } from '../utils/helper';
+import { t } from '../utils/i18n';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -293,14 +294,14 @@ export const Replay: React.FC<{}> = () => {
             onCatchErrorWhenRender: error => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
             },
             onCatchErrorWhenAppendFrame: error => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
             },
@@ -317,7 +318,7 @@ export const Replay: React.FC<{}> = () => {
             onStoppedWithError: (error) => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
               store.setReplayFail(true);
@@ -350,14 +351,14 @@ export const Replay: React.FC<{}> = () => {
 
   const PlayerCover = useCallback(() => {
     if (!player) {
-      return (<Progress title={"loading..."} />)
+      return (<Progress title={t("replay.loading")} />)
     }
 
     if (player.phase === PlayerPhase.Playing) return null;
 
     return (
       <div className="player-cover">
-        {player.phase === PlayerPhase.Buffering ? <Progress title={"loading..."} />: null}
+        {player.phase === PlayerPhase.Buffering ? <Progress title={t("replay.loading")} />: null}
         {player.phase === PlayerPhase.Pause || player.phase === PlayerPhase.Ended || player.phase === PlayerPhase.WaitingFirstFrame ? 
           <div className="play-btn" onClick={handlePlayerClick}></div> : null}
       </div>

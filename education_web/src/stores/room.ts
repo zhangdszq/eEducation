@@ -9,7 +9,7 @@ import AgoraWebClient from '../utils/agora-rtc-client';
 import {get} from 'lodash';
 import { isElectron } from '../utils/platform';
 import GlobalStorage from '../utils/custom-storage';
-import { whiteboard } from './whiteboard';
+import { t } from '../utils/i18n';
 
 function canJoin({onlineStatus, roomType, channelCount, role}: {onlineStatus: any, role: string, channelCount: number, roomType: number}) {
   const result = {
@@ -120,6 +120,7 @@ export type RoomState = {
   rtm: RtmState
   mediaDevice: MediaDeviceState
   messages: List<ChatMessage>
+  language: string
 }
 
 export type AgoraMediaStream = {
@@ -189,6 +190,7 @@ export class RoomStore {
       microphone: 0
     },
     messages: List<ChatMessage>(),
+    language: navigator.language,
     ...GlobalStorage.read('agora_room')
   });
 
@@ -400,8 +402,8 @@ export class RoomStore {
         }
         case RoomMessage.muteBoard: {
           globalStore.showToast({
-            message: `Teacher already cancel your whiteboard`,
-            type: 'notice'
+            type: 'notice',
+            message: t('toast.teacher_cancel_whiteboard'),
           });
           return await this.updateMe({...me, grantBoard: 0});
         }
@@ -416,29 +418,29 @@ export class RoomStore {
         }
         case RoomMessage.unmuteBoard: {
           globalStore.showToast({
-            message: `Teacher already permit your whiteboard`,
-            type: 'notice'
+            type: 'notice',
+            message: t('toast.teacher_accept_whiteboard')
           });
           return await this.updateMe({...me, grantBoard: 1});
         }
         case RoomMessage.acceptCoVideo: {
           globalStore.showToast({
             type: 'co-video',
-            message: 'teacher already accept co-video'
+            message: t("toast.teacher_accept_co_video")
           });
           return;
         }
         case RoomMessage.rejectCoVideo: {
           globalStore.showToast({
             type: 'co-video',
-            message: 'teacher already rejected co-video'
+            message: t("toast.teacher_reject_co_video")
           });
           return;
         }
         case RoomMessage.cancelCoVideo: {
           globalStore.showToast({
             type: 'co-video',
-            message: 'teacher already canceled co-video'
+            message: t("toast.teacher_cancel_co_video")
           });
           return;
         }
@@ -466,7 +468,7 @@ export class RoomStore {
             this.commit(this.state);
             globalStore.showNotice({
               reason: 'peer_hands_up',
-              text: `"${applyUser.account}" wants to interact with you`
+              text: t('notice.student_interactive_apply', {reason: applyUser.account}),
             });
           }
           return;
@@ -479,7 +481,7 @@ export class RoomStore {
 
             globalStore.showToast({
               type: 'co-video',
-              message: 'student canceled co-video'
+              message: t('toast.student_cancel_co_video')
             });
           }
           return;
@@ -492,7 +494,6 @@ export class RoomStore {
 
   async mute(uid: string, type: string) {
     const me = this.state.me;
-    console.log(">>>>> mute, uid, ", uid, " type: ", type);
     if (me.uid === `${uid}`) {
       if (type === 'audio') {
         await this.updateAttrsBy(me.uid, {

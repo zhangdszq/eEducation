@@ -81,7 +81,7 @@
     "@netless/react-seek-slider": "^1.0.4",
     "agora-electron-sdk": "2.9.1-beta.4",
     "agora-rtc-sdk": "3.0.0",
-    "agora-rtm-sdk": "^1.2.0",
+    "agora-rtm-sdk": "^1.2.1",
     "ali-oss": "^6.3.1",
     "concurrently": "^5.0.0",
     "cross-env": "^6.0.3",

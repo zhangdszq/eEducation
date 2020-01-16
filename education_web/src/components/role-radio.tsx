@@ -3,6 +3,7 @@ import { Theme, RadioGroup, Radio, FormControlLabel, Typography } from '@materia
 import { makeStyles } from '@material-ui/core/styles';
 
 import './role-radio.scss';
+import { t } from '../utils/i18n';
 
 const useStyles = makeStyles ((theme: Theme) => ({
   radioGroup: {
@@ -27,14 +28,14 @@ export default function (props: any) {
         className={"custom-radio align-left"}
         value="teacher"
         control={<Radio className={"custom-radio"} color="primary" />}
-        label="teacher"
+        label={t("home.teacher")}
         labelPlacement="end"
       />
       <FormControlLabel
         className={"custom-radio align-right"}
         value="student"
         control={<Radio className={"custom-radio"} color="primary" />}
-        label="student"
+        label={t("home.student")}
         labelPlacement="end"
       />
       {props.requiredText ? <Typography className={classes.required}>{props.requiredText}</Typography> : null}

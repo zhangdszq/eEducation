@@ -8,6 +8,7 @@ import { roomStore } from '../../stores/room';
 import { globalStore } from '../../stores/global';
 import { useHistory } from 'react-router-dom';
 import { RoomMessage } from '../../utils/agora-rtm-client';
+import { t } from '../../utils/i18n';
 
 interface RoomProps {
   onConfirm: (type: string) => void
@@ -48,8 +49,8 @@ function RoomDialog(
             {desc}
           </DialogContentText>
           <div className="button-group">
-            <Button name="Confirm" className="confirm" onClick={handleConfirm} color="primary" />
-            <Button name="Cancel" className="cancel" onClick={handleClose} color="primary" />
+            <Button name={t("toast.confirm")} className="confirm" onClick={handleConfirm} color="primary" />
+            <Button name={t("toast.cancel")} className="cancel" onClick={handleClose} color="primary" />
           </div>
         </DialogContent>
       </Dialog>

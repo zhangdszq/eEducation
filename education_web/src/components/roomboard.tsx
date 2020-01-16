@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import ChatPanel from './chat/panel';
 import StudentList from './student-list';
 import useChatText from '../hooks/use-chat-text';
+import { t } from '../utils/i18n';
+import { useGlobalState } from '../containers/root-container';
+import { globalStore } from '../stores/global';
 
 export default function Roomboard (props: any) {
   const {
@@ -9,12 +12,15 @@ export default function Roomboard (props: any) {
     messages, sendMessage, handleChange
   } = useChatText();
 
-  const [active, setActive] = useState('chatroom');
+  const {active} = useGlobalState();
+
   const [visible, setVisible] = useState(true);
 
   const toggleCollapse = (evt: any) => {
     setVisible(!visible);
   }
+
+  const count = active !== 'chatroom' ? globalStore.state.newMessageCount : 0;
 
   return (
     <>
@@ -22,22 +28,25 @@ export default function Roomboard (props: any) {
     {visible ? 
     <div className={`small-class chat-board`}>
       <div className="menu">
-        <div onClick={() => { setActive('chatroom') }} className={`item ${active === 'chatroom' ? 'active' : ''}`}>Chatroom</div>
-        <div onClick={() => { setActive('studentList') }} className={`item ${active === 'studentList' ? 'active' : ''}`}>Student List</div>
+        <div onClick={() => { globalStore.setActive('chatroom') }} className={`item ${active === 'chatroom' ? 'active' : ''}`}>
+          {t('room.chat_room')}
+          {active !== 'chatroom' && count > 0 ? <span className={`message-count ${globalStore.state.language}`}>{count}</span> : null}
+        </div>
+        <div onClick={() => { globalStore.setActive('studentList') }} className={`item ${active === 'studentList' ? 'active' : ''}`}>{t('room.student_list')}</div>
       </div>
-      {
-        active === 'chatroom' ?
+      <div className={`chat-container ${active === 'chatroom' ? '' : 'hide'}`}>
         <ChatPanel
           messages={messages}
           value={value}
           sendMessage={sendMessage}
           handleChange={handleChange} />
-        :
+      </div>
+      <div className={`student-container ${active !== 'chatroom' ? '' : 'hide'}`}>
         <StudentList
           role={role}
           list={list}
         />
-      }
+      </div>
     </div>
     : null}
     </>

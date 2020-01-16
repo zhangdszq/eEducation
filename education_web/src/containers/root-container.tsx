@@ -5,6 +5,7 @@ import { WhiteboardState, whiteboard } from '../stores/whiteboard';
 import { useHistory, useLocation } from 'react-router-dom';
 import { resolveMessage, resolvePeerMessage, resolveChannelAttrs, jsonParse } from '../utils/helper';
 import GlobalStorage from '../utils/custom-storage';
+import { t } from '../utils/i18n';
 
 export type IRootProvider = {
   globalState: GlobalState
@@ -83,7 +84,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
       if (reason === 'LOGIN_FAILURE') {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'login failure'
+          message: t('toast.login_failure'),
         });
         history.push('/');
         return;
@@ -91,7 +92,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
       if (reason === 'REMOTE_LOGIN' || newState === 'ABORTED') {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'kick'
+          message: t('toast.kicked'),
         });
         history.push('/');
         return;
@@ -133,6 +134,12 @@ export const RootProvider: React.FC<any> = ({children}) => {
         id: memberId,
       }
       console.log("[rtmClient] ChannelMessage", msg);
+      const isChatroom = globalStore.state.active === 'chatroom';
+      if (!isChatroom) {
+        globalStore.setMessageCount(globalStore.state.newMessageCount+1);
+      } else {
+        globalStore.setMessageCount(0);
+      }
       roomStore.updateChannelMessage(chatMessage);
     });
     return () => {
@@ -153,11 +160,12 @@ export const RootProvider: React.FC<any> = ({children}) => {
       course: room.course,
       mediaDevice: room.mediaDevice,
     });
+    GlobalStorage.save('language', value.globalState.language);
     // WARN: DEBUG ONLY MUST REMOVED IN PRODUCTION
     //@ts-ignore
     window.room = roomState;
     //@ts-ignore
-    window.state = globalState;
+    window.globalState = globalState;
     //@ts-ignore
     window.whiteboard = whiteboardState;
   }, [value, location]);

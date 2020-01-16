@@ -11,6 +11,7 @@ import { globalStore } from '../../stores/global';
 import { platform } from '../../utils/platform';
 import AgoraWebClient, { AgoraStreamSpec, SHARE_ID } from '../../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
+import { t } from '../../utils/i18n';
 
 export const roomTypes = [
   {value: 0, text: 'One-on-One', path: 'one-to-one'},
@@ -62,7 +63,7 @@ export function RoomPage({ children }: any) {
       }).catch((err: any) => {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'login failure'
+          message: t('toast.login_failure'),
         });
         history.push('/');
         console.warn(err)
@@ -73,7 +74,7 @@ export function RoomPage({ children }: any) {
     }).catch((err: any) => {
       globalStore.showToast({
         type: 'rtmClient',
-        message: 'login failure'
+        message: t('toast.login_failure'),
       });
       history.push('/');
       console.warn(err)
@@ -94,9 +95,7 @@ export function RoomPage({ children }: any) {
   const isBigClass = Boolean(location.pathname.match(/big-class/));
   const isSmallClass = Boolean(location.pathname.match(/small-class/));
   
-  const prevRoute = useRef<string>(location.pathname);
   useEffect(() => {
-    console.log("[route] prevRoute: ", prevRoute.current);
     return () => {
       globalStore.removeUploadNotice();
       roomStore.exitAll()

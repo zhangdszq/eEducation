@@ -16,7 +16,6 @@ import OneToOne from './classroom/one-to-one';
 import BigClass from './classroom/big-class';
 
 export default function () {
-
   return (
     <ThemeContainer>
       <CustomBrowserRouter>

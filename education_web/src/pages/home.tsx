@@ -6,19 +6,16 @@ import RoleRadio from '../components/role-radio';
 import Icon from '../components/icon';
 import FormInput from '../components/form-input';
 import FormSelect from '../components/form-select';
+import LangSelect from '../components/lang-select';
 import { isElectron } from '../utils/platform';
 import { usePlatform } from '../containers/platform-container';
 import {useHistory} from 'react-router-dom';
 import { roomStore } from '../stores/room';
 import { genUid } from '../utils/helper';
 import MD5 from 'js-md5';
-import { globalStore } from '../stores/global';
-
-export const roomTypes = [
-  {value: 0, text: 'One-to-One', path: 'one-to-one'},
-  {value: 1, text: 'Small Class', path: 'small-class'},
-  {value: 2, text: 'Large Class', path: 'big-class'},
-];
+import { globalStore, roomTypes } from '../stores/global';
+import { t } from '../utils/i18n';
+import GlobalStorage from '../utils/custom-storage';
 
 const useStyles = makeStyles ((theme: Theme) => ({
   formControl: {
@@ -68,20 +65,20 @@ function HomePage() {
 
   const handleSubmit = () => {
     if (!session.roomName) {
-      setRequired({...required, roomName: 'missing room name'});
+      setRequired({...required, roomName: t('home.missing_room_name')});
       return;
     }
 
     if (!session.yourName) {
-      setRequired({...required, yourName: 'missing your name'});
+      setRequired({...required, yourName: t('home.missing_your_name')});
       return;
     }
 
     if (!session.role) {
-      setRequired({...required, role: 'missing role'});
+      setRequired({...required, role: t('home.missing_role')});
       return;
     }
-
+    
     if (!roomTypes[session.roomType]) return;
     const path = roomTypes[session.roomType].path
     const payload = {
@@ -109,12 +106,12 @@ function HomePage() {
       if (err.reason) {
         globalStore.showToast({
           type: 'rtmClient',
-          message: err.reason
+          message: t('toast.rtm_login_failed_reason', {reason: err.reason}),
         })
       } else {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'login failure, please checkout ur network'
+          message: t('toast.rtm_login_failed'),
         })
       }
       console.warn(err);
@@ -131,10 +128,27 @@ function HomePage() {
       <div className="web-menu">
         <div className="web-menu-container">
           <div className="short-title">
-            <span className="title">Agora Education</span>
-            <span className="subtitle">Powered by agora.io</span>
+            <span className="title">{t('home.short_title.title')}</span>
+            <span className="subtitle">{t('home.short_title.subtitle')}</span>
+            <span className="build-version">{t("build_version")}</span>
           </div>
-          <Icon className="icon-setting" onClick={handleSetting}/>
+          <div className="setting-container">
+            <Icon className="icon-setting" onClick={handleSetting}/>
+            <LangSelect
+            value={GlobalStorage.getLanguage().language !== 'zh-CN' ? 1 : 0}
+            onChange={(evt: any) => {
+              const value = evt.target.value;
+              if (value === 0) {
+                globalStore.setLanguage('zh-CN');
+              } else {
+                globalStore.setLanguage('en');
+              }
+            }}
+            items={[
+              {text: '中文', name: 'zh-CN'},
+              {text: 'En', name: 'en'}
+            ]}></LangSelect>
+          </div>
         </div>
       </div>
       }
@@ -142,13 +156,14 @@ function HomePage() {
         <div className="flex-item cover">
           {isElectron ? 
           <>
-          <div className="short-title">
-            <span className="title">Agora Education</span>
-            <span className="subtitle">Powered by agora.io</span>
+          <div className={`short-title ${globalStore.state.language}`}>
+            <span className="title">{t('home.short_title.title')}</span>
+            <span className="subtitle">{t('home.short_title.subtitle')}</span>
           </div>
-          <div className="cover-placeholder"></div>
+          <div className={`cover-placeholder ${t('home.cover_class')}`}></div>
+          <div className='build-version'>{t("build_version")}</div>
           </>
-          : <div className="cover-placeholder-web"></div>
+          : <div className={`cover-placeholder-web ${t('home.cover_class')}`}></div>
           }
         </div>
         <div className="flex-item card">
@@ -157,7 +172,7 @@ function HomePage() {
           </div>
           <div className="position-content flex-direction-column">
             <FormControl className={classes.formControl}>
-              <FormInput Label={"Room Name"} value={session.roomName} onChange={
+              <FormInput Label={t('home.room_name')} value={session.roomName} onChange={
                 (val: string) => {
                   setSessionInfo({
                     ...session,
@@ -168,7 +183,7 @@ function HomePage() {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <FormInput Label={"Your Name"} value={session.yourName} onChange={
+              <FormInput Label={t('home.nickname')} value={session.yourName} onChange={
                 (val: string) => {
                   setSessionInfo({
                     ...session,
@@ -180,7 +195,7 @@ function HomePage() {
             </FormControl>
             <FormControl className={classes.formControl}>
               <FormSelect 
-                Label={"Room Type"}
+                Label={t('home.room_type')}
                 value={session.roomType}
                 onChange={(evt: any) => {
                   setSessionInfo({
@@ -188,7 +203,11 @@ function HomePage() {
                     roomType: evt.target.value
                   });
                 }}
-                items={roomTypes}
+                items={roomTypes.map((it: any) => ({
+                  value: it.value,
+                  text: t(`${it.text}`),
+                  path: it.path
+                }))}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
@@ -199,7 +218,7 @@ function HomePage() {
                  });
               }} requiredText={required.role}></RoleRadio>
             </FormControl>
-            <Button name={"Join"} onClick={handleSubmit}/>
+            <Button name={t('home.room_join')} onClick={handleSubmit}/>
           </div>
         </div>
       </div>
