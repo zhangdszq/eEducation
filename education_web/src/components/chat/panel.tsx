@@ -7,6 +7,7 @@ import { List } from 'immutable';
 import { ChatMessage } from '../../utils/types';
 import { useRoomState } from '../../containers/root-container';
 import useChatControl from '../../hooks/use-chat-control';
+import { t } from '../../utils/i18n';
 
 interface ChatPanelProps {
   messages: List<ChatMessage>
@@ -58,7 +59,7 @@ export default function ChatPanel ({
         <Input
           disabled={disableChat}
           value={value}
-          placeholder="Input Message"
+          placeholder={disableChat ? t("chat.banned") : t("chat.placeholder")}
           disableUnderline
           className={"message-input"}
           onKeyPress={async (evt: any) => {
@@ -68,7 +69,7 @@ export default function ChatPanel ({
             }
           }}
           onChange={handleChange}/>
-        <Button className={'chat-panel-btn'} name={"send"}
+        <Button className={'chat-panel-btn'} name={t("chat.send")}
           onClick={async (evt: any) => {
             const val = truncateBlank(value)
             val.length > 0 && await sendMessage(val);

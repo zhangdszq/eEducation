@@ -5,7 +5,7 @@ import { AgoraElectronStream, StreamType, nativeRTCClient as nativeClient } from
 import { useRoomState } from '../containers/root-container';
 import { platform } from '../utils/platform';
 
-const contentMode = 0;
+const fillContentMode = 0;
 const fitContentMode = 1;
 
 interface VideoPlayerProps {
@@ -57,24 +57,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const _stream = stream as AgoraElectronStream;
       const dom = document.getElementById(domId);
       if (!dom) return;
-      console.log("[agora-electron] video player", dom, streamID, contentMode);
+      console.log("[agora-electron] video player", dom, streamID, fillContentMode);
       if (preview) {
         // set for preview
         AgoraRtcEngine.setupLocalVideo(dom);
-        AgoraRtcEngine.setupViewContentMode(streamID, contentMode);
+        AgoraRtcEngine.setupViewContentMode(streamID, fillContentMode);
         AgoraRtcEngine.setClientRole(1);
         // preview mode required you become host
         AgoraRtcEngine.startPreview();
         // AgoraRtcEngine.muteLocalVideoStream(nativeClient.published);
         // AgoraRtcEngine.muteLocalAudioStream(nativeClient.published);
         return () => {
-          console.log("[agora-electron] stop preview", dom, streamID, contentMode);
+          console.log("[agora-electron] stop preview", dom, streamID, fillContentMode);
           AgoraRtcEngine.stopPreview();
           AgoraRtcEngine.setClientRole(2);
         }
       }
       if (_stream.type === StreamType.local) {
-        console.log("[agora-electron] video-player play " ,AgoraRtcEngine.setupViewContentMode(streamID, contentMode));
+        console.log("[agora-electron] video-player play " ,AgoraRtcEngine.setupViewContentMode(streamID, fillContentMode));
         console.log("[agora-electron] video-player setupLocalVideo ", AgoraRtcEngine.setupLocalVideo(dom));
         return () => {
           // AgoraRtcEngine.destroyRenderView(streamID, dom, (err: any) => { console.warn(err.message) });
@@ -93,7 +93,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       if (_stream.type === StreamType.remote) {
         AgoraRtcEngine.subscribe(streamID, dom);
-        AgoraRtcEngine.setupViewContentMode(streamID, contentMode);
+        AgoraRtcEngine.setupViewContentMode(streamID, fillContentMode);
         return () => {
           // AgoraRtcEngine.destroyRenderView(streamID, dom, (err: any) => { console.warn(err.message) });
         }

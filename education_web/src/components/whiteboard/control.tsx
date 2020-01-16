@@ -5,6 +5,7 @@ import { whiteboard } from '../../stores/whiteboard';
 import moment from 'moment';
 import { globalStore } from '../../stores/global';
 import { getOSSUrl } from '../../utils/helper';
+import { t } from '../../utils/i18n';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void
@@ -65,7 +66,7 @@ export default function Control({
     if (+timeMoment >= +Date.now()) {
       globalStore.showToast({
         type: 'netlessClient',
-        message: 'Recording too short, at least 15 seconds'
+        message: t('toast.recording_too_short')
       })
       return false;
     }
@@ -88,7 +89,7 @@ export default function Control({
         let mediaUrl = await whiteboard.stopRecording();
         globalStore.showToast({
           type: 'recording',
-          message: 'stop recording success',
+          message: t('toast.stop_recording'),
         });
         if (whiteboard.state.endTime 
           && whiteboard.state.startTime) {
@@ -112,14 +113,14 @@ export default function Control({
         await whiteboard.startRecording();
         globalStore.showToast({
           type: 'recording',
-          message: 'start recording success',
+          message: t('toast.start_recording'),
         });
       }
     } catch(err) {
       if (err.recordingErr) {
         globalStore.showToast({
           type: 'recordingErr',
-          message: err.recordingErr.message,
+          message: t('toast.recording_failed', {reason: err.recordingErr.message})
         });
       }
     }

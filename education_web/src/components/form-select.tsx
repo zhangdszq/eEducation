@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select, InputLabel, MenuItem } from '@material-ui/core';
+import { t } from '../utils/i18n';
 
 export interface FormSelectItems {
   text: string
@@ -9,7 +10,7 @@ export interface FormSelect {
   items: FormSelectItems[]
   Label: string
   value: any
-  onChange: (evt: any) => any,
+  onChange: (evt: any) => any
 }
 
 const FormSelect: React.FC<FormSelect> = ({
