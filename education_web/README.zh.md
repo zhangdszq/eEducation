@@ -3,7 +3,7 @@
 *English Version: [English](README.md)*  
 
 ### 在线预览
-  [web demo](https://webdemo.agora.io/education_web/)
+  [web demo](https://solutions.agora.io/education/web/)
 
 ### 简介
   Agora Edu是基于声网的音视频sdk和实时消息sdk，以及Netless的白板sdk构成  
