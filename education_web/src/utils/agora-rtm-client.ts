@@ -22,9 +22,22 @@ export enum RoomMessage {
   unmuteBoard = 201
 }
 
+export interface ChatBody {
+  account: string
+  content: string
+}
+
+export interface EntityBody {
+  uid: string
+  account: string
+  resource: string
+  value: number
+}
+
 export interface MessageBody {
   cmd: RoomMessage
   text?: string
+  data?: ChatBody | EntityBody
 }
 
 export type SessionProps = {
@@ -149,8 +162,8 @@ export default class AgoraRTMClient {
     await this.logout();
   }
 
-  async sendChannelMessage(msg: string) {
-    return this._currentChannel.sendMessage({ text: msg });
+  async sendChannelMessage(body: string) {
+    return this._currentChannel.sendMessage({ text: body }, {enableHistoricalMessaging: true});
   }
 
   async updateChannelAttrsByKey (key: string, attrs: any) {
@@ -232,7 +245,7 @@ export default class AgoraRTMClient {
   async sendPeerMessage(peerId: string, body: MessageBody) {
     resolveMessage(peerId, body);
     console.log("[rtm-client] send peer message ", peerId, JSON.stringify(body));
-    let result = await this._client.sendMessageToPeer({text: JSON.stringify(body)}, peerId);
+    let result = await this._client.sendMessageToPeer({text: JSON.stringify(body)}, peerId, {enableHistoricalMessaging: true});
     return result.hasPeerReceived;
   }
 }

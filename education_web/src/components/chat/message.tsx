@@ -1,6 +1,7 @@
 import React from 'react';
 import './index.scss';
 import { Link } from 'react-router-dom';
+import { useRoomState } from '../../containers/root-container';
 interface MessageProps {
   nickname: string
   content: string
@@ -15,14 +16,16 @@ export const Message: React.FC<MessageProps> = ({
   sender
 }) => {
 
+  const roomState = useRoomState();
+
   const text = React.useMemo(() => {
-    if (link) {
+    if (link && roomState.course.rid) {
       return (
-        <Link to={link} target="_blank">course recording</Link>
+        <Link to={`${link}?rid=${roomState.course.rid}`} target="_blank">course recording</Link>
       )
     }
     return link ? link : content;
-  }, [content, link])
+  }, [content, link, roomState.course.rid])
 
   return (
   <div className={`message ${sender ? 'sent': 'receive'}`}>
