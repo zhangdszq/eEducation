@@ -2,7 +2,7 @@
   "name": "agora-edu-web",
   "version": "5.0.0",
   "private": true,
-  "homepage": "./",
+  "homepage": ".",
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
@@ -99,7 +99,7 @@
     "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "uuid": "^3.3.3",
-    "white-web-sdk": "2.5.4"
+    "white-web-sdk": "2.5.6"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
