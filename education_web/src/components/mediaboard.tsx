@@ -373,7 +373,7 @@ const items = [
       lock.current = true;
       whiteboard.destroy()
       .then(() => {
-
+        console.log("destroy whiteboard");
       }).catch(console.warn);
     }
   }, []);

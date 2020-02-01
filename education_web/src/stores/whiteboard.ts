@@ -93,6 +93,7 @@ class Whiteboard extends EventEmitter {
     recording: false,
     startTime: 0,
     endTime: 0,
+    room: null,
     ...GlobalStorage.read('mediaDirs'),
   }
 
@@ -332,6 +333,7 @@ class Whiteboard extends EventEmitter {
     this.state = {
       ...this.defaultState,
     }
+    this.commit(this.state);
     this.removeAllListeners();
   }
 
