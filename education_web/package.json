@@ -90,7 +90,7 @@
     "moment": "^2.24.0",
     "node-sass": "^4.12.0",
     "react": "^16.10.2",
-    "react-color": "^2.17.3",
+    "react-color": "2.17.3",
     "react-dom": "^16.10.2",
     "react-draggable": "^4.2.0",
     "react-router-dom": "^5.1.2",
@@ -98,7 +98,7 @@
     "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "uuid": "^3.3.3",
-    "white-web-sdk": "2.5.4"
+    "white-web-sdk": "^2.5.8"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",

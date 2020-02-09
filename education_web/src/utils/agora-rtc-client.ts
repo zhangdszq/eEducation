@@ -377,8 +377,9 @@ export default class AgoraWebClient {
     this.shareClient = new AgoraRTCClient();
     await this.shareClient.createLocalStream({
       video: false,
-      audio: true,
+      audio: false,
       screen: true,
+      screenAudio: true,
       streamID: SHARE_ID,
       microphoneId: '',
       cameraId: ''
