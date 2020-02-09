@@ -8,6 +8,8 @@ const platform = require('os').platform();
 const process = require('process');
 // Module to control application life.
 const app = electron.app;
+
+const globalShortcut = electron.globalShortcut;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -41,9 +43,6 @@ function createWindow() {
 
     // and load the index.html of the app.
     mainWindow.loadURL(startUrl);
-
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -110,6 +109,15 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
+
+
+app.whenReady().then(() => {
+  // more details: https://www.electronjs.org/docs/tutorial/keyboard-shortcuts
+  globalShortcut.register('Control+Shift+X', () => {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  })
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
