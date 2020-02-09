@@ -5,7 +5,7 @@ import { resolveMessage, jsonParse } from './helper';
 
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
-const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_INFO : AgoraRTM.LOG_FILTER_OFF;
+const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_DEBUG : AgoraRTM.LOG_FILTER_OFF;
 
 export enum RoomMessage {
   muteAudio = 101,
@@ -56,7 +56,7 @@ export default class AgoraRTMClient {
   private _channels: any;
   private _client: any;
   private _channelAttrsKey: string | any;
-  private _logged: boolean = false;
+  public _logged: boolean = false;
   private _joined: boolean = false;
 
   constructor () {
@@ -65,7 +65,7 @@ export default class AgoraRTMClient {
     this._currentChannel = null;
     this._currentChannelName = null;
     this._channelAttrsKey = null;
-    this._client = AgoraRTM.createInstance(APP_ID, { enableLogUpload: false, logFilter });
+    this._client = AgoraRTM.createInstance(APP_ID, { enableLogUpload: ENABLE_LOG, logFilter });
   }
 
   public removeAllListeners(): any {

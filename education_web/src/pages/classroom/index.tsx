@@ -47,7 +47,7 @@ export function RoomPage({ children }: any) {
       audio: me.audio,
       chat: me.chat,
       account: me.account,
-      token: '',
+      rtmToken: '',
       boardId: me.boardId,
       linkId: me.linkId,
       sharedId: me.sharedId,
