@@ -514,17 +514,16 @@ const items = [
     return null;
   }, [uploadPhase, convertPhase]);
 
-  const strokeColor: RGBColor | undefined = useMemo(() => {
-    if (whiteboardState.room) {
-      const strokeColor = whiteboardState.room.state.memberState.strokeColor;
-      return {
-        r: strokeColor[0],
-        g: strokeColor[1],
-        b: strokeColor[2],
-      }
+  let strokeColor: RGBColor | undefined = undefined;
+
+  if (whiteboardState.room && whiteboardState.room.state.memberState.strokeColor) {
+    const color = whiteboardState.room.state.memberState.strokeColor;
+    strokeColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
     }
-    return undefined;
-  }, [whiteboardState.room]);
+  }
   
   return (
     <div className={`media-board ${drawable}`}>
