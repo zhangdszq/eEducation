@@ -6,7 +6,7 @@ import { AgoraStream } from '../utils/types';
 import useStream from '../hooks/use-streams';
 import { useLocation } from 'react-router';
 import Tools from './whiteboard/tools';
-import { SketchPicker } from 'react-color';
+import { SketchPicker, RGBColor } from 'react-color';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import { UploadBtn } from './whiteboard/upload/upload-btn';
 import { ResourcesMenu } from './whiteboard/resources-menu';
@@ -531,6 +531,18 @@ const items = [
     }
     return null;
   }, [uploadPhase, convertPhase]);
+
+  const strokeColor: RGBColor | undefined = useMemo(() => {
+    if (whiteboardState.room) {
+      const strokeColor = whiteboardState.room.state.memberState.strokeColor;
+      return {
+        r: strokeColor[0],
+        g: strokeColor[1],
+        b: strokeColor[2],
+      }
+    }
+    return undefined;
+  }, [whiteboardState.room]);
   
   return (
     <div className={`media-board ${drawable}`}>
@@ -558,9 +570,9 @@ const items = [
           items={toolItems}
           currentTool={tool}
           handleToolClick={handleToolClick} />
-          {tool === 'color_picker' && room && room.state ?
+          {tool === 'color_picker' && strokeColor ?
             <SketchPicker
-              color={room.state.memberState.strokeColor}
+              color={strokeColor}
               onChangeComplete={onColorChanged} />
           : null}
         </> : null}

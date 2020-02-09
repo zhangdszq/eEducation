@@ -2,7 +2,7 @@ import { globalStore } from './../stores/global';
 import {get, isEmpty} from 'lodash';
 
 const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
-const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
+const build_version = BUILD_VERSION ? BUILD_VERSION : 'test-only';
 
 const zhCN: any = {
   'toast': {
