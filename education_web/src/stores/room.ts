@@ -573,36 +573,41 @@ export class RoomStore {
   }
 
   async loginAndJoin(payload: any, pass: boolean = false) {
-    const {roomType, role, uid, rid, token} = payload;
-    await this.rtmClient.login(uid, token);
-    const channelMemberCount = await this.rtmClient.getChannelMemberCount([rid]);
-    const channelCount = channelMemberCount[rid];
-    let accounts = await this.rtmClient.getChannelAttributeBy(rid);
-    const onlineStatus = await this.rtmClient.queryOnlineStatusBy(accounts);
-    const argsJoin = {
-      channelCount,
-      onlineStatus,
-      role,
-      accounts,
-      roomType
-    };
-    const result = pass === false ? canJoin(argsJoin) : {permitted: true, reason: ''};
-    if (result.permitted) {
-      let res = await this.rtmClient.join(rid);
-      this.state = {
-        ...this.state,
-        rtm: {
-          ...this.state.rtm,
-          joined: true
+    const {roomType, role, uid, rid, rtmToken} = payload;
+    let result = {permitted: true, reason: ''};
+    await this.rtmClient.login(uid, rtmToken);
+    try {
+      const channelMemberCount = await this.rtmClient.getChannelMemberCount([rid]);
+      const channelCount = channelMemberCount[rid];
+      let accounts = await this.rtmClient.getChannelAttributeBy(rid);
+      const onlineStatus = await this.rtmClient.queryOnlineStatusBy(accounts);
+      const argsJoin = {
+        channelCount,
+        onlineStatus,
+        role,
+        accounts,
+        roomType
+      };
+      result = pass === false ? canJoin(argsJoin) : {permitted: true, reason: ''};
+      if (result.permitted) {
+        let res = await this.rtmClient.join(rid);
+        this.state = {
+          ...this.state,
+          rtm: {
+            ...this.state.rtm,
+            joined: true
+          }
         }
+        const grantBoard = role === 'teacher' ? 1 : 0;
+        await this.updateMe({...payload, grantBoard});
+        this.commit(this.state);
+        return;
       }
-      const grantBoard = role === 'teacher' ? 1 : 0;
-      console.log(">>>>>>>>>>#room: ", grantBoard);
-      await this.updateMe({...payload, grantBoard});
-      this.commit(this.state);
-      return;
+    } catch (err) {
+      if (this.rtmClient._logged) {
+        await this.rtmClient.logout();
+      }
     }
-    await this.rtmClient.logout();
     throw {
       type: 'not_permitted',
       reason: result.reason
@@ -821,13 +826,18 @@ export class RoomStore {
 
   async exitAll() {
     try {
-      await this.rtmClient.exit();
-      await this.rtcClient.exit();
-    } catch(err) {
-      console.warn(err);
+      try {
+        await this.rtmClient.exit();
+      } catch(err) {
+        console.warn(err);
+      }
+      try {
+        await this.rtcClient.exit();
+      } catch(err) {
+        console.warn(err);
+      }
     } finally {
       GlobalStorage.clear('agora_room');
-      this.state = {} as RoomState;
       this.state = {
         ...this.defaultState
       }

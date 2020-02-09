@@ -91,7 +91,7 @@ function HomePage() {
       audio: 1,
       chat: 1,
       account: session.yourName,
-      token: '',
+      rtmToken: '',
       boardId: '',
       linkId: 0,
       sharedId: 0,
