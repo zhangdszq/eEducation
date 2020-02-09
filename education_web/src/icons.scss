@@ -5,6 +5,54 @@
   align-items: center;
 }
 
+.network-bad {
+  cursor: pointer;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  &::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/signal-bad@2x.png');
+  }
+}
+
+.network-good {
+  cursor: pointer;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  &::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/signal-good@2x.png');
+  }
+}
+
+.network-normal {
+  cursor: pointer;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  &::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/signal-normal@2x.png');
+  }
+}
+
 .icon {
   cursor: pointer;
   display: flex;
@@ -53,6 +101,12 @@
   background-image: url('./assets/icon-speaker@2x.png');
 }
 
+.icon-speaker-on,
+.icon-speaker-off
+{
+  width: 37px;
+}
+
 .icon-speaker-on::after {
   width: 100%;
   height: 100%;
@@ -60,7 +114,7 @@
   background-repeat: no-repeat;
   background-size: contain;
   content: ' ';
-  background-image: url('./assets/icon-speaker03-s.png');
+  background-image: url('./assets/icon-speaker-on.png');
 }
 
 .icon-speaker-off::after {
@@ -70,7 +124,7 @@
   background-repeat: no-repeat;
   background-size: contain;
   content: ' ';
-  background-image: url('./assets/icon-speakeroff-s@2x.png');
+  background-image: url('./assets/icon-speaker-off.png');
 }
 
 .icons-camera-mute::after {
@@ -659,7 +713,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     content: ' ';
-    background-image: url('./assets/icon-speaker03@2x.png');
+    background-image: url('./assets/icon-microphone-on-blue@2x.png');
   }
 
   &:hover {
@@ -670,7 +724,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-speaker03@2x.png');
+      background-image: url('./assets/icon-microphone-on-blue@2x.png');
     }
   }
 }
@@ -683,7 +737,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     content: ' ';
-    background-image: url('./assets/icon-speakeroff-dark@2x.png');
+    background-image: url('./assets/icon-microphone-off-blue@2x.png');
   }
 
   &:hover {
@@ -694,8 +748,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-speakeroff-dark@2x.png');
-      // background-image: url('./assets/icon-speaker03-disable@2x.png');
+      background-image: url('./assets/icon-microphone-off-blue@2x.png');
     }
   }
 }
@@ -708,7 +761,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     content: ' ';
-    background-image: url('./assets/icon-camera-on@2x.png');
+    background-image: url('./assets/icon-camera-on-blue@2x.png');
   }
 
   &:hover {
@@ -719,7 +772,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-camera-on@2x.png');
+      background-image: url('./assets/icon-camera-on-blue@2x.png');
     }
   }
 }
@@ -732,7 +785,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     content: ' ';
-    background-image: url('./assets/icon-camera-off@2x.png');
+    background-image: url('./assets/icon-camera-off-blue@2x.png');
   }
 
   &:hover {
@@ -743,7 +796,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-camera-off@2x.png');
+      background-image: url('./assets/icon-camera-off-blue@2x.png');
     }
   }
 }
