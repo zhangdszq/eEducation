@@ -301,7 +301,7 @@ const items = [
   }, [course.lockBoard]);
 
   const drawable: string = useMemo(() => {
-    if (location.pathname.match('small-class')) {
+    if (location.pathname.match('small-class|big-class')) {
       if (me.role === 'teacher') {
         return 'drawable';
       }
