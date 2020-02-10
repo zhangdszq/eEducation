@@ -92,7 +92,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
       if (reason === 'REMOTE_LOGIN' || newState === 'ABORTED') {
         globalStore.showToast({
           type: 'rtmClient',
-          message: t('toast.kicked'),
+          message: t('toast.kick'),
         });
         history.push('/');
         return;
