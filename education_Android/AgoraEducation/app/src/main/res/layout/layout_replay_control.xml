@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:background="@color/black_66">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/btn_play"
         android:layout_width="@dimen/dp_40"
         android:layout_height="@dimen/dp_40"
         android:layout_centerInParent="true"
-        android:src="@drawable/icon_play_big" />
+        android:src="@drawable/ic_play_big" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,11 +22,11 @@
         android:paddingStart="@dimen/dp_10"
         android:paddingEnd="@dimen/dp_10">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btn_play_pause"
             android:layout_width="@dimen/dp_24"
             android:layout_height="@dimen/dp_24"
-            android:src="@drawable/icon_play" />
+            android:src="@drawable/ic_play" />
 
         <SeekBar
             android:id="@+id/sb_time"

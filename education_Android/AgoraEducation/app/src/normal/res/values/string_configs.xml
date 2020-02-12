@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="agora_app_id" translatable="false"><#YOUR APP ID#></string>
+    <string name="agora_rtc_token" translatable="false"><#YOUR RTC TOKEN#></string>
+    <string name="agora_rtm_token" translatable="false"><#YOUR RTM TOKEN#></string>
+    <string name="whiteboard_sdk_token" translatable="false"><#YOUR WHITEBOARD SDK TOKEN#></string>
+</resources>
