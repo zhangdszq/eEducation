@@ -587,7 +587,7 @@
         TeacherModel *sourceModel = sourceInfoModel.teacherModel;
         TeacherModel *currentModel = currentInfoModel.teacherModel;
         if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
-            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:NO];
+            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:YES];
         }
     }
     
