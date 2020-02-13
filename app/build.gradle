@@ -23,7 +23,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', 'API_BASE_URL', '"http://115.231.168.26:8080/"'
+            buildConfigField 'String', 'API_BASE_URL', '"https://room.sh.agoralab.co/"'
         }
     }
 
