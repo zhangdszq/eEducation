@@ -13,6 +13,7 @@ import "video.js/dist/video-js.css";
 import { getOSSUrl } from '../utils/helper';
 import { t } from '../utils/i18n';
 import { RTMReplayer, RtmPlayerState } from '../components/whiteboard/agora/rtm-player';
+import { errorStore } from './error-page/state';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -192,7 +193,10 @@ const ReplayContainer: React.FC<{}> = () => {
   }, []);
 
   if (!uuid || !rid || !startTime || !endTime || !mediaUrl) {
-    return <Redirect to="/replay/404"></Redirect>
+    errorStore.state = {
+      reason: t('error.components.paramsEmpty', {reason: 'uuid, rid, startTime, endTime, mediaUrl'})
+    }
+    return <Redirect to="/error"></Redirect>
   }
 
   const value = state;

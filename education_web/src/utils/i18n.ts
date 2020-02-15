@@ -5,6 +5,11 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : 'test-only';
 
 const zhCN: any = {
+  'error': {
+    'components': {
+      'paramsEmpty': '参数：{reason}不能为空',
+    }
+  },
   'toast': {
     'confirm': '确定',
     'cancel': '取消',
@@ -87,6 +92,11 @@ const zhCN: any = {
 }
 
 const en = {
+  'error': {
+    'components': {
+      'paramsEmpty': 'params：{reason} can`t be empty',
+    }
+  },
   'toast': {
     'confirm': 'Confirm',
     'cancel': 'Cancel',
@@ -169,7 +179,7 @@ const en = {
 }
 
 export const t = (name: string, options?: any): string => {
-  const lang = globalStore.state.language === 'zh-CN' ? zhCN : en;
+  const lang = globalStore.state.language.match(/^zh/) ? zhCN : en;
   let content = get(lang, name, null);
   if (!content) throw `${lang}: ${name} has no match`;
   if (!isEmpty(options)) {
