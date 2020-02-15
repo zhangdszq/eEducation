@@ -6,11 +6,13 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { resolveMessage, resolvePeerMessage, resolveChannelAttrs, jsonParse } from '../utils/helper';
 import GlobalStorage from '../utils/custom-storage';
 import { t } from '../utils/i18n';
+import { ErrorState, ErrorStore, errorStore } from '../pages/error-page/state';
 
 export type IRootProvider = {
   globalState: GlobalState
   roomState: RoomState
   whiteboardState: WhiteboardState
+  errorState: ErrorState
 }
 
 export interface IObserver<T> {
@@ -56,10 +58,15 @@ export const useWhiteboardState = () => {
   return useStore().whiteboardState;
 }
 
+export const useErrorState = () => {
+  return useStore().errorState;
+}
+
 export const RootProvider: React.FC<any> = ({children}) => {
   const globalState = useObserver<GlobalState>(globalStore);
   const roomState = useObserver<RoomState>(roomStore);
   const whiteboardState = useObserver<WhiteboardState>(whiteboard);
+  const errorState = useObserver<ErrorState>(errorStore);
   const history = useHistory();
 
   const ref = useRef<boolean>(false);
@@ -74,6 +81,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
     globalState,
     roomState,
     whiteboardState,
+    errorState,
   }
 
   useEffect(() => {
@@ -162,6 +170,8 @@ export const RootProvider: React.FC<any> = ({children}) => {
     });
     GlobalStorage.save('language', value.globalState.language);
     // WARN: DEBUG ONLY MUST REMOVED IN PRODUCTION
+    //@ts-ignore
+    window.errorState = errorState;
     //@ts-ignore
     window.room = roomState;
     //@ts-ignore

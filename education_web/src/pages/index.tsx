@@ -14,6 +14,7 @@ import { RootProvider } from '../containers/root-container';
 import SmallClass from './classroom/small-class';
 import OneToOne from './classroom/one-to-one';
 import BigClass from './classroom/big-class';
+import ErrorPage from './error-page/error-page';
 
 export default function () {
   return (
@@ -46,6 +47,9 @@ export default function () {
           </Route>
           <Route exact path="/replay/:uuid/:startTime/:endTime/:mediaUrl">
             <ReplayContainer />
+          </Route>
+          <Route path="/error">
+            <ErrorPage />
           </Route>
         </RootProvider>
         </PlatformContainer>
