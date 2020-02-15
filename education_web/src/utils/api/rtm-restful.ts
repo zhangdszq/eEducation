@@ -1,18 +1,16 @@
 import {get, isEmpty} from 'lodash';
 import { AgoraFetch } from '../fetch';
-import GlobalStorage from '../custom-storage';
 
-const isDev = process.env.NODE_ENV !== 'production' ? true : false;
-const url = isDev ? `${window.location.protocol}//${window.location.host}/dev/v2/project/%s/rtm` : process.env.REACT_APP_AGORA_RTM_SERVICE_ENDPOINT as string;
+const url = `${window.location.protocol}//${window.location.host}/dev/v2/project/%s/rtm`;
 const PREFIX = url.replace('%s', process.env.REACT_APP_AGORA_APP_ID as string);
 
-type queryChannelMessage = {
+export type QueryChannelMessage = {
   rid: string,
   startTime: string,
   endTime: string
 }
 
-type AgoraChannelMessage = {
+export type AgoraChannelMessage = {
   dst: string
   message_type: string
   ms: number
@@ -49,7 +47,7 @@ export class RTMRestful {
     return `Basic ${btoa(plainCredentials)}`;
   }
 
-  async fetchChannelMessageCount({rid, startTime, endTime}: queryChannelMessage) {
+  async fetchChannelMessageCount({rid, startTime, endTime}: QueryChannelMessage) {
     const response: Response = await AgoraFetch(`${PREFIX}/message/history/count?destination=${rid}&start_time=${startTime}&end_time=${endTime}`, {
       method: 'GET',
       headers: {
@@ -67,7 +65,7 @@ export class RTMRestful {
 
   async fetchChannelMessages({
     rid, startTime, endTime
-  }: queryChannelMessage): Promise<AgoraChannelMessage[]> {
+  }: QueryChannelMessage): Promise<AgoraChannelMessage[]> {
     const responseA: Response = await AgoraFetch(`${PREFIX}/message/history/query`, {
       method: 'POST',
       headers: {
@@ -103,13 +101,10 @@ export class RTMRestful {
     return messages;
   }
 
-  async getAllChannelMessages(params: queryChannelMessage) {
+  async getAllChannelMessages(params: QueryChannelMessage) {
     let count = await this.fetchChannelMessageCount(params);
     if (count === 0) {
-      return {
-        count: 0,
-        messages: []
-      }
+      return undefined;
     }
     let totalCount = this.totalCount;
     let channelMessages: AgoraChannelMessage[] = [];
@@ -122,9 +117,7 @@ export class RTMRestful {
         this.limit = 100;
       }
     }
-    console.log("getAllChannelMessages, channelMessages: ", channelMessages);
-    GlobalStorage.save('channelMessages', channelMessages);
-    return GlobalStorage.read('channelMessages');
+    return channelMessages;
   }
 }
 

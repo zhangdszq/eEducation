@@ -2,7 +2,7 @@
   "name": "agora-edu-web",
   "version": "5.0.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "/education_web",
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
@@ -99,7 +99,7 @@
     "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "uuid": "^3.3.3",
-    "white-web-sdk": "^2.5.8"
+    "white-web-sdk": "2.5.9"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
@@ -133,8 +133,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
-    "@netless/white-audio-plugin": "1.1.4",
-    "@netless/white-video-plugin": "1.1.10",
+    "@netless/white-audio-plugin": "^1.1.10",
+    "@netless/white-video-plugin": "^1.1.17",
     "@types/ali-oss": "^6.0.4",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.145",
@@ -151,6 +151,7 @@
     "electron": "5.0.8",
     "electron-builder": "^21.2.0",
     "react-app-rewired": "^2.1.4",
+    "react-use": "^13.24.0",
     "source-map-support": "^0.5.16",
     "wait-on": "^3.3.0"
   }

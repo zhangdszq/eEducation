@@ -3,7 +3,7 @@ import './replay.scss';
 import Slider from '@material-ui/core/Slider';
 import { Subject } from 'rxjs';
 import { Player, PlayerPhase } from 'white-web-sdk';
-import { useParams, useLocation } from 'react-router';
+import { useParams, useLocation, Redirect } from 'react-router';
 import moment from 'moment';
 import { Progress } from '../components/progress/progress';
 import { globalStore } from '../stores/global';
@@ -12,7 +12,7 @@ import { whiteboard } from '../stores/whiteboard';
 import "video.js/dist/video-js.css";
 import { getOSSUrl } from '../utils/helper';
 import { t } from '../utils/i18n';
-import GlobalStorage from '../utils/custom-storage';
+import { RTMReplayer, RtmPlayerState } from '../components/whiteboard/agora/rtm-player';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -110,7 +110,6 @@ class ReplayStore {
     if (!this.state.isPlaying && this.state.player) {
       this.state.player.seekToScheduleTime(0);
     }
-    console.log("updatePlayer this.state ", this.state);
     this.commit(this.state);
   }
 
@@ -177,6 +176,12 @@ const useReplayContext = () => React.useContext(ReplayContext);
 const ReplayContainer: React.FC<{}> = () => {
   const [state, setState] = React.useState<IPlayerState>(defaultState);
 
+  const {uuid, startTime, endTime, mediaUrl} = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const rid: string = searchParams.get('rid') as string;
+  const senderId: string = searchParams.get('senderId') as string;
+
   React.useEffect(() => {
     store.subscribe((state: any) => {
       setState(state);
@@ -186,25 +191,51 @@ const ReplayContainer: React.FC<{}> = () => {
     }
   }, []);
 
+  if (!uuid || !rid || !startTime || !endTime || !mediaUrl) {
+    return <Redirect to="/replay/404"></Redirect>
+  }
+
   const value = state;
 
   return (
     <ReplayContext.Provider value={value}>
-      <Replay />
+      <NetlessAgoraReplay
+        rid={rid}
+        senderId={senderId}
+        whiteboardUUID={uuid}
+        startTime={+startTime}
+        endTime={+endTime}
+        mediaUrl={mediaUrl}
+      />
     </ReplayContext.Provider>
   )
 }
 
 export default ReplayContainer;
 
-export const Replay: React.FC<{}> = () => {
+export type NetlessAgoraReplayProps = {
+  whiteboardUUID: string
+  rid: string
+  senderId: string
+  startTime: number
+  endTime: number
+  mediaUrl: string
+}
+
+export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
+  whiteboardUUID: uuid,
+  rid,
+  senderId,
+  startTime,
+  endTime,
+  mediaUrl
+}) => {
   const state = useReplayContext();
 
   const player = useMemo(() => {
     if (!store.state || !store.state.player) return null;
     return store.state.player as Player;
   }, [store.state]);
-
 
   const handlePlayerClick = () => {
     if (!store.state || !player) return;
@@ -229,7 +260,6 @@ export const Replay: React.FC<{}> = () => {
     store.setCurrentTime(newValue);
     store.updateProgress(newValue);
   }
-
 
   const onWindowResize = () => {
     if (state.player) {
@@ -262,13 +292,6 @@ export const Replay: React.FC<{}> = () => {
       }
     }
   }
-
-  const {uuid, startTime, endTime, mediaUrl} = useParams();
-  const location = useLocation();
-
-  const searchParams = new URLSearchParams(location.search);
-
-  const rid: string = searchParams.get('rid') as string;
 
   const duration = useMemo(() => {
     if (!startTime || !endTime) return 0;
@@ -330,7 +353,6 @@ export const Replay: React.FC<{}> = () => {
               store.setReplayFail(true);
             },
             onScheduleTimeChanged: (scheduleTime) => {
-              console.log("onScheduleTimeChanged scheduleTime ", scheduleTime);
               if (lock.current) return;
               store.setCurrentTime(scheduleTime);
             }
@@ -356,46 +378,6 @@ export const Replay: React.FC<{}> = () => {
     return moment(state.currentTime).format("mm:ss");
   }, [state.currentTime]);
 
-  const loadRTM = useRef<boolean>(false);
-  const [rtmMessage, setRtmMessage] = useState<{count: any, messages: any[]}>(GlobalStorage.getRtmMessage());
-  const rtmRecord = new RTMRestful(process.env.REACT_APP_AGORA_CUSTOMER_ID as string, process.env.REACT_APP_AGORA_CUSTOMER_CERTIFICATE as string);
-
-  useEffect(() => {
-    if (startTime && endTime) {
-      loadRTM.current = true;
-      const begin = moment(+startTime).utc().format("YYYY-MM-DDTHH:mm:ss");
-      const ended = moment(+endTime).utc().format("YYYY-MM-DDTHH:mm:ss");
-      // rtmRecord.getAllChannelMessages(
-      //   {
-      //    rid: rid,
-      //    startTime: begin,
-      //    endTime: ended,
-      //   }
-      // )
-      // .then((e: any) => {
-      //   loadRTM.current = false;
-      //   const messages = e.filter((it: any) => it.message_type === "group_message");
-      //   const chatMessages = messages.reduce((collect: any[], value: any) => {
-      //     const payload = value.payload;
-      //     const json = JSON.parse(payload);
-      //     if (json.content) {
-      //       return collect.concat({
-      //         account: json.account,
-      //         content: json.content,
-      //         ms: value.ms,
-      //         src: value.src
-      //       });
-      //     }
-      //     return collect;
-      //   }, []);
-      //   setRtmMessage(chatMessages);
-      // })
-      // .catch((err: any) => {
-      //   console.warn(err);
-      // })
-    }
-  }, [startTime, endTime, rid]);
-
   const PlayerCover = useCallback(() => {
     if (!player) {
       return (<Progress title={t("replay.loading")} />)
@@ -410,17 +392,7 @@ export const Replay: React.FC<{}> = () => {
           <div className="play-btn" onClick={handlePlayerClick}></div> : null}
       </div>
     )
-  }, [player]);
-
-  const ref = useRef(null);
-
-  // const scrollDown = (current: any) => {
-  //   current.scrollTop = current.scrollHeight;
-  // }
-
-  // useEffect(() => {
-  //   scrollDown(ref.current);
-  // }, [messages]);
+  }, [player, state]);
 
   return (
     <div className="replay">
@@ -471,11 +443,19 @@ export const Replay: React.FC<{}> = () => {
           <video id="white-sdk-video-js" className="video-js video-layout" style={{width: "100%", height: "100%", objectFit: "cover"}}></video>
         </div>
         <div className="chat-holder chat-board chat-messages-container">
-          {/* <div className="chat-messages" ref={ref}>
-            {rtmMessage && rtmMessage.messages && rtmMessage.messages.map((item: any, key: number) => (
-              <Message key={key} nickname={item.account} content={item.content} link={item.link} sender={false} />
-            ))}
-          </div>  */}
+          <RTMReplayer
+            senderId={senderId}
+            rid={rid}
+            startTime={startTime}
+            endTime={endTime}
+            currentSeekTime={state.currentTime}
+            onPhaseChanged={(e: RtmPlayerState) => {
+              if (e !== RtmPlayerState.load) {
+                player?.stop();
+                // player?.pause();
+              }
+            }}
+          ></RTMReplayer>
         </div>
       </div>
     </div>
