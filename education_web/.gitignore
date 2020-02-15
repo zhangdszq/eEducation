@@ -7,3 +7,5 @@ release/
 build
 build
 .DS_Store
+education_web
+*.log
