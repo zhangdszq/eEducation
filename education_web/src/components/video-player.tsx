@@ -46,6 +46,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const loadAudio = useRef<boolean>(false);
 
   const lockPlay = useRef<boolean>(false);
+  const me = useRoomState().me;
 
   const AgoraRtcEngine = useMemo(() => {
     return nativeClient.rtcEngine;
@@ -154,6 +155,7 @@ useEffect(() => {
 
   if (stream && platform === 'electron') {
     // prevent already muted video
+    if (stream.type !== StreamType.local) return;
     if (!loadAudio.current) {
       if (!audio) {
         const res = AgoraRtcEngine.muteLocalAudioStream(true);
@@ -196,6 +198,7 @@ useEffect(() => {
 
   if (stream && platform === 'electron') {
       // prevent already muted video
+      if (stream.type !== StreamType.local) return;
       if (!loadVideo.current) {
         if (!video) {
           const res = AgoraRtcEngine.muteLocalVideoStream(true);
@@ -232,8 +235,6 @@ const onClose = (evt: any) => {
     handleClose('close', streamID);
   }
 }
-
-const me = useRoomState().me;
 
 return (
   <div className={`${className ? className : (preview ? 'preview-video' : `agora-video-view ${Boolean(video) === false && stream ? 'show-placeholder' : ''}`)}`}>
