@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.agora.base.Callback;
+import io.agora.base.ToastManager;
+import io.agora.education.R;
 import io.agora.education.classroom.bean.msg.Cmd;
 import io.agora.education.classroom.bean.msg.PeerMsg;
 import io.agora.education.classroom.bean.user.Student;
@@ -176,6 +178,7 @@ public class LargeClassContext extends ClassContext {
 
             }
         });
+        ToastManager.showShort(R.string.accept_interactive);
     }
 
     private void reject() {
@@ -190,6 +193,7 @@ public class LargeClassContext extends ClassContext {
 
             }
         });
+        ToastManager.showShort(R.string.reject_interactive);
     }
 
     public interface LargeClassEventListener extends ClassEventListener {
