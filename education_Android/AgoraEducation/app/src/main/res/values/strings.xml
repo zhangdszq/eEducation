@@ -23,6 +23,14 @@
     <string name="time_default" translatable="false">00:00:00</string>
     <string name="time_separator" translatable="false">&#160;/&#160;</string>
     <string name="app_upgrade">Find new version, please download</string>
+    <string name="upgrade">Upgrade now</string>
+    <string name="later">Later</string>
     <string name="rtm_not_login">RTM not login, please try again later</string>
     <string name="configuration_load_failed">Configuration load failed, please try again later</string>
+    <string name="policy_tips" translatable="false">请您务必审慎阅读，充分理解《隐私政策》条款，我们深知个人信息对您的重要性，并会全力保护您的个人信息安全可靠。</string>
+    <string name="policy">Policy</string>
+    <string name="policy_agree">Agree</string>
+    <string name="policy_refuse">Refuse</string>
+    <string name="accept_interactive">Teacher accept your interactive request!</string>
+    <string name="reject_interactive">Teacher reject your interactive request!</string>
 </resources>
