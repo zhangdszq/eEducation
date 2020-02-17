@@ -1,6 +1,7 @@
 package io.agora.education.widget;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,12 +24,16 @@ public class ConfirmDialog extends DialogFragment {
     protected TextView tv_content;
     @BindView(R.id.tv_dialog_cancel)
     protected TextView tv_dialog_cancel;
+    @BindView(R.id.tv_dialog_confirm)
+    protected TextView tv_dialog_confirm;
     @BindView(R.id.line2)
     protected View line2;
 
     private String content;
+    private String cancelText;
+    private String confirmText;
     private boolean isSingle;
-    private DialogClickListener listener;
+    protected DialogClickListener listener;
 
     public static ConfirmDialog normal(String content, DialogClickListener listener) {
         ConfirmDialog fragment = new ConfirmDialog();
@@ -39,12 +44,22 @@ public class ConfirmDialog extends DialogFragment {
         return fragment;
     }
 
+    public static ConfirmDialog normalWithButton(String content, String cancelText, String confirmText, DialogClickListener listener) {
+        ConfirmDialog fragment = ConfirmDialog.normal(content, listener);
+        fragment.cancelText = cancelText;
+        fragment.confirmText = confirmText;
+        return fragment;
+    }
+
     public static ConfirmDialog single(String content, DialogClickListener listener) {
-        ConfirmDialog fragment = new ConfirmDialog();
-        fragment.content = content;
+        ConfirmDialog fragment = ConfirmDialog.normal(content, listener);
         fragment.isSingle = true;
-        fragment.listener = listener;
-        fragment.setCancelable(false);
+        return fragment;
+    }
+
+    public static ConfirmDialog singleWithButton(String content, String confirmText, DialogClickListener listener) {
+        ConfirmDialog fragment = ConfirmDialog.single(content, listener);
+        fragment.confirmText = confirmText;
         return fragment;
     }
 
@@ -56,7 +71,12 @@ public class ConfirmDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme());
+        Context context = getContext();
+        if (context == null) {
+            return super.onCreateDialog(savedInstanceState);
+        } else {
+            return new Dialog(context, getTheme());
+        }
     }
 
     @Nullable
@@ -65,6 +85,8 @@ public class ConfirmDialog extends DialogFragment {
         View root = inflater.inflate(R.layout.layout_dialog_confirm, container, false);
         ButterKnife.bind(this, root);
         tv_content.setText(content);
+        tv_dialog_cancel.setText(cancelText);
+        tv_dialog_confirm.setText(confirmText);
         tv_dialog_cancel.setVisibility(isSingle ? View.GONE : View.VISIBLE);
         line2.setVisibility(isSingle ? View.GONE : View.VISIBLE);
         return root;

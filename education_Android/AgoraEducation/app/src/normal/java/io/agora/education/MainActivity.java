@@ -138,9 +138,10 @@ public class MainActivity extends BaseActivity {
         };
         ConfirmDialog dialog;
         if (isForce) {
-            dialog = ConfirmDialog.single(content, listener);
+            dialog = ConfirmDialog.singleWithButton(content, getString(R.string.upgrade), listener);
+            dialog.setCancelable(false);
         } else {
-            dialog = ConfirmDialog.normal(content, listener);
+            dialog = ConfirmDialog.normalWithButton(content, getString(R.string.later), getString(R.string.upgrade), listener);
         }
         dialog.show(getSupportFragmentManager(), null);
     }

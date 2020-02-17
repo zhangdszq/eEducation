@@ -1,5 +1,7 @@
 package io.agora.education;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -30,9 +32,17 @@ public class SettingActivity extends BaseActivity {
         switch_eye_care.setChecked(EyeProtection.isNeedShow());
     }
 
-    @OnClick(R.id.iv_back)
+    @OnClick({R.id.iv_back, R.id.layout_policy})
     public void onClick(View view) {
-        finish();
+        switch (view.getId()) {
+            case R.id.iv_back:
+                finish();
+                break;
+            case R.id.layout_policy:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.POLICY_URL));
+                startActivity(intent);
+                break;
+        }
     }
 
     @OnCheckedChanged(R.id.switch_eye_care)
