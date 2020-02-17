@@ -150,28 +150,28 @@
     
     if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
         
-        [AlertViewUtil showAlertWithController:self title:@"User name must be within 11 digits or English characters"];
+        [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"UserNameVerifyText", nil)];
         return;
     }
-    
+
     NSString *className = self.classNameTextFiled.text;
-    if ([self.roomType.titleLabel.text isEqualToString:@"One-to-One"]) {
+    if ([self.roomType.titleLabel.text isEqualToString:NSLocalizedString(@"OneToOneText", nil)]) {
         
         NSString *channelName = [NSString stringWithFormat:@"0%@", className.md5];
         [self join1V1RoomWithChannelName:channelName maxStudentCount:1 vcIdentifier:@"oneToOneRoom"];
 
-    } else if ([self.roomType.titleLabel.text isEqualToString:@"Small Class"]) {
+    } else if ([self.roomType.titleLabel.text isEqualToString:NSLocalizedString(@"SmallClassText", nil)]) {
 
         NSString *channelName = [NSString stringWithFormat:@"1%@", className.md5];
         [self joinMinRoomWithChannelName:channelName maxStudentCount:16 vcIdentifier:@"mcRoom"];
         
-    } else if ([self.roomType.titleLabel.text isEqualToString:@"Large Class"]) {
+    } else if ([self.roomType.titleLabel.text isEqualToString:NSLocalizedString(@"LargeClassText", nil)]) {
 
         NSString *channelName = [NSString stringWithFormat:@"2%@", className.md5];
         [self joinBigRoomWithChannelName:channelName vcIdentifier:@"bcroom"];
         
     } else {
-        [AlertViewUtil showAlertWithController:self title:@"Please select a room type"];
+        [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"RoomTypeVerifyText", nil)];
         return;
     }
 }
@@ -219,12 +219,13 @@
                [weakself presentViewController:vc animated:YES completion:nil];
                 
             } else {
-                [AlertViewUtil showAlertWithController:self title:@"The number is full, please change room name"];
+                [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"RoomCountVerifyText", nil)];
+                
             }
             
         } completeFailBlock:^{
-            
-            [AlertViewUtil showAlertWithController:weakself title:@"Request failed"];
+        
+            [AlertViewUtil showAlertWithController:weakself title:NSLocalizedString(@"RequestFailedText", nil)];
             
             [weakself.activityIndicator stopAnimating];
             [weakself.joinButton setEnabled:YES];
@@ -271,12 +272,13 @@
                 [weakself presentViewController:vc animated:YES completion:nil];
                 
             } else {
-                [AlertViewUtil showAlertWithController:self title:@"Room is full, please change another room"];
+                [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"RoomCountVerifyText", nil)];
+                
             }
             
         } completeFailBlock:^{
             
-            [AlertViewUtil showAlertWithController:weakself title:@"Request failed"];
+            [AlertViewUtil showAlertWithController:weakself title:NSLocalizedString(@"RequestFailedText", nil)];
             
             [weakself.activityIndicator stopAnimating];
             [weakself.joinButton setEnabled:YES];

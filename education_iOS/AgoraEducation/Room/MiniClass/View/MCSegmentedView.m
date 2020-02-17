@@ -25,7 +25,6 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
 
-    NSLog(@"ddddd---- %f",self.bounds.size.height);
     UIView *bottomLineView = [[UIView alloc] init];
     bottomLineView.backgroundColor = [UIColor colorWithHexString:@"0xDBE2E5"];
     [self addSubview:bottomLineView];

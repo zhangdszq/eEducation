@@ -501,7 +501,7 @@
                                     <constraint firstAttribute="height" constant="54" id="oSu-AC-UKV"/>
                                 </constraints>
                             </view>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Labeldddddddd" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cmR-yN-DIn">
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cmR-yN-DIn">
                                 <rect key="frame" x="100" y="365" width="214" height="34"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -568,29 +568,29 @@
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="Jwb-sC-G87"/>
+                                <exclude reference="y7B-58-WSv"/>
+                                <exclude reference="8ow-09-4qF"/>
+                                <exclude reference="azC-M6-XKY"/>
                                 <exclude reference="KhL-z1-8Uy"/>
                                 <exclude reference="WAJ-dQ-QzN"/>
                                 <exclude reference="aoL-6p-g6X"/>
                                 <exclude reference="gbU-oL-MJg"/>
-                                <exclude reference="8ow-09-4qF"/>
-                                <exclude reference="azC-M6-XKY"/>
-                                <exclude reference="y7B-58-WSv"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact-widthClass=regular">
                             <mask key="constraints">
+                                <include reference="8ow-09-4qF"/>
                                 <include reference="WAJ-dQ-QzN"/>
                                 <include reference="aoL-6p-g6X"/>
-                                <include reference="8ow-09-4qF"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
                                 <include reference="Jwb-sC-G87"/>
+                                <include reference="y7B-58-WSv"/>
+                                <include reference="azC-M6-XKY"/>
                                 <include reference="KhL-z1-8Uy"/>
                                 <include reference="gbU-oL-MJg"/>
-                                <include reference="azC-M6-XKY"/>
-                                <include reference="y7B-58-WSv"/>
                             </mask>
                         </variation>
                     </view>

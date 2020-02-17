@@ -169,7 +169,7 @@
         muteChat = self.educationManager.studentModel.chat == 0 ? YES : NO;
     }
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? NSLocalizedString(@"ProhibitedPostText", nil) : NSLocalizedString(@"InputMessageText", nil);
 }
 
 - (void)updateStudentViews:(StudentModel*)studentModel {
@@ -324,7 +324,7 @@
 
 - (void)closeRoom {
     WEAK(self);
-    [AlertViewUtil showAlertWithController:self title:@"Quit classroom?" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"QuitClassroomText", nil) sureHandler:^(UIAlertAction * _Nullable action) {
         
         [weakself.navigationView stopTimer];
         [weakself.educationManager releaseResources];
