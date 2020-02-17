@@ -37,6 +37,7 @@ import io.agora.education.service.bean.response.AppVersion;
 import io.agora.education.util.AppUtil;
 import io.agora.education.util.CryptoUtil;
 import io.agora.education.widget.ConfirmDialog;
+import io.agora.education.widget.PolicyDialog;
 import io.agora.rtc.Constants;
 import io.agora.sdk.manager.RtmManager;
 
@@ -87,11 +88,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        // TODO TEST
-        if (BuildConfig.DEBUG) {
-            et_room_name.setText("1234");
-            et_your_name.setText("000");
-        }
+        new PolicyDialog().show(getSupportFragmentManager(), null);
     }
 
     @Override
