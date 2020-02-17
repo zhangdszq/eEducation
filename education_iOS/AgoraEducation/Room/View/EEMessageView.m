@@ -65,7 +65,7 @@
                 messageModel.roomid = componentsArray[2];
                 messageModel.startTime = componentsArray[3];
                 messageModel.endTime = componentsArray[4];
-                messageModel.content = @"replay recording";
+                messageModel.content = NSLocalizedString(@"ReplayRecordingText", nil);
             }
         }
     }

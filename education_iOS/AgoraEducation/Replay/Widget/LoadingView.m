@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UIView *loadingView;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UILabel *loadingLabel;
 
 @end
 
@@ -49,6 +50,7 @@
 
 -(void)initView {
     self.layer.cornerRadius = 8;
+    self.loadingLabel.text = NSLocalizedString(@"LoadingText", nil);
 }
 
 -(void)showLoading {

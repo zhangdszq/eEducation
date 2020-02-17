@@ -256,7 +256,7 @@
     }
     
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? NSLocalizedString(@"ProhibitedPostText", nil) : NSLocalizedString(@"InputMessageText", nil);
 }
 
 - (void)updateStudentViews:(StudentModel *)studentModel remoteVideo:(BOOL)remote {
@@ -386,7 +386,8 @@
         weakself.linkState = StudentLinkStateAccept;
         
         weakself.tipLabel.hidden = NO;
-        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@ accept your interactive request!", weakself.educationManager.teacherModel.account]];
+        
+        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@%@", weakself.educationManager.teacherModel.account, NSLocalizedString(@"AcceptRequestText", nil)]];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakself.tipLabel.hidden = YES;
         });
@@ -480,7 +481,7 @@
 #pragma mark RoomProtocol
 - (void)closeRoom {
     WEAK(self);
-    [AlertViewUtil showAlertWithController:self title:@"Quit classroom?" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"QuitClassroomText", nil) sureHandler:^(UIAlertAction * _Nullable action) {
         
         if (weakself.linkState == StudentLinkStateAccept) {
             [weakself.educationManager setSignalWithType:SignalP2PTypeCancel completeSuccessBlock:nil];
