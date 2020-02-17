@@ -14,7 +14,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 
 import butterknife.BindView;
-import io.agora.education.BuildConfig;
 import io.agora.education.R;
 import io.agora.education.base.BaseFragment;
 import io.agora.education.classroom.BaseClassActivity;
@@ -94,11 +93,6 @@ public class ChatRoomFragment extends BaseFragment implements OnItemChildClickLi
                 Object object = adapter.getItem(position);
                 if (object instanceof ChannelMsg) {
                     ChannelMsg msg = (ChannelMsg) object;
-                    // TODO TEST
-                    if (BuildConfig.DEBUG) {
-                        msg.link = "/replay/c97c09499a6e4a7086b1d3c3802c634d/1579145682784/1579145699157";
-                        msg.url = "https://beings.oss-cn-hangzhou.aliyuncs.com/8a44107d5546925853e1c792a1309343_281dc9bdb52d04dc20036dbd8313ed055.m3u8";
-                    }
                     if (!TextUtils.isEmpty(msg.link)) {
                         String[] strings = msg.link.split("/");
                         String uuid = strings[2];
