@@ -3,7 +3,7 @@ import { GlobalState, globalStore} from '../stores/global';
 import { RoomState, roomStore} from '../stores/room';
 import { WhiteboardState, whiteboard } from '../stores/whiteboard';
 import { useHistory, useLocation } from 'react-router-dom';
-import { resolveMessage, resolvePeerMessage, resolveChannelAttrs, jsonParse } from '../utils/helper';
+import { resolveMessage, resolvePeerMessage, jsonParse } from '../utils/helper';
 import GlobalStorage from '../utils/custom-storage';
 import { t } from '../utils/i18n';
 import { ErrorState, ErrorStore, errorStore } from '../pages/error-page/state';
@@ -114,10 +114,10 @@ export const RootProvider: React.FC<any> = ({children}) => {
       }).catch(console.warn);
     });
     rtmClient.on("AttributesUpdated", (attributes: object) => {
-      const channelAttrs = resolveChannelAttrs(attributes);
-      console.log('[rtm-client] updated resolved attrs', channelAttrs);
+      // const channelAttrs = exactChannelAttrsFromRawData(attributes);
+      // console.log('[rtm-client] updated resolved attrs', channelAttrs);
       console.log('[rtm-client] updated origin attributes', attributes);
-      roomStore.updateRoomAttrs(channelAttrs)
+      roomStore.updateRoomAttrs(attributes)
     });
     rtmClient.on("MemberJoined", (memberId: string) => {
     });
