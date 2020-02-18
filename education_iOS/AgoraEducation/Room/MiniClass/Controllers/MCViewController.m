@@ -46,6 +46,8 @@
 @property (weak, nonatomic) IBOutlet MCStudentListView *studentListView;
 @property (weak, nonatomic) IBOutlet MCSegmentedView *segmentedView;
 
+@property (weak, nonatomic) IBOutlet UILabel *tipLabel;
+
 // white
 @property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
 @property (weak, nonatomic) IBOutlet EEPageControlView *pageControlView;
@@ -203,6 +205,9 @@
     
     self.roomManagerView.layer.borderWidth = 1.f;
     self.roomManagerView.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
+    
+    self.tipLabel.layer.backgroundColor = [UIColor colorWithHexString:@"000000" alpha:0.7].CGColor;
+    self.tipLabel.layer.cornerRadius = 6;
 }
 
 - (void)initStudentRenderBlock {
@@ -440,6 +445,38 @@
             [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:nil completeFailBlock:nil];
         }
             break;
+        case SignalP2PTypeMuteBoard:
+        {
+            currentStuModel.grant_board = 0;
+            NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+            
+            WEAK(self);
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:^{
+                weakself.tipLabel.hidden = NO;
+                [weakself.tipLabel setText:NSLocalizedString(@"MuteBoardText", nil)];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    weakself.tipLabel.hidden = YES;
+                });
+
+            } completeFailBlock:nil];
+        }
+            break;
+        case SignalP2PTypeUnMuteBoard:
+        {
+            currentStuModel.grant_board = 1;
+            NSString *value = [GenerateSignalBody channelAttrsWithValue:currentStuModel];
+            WEAK(self);
+            [self.educationManager updateGlobalStateWithValue:value completeSuccessBlock:^{
+                
+                weakself.tipLabel.hidden = NO;
+                [weakself.tipLabel setText:NSLocalizedString(@"UnMuteBoardText", nil)];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    weakself.tipLabel.hidden = YES;
+                });
+                            
+            } completeFailBlock:nil];
+        }
+            break;
         default:
             break;
     }
@@ -454,8 +491,13 @@
     {
         TeacherModel *sourceModel = sourceInfoModel.teacherModel;
         TeacherModel *currentModel = currentInfoModel.teacherModel;
+        
         if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
-            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:NO];
+            
+            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:!self.educationManager.studentModel.grant_board];
+            
+        } else if(currentModel.whiteboard_uid.length > 0){
+            [self.educationManager disableWhiteDeviceInputs:!self.educationManager.studentModel.grant_board];
         }
 
         if(sourceModel.class_state != currentModel.class_state) {

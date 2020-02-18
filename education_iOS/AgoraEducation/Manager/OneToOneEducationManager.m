@@ -335,28 +335,32 @@
         [self.rtcDelegate rtcDidOfflineOfUid:uid];
     }
 }
-- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {
+    
+    // local user uid = 0
+    if(uid != 0){
+        return;
+    }
     
     RTCNetworkGrade grade = RTCNetworkGradeUnknown;
     
-    switch (type) {
-        case AgoraNetworkTypeUnknown:
-        case AgoraNetworkTypeMobile4G:
-        case AgoraNetworkTypeWIFI:
+    AgoraNetworkQuality quality = MAX(txQuality, rxQuality);
+    switch (quality) {
+        case AgoraNetworkQualityExcellent:
+        case AgoraNetworkQualityGood:
             grade = RTCNetworkGradeHigh;
             break;
-        case AgoraNetworkTypeMobile3G:
-        case AgoraNetworkTypeMobile2G:
+        case AgoraNetworkQualityPoor:
+        case AgoraNetworkQualityBad:
             grade = RTCNetworkGradeMiddle;
             break;
-        case AgoraNetworkTypeLAN:
-        case AgoraNetworkTypeDisconnected:
+        case AgoraNetworkQualityVBad:
+        case AgoraNetworkQualityDown:
             grade = RTCNetworkGradeLow;
             break;
         default:
             break;
     }
-    
     if([self.rtcDelegate respondsToSelector:@selector(rtcNetworkTypeGrade:)]) {
         [self.rtcDelegate rtcNetworkTypeGrade:grade];
     }

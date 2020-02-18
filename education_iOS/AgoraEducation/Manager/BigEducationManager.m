@@ -336,28 +336,32 @@
         [self.rtcDelegate rtcDidOfflineOfUid:uid];
     }
 }
-- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {
+    
+    // local user uid = 0
+    if(uid != 0){
+        return;
+    }
     
     RTCNetworkGrade grade = RTCNetworkGradeUnknown;
     
-    switch (type) {
-        case AgoraNetworkTypeUnknown:
-        case AgoraNetworkTypeMobile4G:
-        case AgoraNetworkTypeWIFI:
+    AgoraNetworkQuality quality = MAX(txQuality, rxQuality);
+    switch (quality) {
+        case AgoraNetworkQualityExcellent:
+        case AgoraNetworkQualityGood:
             grade = RTCNetworkGradeHigh;
             break;
-        case AgoraNetworkTypeMobile3G:
-        case AgoraNetworkTypeMobile2G:
+        case AgoraNetworkQualityPoor:
+        case AgoraNetworkQualityBad:
             grade = RTCNetworkGradeMiddle;
             break;
-        case AgoraNetworkTypeLAN:
-        case AgoraNetworkTypeDisconnected:
+        case AgoraNetworkQualityVBad:
+        case AgoraNetworkQualityDown:
             grade = RTCNetworkGradeLow;
             break;
         default:
             break;
     }
-    
     if([self.rtcDelegate respondsToSelector:@selector(rtcNetworkTypeGrade:)]) {
         [self.rtcDelegate rtcNetworkTypeGrade:grade];
     }
@@ -445,20 +449,6 @@
 - (void)disableWhiteDeviceInputs:(BOOL)disable {
     [self.whiteManager disableDeviceInputs:disable];
 }
-
-- (void)setWhiteStrokeColor:(NSArray<NSNumber *>*)strokeColor {
-    self.whiteManager.whiteMemberState.strokeColor = strokeColor;
-    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
-}
-
-- (void)setWhiteApplianceName:(NSString *)applianceName {
-    self.whiteManager.whiteMemberState.currentApplianceName = applianceName;
-    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
-}
-
-- (void)setWhiteMemberInput:(nonnull WhiteMemberState *)memberState {
-    [self.whiteManager setMemberState:memberState];
-}
 - (void)refreshWhiteViewSize {
     [self.whiteManager refreshViewSize];
 }
@@ -472,9 +462,6 @@
     }
 }
 
-- (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler {
-    [self.whiteManager setSceneIndex:index completionHandler:completionHandler];
-}
 - (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^ _Nonnull)(BOOL finished))completionHandler {
     
     if(self.whiteManager.combinePlayer != nil) {
