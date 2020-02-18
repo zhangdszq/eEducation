@@ -42,16 +42,21 @@
     backImageView.frame = self.contentView.bounds;
     [self.contentView addSubview:backImageView];
     backImageView.image = [UIImage imageNamed:@"icon-student"];
+    backImageView.contentMode = UIViewContentModeScaleAspectFit;
     backImageView.backgroundColor = [UIColor colorWithHexString:@"DBE2E5"];
     self.backImageView = backImageView;
 
+    UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 50, 95, 20)];
+    labelView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
+    [self.contentView addSubview:labelView];
+    
     UILabel *nameLable = [self addNameLabel];
     [self.contentView addSubview:nameLable];
     [self bringSubviewToFront:nameLable];
     self.nameLable = nameLable;
 
     UIImageView *volumeImageView = [[UIImageView alloc] init];
-    volumeImageView.frame = CGRectMake(75,50, 20, 20);
+    volumeImageView.frame = CGRectMake(75, 50, 20, 20);
     [self.contentView addSubview:volumeImageView];
     [volumeImageView setImage:[UIImage imageNamed:@"icon-speaker3-min"]];
     self.volumeImageView = volumeImageView;
@@ -59,8 +64,8 @@
 
 - (UILabel *)addNameLabel {
     UILabel *nameLabel = [[UILabel alloc] init];
-    nameLabel.frame = CGRectMake(0, 70-20, 95, 20);
-    nameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    nameLabel.frame = CGRectMake(5, 50, 65, 20);
+    nameLabel.backgroundColor = UIColor.clearColor;
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.font = [UIFont systemFontOfSize:10.f];
     nameLabel.layer.cornerRadius = 2;

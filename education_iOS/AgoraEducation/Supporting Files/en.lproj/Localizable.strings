@@ -7,7 +7,7 @@
 */
 
 LoadingText = "loading";
-ColorPickerText = "Color Picker";
+ColorPickerText = " Color Picker";
 OKText = "OK";
 CancelText = "Cancel";
 EyeProtectionText = "Eye protection";
@@ -22,6 +22,7 @@ AcceptRequestText = " accept your interactive request!";
 
 MaterialsAreaText = "Materials area";
 ChatroomText = "Chatroom";
+StudentText = "Student";
 
 OneToOneText = "One-to-One";
 SmallClassText = "Small Class";

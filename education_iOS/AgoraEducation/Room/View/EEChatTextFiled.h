@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEChatTextFiled : UIView
+@property (weak, nonatomic) IBOutlet UIView *chatBgView;
 @property (strong, nonatomic) IBOutlet UIView *chatTextFiled;
 @property (weak, nonatomic) IBOutlet UITextField *contentTextFiled;
 
