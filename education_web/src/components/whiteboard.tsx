@@ -2,14 +2,18 @@ import React, {useEffect} from 'react';
 import './whiteboard.scss';
 import { Room } from 'white-web-sdk';
 import { whiteboard } from '../stores/whiteboard';
+import { t } from '../utils/i18n';
+import { Progress } from '../components/progress/progress';
 interface WhiteBoardProps {
   room: Room
   className: string
+  loading: boolean
 }
 
 export default function Whiteboard ({
   room,
   className,
+  loading
 }: WhiteBoardProps) {
 
   useEffect(() => {
@@ -19,8 +23,11 @@ export default function Whiteboard ({
     whiteboard.updateRoomState();
     if ($whiteboard) {
       window.addEventListener("resize", (evt: any) => {
-        room.moveCamera({centerX: 0, centerY: 0});
-        room.refreshViewSize();
+        console.log("loading",whiteboard.state.loading);
+        if (!whiteboard.state.loading) {
+          room.moveCamera({centerX: 0, centerY: 0});
+          room.refreshViewSize();           
+        }
       });
       return () => {
         window.removeEventListener("resize", (evt: any) => {});
@@ -30,7 +37,7 @@ export default function Whiteboard ({
 
   return (
     <div className="whiteboard">
-      {/* {room ? <RoomWhiteboard room={room} className={`whiteboard-canvas ${className}`}/> : null} */}
+      { loading ? <Progress title={t("whiteboard.loading")}></Progress> : null}
       <div id="whiteboard" className={`whiteboard-canvas ${className}`}></div>
     </div>
   )

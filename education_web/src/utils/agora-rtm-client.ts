@@ -150,16 +150,21 @@ export default class AgoraRTMClient {
 
   async leave (channel: string) {
     if (this._channels[channel]) {
-      await this._channels[channel].leave();
+      // await this._channels[channel].leave();
       this._joined = false;
       this.destroyChannel(channel);
     }
   }
 
   async exit() {
-    await this.deleteChannelAttributesByKey();
-    await this.leave(this._currentChannelName);
-    await this.logout();
+    try {
+      await this.deleteChannelAttributesByKey();
+    } catch (err) {
+
+    } finally {
+      await this.leave(this._currentChannelName);
+      await this.logout();
+    }
   }
 
   async sendChannelMessage(body: string) {
@@ -201,7 +206,11 @@ export default class AgoraRTMClient {
   }
 
   async queryOnlineStatusBy(accounts: any[]) {
-    let results: any = {};
+    let results: any = {
+      teacherCount: 0,
+      totalCount: 0,
+      studentTotalCount: 0
+    };
     if (accounts.length > 0) {
       const ids = accounts.map((it: any) => `${it.uid}`);
       results = await this._client.queryPeersOnlineStatus(ids);
@@ -212,6 +221,7 @@ export default class AgoraRTMClient {
           results.teacherCount = 1;
         }
         results.totalCount = accounts.filter((it: any) => results[it.uid]).length;
+        results.studentsTotalCount = results.totalCount - results.teacherCount;
       } else {
         console.warn(`accounts: ${ids}, cannot get peers online status from [queryPeersOnlineStatus]`);
       }
@@ -225,7 +235,6 @@ export default class AgoraRTMClient {
     for (let key of Object.keys(json)) {
       if (key === 'teacher') {
         const teacherObj = jsonParse(_.get(json, `${key}.value`));
-        console.log("teacherObj ", teacherObj);
         // when teacher is not empty object
         if(teacherObj && Object.keys(teacherObj).length) {
           accounts.push({role: 'teacher', ...teacherObj});

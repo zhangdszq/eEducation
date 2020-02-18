@@ -192,9 +192,11 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   
   const location = useLocation();
 
-  const current =  useMemo(() => {
+  const current = useMemo(() => {
     return whiteboardState.scenes.get(whiteboardState.currentScenePath);
   }, [whiteboardState.scenes, whiteboardState.currentScenePath]);
+
+  const showTools = !(location.pathname.match(/big-class/) && roomStore.state.me.role !== 'teacher');
 
   const totalPage = useMemo(() => {
     if (!current) return 0;
@@ -385,6 +387,7 @@ const items = [
       whiteboard.join({
         rid: roomStore.state.course.rid,
         uid: me.boardId,
+        location: location.pathname,
         userPayload: {
           userId: roomStore.state.me.uid,
           identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
@@ -403,6 +406,7 @@ const items = [
       whiteboard.join({
         rid: roomStore.state.course.rid,
         uid: course.boardId,
+        location: location.pathname,
         userPayload: {
           userId: roomStore.state.me.uid,
           identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
@@ -450,6 +454,9 @@ const items = [
           }
           return;
         }
+      }}
+      onSuccess={() => {
+        console.log("on success");
       }}
       onFailure={(err: any) => {
         // WARN: capture exception
@@ -558,6 +565,7 @@ const items = [
         />
         :
         <Whiteboard
+          loading={whiteboardState.loading}
           className={selector}
           room={room}
         />
@@ -565,11 +573,11 @@ const items = [
       <div className="layer">
         {!sharedStream ? 
         <>
-          <Tools
+          {showTools ? <Tools
           items={toolItems}
           currentTool={tool}
-          handleToolClick={handleToolClick} />
-          {tool === 'color_picker' && room && room.state ?
+          handleToolClick={handleToolClick} /> : null}
+          {tool === 'color_picker' && strokeColor ?
             <SketchPicker
               color={strokeColor}
               onChangeComplete={onColorChanged} />

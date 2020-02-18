@@ -96,11 +96,11 @@ function HomePage() {
       linkId: 0,
       sharedId: 0,
       lockBoard: 0,
+      grantBoard: 0,
     }
     ref.current = true;
     globalStore.showLoading();
     roomStore.loginAndJoin(payload).then(() => {
-      roomStore.updateSessionInfo(payload);
       history.push(`/classroom/${path}`);
     }).catch((err: any) => {
       if (err.reason) {

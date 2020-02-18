@@ -1,9 +1,9 @@
 import { APP_ID } from './agora-rtc-client';
 import EventEmitter from 'events';
 import { btoa } from './helper';
-import { roomStore } from '../stores/room';
+import { RoomStore } from '../stores/room';
 // @ts-ignore
-const AgoraRtcEngine = window.rtcEngine;
+export const AgoraRtcEngine = window.rtcEngine;
 
 if (AgoraRtcEngine) {
   AgoraRtcEngine.initialize(APP_ID);
@@ -14,6 +14,7 @@ if (AgoraRtcEngine) {
   AgoraRtcEngine.setVideoProfile(43, false);
 }
 
+// TODO: default screen sharing uid, please do not directly use it.
 const SHARE_ID = 7;
 
 export interface Stream {
@@ -59,9 +60,10 @@ export class AgoraElectronClient {
   public readonly rtcEngine: any
   public published: boolean;
   public shared: boolean;
+  private roomStore: RoomStore;
   subscribeVideoSource: boolean = false;
 
-  constructor() {
+  constructor(deps: {roomStore: RoomStore}) {
     this.rtcEngine = AgoraRtcEngine;
     this.published = false;
     this.localUid = 0;
@@ -69,6 +71,7 @@ export class AgoraElectronClient {
     this.shared = false;
     this.rid = '';
     this.bus = new EventEmitter();
+    this.roomStore = deps.roomStore;
   }
 
   private isLocal(uid: number) {
@@ -276,7 +279,7 @@ export class AgoraElectronClient {
   async stopScreenShare() {
     if (this.shared) {
       this.rtcEngine.once('videoSourceLeaveChannel', (evt: any) => {
-        roomStore.removeLocalSharedStream();
+        this.roomStore.removeLocalSharedStream();
         this.rtcEngine.off('videoSourceLeaveChannel', (evt: any) => {});
       });
       this.rtcEngine.videoSourceLeave();
@@ -286,8 +289,13 @@ export class AgoraElectronClient {
   }
 
   exit () {
-    this.leave();
-    this.destroyClient();
+    try {
+      this.leave();
+    } catch(err) {
+      throw err;
+    } finally {
+      this.destroyClient();
+    }
   }
 
   publish() {
@@ -303,4 +311,4 @@ export class AgoraElectronClient {
   }
 }
 
-export const nativeRTCClient = new AgoraElectronClient();
+// export const nativeRTCClient = roomStore.rtcClient as AgoraElectronClient;

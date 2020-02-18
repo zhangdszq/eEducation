@@ -28,49 +28,47 @@ export function RoomPage({ children }: any) {
   useEffect(() => {
 
     const me = roomStore.state.me;
-    const rid = roomStore.state.course.rid;
-    const roomType = roomStore.state.course.roomType;
-    const roomName = roomStore.state.course.roomName;
+    const {
+      rid,
+      roomType,
+      roomName,
+      lockBoard,
+      linkId,
+    } = roomStore.state.course;
+
+    const {rtmToken, rtcToken} = roomStore.state;
 
     if (!rid || !me.uid) {
       history.push('/');
     }
 
     const uid = me.uid;
+
     const payload = {
-      uid,
+      // course state
       rid,
-      role: me.role,
       roomName,
       roomType,
+      lockBoard,
+      rtmToken,
+      rtcToken,
+      // TODO
+      linkId: linkId,
+      // agora user attributes
+      uid,
+      role: me.role,
       video: me.video,
       audio: me.audio,
       chat: me.chat,
       account: me.account,
-      rtmToken: '',
       boardId: me.boardId,
-      linkId: me.linkId,
       sharedId: me.sharedId,
-      lockBoard: me.lockBoard,
       grantBoard: me.grantBoard,
     }
     lock.current = true;
     if (roomStore.state.rtm.joined) return;
     globalStore.showLoading();
     roomStore.loginAndJoin(payload, true).then(() => {
-      roomStore.updateMe(payload).then(() => {
-        lock.current && roomStore.updateSessionInfo(payload);
-      }).catch((err: any) => {
-        globalStore.showToast({
-          type: 'rtmClient',
-          message: t('toast.login_failure'),
-        });
-        history.push('/');
-        console.warn(err)
-      }).finally(() => {
-        globalStore.stopLoading();
-        lock.current = false;
-      })
     }).catch((err: any) => {
       globalStore.showToast({
         type: 'rtmClient',
@@ -80,6 +78,7 @@ export function RoomPage({ children }: any) {
       console.warn(err)
     })
     .finally(() => {
+      globalStore.stopLoading();
       lock.current = false;
     });
   }, []);

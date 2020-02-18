@@ -200,8 +200,8 @@ export default function NavContainer() {
   const updateClassState = () => {
     if (!lock.current) {
       lock.current = true;
-      roomStore.updateAttrsBy(me.uid, {
-        class_state: +!Boolean(roomStore.state.course.courseState)
+      roomStore.updateMe({
+        courseState: +!Boolean(roomStore.state.course.courseState)
       }).then(() => {
         console.log("update success");
       }).catch(console.warn)

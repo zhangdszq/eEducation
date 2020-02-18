@@ -2,7 +2,7 @@ import { APP_ID } from './../utils/agora-rtm-client';
 import { EventEmitter } from 'events';
 import { videoPlugin } from '@netless/white-video-plugin';
 import { audioPlugin } from '@netless/white-audio-plugin';
-import { Room, WhiteWebSdk, DeviceType, SceneState, createPlugins } from 'white-web-sdk';
+import { Room, WhiteWebSdk, DeviceType, SceneState, createPlugins, RoomPhase } from 'white-web-sdk';
 import { Subject } from 'rxjs';
 import { WhiteboardAPI, RecordOperator } from '../utils/api';
 import {Map} from 'immutable';
@@ -53,6 +53,7 @@ plugins.setPluginContext("video", {identity: 'guest'});
 plugins.setPluginContext("audio", {identity: 'guest'});
 
 export type WhiteboardState = {
+  loading: boolean
   joined: boolean
   scenes: Map<string, CustomScene>
   currentScenePath: string
@@ -71,6 +72,7 @@ export type WhiteboardState = {
 type JoinParams = {
   rid: string
   uid?: string
+  location?: string
   userPayload: {
     userId: string,
     identity: string
@@ -94,6 +96,7 @@ class Whiteboard extends EventEmitter {
     startTime: 0,
     endTime: 0,
     room: null,
+    loading: true,
     ...GlobalStorage.read('mediaDirs'),
   }
 
@@ -284,10 +287,20 @@ class Whiteboard extends EventEmitter {
     throw reason;
   }
 
-  async join({rid, uid, userPayload}: JoinParams) {
+  updateLoading(value: boolean) {
+    this.state = {
+      ...this.state,
+      loading: value
+    }
+    this.commit(this.state);
+  }
+
+  async join({rid, uid, location, userPayload}: JoinParams) {
     await this.leave();
     const {uuid, roomToken} = await this.connect(rid, uid);
     const identity = userPayload.identity === 'host' ? 'host' : 'guest';
+
+    console.log("Whiteboard join");
 
     plugins.setPluginContext("video", {identity});
     plugins.setPluginContext("audio", {identity});
@@ -296,8 +309,17 @@ class Whiteboard extends EventEmitter {
       uuid,
       roomToken,
       disableBezier: true,
+      disableDeviceInputs: location!.match(/big-class/) && identity !== 'host' ? true : false,
+      disableOperations: location!.match(/big-class/) && identity !== 'host' ? true : false,
     }, {
-      onPhaseChanged: phase => {},
+      onPhaseChanged: (phase: RoomPhase) => {
+        if (phase === RoomPhase.Connected) {
+          this.updateLoading(false);
+        } else {
+          this.updateLoading(true);
+        }
+        console.log("[White] onPhaseChanged phase : ", phase);
+      },
       onRoomStateChanged: state => {
         if (state.zoomScale) {
           whiteboard.updateScale(state.zoomScale);
@@ -326,6 +348,7 @@ class Whiteboard extends EventEmitter {
   async leave() {
     if (!this.state.room) return;
     await this.state.room.disconnect();
+    this.updateLoading(true);
   }
 
   async destroy() {
@@ -426,7 +449,6 @@ class Whiteboard extends EventEmitter {
       });
     }
     await roomStore.updateMe({
-      ...roomStore.state.me,
       lockBoard
     });
   }
