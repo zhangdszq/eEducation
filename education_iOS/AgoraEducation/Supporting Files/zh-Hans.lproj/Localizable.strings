@@ -32,3 +32,6 @@ UserNameVerifyText = "用户名为11位及以内的数字或者英文字符";
 RoomTypeVerifyText = "请选择房间类型";
 RoomCountVerifyText = "人数已满,请换个房间";
 RequestFailedText = "请求失败";
+
+MuteBoardText = "老师已授权了你的白板权限";
+UnMuteBoardText = "老师已回收了你的白板权限";

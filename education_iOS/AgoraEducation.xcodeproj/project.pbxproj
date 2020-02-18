@@ -130,7 +130,7 @@
 		1A87571023571CFE009C55A8 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		1A87571123571CFE009C55A8 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
-		1AE0D0042283C5F20092AC5E /* AgoraEducation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraEducation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraCloudClass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D01C2283C5F40092AC5E /* AgoraEducationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0A022897E9A0092AC5E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -514,7 +514,7 @@
 		1AE0D0052283C5F20092AC5E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1AE0D0042283C5F20092AC5E /* AgoraEducation.app */,
+				1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */,
 				1AE0D01C2283C5F40092AC5E /* AgoraEducationTests.xctest */,
 				1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */,
 			);
@@ -816,7 +816,7 @@
 			);
 			name = AgoraEducation;
 			productName = AgoraSmallClass;
-			productReference = 1AE0D0042283C5F20092AC5E /* AgoraEducation.app */;
+			productReference = 1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1AE0D01B2283C5F40092AC5E /* AgoraEducationTests */ = {
@@ -1284,7 +1284,7 @@
 				);
 				MARKETING_VERSION = 5.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AgoraCloudClass;
 				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1317,7 +1317,7 @@
 				);
 				MARKETING_VERSION = 5.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AgoraCloudClass;
 				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1474,7 +1474,7 @@
 				);
 				MARKETING_VERSION = 5.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducationQA;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AgoraCloudClass;
 				PROVISIONING_PROFILE_SPECIFIER = AgoraIOTest2019;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;

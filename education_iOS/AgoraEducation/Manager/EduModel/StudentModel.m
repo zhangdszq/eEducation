@@ -18,6 +18,7 @@
         self.video = NO;
         self.audio = NO;
         self.chat = NO;
+        self.grant_board = NO;
     }
     return self;
 }
@@ -28,7 +29,8 @@
                     & [((StudentModel*)otherObject).uid isEqualToString:self.uid]
                     & ((StudentModel*)otherObject).video == self.video
                     & ((StudentModel*)otherObject).audio == self.audio
-                    & ((StudentModel*)otherObject).chat == self.chat;
+                    & ((StudentModel*)otherObject).chat == self.chat
+                    & ((StudentModel*)otherObject).grant_board == self.grant_board;
         return equal;
     }
 

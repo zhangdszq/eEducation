@@ -23,6 +23,9 @@
     // Initialization cod
     self.muteVideoButton.selected = YES;
     self.muteAudioButton.selected = YES;
+    self.muteWhiteButton.selected = YES;
+    
+//    self.muteWhiteButton.enabled = NO;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -45,6 +48,9 @@
     self.muteVideoButton.selected = studentModel.video ? YES : NO;
     self.muteVideoButton.hidden = studentModel.uid != self.userId ? YES : NO;
     self.muteAudioButton.hidden = studentModel.uid != self.userId ? YES : NO;
+    
+    self.muteWhiteButton.selected = studentModel.grant_board ? YES : NO;
+    self.muteWhiteButton.hidden = studentModel.uid != self.userId ? YES : NO;
 }
 
 

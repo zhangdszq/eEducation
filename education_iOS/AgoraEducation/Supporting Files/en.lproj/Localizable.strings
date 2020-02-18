@@ -33,4 +33,5 @@ RoomTypeVerifyText = "Please select a room type";
 RoomCountVerifyText = "Room is full, please change another room";
 RequestFailedText = "request failed";
 
-
+MuteBoardText = "Teacher has authorized your whiteboard permissions";
+UnMuteBoardText = "Teacher has revoked your whiteboard permissions";
