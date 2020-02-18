@@ -97,6 +97,9 @@
     self.classRoomTypeView = classRoomTypeView;
     classRoomTypeView.hidden = YES;
     classRoomTypeView.delegate = self;
+    
+    self.classNameTextFiled.delegate = self;
+    self.userNameTextFiled.delegate = self;
 }
 
 - (void)addTouchedRecognizer {
@@ -131,13 +134,24 @@
     return uid;
 }
 
-- (BOOL)checkClassRoomText:(NSString *)text {
-    NSString *regex = @"^[a-zA-Z0-9]*$";
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
-    if ([predicate evaluateWithObject:text] && text.length <= 11) {
+- (BOOL)checkFieldText:(NSString *)text {
+    
+    int strlength = 0;
+    char *p = (char *)[text cStringUsingEncoding:NSUnicodeStringEncoding];
+    for (int i=0; i < [text lengthOfBytesUsingEncoding:NSUnicodeStringEncoding]; i++) {
+        if (*p) {
+            p++;
+            strlength++;
+        }
+        else {
+            p++;
+        }
+    }
+    
+    if(strlength <= 20){
         return YES;
     } else {
-        return NO;
+       return NO;
     }
 }
 
@@ -147,8 +161,8 @@
 }
 
 - (IBAction)joinRoom:(UIButton *)sender {
-    
-    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkClassRoomText:self.classNameTextFiled.text] || ![self checkClassRoomText:self.userNameTextFiled.text]) {
+
+    if (self.classNameTextFiled.text.length <= 0 || self.userNameTextFiled.text.length <= 0 || ![self checkFieldText:self.classNameTextFiled.text] || ![self checkFieldText:self.userNameTextFiled.text]) {
         
         [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"UserNameVerifyText", nil)];
         return;
@@ -315,6 +329,12 @@
         [weakself presentViewController:vc animated:YES completion:nil];
         
     } completeFailBlock: nil];
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 #pragma mark EEClassRoomTypeDelegate

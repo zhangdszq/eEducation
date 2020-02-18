@@ -7,7 +7,7 @@
 */
 
 LoadingText = "加载中";
-ColorPickerText = "选择颜色";
+ColorPickerText = " 选择颜色";
 OKText = "确定";
 CancelText = "取消";
 EyeProtectionText = "护眼模式";
@@ -22,6 +22,7 @@ AcceptRequestText = " 接受了你的连麦申请!";
 
 MaterialsAreaText = "教材区";
 ChatroomText = "聊天室";
+StudentText = "学生";
 
 OneToOneText = "1V1";
 SmallClassText = "小班课";
