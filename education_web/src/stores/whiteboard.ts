@@ -11,7 +11,7 @@ import { isEmpty, get } from 'lodash';
 import { roomStore } from './room';
 import { handleRegion } from '../utils/helper';
 import { globalStore } from './global';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
 const RECORDING_UID = 1;
@@ -106,8 +106,8 @@ class Whiteboard extends EventEmitter {
     plugins,
     loggerOptions: {
       disableReportLog: ENABLE_LOG ? false : true,
-      reportLevelMask: "info",
-      printLevelMask: "info",
+      reportLevelMask: "debug",
+      printLevelMask: "debug",
     }
   });
 

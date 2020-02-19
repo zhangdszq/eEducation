@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import ChatPanel from './chat/panel';
 import StudentList from './student-list';
 import useChatText from '../hooks/use-chat-text';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 import { useGlobalState } from '../containers/root-container';
 import { globalStore } from '../stores/global';
 

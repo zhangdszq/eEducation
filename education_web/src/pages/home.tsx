@@ -14,7 +14,7 @@ import { roomStore } from '../stores/room';
 import { genUid } from '../utils/helper';
 import MD5 from 'js-md5';
 import { globalStore, roomTypes } from '../stores/global';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 import GlobalStorage from '../utils/custom-storage';
 
 const useStyles = makeStyles ((theme: Theme) => ({

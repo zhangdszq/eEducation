@@ -5,7 +5,7 @@ import Button from './custom-button';
 import FormSelect from './form-select';
 import SpeakerVolume from './volume/speaker';
 import useSettingControl from '../hooks/use-setting-control';
-import {t} from '../utils/i18n';
+import {t} from '../i18n';
 
 import { usePlatform } from '../containers/platform-container';
 

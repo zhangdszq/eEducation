@@ -95,6 +95,11 @@
     line-height: 17px;
     margin-right: 10px;
   }
+  .net-field-container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
   .net-field-value {
     color: #44A2FC;
     font-size: 12px;

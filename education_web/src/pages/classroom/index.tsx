@@ -11,7 +11,7 @@ import { globalStore } from '../../stores/global';
 import { platform } from '../../utils/platform';
 import AgoraWebClient, { AgoraStreamSpec, SHARE_ID } from '../../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
-import { t } from '../../utils/i18n';
+import { t } from '../../i18n';
 
 export const roomTypes = [
   {value: 0, text: 'One-on-One', path: 'one-to-one'},
@@ -69,6 +69,7 @@ export function RoomPage({ children }: any) {
     if (roomStore.state.rtm.joined) return;
     globalStore.showLoading();
     roomStore.loginAndJoin(payload, true).then(() => {
+      console.log('[biz-login]  loginAndJoin, success: ', JSON.stringify(payload));
     }).catch((err: any) => {
       globalStore.showToast({
         type: 'rtmClient',

@@ -8,7 +8,7 @@ import { roomStore } from '../../stores/room';
 import { globalStore } from '../../stores/global';
 import { useHistory } from 'react-router-dom';
 import { RoomMessage } from '../../utils/agora-rtm-client';
-import { t } from '../../utils/i18n';
+import { t } from '../../i18n';
 
 interface RoomProps {
   onConfirm: (type: string) => void
