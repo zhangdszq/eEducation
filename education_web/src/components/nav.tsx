@@ -70,9 +70,9 @@ export function Nav ({
       <div className="network-state">
         {platform === 'web' ? <span className="net-field">{t('nav.delay')}<span className="net-field-value">{delay}</span></span> : null}
         {/* <span className="net-field">Packet Loss Rate: <span className="net-field-value">{lossPacket}</span></span> */}
-        <span className="net-field">
+        <span className="net-field net-field-container">
           {t('nav.network')}
-          <span className={`net-field-value net-field-container ${networkQualityIcon[network]}`} style={{marginLeft: '.2rem'}}>
+          <span className={`net-field-value ${networkQualityIcon[network]}`} style={{marginLeft: '.2rem'}}>
           </span>
         </span>
         {platform === 'electron' ? <span className="net-field">{t('nav.network')}<span className="net-field-value">{cpu}</span></span> : null}
