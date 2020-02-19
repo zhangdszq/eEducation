@@ -9,7 +9,7 @@ import AgoraWebClient from '../utils/agora-rtc-client';
 import { get, set, isEmpty } from 'lodash';
 import { isElectron } from '../utils/platform';
 import GlobalStorage from '../utils/custom-storage';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 import { jsonParse } from '../utils/helper';
 
 function canJoin({ onlineStatus, roomType, channelCount, role }: { onlineStatus: any, role: string, channelCount: number, roomType: number }) {
@@ -58,13 +58,13 @@ export type ChannelAttrs = {
   video: number
   audio: number
   chat: number
-  class_state?: number,
-  mute_chat?: number,
-  whiteboard_uid: string // whiteboard_uuid
-  shared_uid: number // shared_uid
-  link_uid: number // link_uid
-  lock_board?: number // lock_board
-  grant_board: number // grant_board
+  class_state?: number
+  mute_chat?: number
+  whiteboard_uid: string
+  shared_uid: number 
+  link_uid: number
+  lock_board?: number
+  grant_board: number
 };
 export interface AgoraUser {
   uid: string
@@ -172,6 +172,7 @@ export class RoomStore {
       linkId: 0,
       sharedId: 0,
       boardId: '',
+      lockBoard: 0,
       grantBoard: 0,
     },
     users: Map<string, AgoraUser>(),
@@ -199,6 +200,7 @@ export class RoomStore {
       rid: '',
       roomName: '',
       roomType: 0,
+      lockBoard: 0,
     },
     mediaDevice: {
       microphoneId: '',
@@ -708,6 +710,7 @@ export class RoomStore {
   }
 
   private exactChannelAttrsBy(me: AgoraUser, course: ClassState): ChannelAttrs {
+    console.log("origin: ", me, course);
     const newChannelAttrs: ChannelAttrs = {
       uid: me.uid,
       account: `${me.account}`,

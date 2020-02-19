@@ -5,7 +5,7 @@ import { whiteboard } from '../../stores/whiteboard';
 import moment from 'moment';
 import { globalStore } from '../../stores/global';
 import { getOSSUrl } from '../../utils/helper';
-import { t } from '../../utils/i18n';
+import { t } from '../../i18n';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void

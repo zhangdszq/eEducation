@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import './whiteboard.scss';
 import { Room } from 'white-web-sdk';
 import { whiteboard } from '../stores/whiteboard';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 import { Progress } from '../components/progress/progress';
 interface WhiteBoardProps {
   room: Room
@@ -23,7 +23,6 @@ export default function Whiteboard ({
     whiteboard.updateRoomState();
     if ($whiteboard) {
       window.addEventListener("resize", (evt: any) => {
-        console.log("loading",whiteboard.state.loading);
         if (!whiteboard.state.loading) {
           room.moveCamera({centerX: 0, centerY: 0});
           room.refreshViewSize();           

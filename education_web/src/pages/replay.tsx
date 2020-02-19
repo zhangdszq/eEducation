@@ -11,7 +11,7 @@ import { WhiteboardAPI, RTMRestful } from '../utils/api';
 import { whiteboard } from '../stores/whiteboard';
 import "video.js/dist/video-js.css";
 import { getOSSUrl } from '../utils/helper';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 import { RTMReplayer, RtmPlayerState } from '../components/whiteboard/agora/rtm-player';
 import { errorStore } from './error-page/state';
 

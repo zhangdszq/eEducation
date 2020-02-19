@@ -22,7 +22,7 @@ import { platform } from '../utils/platform';
 import AgoraWebClient, { SHARE_ID } from '../utils/agora-rtc-client';
 import "white-web-sdk/style/index.css";
 import { ViewMode } from 'white-web-sdk';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 
 const pathName = (path: string): string => {
   const reg = /\/([^/]*)\//g;
@@ -515,8 +515,10 @@ const items = [
       if (roomStore.state.course.lockBoard) {
         room.handToolActive = false;
         room.disableCameraTransform = true;
+        room.disableDeviceInputs = true;
       } else {
         room.disableCameraTransform = false;
+        room.disableDeviceInputs = false;
       }
     }
   }, [room, roomStore.state.course.lockBoard, roomStore.state.me.role]);

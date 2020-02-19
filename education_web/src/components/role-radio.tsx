@@ -3,7 +3,7 @@ import { Theme, RadioGroup, Radio, FormControlLabel, Typography } from '@materia
 import { makeStyles } from '@material-ui/core/styles';
 
 import './role-radio.scss';
-import { t } from '../utils/i18n';
+import { t } from '../i18n';
 
 const useStyles = makeStyles ((theme: Theme) => ({
   radioGroup: {
