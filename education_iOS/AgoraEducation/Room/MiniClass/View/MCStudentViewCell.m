@@ -51,7 +51,7 @@
     self.muteAudioButton.hidden = studentModel.uid.integerValue != self.userId.integerValue ? YES : NO;
     
     self.muteWhiteButton.selected = studentModel.grant_board ? YES : NO;
-    self.muteWhiteButton.hidden = studentModel.uid != self.userId ? YES : NO;
+    self.muteWhiteButton.hidden = studentModel.uid.integerValue != self.userId.integerValue ? YES : NO;
 }
 
 
