@@ -21,4 +21,6 @@ public interface ChannelEventListener {
 
     void onPeerMsgReceived(PeerMsg msg);
 
+    void onMemberCountUpdated(int count);
+
 }

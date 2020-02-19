@@ -181,6 +181,13 @@ public class RtmChannelStrategy extends ChannelStrategy<List<RtmChannelAttribute
                 channelEventListener.onPeerMsgReceived(msg);
             }
         }
+
+        @Override
+        public void onMemberCountUpdated(int i) {
+            if (channelEventListener != null) {
+                channelEventListener.onMemberCountUpdated(i);
+            }
+        }
     };
 
 }

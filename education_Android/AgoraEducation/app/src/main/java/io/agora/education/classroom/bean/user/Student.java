@@ -8,6 +8,7 @@ import io.agora.sdk.annotation.ClientRole;
 public class Student extends User implements Cloneable {
 
     public int chat; // enable chat -- 0: disable, 1: enable
+    public int grant_board; // enable board -- 0: disable, 1: enable
     public transient boolean isGenerate; // create by local
 
     public Student(boolean isGenerate) {

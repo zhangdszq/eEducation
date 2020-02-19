@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Agora Education</string>
+    <string name="app_name">Agora Cloud Class</string>
     <string name="hint_room_name">Room Name</string>
     <string name="hint_room_type">Room Type</string>
     <string name="room_name_should_not_be_empty">Room name should not be empty.</string>

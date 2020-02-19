@@ -166,6 +166,10 @@ public abstract class ClassContext implements ChannelEventListener {
         }
     }
 
+    @Override
+    public void onMemberCountUpdated(int count) {
+    }
+
     private RtcEventListener rtcEventListener = new RtcEventListener() {
         @Override
         public void onNetworkQuality(int uid, int txQuality, int rxQuality) {

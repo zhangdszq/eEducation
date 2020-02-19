@@ -28,4 +28,6 @@
     <string name="policy_refuse">暂不使用</string>
     <string name="accept_interactive">老师接受了你的连麦申请！</string>
     <string name="reject_interactive">老师拒绝了你的连麦申请！</string>
+    <string name="authorize_board">老师已授权了你的白板权限</string>
+    <string name="revoke_board">老师已回收了你的白板权限</string>
 </resources>
