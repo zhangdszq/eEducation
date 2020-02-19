@@ -46,8 +46,9 @@
     NSString *videoImageName = studentModel.video ? @"roomCameraOn" : @"roomCameraOff";
     [self.muteVideoButton setImage:[UIImage imageNamed:videoImageName] forState:(UIControlStateNormal)];
     self.muteVideoButton.selected = studentModel.video ? YES : NO;
-    self.muteVideoButton.hidden = studentModel.uid != self.userId ? YES : NO;
-    self.muteAudioButton.hidden = studentModel.uid != self.userId ? YES : NO;
+    
+    self.muteVideoButton.hidden = studentModel.uid.integerValue != self.userId.integerValue ? YES : NO;
+    self.muteAudioButton.hidden = studentModel.uid.integerValue != self.userId.integerValue ? YES : NO;
     
     self.muteWhiteButton.selected = studentModel.grant_board ? YES : NO;
     self.muteWhiteButton.hidden = studentModel.uid != self.userId ? YES : NO;

@@ -23,6 +23,7 @@
         self.video = NO;
         self.audio = NO;
         self.class_state = NO;
+        self.lock_board = NO;
     }
     return self;
 }

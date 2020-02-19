@@ -521,8 +521,13 @@
         [self.whiteManager pause];
     }
 }
+
 - (void)stopWhite {
     [self.whiteManager stop];
+}
+
+- (void)disableCameraTransform:(BOOL)disableCameraTransform {
+    [self.whiteManager disableCameraTransform:disableCameraTransform];
 }
 
 - (NSTimeInterval)whiteTotleTimeDuration {

@@ -367,7 +367,7 @@
         
         weakself.tipLabel.hidden = NO;
         
-        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@%@", weakself.educationManager.teacherModel.account, NSLocalizedString(@"AcceptRequestText", nil)]];
+        [weakself.tipLabel setText: NSLocalizedString(@"AcceptRequestText", nil)];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakself.tipLabel.hidden = YES;
         });
@@ -422,6 +422,7 @@
         [weakself.educationManager seekWhiteToTime:cmTime completionHandler:^(BOOL finished) {
         }];
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
+        [weakself.educationManager disableCameraTransform:weakself.educationManager.teacherModel.lock_board];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
             [weakself.educationManager moveWhiteToContainer:sceneIndex];
         }];
@@ -521,6 +522,13 @@
             self.linkState = StudentLinkStateIdle;
             [self removeStudentCanvas: self.educationManager.teacherModel.link_uid.integerValue];
             [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+            
+            self.tipLabel.hidden = NO;
+            [self.tipLabel setText: NSLocalizedString(@"AcceptRequestText", nil)];
+            WEAK(self);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                weakself.tipLabel.hidden = YES;
+            });
         }
             break;
         case SignalP2PTypeMuteChat:
@@ -558,7 +566,12 @@
         TeacherModel *sourceModel = sourceInfoModel.teacherModel;
         TeacherModel *currentModel = currentInfoModel.teacherModel;
         if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
+            
             [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:YES];
+            
+        } else if(currentModel.whiteboard_uid.length > 0){
+                   
+            [self.educationManager disableCameraTransform:currentModel.lock_board];
         }
     }
     

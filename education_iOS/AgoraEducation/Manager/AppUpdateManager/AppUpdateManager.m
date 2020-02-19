@@ -82,7 +82,7 @@ static AppUpdateManager *manager = nil;
         NSURL *url = [NSURL URLWithString:ITUNES_URL];
         
         if(force){
-            [AlertViewUtil showAlertWithController:showController title:@"The version has been updated. Please download the new version" message:nil cancelText:nil sureText:@"OK" cancelHandler:nil sureHandler:^(UIAlertAction * _Nullable action) {
+            [AlertViewUtil showAlertWithController:showController title:NSLocalizedString(@"UpdateText", nil) message:nil cancelText:nil sureText:NSLocalizedString(@"OKText", nil) cancelHandler:nil sureHandler:^(UIAlertAction * _Nullable action) {
 
                 if(@available(iOS 10.0, *)) {
                     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -91,7 +91,7 @@ static AppUpdateManager *manager = nil;
                 }
             }];
         } else {
-            [AlertViewUtil showAlertWithController:showController title:@"The version has been updated. Please download the new version" message:nil cancelText:@"Cancel" sureText:@"OK" cancelHandler:nil sureHandler:^(UIAlertAction * _Nullable action) {
+            [AlertViewUtil showAlertWithController:showController title:NSLocalizedString(@"UpdateText", nil) message:nil cancelText:NSLocalizedString(@"CancelText", nil) sureText:NSLocalizedString(@"OKText", nil) cancelHandler:nil sureHandler:^(UIAlertAction * _Nullable action) {
 
                 if(@available(iOS 10.0, *)) {
                     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];

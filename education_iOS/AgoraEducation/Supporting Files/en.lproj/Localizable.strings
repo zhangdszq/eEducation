@@ -6,7 +6,7 @@
   Copyright © 2020 yangmoumou. All rights reserved.
 */
 
-LoadingText = "loading";
+LoadingText = "loading...";
 ColorPickerText = " Color Picker";
 OKText = "OK";
 CancelText = "Cancel";
@@ -18,7 +18,8 @@ ProhibitedPostText = " Prohibited post";
 InputMessageText = " Input message";
 QuitClassroomText = "Quit classroom?";
 
-AcceptRequestText = " accept your interactive request!";
+AcceptRequestText = "Teacher accept your interactive request!";
+CancelRequestText = "Teacher cancel your interactive!";
 
 MaterialsAreaText = "Materials area";
 ChatroomText = "Chatroom";
@@ -35,3 +36,5 @@ RequestFailedText = "request failed";
 
 MuteBoardText = "Teacher has authorized your whiteboard permissions";
 UnMuteBoardText = "Teacher has revoked your whiteboard permissions";
+
+UpdateText = "The version has been updated. Please download the new version";
