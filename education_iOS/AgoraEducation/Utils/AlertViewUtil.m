@@ -9,29 +9,39 @@
 #import "AlertViewUtil.h"
 
 @implementation AlertViewUtil
++ (void)showAlertWithController:(UIViewController *)viewController title:(NSString *)title cancelHandler:(KAlertHandler)cancelHandler sureHandler:(KAlertHandler)sureHandler {
+    
+    [AlertViewUtil showAlertWithController:viewController title:title message:nil cancelText:NSLocalizedString(@"CancelText", nil) sureText:NSLocalizedString(@"OKText", nil) cancelHandler:cancelHandler sureHandler:sureHandler];
+}
+
 + (void)showAlertWithController:(UIViewController *)viewController title:(NSString *)title sureHandler:(KAlertHandler)sureHandler {
-    [[AlertViewUtil alloc] initWithDeleteDecideWithController:viewController title:title sureHandler:sureHandler];
+    
+    [AlertViewUtil showAlertWithController:viewController title:title message:nil cancelText:NSLocalizedString(@"CancelText", nil) sureText:NSLocalizedString(@"OKText", nil) cancelHandler:nil sureHandler:sureHandler];
 }
 
 + (void)showAlertWithController:(UIViewController *)viewController title:(NSString *)title {
-    UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"CancelText", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-    }];
-    [alertVc addAction:actionCancel];
+    
+    [AlertViewUtil showAlertWithController:viewController title:title message:nil cancelText:NSLocalizedString(@"CancelText", nil) sureText:nil cancelHandler:nil sureHandler:nil];
+}
+
++ (void)showAlertWithController:(UIViewController *)viewController title:(NSString *)title message:(NSString * _Nullable)message cancelText:(NSString * _Nullable)cancelText sureText:(NSString * _Nullable)sureText cancelHandler:(KAlertHandler _Nullable)cancelHandler sureHandler:(KAlertHandler _Nullable)sureHandler {
+    
+    UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    if (sureText != nil && sureText.length > 0) {
+        UIAlertAction *actionDone = [UIAlertAction actionWithTitle:sureText style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            !sureHandler ? : sureHandler(action);
+        }];
+        [alertVc addAction:actionDone];
+    }
+    
+    if (cancelText != nil && cancelText.length > 0) {
+        UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:cancelText style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            !cancelHandler ? : cancelHandler(action);
+        }];
+        [alertVc addAction:actionCancel];
+    }
+    
     [viewController presentViewController:alertVc animated:YES completion:nil];
 }
 
-- (void)initWithDeleteDecideWithController:(UIViewController *)viewController title:(NSString *)title sureHandler:(KAlertHandler)sureHandler
-{
-    UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *actionDone = [UIAlertAction actionWithTitle:NSLocalizedString(@"OKText", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        !sureHandler ? : sureHandler(action);
-    }];
-    
-    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"CancelText", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-    }];
-    [alertVc addAction:actionDone];
-    [alertVc addAction:actionCancel];
-    [viewController presentViewController:alertVc animated:YES completion:nil];
-}
 @end

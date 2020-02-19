@@ -62,5 +62,6 @@ Podfile.lock
 
 IPADEV/
 IPAQA/
+IPA/
 *.ipa
 *.xcarchive
