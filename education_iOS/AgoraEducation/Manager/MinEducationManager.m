@@ -259,10 +259,10 @@
     [self.rtcManager initEngineKit:appid];
     [self.rtcManager setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
     [self.rtcManager enableVideo];
-    [self.rtcManager startPreview];
     [self.rtcManager enableWebSdkInteroperability:YES];
     [self.rtcManager enableDualStreamMode:YES];
     [self setRTCClientRole: role];
+    [self.rtcManager startPreview];
 }
 
 - (int)joinRTCChannelByToken:(NSString * _Nullable)token channelId:(NSString * _Nonnull)channelId info:(NSString * _Nullable)info uid:(NSUInteger)uid joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock {
