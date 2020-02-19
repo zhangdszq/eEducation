@@ -84,8 +84,8 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
     }
 
     @Override
-    public void onBoardMuteStatusChanged(boolean muted) {
-        whiteboardFragment.disableDeviceInputs(muted);
+    public void onGrantWhiteboard(boolean granted) {
+        whiteboardFragment.disableDeviceInputs(granted);
     }
 
     @Override
