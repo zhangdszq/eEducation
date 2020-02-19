@@ -25,11 +25,13 @@ public class PolicyDialog extends ConfirmDialog implements ConfirmDialog.DialogC
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        SpannableString spannableString = new SpannableString(getString(R.string.policy_tips));
-        spannableString.setSpan(new URLSpan(BuildConfig.POLICY_URL), 13, 19, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        String tips = getString(R.string.policy_tips);
+        String policy = getString(R.string.policy);
+        SpannableString spannableString = new SpannableString(tips);
+        int index = tips.toLowerCase().indexOf(policy.toLowerCase());
+        spannableString.setSpan(new URLSpan(BuildConfig.POLICY_URL), index, index + policy.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tv_content.setMovementMethod(LinkMovementMethod.getInstance());
         tv_content.setText(spannableString);
-        tv_content.setTextSize(12);
         tv_dialog_cancel.setText(R.string.policy_refuse);
         tv_dialog_confirm.setText(R.string.policy_agree);
         listener = this;

@@ -27,8 +27,8 @@
     <string name="later">Later</string>
     <string name="rtm_not_login">RTM not login, please try again later</string>
     <string name="configuration_load_failed">Configuration load failed, please try again later</string>
-    <string name="policy_tips" translatable="false">请您务必审慎阅读，充分理解《隐私政策》条款，我们深知个人信息对您的重要性，并会全力保护您的个人信息安全可靠。</string>
-    <string name="policy">Policy</string>
+    <string name="policy_tips">Please read carefully and fully understand the terms of the user agreement and privacy policy.</string>
+    <string name="policy">User agreement and privacy policy</string>
     <string name="policy_agree">Agree</string>
     <string name="policy_refuse">Refuse</string>
     <string name="accept_interactive">Teacher accept your interactive request!</string>
