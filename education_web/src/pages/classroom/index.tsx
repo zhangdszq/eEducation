@@ -209,7 +209,7 @@ export function RoomPage({ children }: any) {
     if (classroom) {
       if (platform === 'web') {
         const webClient = roomStore.rtcClient as AgoraWebClient;
-        if (webClient.joined) {
+        if (webClient.joined || rtc.current) {
           return;
         }
         console.log("[agora-rtc] add event listener");
@@ -401,7 +401,7 @@ export function RoomPage({ children }: any) {
         }
       }
     }
-  }, [roomState.me.uid, roomState.course.rid]);
+  }, [JSON.stringify([roomState.me.uid, roomState.course.rid])]);
 
   return (
     <div className={`classroom ${roomType.path}`}>

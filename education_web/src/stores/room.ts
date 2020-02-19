@@ -812,9 +812,11 @@ export class RoomStore {
       const student = jsonParse(get(json, `${key}.value`));
       if (!isEmpty(student)) {
         student.uid = key;
-        students.push(student);
+        students.push(Object.freeze(student));
+        // console.log(">>> parse, student: ", student);
       }
     }
+
     const accounts = [];
     if (!isEmpty(teacherJson)) {
       const teacher: any = { role: 'teacher' };
@@ -827,13 +829,13 @@ export class RoomStore {
     }
     for (let student of students) {
       if (!isEmpty(student)) {
-        const _student: any = { role: 'student' };
+        const tempStudent: any = { role: 'student' };
         for (const prop of AgoraUserKeys) {
           if (student.hasOwnProperty(prop)) {
-            _student[prop] = student[prop]
+            tempStudent[prop] = student[prop]
           }
         }
-        accounts.push(_student);
+        accounts.push(tempStudent);
       }
     }
     return {
