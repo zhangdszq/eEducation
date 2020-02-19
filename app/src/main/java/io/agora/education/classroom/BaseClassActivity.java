@@ -157,6 +157,11 @@ public abstract class BaseClassActivity extends BaseActivity implements ClassEve
     }
 
     @Override
+    public void onLockWhiteboard(boolean locked) {
+        whiteboardFragment.disableCameraTransform(locked);
+    }
+
+    @Override
     public void onMuteLocalChat(boolean muted) {
         chatRoomFragment.setMuteLocal(muted);
     }

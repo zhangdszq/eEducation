@@ -14,6 +14,8 @@ public interface ClassEventListener {
 
     void onWhiteboardIdChanged(String id);
 
+    void onLockWhiteboard(boolean locked);
+
     void onMuteLocalChat(boolean muted);
 
     void onMuteAllChat(boolean muted);

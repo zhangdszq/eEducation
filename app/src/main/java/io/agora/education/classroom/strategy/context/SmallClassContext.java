@@ -112,7 +112,7 @@ public class SmallClassContext extends ClassContext {
         super.onLocalChanged(local);
         onUsersMediaChanged();
         if (classEventListener instanceof SmallClassEventListener) {
-            runListener(() -> ((SmallClassEventListener) classEventListener).onBoardMuteStatusChanged(local.grant_board == 0));
+            runListener(() -> ((SmallClassEventListener) classEventListener).onGrantWhiteboard(local.grant_board == 0));
         }
     }
 
@@ -137,7 +137,7 @@ public class SmallClassContext extends ClassContext {
     public interface SmallClassEventListener extends ClassEventListener {
         void onUsersMediaChanged(List<User> users);
 
-        void onBoardMuteStatusChanged(boolean muted);
+        void onGrantWhiteboard(boolean granted);
     }
 
 }
