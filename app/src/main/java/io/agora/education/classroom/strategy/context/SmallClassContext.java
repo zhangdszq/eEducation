@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.agora.base.Callback;
+import io.agora.base.ToastManager;
+import io.agora.education.R;
 import io.agora.education.classroom.bean.channel.ChannelInfo;
+import io.agora.education.classroom.bean.msg.Cmd;
+import io.agora.education.classroom.bean.msg.PeerMsg;
 import io.agora.education.classroom.bean.user.Student;
 import io.agora.education.classroom.bean.user.Teacher;
 import io.agora.education.classroom.bean.user.User;
@@ -57,6 +61,37 @@ public class SmallClassContext extends ClassContext {
     }
 
     @Override
+    public void onPeerMsgReceived(PeerMsg msg) {
+        super.onPeerMsgReceived(msg);
+        Cmd cmd = msg.getCmd();
+        if (cmd == null) return;
+        switch (cmd) {
+            case MUTE_BOARD:
+                muteBoard(true);
+                break;
+            case UNMUTE_BOARD:
+                muteBoard(false);
+                break;
+        }
+    }
+
+    private void muteBoard(boolean muted) {
+        Student local = channelStrategy.getLocal();
+        local.grant_board = muted ? 0 : 1;
+        channelStrategy.updateLocalAttribute(local, new Callback<Void>() {
+            @Override
+            public void onSuccess(Void res) {
+                ToastManager.showShort(muted ? R.string.revoke_board : R.string.authorize_board);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+        });
+    }
+
+    @Override
     public void onChannelInfoInit() {
         super.onChannelInfoInit();
         if (channelStrategy.getLocal().isGenerate) {
@@ -76,6 +111,9 @@ public class SmallClassContext extends ClassContext {
     public void onLocalChanged(Student local) {
         super.onLocalChanged(local);
         onUsersMediaChanged();
+        if (classEventListener instanceof SmallClassEventListener) {
+            runListener(() -> ((SmallClassEventListener) classEventListener).onBoardMuteStatusChanged(local.grant_board == 0));
+        }
     }
 
     @Override
@@ -98,6 +136,8 @@ public class SmallClassContext extends ClassContext {
 
     public interface SmallClassEventListener extends ClassEventListener {
         void onUsersMediaChanged(List<User> users);
+
+        void onBoardMuteStatusChanged(boolean muted);
     }
 
 }

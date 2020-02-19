@@ -139,6 +139,14 @@ public class LargeClassContext extends ClassContext {
         }
     }
 
+    @Override
+    public void onMemberCountUpdated(int count) {
+        super.onMemberCountUpdated(count);
+        if (classEventListener instanceof LargeClassEventListener) {
+            runListener(() -> ((LargeClassEventListener) classEventListener).onUserCountChanged(count));
+        }
+    }
+
     public void cancel(boolean isRemote) {
         channelStrategy.clearLocalAttribute(new Callback<Void>() {
             @Override

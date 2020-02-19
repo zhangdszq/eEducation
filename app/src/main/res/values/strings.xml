@@ -33,4 +33,6 @@
     <string name="policy_refuse">Refuse</string>
     <string name="accept_interactive">Teacher accept your interactive request!</string>
     <string name="reject_interactive">Teacher reject your interactive request!</string>
+    <string name="authorize_board">Teacher has authorized your whiteboard permissions</string>
+    <string name="revoke_board">Teacher has revoked your whiteboard permissions</string>
 </resources>
