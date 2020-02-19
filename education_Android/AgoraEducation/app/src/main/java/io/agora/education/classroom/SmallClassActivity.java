@@ -84,6 +84,11 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
     }
 
     @Override
+    public void onBoardMuteStatusChanged(boolean muted) {
+        whiteboardFragment.disableDeviceInputs(muted);
+    }
+
+    @Override
     public void onTabSelected(TabLayout.Tab tab) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (tab.getPosition() == 0) {

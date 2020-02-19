@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,8 +86,10 @@ public class ConfirmDialog extends DialogFragment {
         View root = inflater.inflate(R.layout.layout_dialog_confirm, container, false);
         ButterKnife.bind(this, root);
         tv_content.setText(content);
-        tv_dialog_cancel.setText(cancelText);
-        tv_dialog_confirm.setText(confirmText);
+        if (!TextUtils.isEmpty(cancelText))
+            tv_dialog_cancel.setText(cancelText);
+        if (!TextUtils.isEmpty(confirmText))
+            tv_dialog_confirm.setText(confirmText);
         tv_dialog_cancel.setVisibility(isSingle ? View.GONE : View.VISIBLE);
         line2.setVisibility(isSingle ? View.GONE : View.VISIBLE);
         return root;

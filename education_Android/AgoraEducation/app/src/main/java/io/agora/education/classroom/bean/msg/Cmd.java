@@ -11,7 +11,9 @@ public enum Cmd {
     REJECT(107),
     CANCEL(108),
     MUTE_CHAT(109),
-    UNMUTE_CAHT(110);
+    UNMUTE_CAHT(110),
+    MUTE_BOARD(200),
+    UNMUTE_BOARD(201);
 
     private int code;
 
@@ -20,9 +22,11 @@ public enum Cmd {
     }
 
     public static Cmd get(int code) {
-        if (code < MUTE_AUDIO.code || code > UNMUTE_CAHT.code)
-            return null;
-        return Cmd.values()[code - MUTE_AUDIO.code];
+        for (Cmd cmd : Cmd.values()) {
+            if (cmd.code == code)
+                return cmd;
+        }
+        return null;
     }
 
     public int getCode() {
