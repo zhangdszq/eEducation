@@ -84,6 +84,10 @@
     [self.player stop];
 }
 
+- (void)disableCameraTransform:(BOOL)disableCameraTransform {
+    [self.room disableCameraTransform:disableCameraTransform];
+}
+
 - (void)seekToTime:(NSTimeInterval)beginTime {
     [self.player seekToScheduleTime: beginTime];
 }
