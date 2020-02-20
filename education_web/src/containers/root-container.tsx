@@ -6,13 +6,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { resolveMessage, resolvePeerMessage, jsonParse } from '../utils/helper';
 import GlobalStorage from '../utils/custom-storage';
 import { t } from '../i18n';
-import { ErrorState, errorStore } from '../pages/error-page/state';
-
 export type IRootProvider = {
   globalState: GlobalState
   roomState: RoomState
   whiteboardState: WhiteboardState
-  errorState: ErrorState
 }
 
 export interface IObserver<T> {

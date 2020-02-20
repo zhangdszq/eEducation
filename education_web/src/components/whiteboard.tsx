@@ -1,11 +1,12 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import './whiteboard.scss';
 import { Room } from 'white-web-sdk';
 import { whiteboard } from '../stores/whiteboard';
 import { t } from '../i18n';
 import { Progress } from '../components/progress/progress';
+
 interface WhiteBoardProps {
-  room: Room
+  room?: Room | null
   className: string
   loading: boolean
 }
@@ -16,28 +17,30 @@ export default function Whiteboard ({
   loading
 }: WhiteBoardProps) {
 
+  const domRef = useRef(null);
+
   useEffect(() => {
-    if (!room) return;
-    room.bindHtmlElement(document.getElementById('whiteboard') as HTMLDivElement);
-    const $whiteboard = document.getElementById('whiteboard') as HTMLDivElement
+    if (!room || !whiteboard.state.room || !domRef.current) return;
+    room.bindHtmlElement(domRef.current);
     whiteboard.updateRoomState();
-    if ($whiteboard) {
-      window.addEventListener("resize", (evt: any) => {
-        if (!whiteboard.state.loading) {
-          room.moveCamera({centerX: 0, centerY: 0});
-          room.refreshViewSize();           
-        }
-      });
-      return () => {
-        window.removeEventListener("resize", (evt: any) => {});
+    window.addEventListener("resize", (evt: any) => {
+      if (whiteboard.state.room !== null) {
+        whiteboard.state.room.moveCamera({centerX: 0, centerY: 0});
+        whiteboard.state.room.refreshViewSize();           
       }
+    });
+    return () => {
+      if (whiteboard.state.room) {
+        whiteboard.state.room.bindHtmlElement(null);
+      }
+      window.removeEventListener("resize", (evt: any) => {});
     }
-  }, [room])
+  }, [room, domRef]);
 
   return (
     <div className="whiteboard">
-      { loading ? <Progress title={t("whiteboard.loading")}></Progress> : null}
-      <div id="whiteboard" className={`whiteboard-canvas ${className}`}></div>
+      { loading || !room ? <Progress title={t("whiteboard.loading")}></Progress> : null}
+      <div ref={domRef} id="whiteboard" className={`whiteboard-canvas ${className}`}></div>
     </div>
   )
 }
