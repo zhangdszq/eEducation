@@ -303,12 +303,19 @@ class Whiteboard extends EventEmitter {
     plugins.setPluginContext("video", {identity});
     plugins.setPluginContext("audio", {identity});
 
+    const disableDeviceInputs: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
+    const disableOperations: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
+    const isWritable: boolean = location!.match(/big-class/) && identity !== 'host' ? false : true;
+
+    console.log(`[White] isWritable, ${isWritable}, disableDeviceInputs, ${disableDeviceInputs}, disableOperations, ${disableOperations}, location: ${location}`);
+
     const room = await this.client.joinRoom({
       uuid,
       roomToken,
       disableBezier: true,
-      disableDeviceInputs: location!.match(/big-class/) && identity !== 'host' ? true : false,
-      disableOperations: location!.match(/big-class/) && identity !== 'host' ? true : false,
+      disableDeviceInputs,
+      disableOperations,
+      isWritable,
     }, {
       onPhaseChanged: (phase: RoomPhase) => {
         if (phase === RoomPhase.Connected) {

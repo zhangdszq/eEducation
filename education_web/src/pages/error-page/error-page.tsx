@@ -22,7 +22,7 @@ const ErrorPage: React.FC<ErrorState> = ({
           <h1 className={classes.title}>{reason}</h1>
           {/* <h2 className={classes.subTitle}>Page not found :(</h2> */}
           <h4 className={classes.description}>
-            {JSON.stringify(errors)}
+            {/* {show error} */}
           </h4>
         </GridItem>
       </GridContainer>

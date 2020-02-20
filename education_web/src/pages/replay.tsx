@@ -196,7 +196,7 @@ const ReplayContainer: React.FC<{}> = () => {
     errorStore.state = {
       reason: t('error.components.paramsEmpty', {reason: 'uuid, rid, startTime, endTime, mediaUrl'})
     }
-    return <Redirect to="/error"></Redirect>
+    return <Redirect to="/404"></Redirect>
   }
 
   const value = state;
