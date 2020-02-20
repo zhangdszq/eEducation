@@ -2,7 +2,11 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
 
 const en = {
+  'return': {
+    'home': 'Back To Home',
+  },
   'error': {
+    'not_found': 'Page Not Found',
     'components': {
       'paramsEmpty': 'params：{reason} can`t be empty',
     }
@@ -25,7 +29,7 @@ const en = {
     'start_recording': 'Start cloud recording success',
     'stop_recording': 'Stop cloud recording success',
     'recording_too_short': 'Recording too short, at least 15 seconds',
-    'rtm_login_failed': 'login failure, please checkout ur network',
+    'rtm_login_failed': 'login failure, please check your network',
     'rtm_login_failed_reason': 'login failure, reason: {reason}',
     'replay_failed': 'Replay Failed please refresh browser',
     'teacher_exists': 'Teacher already exists, Please waiting for 30s or reopen new class',

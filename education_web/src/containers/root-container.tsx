@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { GlobalState, globalStore} from '../stores/global';
 import { RoomState, roomStore} from '../stores/room';
+import {ErrorState, errorStore} from '../pages/error-page/state';
 import { WhiteboardState, whiteboard } from '../stores/whiteboard';
 import { useHistory, useLocation } from 'react-router-dom';
 import { resolveMessage, resolvePeerMessage, jsonParse } from '../utils/helper';
@@ -10,6 +11,7 @@ export type IRootProvider = {
   globalState: GlobalState
   roomState: RoomState
   whiteboardState: WhiteboardState
+  errorState: ErrorState
 }
 
 export interface IObserver<T> {

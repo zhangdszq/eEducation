@@ -2,7 +2,11 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
 
 const zhCN: any = {
+  'return': {
+    'home': '返回主页',
+  },
   'error': {
+    'not_found': '页面找不到',
     'components': {
       'paramsEmpty': '参数：{reason}不能为空',
     }
