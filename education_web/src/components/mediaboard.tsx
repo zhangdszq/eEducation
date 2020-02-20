@@ -196,8 +196,6 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
     return whiteboardState.scenes.get(whiteboardState.currentScenePath);
   }, [whiteboardState.scenes, whiteboardState.currentScenePath]);
 
-  const showTools = !(location.pathname.match(/big-class/) && roomStore.state.me.role !== 'teacher');
-
   const totalPage = useMemo(() => {
     if (!current) return 0;
     return current.totalPage;
@@ -209,7 +207,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   }, [current]);
 
   const addNewPage: any = (evt: any) => {
-    if (!current) return;
+    if (!current || !room) return;
     // const newIndex = netlessClient.state.sceneState.scenes.length;
     const newIndex = room.state.sceneState.index + 1;
     const scenePath = room.state.sceneState.scenePath;
@@ -220,7 +218,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   }
 
   const changePage = (idx: number, force?: boolean) => {
-    if (ref.current || !current) return;
+    if (ref.current || !current || !room) return;
     const _idx = idx -1;
     if (_idx < 0 || _idx >= current.totalPage) return;
     if (force) {
@@ -551,6 +549,19 @@ const items = [
       b: color[2],
     }
   }
+
+  useEffect(() => {
+    if (!room) return;
+    if (drawable === 'panel') {
+      room.disableDeviceInputs = true;
+      room.disableCameraTransform = true;
+      return;
+    }
+    room.disableDeviceInputs = false;
+    room.disableCameraTransform = false;
+  }, [drawable, room]);
+
+  const showTools = drawable === 'drawable';
   
   return (
     <div className={`media-board ${drawable}`}>

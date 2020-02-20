@@ -301,8 +301,8 @@
 }
 
 .media-board.panel {
-  // pointer-events: none;
-  // cursor: pointer;
+  pointer-events: none;
+  cursor: pointer;
 }
 
 .media-board {
@@ -686,7 +686,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-disconnect@2x.png');
+      background-image: url('./assets/icon-connect@2x.png');
     }
   }
 }
@@ -710,7 +710,7 @@
       background-repeat: no-repeat;
       background-size: contain;
       content: ' ';
-      background-image: url('./assets/icon-connect@2x.png');
+      background-image: url('./assets/icon-disconnect@2x.png');
     }
   }
 }
