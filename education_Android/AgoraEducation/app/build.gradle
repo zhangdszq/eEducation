@@ -30,6 +30,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
+            applicationIdSuffix ".debug"
             buildConfigField 'String', 'API_BASE_URL', '"http://115.231.168.26:8080/"'
             buildConfigField 'String', 'POLICY_URL', '"https://www.agora.io/privacy-policy"'
         }
