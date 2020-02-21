@@ -305,9 +305,9 @@ class Whiteboard extends EventEmitter {
 
     const disableDeviceInputs: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
     const disableOperations: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
-    const isWritable: boolean = location!.match(/big-class/) && identity !== 'host' ? false : true;
+    // const isWritable: boolean = location!.match(/big-class/) && identity !== 'host' ? false : true;
 
-    console.log(`[White] isWritable, ${isWritable}, disableDeviceInputs, ${disableDeviceInputs}, disableOperations, ${disableOperations}, location: ${location}`);
+    console.log(`[White] disableDeviceInputs, ${disableDeviceInputs}, disableOperations, ${disableOperations}, location: ${location}`);
 
     const room = await this.client.joinRoom({
       uuid,
@@ -315,7 +315,7 @@ class Whiteboard extends EventEmitter {
       disableBezier: true,
       disableDeviceInputs,
       disableOperations,
-      isWritable,
+      // isWritable,
     }, {
       onPhaseChanged: (phase: RoomPhase) => {
         if (phase === RoomPhase.Connected) {
