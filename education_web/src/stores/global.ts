@@ -1,4 +1,11 @@
 import {Subject} from 'rxjs';
+import GlobalStorage from '../utils/custom-storage';
+
+export const roomTypes = [
+  {value: 0, text: 'home.1v1', path: 'one-to-one'},
+  {value: 1, text: 'home.mini_class', path: 'small-class'},
+  {value: 2, text: 'home.large_class', path: 'big-class'},
+]
 
 export type GlobalState = {
   loading: boolean
@@ -23,7 +30,10 @@ export type GlobalState = {
   nativeWindowInfo: {
     visible: boolean
     items: any[]
-  }
+  },
+  active: string,
+  language: string,
+  newMessageCount: number,
 }
 
 export class Root {
@@ -52,7 +62,11 @@ export class Root {
     nativeWindowInfo: {
       visible: false,
       items: []
-    }
+    },
+    active: 'chatroom',
+    language: navigator.language,
+    newMessageCount: 0,
+    ...GlobalStorage.getLanguage(),
   }
 
   constructor() {
@@ -198,6 +212,43 @@ export class Root {
     }
     this.commit(this.state);
   }
+
+  setLanguage(language: string) {
+    this.state = {
+      ...this.state,
+      language,
+    }
+    this.commit(this.state);
+    GlobalStorage.save('language', this.state.language);
+    window.location.reload();
+  }
+
+  setActive(active: string) {
+    if (active !== 'chatroom') {
+      this.state = {
+        ...this.state,
+        active,
+      }
+    } else {
+      this.state = {
+        ...this.state,
+        active,
+        newMessageCount: 0,
+      }
+    }
+    this.commit(this.state);
+  }
+
+  setMessageCount(len: number) {
+    this.state = {
+      ...this.state,
+      newMessageCount: len
+    }
+    this.commit(this.state);
+  }
 }
 
 export const globalStore = new Root();
+
+// @ts-ignore
+window.globalStore = globalStore;

@@ -5,5 +5,7 @@ yarn.lock
 release/
 *.local
 build
+.DS_Store
+*.log
 src/assets/.DS_Store
 !src/assets/
