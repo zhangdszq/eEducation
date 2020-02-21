@@ -55,7 +55,7 @@
 
     NSMutableAttributedString *contentString;
     if(messageModel.roomid != nil){
-        contentString = [[NSMutableAttributedString alloc] initWithString:@"replay recording" attributes:@{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)}];
+        contentString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"ReplayRecordingText", nil) attributes:@{NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)}];
     } else {
         contentString = [[NSMutableAttributedString alloc] initWithString:messageModel.content];
     }

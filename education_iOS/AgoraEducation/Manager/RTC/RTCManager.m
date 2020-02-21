@@ -109,4 +109,11 @@
     }
 }
 
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {
+    
+    if([self.rtcManagerDelegate respondsToSelector:@selector(rtcEngine:networkQuality:txQuality:rxQuality:)]) {
+        [self.rtcManagerDelegate rtcEngine:engine networkQuality:uid txQuality:txQuality rxQuality:rxQuality];
+    }
+}
+
 @end
