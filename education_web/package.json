@@ -1,8 +1,8 @@
 {
   "name": "agora-edu-web",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
-  "homepage": "/education_web",
+  "homepage": ".",
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
@@ -81,7 +81,7 @@
     "@netless/react-seek-slider": "^1.0.4",
     "agora-electron-sdk": "2.9.1-beta.4",
     "agora-rtc-sdk": "3.0.0",
-    "agora-rtm-sdk": "^1.2.1",
+    "agora-rtm-sdk": "1.2.2",
     "ali-oss": "^6.3.1",
     "concurrently": "^5.0.0",
     "cross-env": "^6.0.3",
@@ -99,7 +99,9 @@
     "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "uuid": "^3.3.3",
-    "white-web-sdk": "2.5.10"
+    "white-web-sdk": "2.6.0",
+    "@netless/white-audio-plugin": "^1.1.10",
+    "@netless/white-video-plugin": "^1.1.17"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
@@ -133,8 +135,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
-    "@netless/white-audio-plugin": "^1.1.10",
-    "@netless/white-video-plugin": "^1.1.17",
     "@types/ali-oss": "^6.0.4",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.145",

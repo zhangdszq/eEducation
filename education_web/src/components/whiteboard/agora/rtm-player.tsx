@@ -126,4 +126,6 @@ const RtmPlayer = ({currentSeekTime, senderId, ...props}: RtmReplayProps) => {
   )
 }
 
+// Feat: RTM replay 
+// 功能: RTM 回放web集成
 export const RTMReplayer = React.memo(RtmPlayer);
