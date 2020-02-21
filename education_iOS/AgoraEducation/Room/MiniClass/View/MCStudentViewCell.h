@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *userId;
 @property (nonatomic, copy) StudentModel *studentModel;
 @property (weak, nonatomic) IBOutlet UIButton *muteAudioButton;
-
 @property (weak, nonatomic) IBOutlet UIButton *muteVideoButton;
+@property (weak, nonatomic) IBOutlet UIButton *muteWhiteButton;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -80,8 +80,10 @@
 - (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)studentArray {
     
     if(studentArray.count == 0 || self.studentArray.count != studentArray.count) {
-        self.studentArray = [NSArray arrayWithArray:studentArray];
-        [self.videoListView reloadData];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.studentArray = [NSArray arrayWithArray:studentArray];
+            [self.videoListView reloadData];
+        });
     } else {
 
         NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];

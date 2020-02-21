@@ -2,7 +2,7 @@
 *Other Language: [简体中文](README.zh.md)*
 
 ### Preview
-  [web demo](https://webdemo.agora.io/education_web/)
+  [web demo](https://solutions.agora.io/education/web/)
 
 ### Description
   Agora Education solution is based on Agora RTM/Media sdk & netless whiteboard sdk.  

@@ -1,0 +1,40 @@
+/* 
+  Localizable.strings
+  AgoraEducation
+
+  Created by SRS on 2020/2/17.
+  Copyright © 2020 yangmoumou. All rights reserved.
+*/
+
+LoadingText = "loading...";
+ColorPickerText = " Color Picker";
+OKText = "OK";
+CancelText = "Cancel";
+EyeProtectionText = "Eye protection";
+SettingText = "Setting";
+ReplayRecordingText = "replay recording";
+
+ProhibitedPostText = " Prohibited post";
+InputMessageText = " Input message";
+QuitClassroomText = "Quit classroom?";
+
+AcceptRequestText = "Teacher accept your interactive request!";
+CancelRequestText = "Teacher cancel your interactive!";
+
+MaterialsAreaText = "Materials area";
+ChatroomText = "Chatroom";
+StudentText = "Student";
+
+OneToOneText = "One-to-One";
+SmallClassText = "Small Class";
+LargeClassText = "Large Class";
+
+UserNameVerifyText = "User name must be within 11 digits or English characters";
+RoomTypeVerifyText = "Please select a room type";
+RoomCountVerifyText = "Room is full, please change another room";
+RequestFailedText = "request failed";
+
+MuteBoardText = "Teacher has revoked your whiteboard permissions";
+UnMuteBoardText = "Teacher has authorized your whiteboard permissions";
+
+UpdateText = "The version has been updated. Please download the new version";

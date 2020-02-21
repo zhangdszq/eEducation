@@ -23,10 +23,12 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.chatTextFiled.frame = self.bounds;
-    self.contentTextFiled.layer.cornerRadius = 17;
-    self.contentTextFiled.layer.masksToBounds = YES;
-    self.contentTextFiled.layer.borderWidth = 1.f;
-    self.contentTextFiled.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
+
+    self.chatBgView.layer.cornerRadius = 17;
+    self.chatBgView.layer.masksToBounds = YES;
+    self.chatBgView.layer.borderWidth = 1.f;
+    self.chatBgView.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
+    
     self.layer.borderWidth = 1.f;
     self.layer.borderColor = [UIColor colorWithHexString:@"DBE2E5"].CGColor;
 }
