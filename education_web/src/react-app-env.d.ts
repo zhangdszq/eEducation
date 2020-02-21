@@ -20,3 +20,5 @@ declare interface Device {
   label: string
   kind: string
 }
+
+declare module '*.scss';

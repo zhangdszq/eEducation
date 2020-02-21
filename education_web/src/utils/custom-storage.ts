@@ -1,3 +1,5 @@
+import { isEmpty } from "lodash";
+
 export class CustomStorage {
 
   private storage: Storage;
@@ -22,7 +24,40 @@ export class CustomStorage {
   clear(key: string) {
     this.storage.removeItem(key);
   }
+
+  getLanguage() {
+    const language = this.read('language') ? this.read('language') : navigator.language;
+    return {language};
+  }
+
+  getRtmMessage (): {count: any, messages: any[]} {
+    const channelMessages = GlobalStorage.read('channelMessages');
+    if (isEmpty(channelMessages)) return {
+      count: 0,
+      messages: []
+    }
+    const messages = channelMessages.filter((it: any) => it.message_type === "group_message");
+    const chatMessages = messages.reduce((collect: any[], value: any) => {
+      const payload = value.payload;
+      const json = JSON.parse(payload);
+      if (json.content) {
+        return collect.concat({
+          account: json.account,
+          content: json.content,
+          ms: value.ms,
+          src: value.src
+        });
+      }
+      return collect;
+    }, []);
+    return {
+      messages: chatMessages,
+      count: chatMessages.length
+    }
+  }
 }
 
 const GlobalStorage = new CustomStorage();
+// @ts-ignore
+window.GlobalStorage = GlobalStorage;
 export default GlobalStorage;

@@ -13,6 +13,7 @@ import { isElectron, platform } from '../utils/platform';
 import { useRoomState } from '../containers/root-container';
 import { roomStore } from '../stores/room';
 import { globalStore } from '../stores/global';
+import { t } from '../i18n';
 
 interface NavProps {
   delay: string
@@ -25,6 +26,16 @@ interface NavProps {
   classState: boolean
   onCardConfirm: (type: string) => void
   handleClick: (type: string) => void
+}
+
+const networkQualityIcon: {[key: string]: string} = {
+  'excellent': 'network-good',
+  'good': 'network-good',
+  'poor': 'network-normal',
+  'bad': 'network-normal',
+  'very bad': 'network-bad',
+  'down': 'network-bad',
+  'unknown': 'network-bad',
 }
 
 export function Nav ({
@@ -52,15 +63,19 @@ export function Nav ({
       <div className="class-title">
         <span className="room-name">{roomName}</span>
         {role === 'teacher' ? 
-          <Button className={`nav-button ${classState ? "stop" : "start"}`} name={classState ? "Class end" : "Class start"} onClick={(evt: any) => {
+          <Button className={`nav-button ${classState ? "stop" : "start"}`} name={classState ? t('nav.class_end') : t('nav.class_start')} onClick={(evt: any) => {
             handleClick("classState")
           }} /> : null}
       </div>
       <div className="network-state">
-        {platform === 'web' ? <span className="net-field">Delay: <span className="net-field-value">{delay}</span></span> : null}
+        {platform === 'web' ? <span className="net-field">{t('nav.delay')}<span className="net-field-value">{delay}</span></span> : null}
         {/* <span className="net-field">Packet Loss Rate: <span className="net-field-value">{lossPacket}</span></span> */}
-        <span className="net-field">Network: <span className="net-field-value">{network}</span></span>
-        {platform === 'electron' ? <span className="net-field">CPU: <span className="net-field-value">{cpu}</span></span> : null}
+        <span className="net-field net-field-container">
+          {t('nav.network')}
+          <span className={`net-field-value ${networkQualityIcon[network]}`} style={{marginLeft: '.2rem'}}>
+          </span>
+        </span>
+        {platform === 'electron' ? <span className="net-field">{t('nav.network')}<span className="net-field-value">{cpu}</span></span> : null}
       </div>
       <div className="menu">
         <div className="timer">
@@ -69,9 +84,16 @@ export function Nav ({
         </div>
         <span className="menu-split" />
         <div className={platform === 'web' ? "btn-group" : 'electron-btn-group' }>
-          {platform  === 'web' ? <Icon className="icon-setting" onClick={(evt: any) => {
-            handleClick("setting");
-          }}/> : null}
+          {platform  === 'web' ?
+            <>
+            <Icon className="icon-setting" onClick={(evt: any) => {
+              handleClick("setting");
+            }}/>
+            <Icon className="i18n-lang" onClick={(evt: any) => {
+              handleClick("i18n");
+            }}></Icon>
+            </> : null
+          }
           <Icon className="icon-exit" onClick={(evt: any) => {
             handleClick("exit");
           }} />
@@ -192,8 +214,8 @@ export default function NavContainer() {
   const updateClassState = () => {
     if (!lock.current) {
       lock.current = true;
-      roomStore.updateAttrsBy(me.uid, {
-        class_state: +!Boolean(roomStore.state.course.courseState)
+      roomStore.updateMe({
+        courseState: +!Boolean(roomStore.state.course.courseState)
       }).then(() => {
         console.log("update success");
       }).catch(console.warn)
@@ -209,10 +231,12 @@ export default function NavContainer() {
     } else if (type === 'exit') {
       globalStore.showDialog({
         type: 'exitRoom',
-        message: 'Are U sure to exit the classroom?'
+        message: t('toast.quit_room'),
       });
     } else if (type === 'classState') {
       updateClassState();
+    } else if (type === 'i18n-lang') {
+      // globalStore.setLanguage()
     }
   }
 

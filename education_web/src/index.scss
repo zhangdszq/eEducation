@@ -71,12 +71,17 @@ body {
   }
 }
 
+.short-title.en > span {
+  color: white !important;
+}
+
 .short-title {
   display: flex;
   flex-direction: column;
   top: 38px;
   left: 36px;
   position: relative;
+  z-index: 2;
   .title {
     font-size: 24px;
     line-height: 29px;
@@ -87,6 +92,18 @@ body {
     line-height: 16px;
     color: #666;
   }
+  .build-version {
+    font-size: 9px;
+    line-height: 16px;
+    color: #666;
+  }
+}
+
+.setting-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-direction: column;
 }
 
 .cover {
@@ -95,19 +112,31 @@ body {
   background: #F5F7F8;
   border-radius:8px 0px 0px 8px;
   position: relative;
-  
-  .cover-placeholder {
+
+  .build-version {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .cover-placeholder-web {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  .cover-en {
     display: block;
     background-repeat: no-repeat;
     height: 500px;
     width: 350px;
     background-size: contain;
     position: absolute;
-    background-image: url("./assets/pic-index@2x.png");
+    background-image: url("./assets/cover-us.png");
   }
-  .cover-placeholder-web {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
+
+  .cover-cn {
     display: block;
     background-repeat: no-repeat;
     height: 500px;

@@ -510,6 +510,16 @@
     content: ' ';
     background-image: url('./assets/icon-hand@2x.png');
   }
+  .hands_up_end::after {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/icon-hand-disable.png');
+  }
 }
 
 .icon-expand {
@@ -665,30 +675,6 @@
     background-repeat: no-repeat;
     background-size: contain;
     content: ' ';
-    background-image: url('./assets/icon-disconnect@2x.png');
-  }
-
-  &:hover {
-    &::after {
-      width: 100%;
-      height: 100%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      content: ' ';
-      background-image: url('./assets/icon-disconnect@2x.png');
-    }
-  }
-}
-
-.icon-connect-off {
-  &::after {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    content: ' ';
     background-image: url('./assets/icon-connect@2x.png');
   }
 
@@ -701,6 +687,30 @@
       background-size: contain;
       content: ' ';
       background-image: url('./assets/icon-connect@2x.png');
+    }
+  }
+}
+
+.icon-connect-off {
+  &::after {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: ' ';
+    background-image: url('./assets/icon-disconnect@2x.png');
+  }
+
+  &:hover {
+    &::after {
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      content: ' ';
+      background-image: url('./assets/icon-disconnect@2x.png');
     }
   }
 }
@@ -885,16 +895,6 @@
       background-size: contain;
       content: ' ';
       background-image: url('./assets/icon-share-white.png');
-    }
-    .hands_up_end::after {
-      width: 100%;
-      height: 100%;
-      display: block;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      content: ' ';
-      background-image: url('./assets/icon-hand-disable.png');
     }
     .control-text {
       margin-right: 4px;
