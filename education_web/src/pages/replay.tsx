@@ -447,7 +447,7 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
           <video id="white-sdk-video-js" className="video-js video-layout" style={{width: "100%", height: "100%", objectFit: "cover"}}></video>
         </div>
         <div className="chat-holder chat-board chat-messages-container">
-          <RTMReplayer
+          {/* <RTMReplayer
             senderId={senderId}
             rid={rid}
             startTime={startTime}
@@ -456,10 +456,9 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
             onPhaseChanged={(e: RtmPlayerState) => {
               if (e !== RtmPlayerState.load) {
                 player?.stop();
-                // player?.pause();
               }
             }}
-          ></RTMReplayer>
+          ></RTMReplayer> */}
         </div>
       </div>
     </div>
