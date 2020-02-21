@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define NOTICE_KEY_ON_WILL_TERMINATE @"NOTICE_KEY_ON_WILL_TERMINATE"
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;

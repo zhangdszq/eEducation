@@ -18,8 +18,9 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        self.items = [NSArray arrayWithObjects:@"Materials area",@"Chatroom", nil];
+        self.items = [NSArray arrayWithObjects:NSLocalizedString(@"MaterialsAreaText", nil), NSLocalizedString(@"ChatroomText", nil), nil];
     }
+    
     return self;
 }
 - (void)awakeFromNib {

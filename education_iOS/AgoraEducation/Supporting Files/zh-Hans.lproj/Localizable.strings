@@ -1,0 +1,40 @@
+/* 
+  Localizable.strings
+  AgoraEducation
+
+  Created by SRS on 2020/2/17.
+  Copyright © 2020 yangmoumou. All rights reserved.
+*/
+
+LoadingText = "加载中...";
+ColorPickerText = " 选择颜色";
+OKText = "确定";
+CancelText = "取消";
+EyeProtectionText = "护眼模式";
+SettingText = "设置";
+ReplayRecordingText = "回放";
+
+ProhibitedPostText = " 禁言中";
+InputMessageText = " 说点什么";
+
+QuitClassroomText = "退出教室？";
+AcceptRequestText = "老师接受了你的连麦申请!";
+CancelRequestText = "老师取消你的连麦!";
+
+MaterialsAreaText = "教材区";
+ChatroomText = "聊天室";
+StudentText = "学生";
+
+OneToOneText = "1V1";
+SmallClassText = "小班课";
+LargeClassText = "大班课";
+
+UserNameVerifyText = "用户名为11位及以内的数字或者英文字符";
+RoomTypeVerifyText = "请选择房间类型";
+RoomCountVerifyText = "人数已满,请换个房间";
+RequestFailedText = "请求失败";
+
+MuteBoardText = "老师已回收了你的白板权限";
+UnMuteBoardText = "老师已授权了你的白板权限";
+
+UpdateText = "版本已经更新了，请下载最新版本";

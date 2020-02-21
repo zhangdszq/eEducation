@@ -18,16 +18,15 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        self.items = [NSArray arrayWithObjects:@"Chatroom",@"Student", nil];
+        self.items = [NSArray arrayWithObjects:NSLocalizedString(@"ChatroomText", nil), NSLocalizedString(@"StudentText", nil), nil];
     }
     return self;
 }
 - (void)awakeFromNib {
     [super awakeFromNib];
-
-    NSLog(@"ddddd---- %f",self.bounds.size.height);
+    
     UIView *bottomLineView = [[UIView alloc] init];
-    bottomLineView.backgroundColor = [UIColor colorWithHexString:@"0xDBE2E5"];
+    bottomLineView.backgroundColor = [UIColor colorWithHex:0xDBE2E5];
     [self addSubview:bottomLineView];
     bottomLineView.frame = CGRectMake(0, 39, self.bounds.size.width, 1);
 
@@ -40,7 +39,7 @@
         UIButton *itemButton = [[UIButton alloc] init];
         [itemButton setTitle:self.items[i] forState:(UIControlStateNormal)];
         [itemButton setFrame:CGRectMake(i * self.bounds.size.width / 2, 0, self.bounds.size.width/2, self.frame.size.height)];
-        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake((i * self.bounds.size.width / 2) + 14, 39, self.bounds.size.width/2 - 28, 2.f)];
+        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake((i * self.bounds.size.width / 2) + 14, 38, self.bounds.size.width/2 - 28, 3.f)];
         lineView.backgroundColor = [UIColor colorWithHexString:@"44A2FC"];
         [self addSubview:lineView];
         lineView.tag = i + 100;

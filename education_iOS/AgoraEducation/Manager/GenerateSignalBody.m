@@ -55,7 +55,8 @@
                            @"account": model.account,
                            @"video": @(model.video),
                            @"audio": @(model.audio),
-                           @"chat": @(model.chat)};
+                           @"chat": @(model.chat),
+                           @"grant_board": @(model.grant_board)};
     NSString *attrString = [JsonParseUtil dictionaryToJson:dict];
     return attrString;
 }

@@ -34,7 +34,7 @@
     contentLabel.textAlignment = NSTextAlignmentLeft;
     [self addSubview:contentLabel];
     self.contentLabel = contentLabel;
-    contentLabel.text = @"Eye protection";
+    contentLabel.text = NSLocalizedString(@"EyeProtectionText", nil);
 
     UISwitch *switchButton = [[UISwitch alloc] init];
     switchButton.frame = CGRectMake(kScreenWidth - 65, 13, 50, 32);
