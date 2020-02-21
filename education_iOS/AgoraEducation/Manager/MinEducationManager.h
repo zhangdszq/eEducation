@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWhite;
 - (void)pauseWhite;
 - (void)stopWhite;
+- (void)disableCameraTransform:(BOOL)disableCameraTransform;
 - (NSTimeInterval)whiteTotleTimeDuration;
 - (void)currentWhiteScene:(void (^)(NSInteger sceneCount, NSInteger sceneIndex))completionBlock;
 - (void)releaseWhiteResources;

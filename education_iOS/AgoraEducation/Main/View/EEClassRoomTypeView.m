@@ -26,7 +26,8 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.roomNameArray = [NSMutableArray arrayWithObjects:@"One-to-One",@"Small Class",@"Large Class", nil];
+    self.roomNameArray = [NSMutableArray arrayWithObjects:NSLocalizedString(@"OneToOneText", nil), NSLocalizedString(@"SmallClassText", nil), NSLocalizedString(@"LargeClassText", nil), nil];
+
     [self addSubview:self.typeTableView];
     self.typeTableView.layer.borderWidth = 1.f;
     self.typeTableView.layer.borderColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0].CGColor;

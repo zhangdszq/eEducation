@@ -17,7 +17,7 @@ jobs:
     steps:
       - script: cd ${{ parameters.workingDirectory }} && ls && python ci.env.py
         env:
-          AGORA_APP_ID: $(agora.appID)
+          AGORA_APP_ID: $(agora.premiumBroadAppId)
           WHITE_BOARD_TOKEN: $(agora.whiteBoardToken)
 
       - task: InstallAppleCertificate@2
@@ -56,7 +56,7 @@ jobs:
     steps:
       - script: cd ${{ parameters.workingDirectory }} && ls && python ci.env.py
         env:
-          AGORA_APP_ID: $(agora.appID)
+          AGORA_APP_ID: $(agora.premiumBroadAppId)
           WHITE_BOARD_TOKEN: $(agora.whiteBoardToken)
 
       - task: InstallAppleCertificate@2

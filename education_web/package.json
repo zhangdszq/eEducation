@@ -6,8 +6,7 @@
   "main": "./src/index.tsx",
   "agora_electron": {
     "electron_version": "5.0.8",
-    "prebuilt": true,
-    "platform": "darwin"
+    "prebuilt": true
   },
   "dmg": {
     "compression": "store",
