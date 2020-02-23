@@ -3,54 +3,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".room.fragment.WhiteboardFragment">
+    android:layout_height="match_parent">
 
     <com.herewhite.sdk.WhiteboardView
         android:id="@+id/white_board_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
-        layout="@layout/layout_board_control"
+    <io.agora.education.classroom.widget.whiteboard.ApplianceView
+        android:id="@+id/appliance_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
+        android:background="@drawable/bg_appliance_view"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/layout_hand_up"
-        android:layout_width="@dimen/dp_44"
+    <io.agora.education.classroom.widget.whiteboard.ColorPicker
+        android:id="@+id/color_select_view"
+        android:layout_width="@dimen/dp_230"
+        android:layout_height="@dimen/dp_129"
+        android:layout_marginStart="@dimen/dp_6"
+        android:layout_marginEnd="@dimen/dp_6"
+        android:layout_marginBottom="@dimen/dp_6"
+        android:elevation="@dimen/dp_6"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/dp_6"
+        app:layout_constraintBottom_toBottomOf="@id/appliance_view"
+        app:layout_constraintStart_toEndOf="@id/appliance_view"
+        tools:targetApi="lollipop" />
+
+    <io.agora.education.classroom.widget.whiteboard.PageControlView
+        android:id="@+id/page_control_view"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_44"
         android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_10"
-        android:padding="@dimen/dp_4"
-        android:visibility="gone"
+        android:elevation="@dimen/dp_3"
+        android:paddingStart="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_4"
+        app:cardCornerRadius="@dimen/dp_6"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_slt_hand_up" />
-    </androidx.cardview.widget.CardView>
-
-    <include
-        layout="@layout/layout_scene_control"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_10"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/layout_hand_up" />
-
-    <io.agora.rtc.education.room.replay.ReplayControl
-        android:id="@+id/layout_replay_control"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:targetApi="lollipop" />
 
     <ProgressBar
         android:id="@+id/pb_loading"
