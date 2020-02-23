@@ -181,6 +181,9 @@
         background-repeat: no-repeat;
         content: ' ';
         background-image: url("../assets/pic-message@2x.png");
+        display: block;
+        position: absolute;
+        top: 25%;
       }
     }
   }

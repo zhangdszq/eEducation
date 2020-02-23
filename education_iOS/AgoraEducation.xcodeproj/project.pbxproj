@@ -8,11 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1A05ADA3237E4B3B0041F27B /* MCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A05ADA2237E4B3B0041F27B /* MCViewController.m */; };
-		1A05ADA7237E55630041F27B /* Room.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A05ADA6237E55630041F27B /* Room.storyboard */; };
 		1A399E5423697E9000F5A40F /* OneToOneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A399E5323697E9000F5A40F /* OneToOneViewController.m */; };
 		1A44BE7522BF863000766274 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A44BE5722BF863000766274 /* Assets.xcassets */; };
-		1A44BE7622BF863000766274 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A44BE5822BF863000766274 /* LaunchScreen.storyboard */; };
-		1A44BE7722BF863000766274 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A44BE5A22BF863000766274 /* Main.storyboard */; };
 		1A44BE7A22BF863000766274 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE5E22BF863000766274 /* main.m */; };
 		1A44BE7B22BF863000766274 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A44BE6022BF863000766274 /* AppDelegate.m */; };
 		1A70AFB22359F17500942742 /* SettingViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A70AFB12359F17500942742 /* SettingViewCell.m */; };
@@ -20,6 +17,13 @@
 		1AEDE5DD2338C0B40096ADEC /* EyeCareModeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DC2338C0B40096ADEC /* EyeCareModeUtil.m */; };
 		1AEDE5E02338CB9E0096ADEC /* SkinCoverLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */; };
 		1AEDE5E32338CBBF0096ADEC /* SkinCoverWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */; };
+		7813B70223FA5A0300265830 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7813B6F623FA5A0300265830 /* LaunchScreen.storyboard */; };
+		7813B70523FA5A0300265830 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7813B6FD23FA5A0300265830 /* Main.storyboard */; };
+		78515D3923FCD4F20015B5EC /* AppUpdateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78515D3723FCD4F20015B5EC /* AppUpdateManager.m */; };
+		78515D3C23FCD6290015B5EC /* ConfigModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 78515D3B23FCD6290015B5EC /* ConfigModel.m */; };
+		7878B4AF23FA655300AF1B4F /* Room.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7878B4AC23FA655300AF1B4F /* Room.storyboard */; };
+		7878B4C523FA72EE00AF1B4F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7878B4C723FA72EE00AF1B4F /* Localizable.strings */; };
+		7878B4CB23FA735700AF1B4F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7878B4CD23FA735700AF1B4F /* InfoPlist.strings */; };
 		787E7A3823A9FE97005F8F0C /* LoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2723A9FE97005F8F0C /* LoadingView.m */; };
 		787E7A3923A9FE97005F8F0C /* ReplayControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2823A9FE97005F8F0C /* ReplayControlView.m */; };
 		787E7A3A23A9FE97005F8F0C /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 787E7A2923A9FE97005F8F0C /* SliderView.m */; };
@@ -115,14 +119,10 @@
 /* Begin PBXFileReference section */
 		1A05ADA1237E4B3B0041F27B /* MCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCViewController.h; sourceTree = "<group>"; };
 		1A05ADA2237E4B3B0041F27B /* MCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCViewController.m; sourceTree = "<group>"; };
-		1A05ADA6237E55630041F27B /* Room.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Room.storyboard; sourceTree = "<group>"; };
-		1A1749A52365779B00A65B10 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1A399E5223697E9000F5A40F /* OneToOneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneToOneViewController.h; sourceTree = "<group>"; };
 		1A399E5323697E9000F5A40F /* OneToOneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OneToOneViewController.m; sourceTree = "<group>"; };
 		1A44BE3522BF863000766274 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1A44BE5722BF863000766274 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1A44BE5922BF863000766274 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		1A44BE5B22BF863000766274 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1A44BE5E22BF863000766274 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1A44BE6022BF863000766274 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1A44BE7E22BF874A00766274 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -132,7 +132,7 @@
 		1A87571023571CFE009C55A8 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		1A87571123571CFE009C55A8 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		1AD4E993235EFB2700C415BF /* BCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BCViewController.h; sourceTree = "<group>"; };
-		1AE0D0042283C5F20092AC5E /* AgoraEducation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraEducation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraCloudClass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D01C2283C5F40092AC5E /* AgoraEducationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgoraEducationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE0D0A022897E9A0092AC5E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -145,9 +145,27 @@
 		1AEDE5DF2338CB9E0096ADEC /* SkinCoverLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverLayer.m; sourceTree = "<group>"; };
 		1AEDE5E12338CBBF0096ADEC /* SkinCoverWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SkinCoverWindow.h; sourceTree = "<group>"; };
 		1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkinCoverWindow.m; sourceTree = "<group>"; };
+		3327573F8A98D9B63A402151 /* Pods-AgoraEducation.devrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.devrelease.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.devrelease.xcconfig"; sourceTree = "<group>"; };
 		40B28313D80C71B4DA8D643D /* Pods-AgoraEducation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.debug.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraEducation.release.xcconfig"; path = "Target Support Files/Pods-AgoraEducation/Pods-AgoraEducation.release.xcconfig"; sourceTree = "<group>"; };
 		76A4F1D25B13050F999DB322 /* Pods_AgoraEducation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AgoraEducation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7813B6F723FA5A0300265830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7813B6FE23FA5A0300265830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7813B72723FA5BDA00265830 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		7813B72823FA5BDA00265830 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		7813B72E23FA5C1200265830 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		7813B73023FA5C1600265830 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		78515D3723FCD4F20015B5EC /* AppUpdateManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppUpdateManager.m; sourceTree = "<group>"; };
+		78515D3823FCD4F20015B5EC /* AppUpdateManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppUpdateManager.h; sourceTree = "<group>"; };
+		78515D3A23FCD6290015B5EC /* ConfigModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigModel.h; sourceTree = "<group>"; };
+		78515D3B23FCD6290015B5EC /* ConfigModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigModel.m; sourceTree = "<group>"; };
+		7878B4AD23FA655300AF1B4F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Room.storyboard; sourceTree = "<group>"; };
+		7878B4B023FA656000AF1B4F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Room.strings; sourceTree = "<group>"; };
+		7878B4B123FA656300AF1B4F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Room.strings"; sourceTree = "<group>"; };
+		7878B4C623FA72EE00AF1B4F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7878B4C823FA72F200AF1B4F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		7878B4CC23FA735700AF1B4F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7878B4CE23FA735A00AF1B4F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		787E7A2723A9FE97005F8F0C /* LoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadingView.m; sourceTree = "<group>"; };
 		787E7A2823A9FE97005F8F0C /* ReplayControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReplayControlView.m; sourceTree = "<group>"; };
 		787E7A2923A9FE97005F8F0C /* SliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderView.m; sourceTree = "<group>"; };
@@ -374,6 +392,7 @@
 		1A44BE3322BF863000766274 /* AgoraEducation */ = {
 			isa = PBXGroup;
 			children = (
+				7813B6F223FA5A0300265830 /* StoryBoards */,
 				78D730C423B3853200D2146C /* Utils */,
 				787E7A4223A9FEFF005F8F0C /* Manager */,
 				787E7A2523A9FE97005F8F0C /* Replay */,
@@ -381,7 +400,6 @@
 				1AEDE5DA2338C09C0096ADEC /* EyeCare */,
 				1A44BE3622BF863000766274 /* Room */,
 				78D7312E23B38B0A00D2146C /* Main */,
-				1A44BE5A22BF863000766274 /* Main.storyboard */,
 				78D7314223B390DC00D2146C /* KeyCenter.h */,
 				78D7314323B390DC00D2146C /* KeyCenter.m */,
 				1A87571323581AEC009C55A8 /* Supporting Files */,
@@ -396,7 +414,6 @@
 				1A399E502369763900F5A40F /* OneToOne */,
 				1A399E4F236975F900F5A40F /* MiniClass */,
 				1A399E4C236975AD00F5A40F /* BigClass */,
-				1A05ADA6237E55630041F27B /* Room.storyboard */,
 				78D7312B23B3895800D2146C /* VCParamsModel.h */,
 				78D7312C23B3895800D2146C /* VCParamsModel.m */,
 				1A61CB762386303B003D9E81 /* RoomProtocol.h */,
@@ -448,8 +465,9 @@
 			children = (
 				78D7305B23B35ADB00D2146C /* AgoraEducation.pch */,
 				1A44BE5722BF863000766274 /* Assets.xcassets */,
-				1A44BE5822BF863000766274 /* LaunchScreen.storyboard */,
 				1A44BE7E22BF874A00766274 /* Info.plist */,
+				7878B4CD23FA735700AF1B4F /* InfoPlist.strings */,
+				7878B4C723FA72EE00AF1B4F /* Localizable.strings */,
 				1A44BE5E22BF863000766274 /* main.m */,
 				1A44BE3522BF863000766274 /* AppDelegate.h */,
 				1A44BE6022BF863000766274 /* AppDelegate.m */,
@@ -503,7 +521,7 @@
 		1AE0D0052283C5F20092AC5E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1AE0D0042283C5F20092AC5E /* AgoraEducation.app */,
+				1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */,
 				1AE0D01C2283C5F40092AC5E /* AgoraEducationTests.xctest */,
 				1AE0D0272283C5F40092AC5E /* AgoraEducationUITests.xctest */,
 			);
@@ -521,6 +539,51 @@
 				1AEDE5E22338CBBF0096ADEC /* SkinCoverWindow.m */,
 			);
 			path = EyeCare;
+			sourceTree = "<group>";
+		};
+		7813B6F223FA5A0300265830 /* StoryBoards */ = {
+			isa = PBXGroup;
+			children = (
+				7878B4A823FA655300AF1B4F /* Room */,
+				7813B6F323FA5A0300265830 /* LaunchScreen */,
+				7813B6FA23FA5A0300265830 /* Main */,
+			);
+			path = StoryBoards;
+			sourceTree = "<group>";
+		};
+		7813B6F323FA5A0300265830 /* LaunchScreen */ = {
+			isa = PBXGroup;
+			children = (
+				7813B6F623FA5A0300265830 /* LaunchScreen.storyboard */,
+			);
+			path = LaunchScreen;
+			sourceTree = "<group>";
+		};
+		7813B6FA23FA5A0300265830 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				7813B6FD23FA5A0300265830 /* Main.storyboard */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		78515D3623FCD4F20015B5EC /* AppUpdateManager */ = {
+			isa = PBXGroup;
+			children = (
+				78515D3823FCD4F20015B5EC /* AppUpdateManager.h */,
+				78515D3723FCD4F20015B5EC /* AppUpdateManager.m */,
+				78515D3A23FCD6290015B5EC /* ConfigModel.h */,
+				78515D3B23FCD6290015B5EC /* ConfigModel.m */,
+			);
+			path = AppUpdateManager;
+			sourceTree = "<group>";
+		};
+		7878B4A823FA655300AF1B4F /* Room */ = {
+			isa = PBXGroup;
+			children = (
+				7878B4AC23FA655300AF1B4F /* Room.storyboard */,
+			);
+			path = Room;
 			sourceTree = "<group>";
 		};
 		787E7A2523A9FE97005F8F0C /* Replay */ = {
@@ -562,6 +625,7 @@
 		787E7A4223A9FEFF005F8F0C /* Manager */ = {
 			isa = PBXGroup;
 			children = (
+				78515D3623FCD4F20015B5EC /* AppUpdateManager */,
 				78D731A823BB103B00D2146C /* BigEducationManager.h */,
 				78D731A923BB103B00D2146C /* BigEducationManager.m */,
 				78D731B823BB610400D2146C /* MinEducationManager.h */,
@@ -736,6 +800,7 @@
 				40B28313D80C71B4DA8D643D /* Pods-AgoraEducation.debug.xcconfig */,
 				4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */,
 				A5BFF93D50503E0756F47D98 /* Pods-AgoraEducation.qarelease.xcconfig */,
+				3327573F8A98D9B63A402151 /* Pods-AgoraEducation.devrelease.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -771,7 +836,7 @@
 			);
 			name = AgoraEducation;
 			productName = AgoraSmallClass;
-			productReference = 1AE0D0042283C5F20092AC5E /* AgoraEducation.app */;
+			productReference = 1AE0D0042283C5F20092AC5E /* AgoraCloudClass.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1AE0D01B2283C5F40092AC5E /* AgoraEducationTests */ = {
@@ -844,6 +909,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 1AE0CFFB2283C5F20092AC5E;
 			productRefGroup = 1AE0D0052283C5F20092AC5E /* Products */;
@@ -863,23 +929,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				78D730EF23B3889D00D2146C /* EEMessageViewCell.xib in Resources */,
-				1A44BE7722BF863000766274 /* Main.storyboard in Resources */,
 				78D730F123B3889D00D2146C /* EEWhiteboardTool.xib in Resources */,
 				78D7312723B388BE00D2146C /* EETeacherVideoView.xib in Resources */,
+				7813B70523FA5A0300265830 /* Main.storyboard in Resources */,
+				7878B4AF23FA655300AF1B4F /* Room.storyboard in Resources */,
 				787E7A3B23A9FE97005F8F0C /* ReplayControlView.xib in Resources */,
 				78D730F323B3889D00D2146C /* EEChatTextFiled.xib in Resources */,
 				78D730FF23B388A400D2146C /* OTOTeacherView.xib in Resources */,
 				78D730FD23B388A400D2146C /* OTOStudentView.xib in Resources */,
-				1A05ADA7237E55630041F27B /* Room.storyboard in Resources */,
+				7813B70223FA5A0300265830 /* LaunchScreen.storyboard in Resources */,
 				78D7311423B388B100D2146C /* MCStudentViewCell.xib in Resources */,
 				78D730EB23B3889D00D2146C /* EENavigationView.xib in Resources */,
 				787E7A3F23A9FE97005F8F0C /* ReplayViewController.xib in Resources */,
+				7878B4C523FA72EE00AF1B4F /* Localizable.strings in Resources */,
 				78D7313F23B38B5700D2146C /* EEClassRoomTypeView.xib in Resources */,
 				787E7A3C23A9FE97005F8F0C /* LoadingView.xib in Resources */,
 				1A44BE7522BF863000766274 /* Assets.xcassets in Resources */,
 				78D730EA23B3889D00D2146C /* EEColorShowView.xib in Resources */,
 				78D7314823B3964400D2146C /* README.zh.md in Resources */,
-				1A44BE7622BF863000766274 /* LaunchScreen.storyboard in Resources */,
+				7878B4CB23FA735700AF1B4F /* InfoPlist.strings in Resources */,
 				78D7311223B388B100D2146C /* MCTeacherVideoView.xib in Resources */,
 				78D7312423B388BE00D2146C /* BCNavigationView.xib in Resources */,
 				78D7312323B388BE00D2146C /* BCStudentVideoView.xib in Resources */,
@@ -957,6 +1025,7 @@
 				787E7A3823A9FE97005F8F0C /* LoadingView.m in Sources */,
 				78D730FE23B388A400D2146C /* OTOTeacherView.m in Sources */,
 				78D730E923B3889D00D2146C /* EEWhiteboardTool.m in Sources */,
+				78515D3923FCD4F20015B5EC /* AppUpdateManager.m in Sources */,
 				78D730A823B3833500D2146C /* RTCVideoCanvasModel.m in Sources */,
 				78D7312623B388BE00D2146C /* EETeacherVideoView.m in Sources */,
 				78D7310E23B388B100D2146C /* MCStudentVideoListView.m in Sources */,
@@ -997,6 +1066,7 @@
 				78D730D023B3871900D2146C /* JsonParseUtil.m in Sources */,
 				78D730F023B3889D00D2146C /* EEPageControlView.m in Sources */,
 				78D7310F23B388B100D2146C /* MCStudentVideoCell.m in Sources */,
+				78515D3C23FCD6290015B5EC /* ConfigModel.m in Sources */,
 				787E7A3923A9FE97005F8F0C /* ReplayControlView.m in Sources */,
 				78D731C223BCE4EA00D2146C /* BCViewController.m in Sources */,
 				78D7314123B38B5700D2146C /* MainNavigationController.m in Sources */,
@@ -1046,21 +1116,52 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1A44BE5822BF863000766274 /* LaunchScreen.storyboard */ = {
+		7813B6F623FA5A0300265830 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1A44BE5922BF863000766274 /* Base */,
-				1A1749A52365779B00A65B10 /* en */,
+				7813B6F723FA5A0300265830 /* Base */,
+				7813B72723FA5BDA00265830 /* zh-Hans */,
+				7813B72E23FA5C1200265830 /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		1A44BE5A22BF863000766274 /* Main.storyboard */ = {
+		7813B6FD23FA5A0300265830 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1A44BE5B22BF863000766274 /* Base */,
+				7813B6FE23FA5A0300265830 /* Base */,
+				7813B72823FA5BDA00265830 /* zh-Hans */,
+				7813B73023FA5C1600265830 /* en */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		7878B4AC23FA655300AF1B4F /* Room.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7878B4AD23FA655300AF1B4F /* Base */,
+				7878B4B023FA656000AF1B4F /* en */,
+				7878B4B123FA656300AF1B4F /* zh-Hans */,
+			);
+			name = Room.storyboard;
+			sourceTree = "<group>";
+		};
+		7878B4C723FA72EE00AF1B4F /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7878B4C623FA72EE00AF1B4F /* en */,
+				7878B4C823FA72F200AF1B4F /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		7878B4CD23FA735700AF1B4F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7878B4CC23FA735700AF1B4F /* en */,
+				7878B4CE23FA735A00AF1B4F /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1070,6 +1171,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1129,6 +1231,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1185,7 +1288,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 116;
 				DEVELOPMENT_TEAM = SW3CA7M752;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1201,9 +1304,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.0;
+				MARKETING_VERSION = 5.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AgoraCloudClass;
 				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1216,10 +1319,10 @@
 			baseConfigurationReference = 4EAA54960A24224AEAEC570D /* Pods-AgoraEducation.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 113;
-				DEVELOPMENT_TEAM = SW3CA7M752;
+				CURRENT_PROJECT_VERSION = 116;
+				DEVELOPMENT_TEAM = 48TB6ZZL5S;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1234,10 +1337,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				MARKETING_VERSION = 5.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducationDis;
+				PRODUCT_NAME = AgoraCloudClass;
+				PROVISIONING_PROFILE_SPECIFIER = AgoraEducationAppRelease;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 arm64e armv7s armv7";
@@ -1314,10 +1417,133 @@
 			};
 			name = Release;
 		};
+		78515D3223FCCDCB0015B5EC /* DevRelease */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = DevRelease;
+		};
+		78515D3323FCCDCB0015B5EC /* DevRelease */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3327573F8A98D9B63A402151 /* Pods-AgoraEducation.devrelease.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 116;
+				DEVELOPMENT_TEAM = SW3CA7M752;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/AgoraEducation",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/AgoraEducation/Supporting Files/AgoraEducation.pch";
+				INFOPLIST_FILE = "AgoraEducation/Supporting Files/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 5.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducation;
+				PRODUCT_NAME = AgoraCloudClass;
+				PROVISIONING_PROFILE_SPECIFIER = AgoraAppsDevProfile;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 arm64e armv7s armv7";
+			};
+			name = DevRelease;
+		};
+		78515D3423FCCDCB0015B5EC /* DevRelease */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = AgoraSmallClassTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraSmallClassTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AgoraEducation.app/AgoraEducation";
+			};
+			name = DevRelease;
+		};
+		78515D3523FCCDCB0015B5EC /* DevRelease */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = AgoraSmallClassUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraSmallClassUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AgoraSmallClass;
+			};
+			name = DevRelease;
+		};
 		78AED04623C58E5D00A24DDB /* QARelease */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1374,7 +1600,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 116;
 				DEVELOPMENT_TEAM = 7289G77ZF3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1390,9 +1616,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.0;
+				MARKETING_VERSION = 5.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.AgoraEducationQA;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AgoraCloudClass;
 				PROVISIONING_PROFILE_SPECIFIER = AgoraIOTest2019;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1443,6 +1669,7 @@
 			buildConfigurations = (
 				1AE0D02E2283C5F40092AC5E /* Debug */,
 				1AE0D02F2283C5F40092AC5E /* Release */,
+				78515D3223FCCDCB0015B5EC /* DevRelease */,
 				78AED04623C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1453,6 +1680,7 @@
 			buildConfigurations = (
 				1AE0D0312283C5F40092AC5E /* Debug */,
 				1AE0D0322283C5F40092AC5E /* Release */,
+				78515D3323FCCDCB0015B5EC /* DevRelease */,
 				78AED04723C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1463,6 +1691,7 @@
 			buildConfigurations = (
 				1AE0D0342283C5F40092AC5E /* Debug */,
 				1AE0D0352283C5F40092AC5E /* Release */,
+				78515D3423FCCDCB0015B5EC /* DevRelease */,
 				78AED04823C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1473,6 +1702,7 @@
 			buildConfigurations = (
 				1AE0D0372283C5F40092AC5E /* Debug */,
 				1AE0D0382283C5F40092AC5E /* Release */,
+				78515D3523FCCDCB0015B5EC /* DevRelease */,
 				78AED04923C58E5D00A24DDB /* QARelease */,
 			);
 			defaultConfigurationIsVisible = 0;

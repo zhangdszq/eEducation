@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger video;
 @property (nonatomic, assign) NSInteger audio;
 @property (nonatomic, assign) NSInteger chat;
+@property (nonatomic, assign) NSInteger grant_board;
 
 - (BOOL)isEqual:(id)otherObject;
 

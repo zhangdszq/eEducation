@@ -12,10 +12,14 @@
     float: left;
     margin-left: -4px;
     margin-right: 5px;
+    min-width: 80px;
+    text-align: center;
   }
   
   &.align-right {
     float: right;
     margin: 0;
+    min-width: 80px;
+    text-align: center;
   }
 }

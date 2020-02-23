@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import AgoraRTC from 'agora-rtc-sdk';
-import { roomStore } from '../stores/room';
+import { roomStore, RoomStore } from '../stores/room';
+import { isEmpty } from 'lodash';
 
 if (process.env.REACT_APP_AGORA_LOG !== 'true') {
   AgoraRTC.Logger.setLogLevel(AgoraRTC.Logger.NONE);
@@ -46,6 +47,7 @@ const clientEvents: string[] = [
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 export const APP_TOKEN = process.env.REACT_APP_AGORA_APP_TOKEN as string;
 export const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG as string === "true";
+// TODO: default screen sharing uid, please do not directly use it.
 export const SHARE_ID = 7;
 
 class AgoraRTCClient {
@@ -265,8 +267,13 @@ class AgoraRTCClient {
   }
 
   async exit () {
-    await this.leave();
-    await this.destroy();
+    try {
+      await this.leave();       
+    } catch (err) {
+      throw err;
+    } finally {
+      await this.destroy();
+    }
   }
 
   getDevices (): Promise<Device[]> {
@@ -296,7 +303,9 @@ export default class AgoraWebClient {
   public published: boolean;
   public tmpStream: any;
 
-  constructor() {
+  private roomStore: RoomStore;
+
+  constructor(deps: {roomStore: RoomStore}) {
     this.localUid = 0;
     this.channel = '';
     this.rtc = new AgoraRTCClient();
@@ -306,6 +315,8 @@ export default class AgoraWebClient {
     this.tmpStream = null;
     this.joined = false;
     this.published = false;
+    
+    this.roomStore = deps.roomStore;
   }
 
   async getDevices () {
@@ -344,12 +355,17 @@ export default class AgoraWebClient {
   async leaveChannel() {
     this.localUid = 0;
     this.channel = '';
-    await this.unpublishLocalStream();
-    await this.rtc.leave();
-    this.rtc.destroy();
-    this.rtc.destroyClient();
-    this.joined = false;
-    roomStore.setRTCJoined(false);
+    try {
+      await this.unpublishLocalStream();
+      await this.rtc.leave();
+      this.joined = false;
+      roomStore.setRTCJoined(false);
+    } catch (err) {
+      throw err;
+    } finally {
+      this.rtc.destroy();
+      this.rtc.destroyClient();
+    }
   }
 
   async enableDualStream() {
@@ -400,14 +416,30 @@ export default class AgoraWebClient {
   }
 
   async exit () {
-    await this.leaveChannel();
+    const errors: any[] = [];
+    try {
+      await this.leaveChannel();
+    } catch(err) {
+      errors.push({'rtcClient': err});
+    }
     if (this.shared === true) {
-      await this.shareClient.unpublish();
-      await this.shareClient.leave();
+      try {
+        await this.shareClient.unpublish();
+        await this.shareClient.leave();
+      } catch (err) {
+        errors.push({'shareClient': err});
+      }
     }
     if (this.shareClient) {
-      await this.shareClient.destroy();
-      await this.shareClient.destroyClient();
+      try {
+        await this.shareClient.destroy();
+        await this.shareClient.destroyClient();
+      } catch(err) {
+        errors.push({'shareClient': err});
+      }
+    }
+    if (!isEmpty(errors)) {
+      throw errors;
     }
   }
 

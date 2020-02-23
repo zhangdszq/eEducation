@@ -13,6 +13,7 @@
 @property (nonatomic,strong) NSMutableArray *colorArray;
 
 @property (nonatomic, weak) EEColorViewCell *temCell;
+@property (weak, nonatomic) IBOutlet UILabel *pickerLabel;
 @end
 
 @implementation EEColorShowView
@@ -43,7 +44,8 @@
     self.colorCollectionView.delegate = self;
     self.colorCollectionView.dataSource =self;
     [self.colorCollectionView registerClass:[EEColorViewCell class] forCellWithReuseIdentifier:@"ColorCell"];
-
+    
+    self.pickerLabel.text = NSLocalizedString(@"ColorPickerText", nil);
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {

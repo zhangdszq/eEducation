@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL audio;
 
 @property (nonatomic, assign) BOOL class_state;
+@property (nonatomic, assign) BOOL lock_board;
 
 @end
 
