@@ -11,6 +11,7 @@ import { globalStore } from '../../stores/global';
 import { platform } from '../../utils/platform';
 import AgoraWebClient, { AgoraStreamSpec, SHARE_ID } from '../../utils/agora-rtc-client';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
+import { t } from '../../i18n';
 
 export const roomTypes = [
   {value: 0, text: 'One-on-One', path: 'one-to-one'},
@@ -27,58 +28,58 @@ export function RoomPage({ children }: any) {
   useEffect(() => {
 
     const me = roomStore.state.me;
-    const rid = roomStore.state.course.rid;
-    const roomType = roomStore.state.course.roomType;
-    const roomName = roomStore.state.course.roomName;
+    const {
+      rid,
+      roomType,
+      roomName,
+      lockBoard,
+      linkId,
+    } = roomStore.state.course;
+
+    const {rtmToken, rtcToken} = roomStore.state;
 
     if (!rid || !me.uid) {
       history.push('/');
     }
 
     const uid = me.uid;
+
     const payload = {
-      uid,
+      // course state
       rid,
-      role: me.role,
       roomName,
       roomType,
+      lockBoard,
+      rtmToken,
+      rtcToken,
+      // TODO
+      linkId: linkId,
+      // agora user attributes
+      uid,
+      role: me.role,
       video: me.video,
       audio: me.audio,
       chat: me.chat,
       account: me.account,
-      token: '',
       boardId: me.boardId,
-      linkId: me.linkId,
       sharedId: me.sharedId,
-      lockBoard: me.lockBoard,
       grantBoard: me.grantBoard,
     }
     lock.current = true;
     if (roomStore.state.rtm.joined) return;
     globalStore.showLoading();
     roomStore.loginAndJoin(payload, true).then(() => {
-      roomStore.updateMe(payload).then(() => {
-        lock.current && roomStore.updateSessionInfo(payload);
-      }).catch((err: any) => {
-        globalStore.showToast({
-          type: 'rtmClient',
-          message: 'login failure'
-        });
-        history.push('/');
-        console.warn(err)
-      }).finally(() => {
-        globalStore.stopLoading();
-        lock.current = false;
-      })
+      console.log('[biz-login]  loginAndJoin, success: ', JSON.stringify(payload));
     }).catch((err: any) => {
       globalStore.showToast({
         type: 'rtmClient',
-        message: 'login failure'
+        message: t('toast.login_failure'),
       });
       history.push('/');
       console.warn(err)
     })
     .finally(() => {
+      globalStore.stopLoading();
       lock.current = false;
     });
   }, []);
@@ -94,9 +95,7 @@ export function RoomPage({ children }: any) {
   const isBigClass = Boolean(location.pathname.match(/big-class/));
   const isSmallClass = Boolean(location.pathname.match(/small-class/));
   
-  const prevRoute = useRef<string>(location.pathname);
   useEffect(() => {
-    console.log("[route] prevRoute: ", prevRoute.current);
     return () => {
       globalStore.removeUploadNotice();
       roomStore.exitAll()
@@ -210,7 +209,7 @@ export function RoomPage({ children }: any) {
     if (classroom) {
       if (platform === 'web') {
         const webClient = roomStore.rtcClient as AgoraWebClient;
-        if (webClient.joined) {
+        if (webClient.joined || rtc.current) {
           return;
         }
         console.log("[agora-rtc] add event listener");
@@ -402,7 +401,7 @@ export function RoomPage({ children }: any) {
         }
       }
     }
-  }, [roomState.me.uid, roomState.course.rid]);
+  }, [JSON.stringify([roomState.me.uid, roomState.course.rid])]);
 
   return (
     <div className={`classroom ${roomType.path}`}>

@@ -12,11 +12,13 @@ export type UploadBtnProps = {
   roomToken: string,
   onProgress?: PPTProgressListener,
   onFailure?: (err: any) => void,
+  onSuccess?: () => void,
 };
 
 export const UploadBtn: React.FC<UploadBtnProps> = ({
   room, uuid, roomToken,
-  onProgress, onFailure
+  onProgress, onFailure,
+  onSuccess
 }) => {
   const uploadDynamic = async (event: any) => {
     try {
@@ -32,6 +34,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
           uuid,
           onProgress,
         );
+        onSuccess && onSuccess();
       }
     } catch (err) {
       onFailure && onFailure(err);
@@ -52,6 +55,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
           ossConfig.folder,
           uuid,
           onProgress);
+        onSuccess && onSuccess();
       }
     } catch (err) {
       onFailure && onFailure(err)
@@ -75,6 +79,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
           const clientHeight = window.innerHeight;
           await uploadManager.uploadImageFiles(uploadFileArray, clientWidth / 2, clientHeight / 2, onProgress);
         }
+        onSuccess && onSuccess();
       }
     } catch (err) {
       onFailure && onFailure(err)
@@ -102,7 +107,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         }
         const type = fileType.split(".")[1];
         if (url && whiteboard.state.room) {
-          if (type === 'mp4') {
+          if (type.toLowerCase() === 'mp4') {
             const res = whiteboard.state.room.insertPlugin('video', {
               originX: 0,
               originY: 0,
@@ -114,7 +119,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
             });
             console.log("[upload-btn] video resource after insert plugin, res: ", res);
           }
-          if (type === 'mp3') {
+          if (type.toLowerCase() === 'mp3') {
             const res = whiteboard.state.room.insertPlugin('audio', {
               originX: 0,
               originY: 0,
@@ -126,6 +131,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
             });
             console.log("[upload-btn] audio resource after insert plugin, res: ", res);
           }
+          onSuccess && onSuccess();
         }
       } catch(err) {
         onFailure && onFailure(err);
@@ -155,7 +161,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
             <div className="description">pptx only support</div>
           </div>
         </label>
-        <input id="upload-dynamic" accept=".ppt,.pptx" onChange={uploadDynamic} type="file"></input>
+        <input id="upload-dynamic" accept=".pptx" onChange={uploadDynamic} type="file"></input>
       </div>
       <div className="slice-dash"></div>
       <div className="upload-items">
@@ -163,7 +169,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
           <div className="upload-static-resource"></div>
           <div className="text-container">
             <div className="title">Convert to picture</div>
-            <div className="description">ppt, pptx, word, pdf support</div>
+            <div className="description">pptx, word, pdf support</div>
           </div>
         </label>
         <input id="upload-static" accept=".doc,.docx,.ppt,.pptx,.pdf" onChange={uploadStatic} type="file"></input>

@@ -22,6 +22,7 @@ import { platform } from '../utils/platform';
 import AgoraWebClient, { SHARE_ID } from '../utils/agora-rtc-client';
 import "white-web-sdk/style/index.css";
 import { ViewMode } from 'white-web-sdk';
+import { t } from '../i18n';
 
 const pathName = (path: string): string => {
   const reg = /\/([^/]*)\//g;
@@ -95,6 +96,10 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
         webClient.shareClient.on('stopScreenSharing', (evt: any) => {
           console.log('stop screen share', evt);
           webClient.stopScreenShare().then(() => {
+            globalStore.showToast({
+              message: t('toast.canceled_screen_share'),
+              type: 'notice'
+            });
             roomStore.setScreenShare(false);
           }).catch(console.warn).finally(() => {
             console.log('[agora-web] stop share');
@@ -107,13 +112,13 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
         roomStore.setScreenShare(false);
         if (err.type === 'error' && err.msg === 'NotAllowedError') {
           globalStore.showToast({
-            message: `You canceled screen sharing`,
+            message: t('toast.canceled_screen_share'),
             type: 'notice'
           });
         }
         if (err.type === 'error' && err.msg === 'PERMISSION_DENIED') {
           globalStore.showToast({
-            message: `Screen Sharing Failed: ${err.msg}`,
+            message: t('toast.screen_sharing_failed', {reason: err.msg}),
             type: 'notice'
           });
         }
@@ -187,7 +192,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   
   const location = useLocation();
 
-  const current =  useMemo(() => {
+  const current = useMemo(() => {
     return whiteboardState.scenes.get(whiteboardState.currentScenePath);
   }, [whiteboardState.scenes, whiteboardState.currentScenePath]);
 
@@ -202,7 +207,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   }, [current]);
 
   const addNewPage: any = (evt: any) => {
-    if (!current) return;
+    if (!current || !room) return;
     // const newIndex = netlessClient.state.sceneState.scenes.length;
     const newIndex = room.state.sceneState.index + 1;
     const scenePath = room.state.sceneState.scenePath;
@@ -213,7 +218,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
   }
 
   const changePage = (idx: number, force?: boolean) => {
-    if (ref.current || !current) return;
+    if (ref.current || !current || !room) return;
     const _idx = idx -1;
     if (_idx < 0 || _idx >= current.totalPage) return;
     if (force) {
@@ -224,11 +229,14 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
     if (current.type === 'dynamic') {
       if (_idx > current.currentPage) {
         room.pptNextStep();
+        console.log("room.pptNextStep");
       } else {
         room.pptPreviousStep();
+        console.log("room.pptPreviousStep");
       }
     } else {
       room.setSceneIndex(_idx);
+      console.log("room.setSceneIndex", _idx);
     }
     whiteboard.updateRoomState();
   }
@@ -273,26 +281,27 @@ const items = [
   },
   {
     name: 'hand_tool'
-  },
-  // {
-  //   name: 'lock_board'
-  // },
-  // {
-  //   name: 'folder'
-  // }
+  }
 ];
 
   const toolItems = useMemo(() => {
     return items.filter((item: any) => {
       if (role === 'teacher') return item;
       if (['add', 'folder', 'upload'].indexOf(item.name) === -1) {
+        if (item.name === 'hand_tool') {
+          if (course.lockBoard) {
+            return false;
+          } else {
+            return true;
+          }
+        }
         return item;
       }
-    })
-  }, []);
+    });
+  }, [course.lockBoard]);
 
   const drawable: string = useMemo(() => {
-    if (location.pathname.match('small-class')) {
+    if (location.pathname.match('small-class|big-class')) {
       if (me.role === 'teacher') {
         return 'drawable';
       }
@@ -334,6 +343,7 @@ const items = [
       || name === 'hand_tool'
     ) {
       if (name === 'hand_tool') {
+
         room.handToolActive = true;
         updateSelector('hand');
         room.setMemberState({currentApplianceName: 'selector'});
@@ -363,7 +373,7 @@ const items = [
       lock.current = true;
       whiteboard.destroy()
       .then(() => {
-
+        console.log("destroy whiteboard");
       }).catch(console.warn);
     }
   }, []);
@@ -375,6 +385,7 @@ const items = [
       whiteboard.join({
         rid: roomStore.state.course.rid,
         uid: me.boardId,
+        location: location.pathname,
         userPayload: {
           userId: roomStore.state.me.uid,
           identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
@@ -393,6 +404,7 @@ const items = [
       whiteboard.join({
         rid: roomStore.state.course.rid,
         uid: course.boardId,
+        location: location.pathname,
         userPayload: {
           userId: roomStore.state.me.uid,
           identity: roomStore.state.me.role === 'teacher' ? 'host' : 'guest'
@@ -441,6 +453,9 @@ const items = [
           return;
         }
       }}
+      onSuccess={() => {
+        console.log("on success");
+      }}
       onFailure={(err: any) => {
         // WARN: capture exception
         if (uploadPhase === 'uploading') {
@@ -458,13 +473,13 @@ const items = [
   useEffect(() => {
     if (uploadPhase === 'upload_success') {
       globalStore.showUploadNotice({
-        title: 'upload success',
+        title: t('room.upload_success'),
         type: 'ok',
       });
     }
     if (uploadPhase === 'convert_failure') {
       globalStore.showUploadNotice({
-        title: 'upload failure, check the network',
+        title: t('room.upload_failure'),
         type: 'error',
       });
     }
@@ -473,13 +488,13 @@ const items = [
   useEffect(() => {
     if (convertPhase === 'convert_success') {
       globalStore.showUploadNotice({
-        title: 'convert success',
+        title: t('room.convert_success'),
         type: 'ok',
       });
     }
     if (convertPhase === 'convert_failure') {
       globalStore.showUploadNotice({
-        title: 'convert failure, check the network',
+        title: t('room.convert_failure'),
         type: 'error',
       });
     }
@@ -494,6 +509,16 @@ const items = [
         room.setViewMode(ViewMode.Freedom);
       }
     }
+    if (me.role === 'student') {
+      if (roomStore.state.course.lockBoard) {
+        room.handToolActive = false;
+        room.disableCameraTransform = true;
+        room.disableDeviceInputs = true;
+      } else {
+        room.disableCameraTransform = false;
+        room.disableDeviceInputs = false;
+      }
+    }
   }, [room, roomStore.state.course.lockBoard, roomStore.state.me.role]);
 
   const globalState = useGlobalState();
@@ -503,12 +528,12 @@ const items = [
   const UploadProgressView = useCallback(() => {
     if (uploadPhase === 'uploading') {
       return (
-        <Progress title={"uploading..."} />
+        <Progress title={t("room.uploading")} />
       )
     } else 
     if (convertPhase === 'converting') {
       return (
-        <Progress title={"converting..."} />
+        <Progress title={t("room.converting")} />
       )
     }
     return null;
@@ -524,6 +549,19 @@ const items = [
       b: color[2],
     }
   }
+
+  useEffect(() => {
+    if (!room) return;
+    if (drawable === 'panel') {
+      room.disableDeviceInputs = true;
+      room.disableCameraTransform = true;
+      return;
+    }
+    room.disableDeviceInputs = false;
+    room.disableCameraTransform = false;
+  }, [drawable, room]);
+
+  const showTools = drawable === 'drawable';
   
   return (
     <div className={`media-board ${drawable}`}>
@@ -540,6 +578,7 @@ const items = [
         />
         :
         <Whiteboard
+          loading={whiteboardState.loading}
           className={selector}
           room={room}
         />
@@ -547,10 +586,10 @@ const items = [
       <div className="layer">
         {!sharedStream ? 
         <>
-          <Tools
+          {showTools ? <Tools
           items={toolItems}
           currentTool={tool}
-          handleToolClick={handleToolClick} />
+          handleToolClick={handleToolClick} /> : null}
           {tool === 'color_picker' && strokeColor ?
             <SketchPicker
               color={strokeColor}
