@@ -1,16 +1,19 @@
-import React, { useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import './replay.scss';
 import Slider from '@material-ui/core/Slider';
 import { Subject } from 'rxjs';
 import { Player, PlayerPhase } from 'white-web-sdk';
-import { useParams } from 'react-router';
+import { useParams, useLocation, Redirect } from 'react-router';
 import moment from 'moment';
 import { Progress } from '../components/progress/progress';
 import { globalStore } from '../stores/global';
-import { WhiteboardAPI } from '../utils/api';
+import { WhiteboardAPI, RTMRestful } from '../utils/api';
 import { whiteboard } from '../stores/whiteboard';
 import "video.js/dist/video-js.css";
 import { getOSSUrl } from '../utils/helper';
+import { t } from '../i18n';
+import { RTMReplayer, RtmPlayerState } from '../components/whiteboard/agora/rtm-player';
+import { errorStore } from './error-page/state';
 
 export interface IPlayerState {
   beginTimestamp: number
@@ -108,7 +111,6 @@ class ReplayStore {
     if (!this.state.isPlaying && this.state.player) {
       this.state.player.seekToScheduleTime(0);
     }
-    console.log("updatePlayer this.state ", this.state);
     this.commit(this.state);
   }
 
@@ -175,6 +177,12 @@ const useReplayContext = () => React.useContext(ReplayContext);
 const ReplayContainer: React.FC<{}> = () => {
   const [state, setState] = React.useState<IPlayerState>(defaultState);
 
+  const {uuid, startTime, endTime, mediaUrl} = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const rid: string = searchParams.get('rid') as string;
+  const senderId: string = searchParams.get('senderId') as string;
+
   React.useEffect(() => {
     store.subscribe((state: any) => {
       setState(state);
@@ -184,25 +192,54 @@ const ReplayContainer: React.FC<{}> = () => {
     }
   }, []);
 
+  if (!uuid || !rid || !startTime || !endTime || !mediaUrl) {
+    errorStore.state = {
+      reason: t('error.components.paramsEmpty', {reason: 'uuid, rid, startTime, endTime, mediaUrl'})
+    }
+    return <Redirect to="/404"></Redirect>
+  }
+
   const value = state;
 
   return (
     <ReplayContext.Provider value={value}>
-      <Replay />
+      <NetlessAgoraReplay
+        rid={rid}
+        senderId={senderId}
+        whiteboardUUID={uuid}
+        startTime={+startTime}
+        endTime={+endTime}
+        mediaUrl={mediaUrl}
+      />
     </ReplayContext.Provider>
   )
 }
 
 export default ReplayContainer;
 
-export const Replay: React.FC<{}> = () => {
+export type NetlessAgoraReplayProps = {
+  whiteboardUUID: string
+  rid: string
+  senderId: string
+  startTime: number
+  endTime: number
+  mediaUrl: string
+}
+
+export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
+  whiteboardUUID: uuid,
+  rid,
+  senderId,
+  startTime,
+  endTime,
+  mediaUrl
+}) => {
   const state = useReplayContext();
 
   const player = useMemo(() => {
     if (!store.state || !store.state.player) return null;
     return store.state.player as Player;
   }, [store.state]);
-
 
   const handlePlayerClick = () => {
     if (!store.state || !player) return;
@@ -227,7 +264,6 @@ export const Replay: React.FC<{}> = () => {
     store.setCurrentTime(newValue);
     store.updateProgress(newValue);
   }
-
 
   const onWindowResize = () => {
     if (state.player) {
@@ -261,8 +297,6 @@ export const Replay: React.FC<{}> = () => {
     }
   }
 
-  const {uuid, startTime, endTime, mediaUrl} = useParams();
-
   const duration = useMemo(() => {
     if (!startTime || !endTime) return 0;
     const _duration = Math.abs(+startTime - +endTime);
@@ -293,14 +327,14 @@ export const Replay: React.FC<{}> = () => {
             onCatchErrorWhenRender: error => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
             },
             onCatchErrorWhenAppendFrame: error => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
             },
@@ -317,7 +351,7 @@ export const Replay: React.FC<{}> = () => {
             onStoppedWithError: (error) => {
               error && console.warn(error);
               globalStore.showToast({
-                message: `Replay Failed please refresh browser`,
+                message: t('toast.replay_failed'),
                 type: 'notice'
               });
               store.setReplayFail(true);
@@ -350,19 +384,19 @@ export const Replay: React.FC<{}> = () => {
 
   const PlayerCover = useCallback(() => {
     if (!player) {
-      return (<Progress title={"loading..."} />)
+      return (<Progress title={t("replay.loading")} />)
     }
 
     if (player.phase === PlayerPhase.Playing) return null;
 
     return (
       <div className="player-cover">
-        {player.phase === PlayerPhase.Buffering ? <Progress title={"loading..."} />: null}
+        {player.phase === PlayerPhase.Buffering ? <Progress title={t("replay.loading")} />: null}
         {player.phase === PlayerPhase.Pause || player.phase === PlayerPhase.Ended || player.phase === PlayerPhase.WaitingFirstFrame ? 
           <div className="play-btn" onClick={handlePlayerClick}></div> : null}
       </div>
     )
-  }, [player]);
+  }, [player, state]);
 
   return (
     <div className="replay">
@@ -412,7 +446,20 @@ export const Replay: React.FC<{}> = () => {
         <div className="video-player">
           <video id="white-sdk-video-js" className="video-js video-layout" style={{width: "100%", height: "100%", objectFit: "cover"}}></video>
         </div>
-        <div className="chat-holder"></div>
+        <div className="chat-holder chat-board chat-messages-container">
+          {/* <RTMReplayer
+            senderId={senderId}
+            rid={rid}
+            startTime={startTime}
+            endTime={endTime}
+            currentSeekTime={state.currentTime}
+            onPhaseChanged={(e: RtmPlayerState) => {
+              if (e !== RtmPlayerState.load) {
+                player?.stop();
+              }
+            }}
+          ></RTMReplayer> */}
+        </div>
       </div>
     </div>
   )

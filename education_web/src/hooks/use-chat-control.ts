@@ -34,8 +34,8 @@ export default function useChatControl () {
     handleMute (type: string) {
       if (!lock.current) {
         lock.current = true;
-        roomStore.updateAttrsBy(me.uid, {
-          mute_chat: type === 'mute' ? 1 : 0
+        roomStore.updateMe({
+          muteChat: type === 'mute' ? 1 : 0
         }).then(() => {
           console.log("update success");
         }).catch(console.warn)

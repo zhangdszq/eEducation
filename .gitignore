@@ -1,8 +1,6 @@
 .DS_Store
-edu_web/node_modules
 node_modules
 package-lock.json
-education_web
 *.dev
 release
 .env

@@ -1,15 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { GlobalState, globalStore} from '../stores/global';
 import { RoomState, roomStore} from '../stores/room';
+import {ErrorState, errorStore} from '../pages/error-page/state';
 import { WhiteboardState, whiteboard } from '../stores/whiteboard';
 import { useHistory, useLocation } from 'react-router-dom';
-import { resolveMessage, resolvePeerMessage, resolveChannelAttrs, jsonParse } from '../utils/helper';
+import { resolveMessage, resolvePeerMessage, jsonParse } from '../utils/helper';
 import GlobalStorage from '../utils/custom-storage';
-
+import { t } from '../i18n';
 export type IRootProvider = {
   globalState: GlobalState
   roomState: RoomState
   whiteboardState: WhiteboardState
+  errorState: ErrorState
 }
 
 export interface IObserver<T> {
@@ -55,10 +57,15 @@ export const useWhiteboardState = () => {
   return useStore().whiteboardState;
 }
 
+export const useErrorState = () => {
+  return useStore().errorState;
+}
+
 export const RootProvider: React.FC<any> = ({children}) => {
   const globalState = useObserver<GlobalState>(globalStore);
   const roomState = useObserver<RoomState>(roomStore);
   const whiteboardState = useObserver<WhiteboardState>(whiteboard);
+  const errorState = useObserver<ErrorState>(errorStore);
   const history = useHistory();
 
   const ref = useRef<boolean>(false);
@@ -73,6 +80,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
     globalState,
     roomState,
     whiteboardState,
+    errorState,
   }
 
   useEffect(() => {
@@ -83,7 +91,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
       if (reason === 'LOGIN_FAILURE') {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'login failure'
+          message: t('toast.login_failure'),
         });
         history.push('/');
         return;
@@ -91,7 +99,7 @@ export const RootProvider: React.FC<any> = ({children}) => {
       if (reason === 'REMOTE_LOGIN' || newState === 'ABORTED') {
         globalStore.showToast({
           type: 'rtmClient',
-          message: 'kick'
+          message: t('toast.kick'),
         });
         history.push('/');
         return;
@@ -105,10 +113,8 @@ export const RootProvider: React.FC<any> = ({children}) => {
       }).catch(console.warn);
     });
     rtmClient.on("AttributesUpdated", (attributes: object) => {
-      const channelAttrs = resolveChannelAttrs(attributes);
-      console.log('[rtm-client] updated resolved attrs', channelAttrs);
       console.log('[rtm-client] updated origin attributes', attributes);
-      roomStore.updateRoomAttrs(channelAttrs)
+      roomStore.updateRoomAttrs(attributes)
     });
     rtmClient.on("MemberJoined", (memberId: string) => {
     });
@@ -133,6 +139,12 @@ export const RootProvider: React.FC<any> = ({children}) => {
         id: memberId,
       }
       console.log("[rtmClient] ChannelMessage", msg);
+      const isChatroom = globalStore.state.active === 'chatroom';
+      if (!isChatroom) {
+        globalStore.setMessageCount(globalStore.state.newMessageCount+1);
+      } else {
+        globalStore.setMessageCount(0);
+      }
       roomStore.updateChannelMessage(chatMessage);
     });
     return () => {
@@ -153,11 +165,14 @@ export const RootProvider: React.FC<any> = ({children}) => {
       course: room.course,
       mediaDevice: room.mediaDevice,
     });
+    GlobalStorage.save('language', value.globalState.language);
     // WARN: DEBUG ONLY MUST REMOVED IN PRODUCTION
+    //@ts-ignore
+    window.errorState = errorState;
     //@ts-ignore
     window.room = roomState;
     //@ts-ignore
-    window.state = globalState;
+    window.globalState = globalState;
     //@ts-ignore
     window.whiteboard = whiteboardState;
   }, [value, location]);
