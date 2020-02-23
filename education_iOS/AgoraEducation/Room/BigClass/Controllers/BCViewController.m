@@ -9,8 +9,6 @@
 
 #import "BCViewController.h"
 #import "BCSegmentedView.h"
-#import "EEPageControlView.h"
-#import "EEWhiteboardTool.h"
 #import "EEChatTextFiled.h"
 #import "BCStudentVideoView.h"
 #import "EETeacherVideoView.h"
@@ -18,7 +16,6 @@
 
 #import "GenerateSignalBody.h"
 #import "SignalRoomModel.h"
-#import "EEColorShowView.h"
 #import "GenerateSignalBody.h"
 #import "StudentModel.h"
 #import "TeacherModel.h"
@@ -30,7 +27,7 @@
 #import "KeyCenter.h"
 
 #define kLandscapeViewWidth    223
-@interface BCViewController ()<BCSegmentedDelegate, UITextFieldDelegate, RoomProtocol, SignalDelegate, RTCDelegate, EEPageControlDelegate, EEWhiteboardToolDelegate, WhitePlayDelegate>
+@interface BCViewController ()<BCSegmentedDelegate, UITextFieldDelegate, RoomProtocol, SignalDelegate, RTCDelegate, WhitePlayDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatTextFiledRelativeTeacherViewLeftCon;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textFiledBottomConstraint;
@@ -46,14 +43,8 @@
 @property (weak, nonatomic) IBOutlet EEMessageView *messageView;
 
 // white
-@property (weak, nonatomic) IBOutlet EEWhiteboardTool *whiteboardTool;
-@property (weak, nonatomic) IBOutlet EEPageControlView *pageControlView;
-@property (weak, nonatomic) IBOutlet EEColorShowView *colorShowView;
 @property (weak, nonatomic) IBOutlet UIView *whiteboardView;
 @property (nonatomic, weak) WhiteBoardView *boardView;
-@property (nonatomic, assign) NSInteger sceneIndex;
-@property (nonatomic, assign) NSInteger sceneCount;
-
 @property (nonatomic, assign) NSInteger segmentedIndex;
 @property (nonatomic, assign) NSInteger unreadMessageCount;
 @property (nonatomic, assign) StudentLinkState linkState;
@@ -72,15 +63,6 @@
 }
 
 -(void)initData {
-    
-    self.pageControlView.delegate = self;
-    self.whiteboardTool.delegate = self;
-        
-    WEAK(self);
-    [self.colorShowView setSelectColor:^(NSString * _Nullable colorString) {
-        NSArray *colorArray = [UIColor convertColorToRGB:[UIColor colorWithHexString:colorString]];
-        [weakself.educationManager setWhiteStrokeColor:colorArray];
-    }];
     
     self.segmentedView.delegate = self;
     self.studentVideoView.delegate = self;
@@ -184,7 +166,6 @@
 
     if (self.segmentedIndex == 0) {
         self.handUpButton.hidden = YES;
-        self.pageControlView.hidden = YES;
     }
     [self.teactherVideoView updateSpeakerImageWithMuted:YES];
     self.teactherVideoView.defaultImageView.hidden = NO;
@@ -240,7 +221,6 @@
     // update teacher views
     if (self.segmentedIndex == 0) {
         self.handUpButton.hidden = NO;
-        self.pageControlView.hidden = NO;
     }
     [self.teactherVideoView updateSpeakerImageWithMuted:!teacherModel.audio];
     self.teactherVideoView.defaultImageView.hidden = teacherModel.video ? YES : NO;
@@ -249,14 +229,14 @@
 
 - (void)updateChatViews {
     BOOL muteChat = self.educationManager.teacherModel != nil ? self.educationManager.teacherModel.mute_chat : NO;
-    if(self.educationManager.renderStudentModel != nil){
+    if(self.educationManager.studentModel != nil){
         if(!muteChat) {
-            muteChat = self.educationManager.renderStudentModel.chat == 0 ? YES : NO;
+            muteChat = self.educationManager.studentModel.chat == 0 ? YES : NO;
         }
     }
     
     self.chatTextFiled.contentTextFiled.enabled = muteChat ? NO : YES;
-    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? @" Prohibited post" : @" Input message";
+    self.chatTextFiled.contentTextFiled.placeholder = muteChat ? NSLocalizedString(@"ProhibitedPostText", nil) : NSLocalizedString(@"InputMessageText", nil);
 }
 
 - (void)updateStudentViews:(StudentModel *)studentModel remoteVideo:(BOOL)remote {
@@ -386,7 +366,8 @@
         weakself.linkState = StudentLinkStateAccept;
         
         weakself.tipLabel.hidden = NO;
-        [weakself.tipLabel setText:[NSString stringWithFormat:@"%@ accept your interactive request!", weakself.educationManager.teacherModel.account]];
+        
+        [weakself.tipLabel setText: NSLocalizedString(@"AcceptRequestText", nil)];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakself.tipLabel.hidden = YES;
         });
@@ -396,7 +377,6 @@
 
 - (void)landscapeScreenConstraints {
     [self stateBarHidden:YES];
-    self.pageControlView.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO : YES;
     self.handUpButton.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO : YES;
     self.chatTextFiled.hidden = NO;
     self.messageView.hidden = NO;
@@ -406,7 +386,6 @@
     [self stateBarHidden:NO];
     self.chatTextFiled.hidden = self.segmentedIndex == 0 ? YES : NO;
     self.messageView.hidden = self.segmentedIndex == 0 ? YES : NO;
-    self.pageControlView.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO : YES;
     self.handUpButton.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO : YES;
 }
 
@@ -443,10 +422,8 @@
         [weakself.educationManager seekWhiteToTime:cmTime completionHandler:^(BOOL finished) {
         }];
         [weakself.educationManager disableWhiteDeviceInputs:disableDevice];
+        [weakself.educationManager disableCameraTransform:weakself.educationManager.teacherModel.lock_board];
         [weakself.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
-            weakself.sceneCount = sceneCount;
-            weakself.sceneIndex = sceneIndex;
-            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
             [weakself.educationManager moveWhiteToContainer:sceneIndex];
         }];
         
@@ -462,16 +439,12 @@
         self.segmentedIndex = 0;
         self.messageView.hidden = YES;
         self.chatTextFiled.hidden = YES;
-        self.pageControlView.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO: YES;
-        self.whiteboardTool.hidden = YES;
         self.handUpButton.hidden = self.educationManager.teacherModel.uid.integerValue > 0 ? NO: YES;
     }else {
         self.segmentedIndex = 1;
         self.messageView.hidden = NO;
         self.chatTextFiled.hidden = NO;
-        self.pageControlView.hidden = YES;
         self.handUpButton.hidden = YES;
-        self.whiteboardTool.hidden = YES;
         self.unreadMessageCount = 0;
         [self.segmentedView hiddeBadge];
     }
@@ -480,7 +453,7 @@
 #pragma mark RoomProtocol
 - (void)closeRoom {
     WEAK(self);
-    [AlertViewUtil showAlertWithController:self title:@"Quit classroom?" sureHandler:^(UIAlertAction * _Nullable action) {
+    [AlertViewUtil showAlertWithController:self title:NSLocalizedString(@"QuitClassroomText", nil) sureHandler:^(UIAlertAction * _Nullable action) {
         
         if (weakself.linkState == StudentLinkStateAccept) {
             [weakself.educationManager setSignalWithType:SignalP2PTypeCancel completeSuccessBlock:nil];
@@ -546,10 +519,16 @@
             break;
         case SignalP2PTypeCancel:
         {
-            self.whiteboardTool.hidden = YES;
             self.linkState = StudentLinkStateIdle;
             [self removeStudentCanvas: self.educationManager.teacherModel.link_uid.integerValue];
             [self.handUpButton setBackgroundImage:[UIImage imageNamed:@"icon-handup"] forState:(UIControlStateNormal)];
+            
+            self.tipLabel.hidden = NO;
+            [self.tipLabel setText: NSLocalizedString(@"AcceptRequestText", nil)];
+            WEAK(self);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                weakself.tipLabel.hidden = YES;
+            });
         }
             break;
         case SignalP2PTypeMuteChat:
@@ -587,7 +566,12 @@
         TeacherModel *sourceModel = sourceInfoModel.teacherModel;
         TeacherModel *currentModel = currentInfoModel.teacherModel;
         if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
-            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:NO];
+            
+            [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:YES];
+            
+        } else if(currentModel.whiteboard_uid.length > 0){
+                   
+            [self.educationManager disableCameraTransform:currentModel.lock_board];
         }
     }
     
@@ -650,6 +634,7 @@
             [self.navigationView updateSignalImageName:@"icon-signal1"];
             break;
         default:
+            [self.navigationView updateSignalImageName:@"icon-signal1"];
             break;
     }
 }
@@ -674,89 +659,6 @@
     textField.text = nil;
     [textField resignFirstResponder];
     return NO;
-}
-
-#pragma mark EEPageControlDelegate
-- (void)previousPage {
-    if (self.sceneIndex > 0) {
-        self.sceneIndex--;
-        WEAK(self);
-        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
-            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-        }];
-    }
-}
-
-- (void)nextPage {
-    if (self.sceneIndex < self.sceneCount - 1  && self.sceneCount > 0) {
-        self.sceneIndex ++;
-        
-        WEAK(self);
-        [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
-            [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-        }];
-    }
-}
-
-- (void)lastPage {
-    self.sceneIndex = self.sceneCount - 1;
-    
-    WEAK(self);
-    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, (long)weakself.sceneCount]];
-    }];
-}
-
-- (void)firstPage {
-    self.sceneIndex = 0;
-    WEAK(self);
-    [self setWhiteSceneIndex:self.sceneIndex completionSuccessBlock:^{
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-    }];
-}
-
--(void)setWhiteSceneIndex:(NSInteger)sceneIndex completionSuccessBlock:(void (^ _Nullable)(void ))successBlock {
-    
-    [self.educationManager setWhiteSceneIndex:sceneIndex completionHandler:^(BOOL success, NSError * _Nullable error) {
-        if(success) {
-            if(successBlock != nil){
-                successBlock();
-            }
-        } else {
-            NSLog(@"Set scene index err：%@", error);
-        }
-    }];
-}
-
-#pragma mark EEWhiteboardToolDelegate
-- (void)selectWhiteboardToolIndex:(NSInteger)index {
-    
-    NSArray<NSString *> *applianceNameArray = @[ApplianceSelector, AppliancePencil, ApplianceText, ApplianceEraser];
-    if(index < applianceNameArray.count) {
-        NSString *applianceName = [applianceNameArray objectAtIndex:index];
-        if(applianceName != nil) {
-            [self.educationManager setWhiteApplianceName:applianceName];
-        }
-    }
-    
-    BOOL bHidden = self.colorShowView.hidden;
-    // select color
-    if (index == 4) {
-        self.colorShowView.hidden = !bHidden;
-    } else if (!bHidden) {
-        self.colorShowView.hidden = YES;
-    }
-}
-
-#pragma mark WhitePlayDelegate
-- (void)whiteRoomStateChanged {
-    WEAK(self);
-    [self.educationManager currentWhiteScene:^(NSInteger sceneCount, NSInteger sceneIndex) {
-        weakself.sceneCount = sceneCount;
-        weakself.sceneIndex = sceneIndex;
-        [weakself.pageControlView.pageCountLabel setText:[NSString stringWithFormat:@"%ld/%ld", weakself.sceneIndex + 1, weakself.sceneCount]];
-        [weakself.educationManager moveWhiteToContainer:sceneIndex];
-    }];
 }
 
 @end

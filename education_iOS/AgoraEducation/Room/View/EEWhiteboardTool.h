@@ -14,6 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EEWhiteboardTool : UIView
+@property (weak, nonatomic) UIButton *selectButton;
+@property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (strong, nonatomic) IBOutlet UIView *whiteboardTool;
 @property (nonatomic, weak) id <EEWhiteboardToolDelegate> delegate;
 @end

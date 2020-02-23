@@ -5,7 +5,7 @@ import { resolveMessage, jsonParse } from './helper';
 
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
-const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_INFO : AgoraRTM.LOG_FILTER_OFF;
+const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_DEBUG : AgoraRTM.LOG_FILTER_OFF;
 
 export enum RoomMessage {
   muteAudio = 101,
@@ -22,9 +22,22 @@ export enum RoomMessage {
   unmuteBoard = 201
 }
 
+export interface ChatBody {
+  account: string
+  content: string
+}
+
+export interface EntityBody {
+  uid: string
+  account: string
+  resource: string
+  value: number
+}
+
 export interface MessageBody {
   cmd: RoomMessage
   text?: string
+  data?: ChatBody | EntityBody
 }
 
 export type SessionProps = {
@@ -43,7 +56,7 @@ export default class AgoraRTMClient {
   private _channels: any;
   private _client: any;
   private _channelAttrsKey: string | any;
-  private _logged: boolean = false;
+  public _logged: boolean = false;
   private _joined: boolean = false;
 
   constructor () {
@@ -52,7 +65,7 @@ export default class AgoraRTMClient {
     this._currentChannel = null;
     this._currentChannelName = null;
     this._channelAttrsKey = null;
-    this._client = AgoraRTM.createInstance(APP_ID, { enableLogUpload: false, logFilter });
+    this._client = AgoraRTM.createInstance(APP_ID, { enableLogUpload: ENABLE_LOG, logFilter });
   }
 
   public removeAllListeners(): any {
@@ -137,20 +150,25 @@ export default class AgoraRTMClient {
 
   async leave (channel: string) {
     if (this._channels[channel]) {
-      await this._channels[channel].leave();
+      // await this._channels[channel].leave();
       this._joined = false;
       this.destroyChannel(channel);
     }
   }
 
   async exit() {
-    await this.deleteChannelAttributesByKey();
-    await this.leave(this._currentChannelName);
-    await this.logout();
+    try {
+      await this.deleteChannelAttributesByKey();
+    } catch (err) {
+
+    } finally {
+      await this.leave(this._currentChannelName);
+      await this.logout();
+    }
   }
 
-  async sendChannelMessage(msg: string) {
-    return this._currentChannel.sendMessage({ text: msg });
+  async sendChannelMessage(body: string) {
+    return this._currentChannel.sendMessage({ text: body }, {enableHistoricalMessaging: true});
   }
 
   async updateChannelAttrsByKey (key: string, attrs: any) {
@@ -188,7 +206,11 @@ export default class AgoraRTMClient {
   }
 
   async queryOnlineStatusBy(accounts: any[]) {
-    let results: any = {};
+    let results: any = {
+      teacherCount: 0,
+      totalCount: 0,
+      studentTotalCount: 0
+    };
     if (accounts.length > 0) {
       const ids = accounts.map((it: any) => `${it.uid}`);
       results = await this._client.queryPeersOnlineStatus(ids);
@@ -199,6 +221,7 @@ export default class AgoraRTMClient {
           results.teacherCount = 1;
         }
         results.totalCount = accounts.filter((it: any) => results[it.uid]).length;
+        results.studentsTotalCount = results.totalCount - results.teacherCount;
       } else {
         console.warn(`accounts: ${ids}, cannot get peers online status from [queryPeersOnlineStatus]`);
       }
@@ -212,7 +235,6 @@ export default class AgoraRTMClient {
     for (let key of Object.keys(json)) {
       if (key === 'teacher') {
         const teacherObj = jsonParse(_.get(json, `${key}.value`));
-        console.log("teacherObj ", teacherObj);
         // when teacher is not empty object
         if(teacherObj && Object.keys(teacherObj).length) {
           accounts.push({role: 'teacher', ...teacherObj});
@@ -232,7 +254,7 @@ export default class AgoraRTMClient {
   async sendPeerMessage(peerId: string, body: MessageBody) {
     resolveMessage(peerId, body);
     console.log("[rtm-client] send peer message ", peerId, JSON.stringify(body));
-    let result = await this._client.sendMessageToPeer({text: JSON.stringify(body)}, peerId);
+    let result = await this._client.sendMessageToPeer({text: JSON.stringify(body)}, peerId, {enableHistoricalMessaging: true});
     return result.hasPeerReceived;
   }
 }

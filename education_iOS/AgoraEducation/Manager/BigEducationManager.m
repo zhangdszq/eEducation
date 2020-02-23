@@ -15,6 +15,8 @@
 #import "WhiteManager.h"
 #import "RTCManager.h"
 
+#import "AppDelegate.h"
+
 @interface BigEducationManager()<SignalManagerDelegate, WhiteManagerDelegate, RTCManagerDelegate>
 
 @property (nonatomic, strong) SignalManager *signalManager;
@@ -29,6 +31,14 @@
 @end
 
 @implementation BigEducationManager
+
+- (instancetype)init {
+    if (self = [super init]){
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onWillTerminate) name:NOTICE_KEY_ON_WILL_TERMINATE object:nil];
+    }
+    return self;
+}
 
 -(void)initSessionModel {
     self.teacherModel = [TeacherModel new];
@@ -236,7 +246,6 @@
     [self.rtcManager initEngineKit:appid];
     [self.rtcManager setChannelProfile:(AgoraChannelProfileLiveBroadcasting)];
     [self.rtcManager enableVideo];
-    [self.rtcManager startPreview];
     [self.rtcManager enableWebSdkInteroperability:YES];
     [self.rtcManager enableDualStreamMode:YES];
     [self setRTCClientRole: role];
@@ -258,6 +267,30 @@
 
 - (void)setupRTCVideoCanvas:(RTCVideoCanvasModel *) model {
     
+    RTCVideoSessionModel *currentSessionModel;
+    RTCVideoSessionModel *removeSessionModel;
+    for (RTCVideoSessionModel *videoSessionModel in self.rtcVideoSessionModels) {
+        // view rerender
+        if(videoSessionModel.videoCanvas.view == model.videoView){
+            videoSessionModel.videoCanvas.view = nil;
+            if(videoSessionModel.uid == self.signalManager.messageModel.uid.integerValue) {
+                [self.rtcManager setupLocalVideo:videoSessionModel.videoCanvas];
+            } else {
+                [self.rtcManager setupRemoteVideo:videoSessionModel.videoCanvas];
+            }
+            removeSessionModel = videoSessionModel;
+
+        } else if(videoSessionModel.uid == model.uid){
+            videoSessionModel.videoCanvas.view = nil;
+            if(videoSessionModel.uid == self.signalManager.messageModel.uid.integerValue) {
+                [self.rtcManager setupLocalVideo:videoSessionModel.videoCanvas];
+            } else {
+                [self.rtcManager setupRemoteVideo:videoSessionModel.videoCanvas];
+            }
+            currentSessionModel = videoSessionModel;
+        }
+    }
+    
     AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
     videoCanvas.uid = model.uid;
     videoCanvas.view = model.videoView;
@@ -274,16 +307,17 @@
         [self.rtcManager setupRemoteVideo: videoCanvas];
     }
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %d", model.uid];
-    NSArray<RTCVideoSessionModel *> *filteredArray = [self.rtcVideoSessionModels filteredArrayUsingPredicate:predicate];
-    NSAssert(filteredArray.count == 0, @"uid already exist");
-    
-    if(filteredArray.count == 0) {
-        RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
-        videoSessionModel.uid = model.uid;
-        videoSessionModel.videoCanvas = videoCanvas;
-        [self.rtcVideoSessionModels addObject:videoSessionModel];
+    if(removeSessionModel != nil){
+        [self.rtcVideoSessionModels removeObject:removeSessionModel];
     }
+    if(currentSessionModel != nil){
+        [self.rtcVideoSessionModels removeObject:currentSessionModel];
+    }
+    
+    RTCVideoSessionModel *videoSessionModel = [RTCVideoSessionModel new];
+    videoSessionModel.uid = model.uid;
+    videoSessionModel.videoCanvas = videoCanvas;
+    [self.rtcVideoSessionModels addObject:videoSessionModel];
 }
 
 - (void)removeRTCVideoCanvas:(NSUInteger) uid {
@@ -336,28 +370,32 @@
         [self.rtcDelegate rtcDidOfflineOfUid:uid];
     }
 }
-- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine networkTypeChangedToType:(AgoraNetworkType)type {
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality {
+    
+    // local user uid = 0
+    if(uid != 0){
+        return;
+    }
     
     RTCNetworkGrade grade = RTCNetworkGradeUnknown;
     
-    switch (type) {
-        case AgoraNetworkTypeUnknown:
-        case AgoraNetworkTypeMobile4G:
-        case AgoraNetworkTypeWIFI:
+    AgoraNetworkQuality quality = MAX(txQuality, rxQuality);
+    switch (quality) {
+        case AgoraNetworkQualityExcellent:
+        case AgoraNetworkQualityGood:
             grade = RTCNetworkGradeHigh;
             break;
-        case AgoraNetworkTypeMobile3G:
-        case AgoraNetworkTypeMobile2G:
+        case AgoraNetworkQualityPoor:
+        case AgoraNetworkQualityBad:
             grade = RTCNetworkGradeMiddle;
             break;
-        case AgoraNetworkTypeLAN:
-        case AgoraNetworkTypeDisconnected:
+        case AgoraNetworkQualityVBad:
+        case AgoraNetworkQualityDown:
             grade = RTCNetworkGradeLow;
             break;
         default:
             break;
     }
-    
     if([self.rtcDelegate respondsToSelector:@selector(rtcNetworkTypeGrade:)]) {
         [self.rtcDelegate rtcNetworkTypeGrade:grade];
     }
@@ -445,20 +483,6 @@
 - (void)disableWhiteDeviceInputs:(BOOL)disable {
     [self.whiteManager disableDeviceInputs:disable];
 }
-
-- (void)setWhiteStrokeColor:(NSArray<NSNumber *>*)strokeColor {
-    self.whiteManager.whiteMemberState.strokeColor = strokeColor;
-    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
-}
-
-- (void)setWhiteApplianceName:(NSString *)applianceName {
-    self.whiteManager.whiteMemberState.currentApplianceName = applianceName;
-    [self.whiteManager setMemberState:self.whiteManager.whiteMemberState];
-}
-
-- (void)setWhiteMemberInput:(nonnull WhiteMemberState *)memberState {
-    [self.whiteManager setMemberState:memberState];
-}
 - (void)refreshWhiteViewSize {
     [self.whiteManager refreshViewSize];
 }
@@ -472,9 +496,6 @@
     }
 }
 
-- (void)setWhiteSceneIndex:(NSUInteger)index completionHandler:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completionHandler {
-    [self.whiteManager setSceneIndex:index completionHandler:completionHandler];
-}
 - (void)seekWhiteToTime:(CMTime)time completionHandler:(void (^ _Nonnull)(BOOL finished))completionHandler {
     
     if(self.whiteManager.combinePlayer != nil) {
@@ -499,8 +520,13 @@
         [self.whiteManager pause];
     }
 }
+
 - (void)stopWhite {
     [self.whiteManager stop];
+}
+
+- (void)disableCameraTransform:(BOOL)disableCameraTransform {
+    [self.whiteManager disableCameraTransform:disableCameraTransform];
 }
 
 - (NSTimeInterval)whiteTotleTimeDuration {
@@ -599,10 +625,18 @@ The RoomState property in the room will trigger this callback when it changes.
 }
 
 - (void)releaseResources {
+
     for (RTCVideoSessionModel *model in self.rtcVideoSessionModels){
         model.videoCanvas.view = nil;
-        model.videoCanvas = nil;
+        
+        if(model.uid == self.signalManager.messageModel.uid.integerValue) {
+            [self.rtcManager setupLocalVideo:model.videoCanvas];
+        } else {
+            [self.rtcManager setupRemoteVideo:model.videoCanvas];
+        }
     }
+    [self.rtcVideoSessionModels removeAllObjects];
+    
     [self initSessionModel];
     
     // release rtc
@@ -613,6 +647,11 @@ The RoomState property in the room will trigger this callback when it changes.
     
     // release signal
     [self releaseSignalResources];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self releaseResources];
 }
 
 @end

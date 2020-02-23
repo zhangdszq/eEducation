@@ -16,18 +16,17 @@
                 <rect key="frame" x="0.0" y="0.0" width="423" height="132"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gfD-8a-Z6k">
-                        <rect key="frame" x="30" y="56" width="200" height="20"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gfD-8a-Z6k">
+                        <rect key="frame" x="30" y="56" width="269" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="xi4-Cu-Bac"/>
-                            <constraint firstAttribute="width" constant="200" id="yPa-1q-LUe"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.011764705882352941" green="0.011764705882352941" blue="0.011764705882352941" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QaQ-dl-rwI">
-                        <rect key="frame" x="370" y="51" width="30" height="30"/>
+                        <rect key="frame" x="380" y="51" width="30" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="kdG-l4-4qZ"/>
                             <constraint firstAttribute="width" constant="30" id="n6A-QK-wyX"/>
@@ -35,18 +34,30 @@
                         <state key="normal" image="icon-camera-dark"/>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yko-zu-lbG">
-                        <rect key="frame" x="326" y="51" width="30" height="30"/>
+                        <rect key="frame" x="345" y="51" width="30" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="DXW-7E-MY4"/>
                             <constraint firstAttribute="width" constant="30" id="su1-Ai-QiR"/>
                         </constraints>
                         <state key="normal" image="icon-speaker3-max"/>
                     </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I4M-4f-Gxw">
+                        <rect key="frame" x="309" y="51" width="30" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="GwH-PX-zBf"/>
+                            <constraint firstAttribute="width" constant="30" id="tF6-zq-7nA"/>
+                        </constraints>
+                        <state key="normal" image="icon-white-disconnect"/>
+                        <state key="selected" image="icon-white-connect"/>
+                    </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="QaQ-dl-rwI" firstAttribute="leading" secondItem="Yko-zu-lbG" secondAttribute="trailing" constant="14" id="QAD-DO-2fE"/>
+                    <constraint firstItem="I4M-4f-Gxw" firstAttribute="leading" secondItem="gfD-8a-Z6k" secondAttribute="trailing" constant="10" id="G6A-O8-UBu"/>
+                    <constraint firstItem="QaQ-dl-rwI" firstAttribute="leading" secondItem="Yko-zu-lbG" secondAttribute="trailing" constant="5" id="QAD-DO-2fE"/>
                     <constraint firstItem="gfD-8a-Z6k" firstAttribute="leading" secondItem="KDU-np-vTy" secondAttribute="leadingMargin" constant="10" id="Xb6-hF-8jX"/>
-                    <constraint firstAttribute="trailing" secondItem="QaQ-dl-rwI" secondAttribute="trailing" constant="23" id="ggv-RY-1Zr"/>
+                    <constraint firstAttribute="trailing" secondItem="QaQ-dl-rwI" secondAttribute="trailing" constant="13" id="ggv-RY-1Zr"/>
+                    <constraint firstItem="I4M-4f-Gxw" firstAttribute="centerY" secondItem="KDU-np-vTy" secondAttribute="centerY" id="hZX-Yf-X2D"/>
+                    <constraint firstItem="Yko-zu-lbG" firstAttribute="leading" secondItem="I4M-4f-Gxw" secondAttribute="trailing" constant="6" id="jfp-iG-0jE"/>
                 </constraints>
             </tableViewCellContentView>
             <constraints>
@@ -57,6 +68,7 @@
             <connections>
                 <outlet property="muteAudioButton" destination="Yko-zu-lbG" id="gb8-0i-Dgu"/>
                 <outlet property="muteVideoButton" destination="QaQ-dl-rwI" id="1rY-WJ-zyG"/>
+                <outlet property="muteWhiteButton" destination="I4M-4f-Gxw" id="Ul2-oo-MlV"/>
                 <outlet property="nameLabel" destination="gfD-8a-Z6k" id="FpN-LJ-oO0"/>
             </connections>
             <point key="canvasLocation" x="141.30434782608697" y="20.758928571428569"/>
@@ -65,5 +77,7 @@
     <resources>
         <image name="icon-camera-dark" width="30" height="30"/>
         <image name="icon-speaker3-max" width="30" height="30"/>
+        <image name="icon-white-connect" width="32" height="32"/>
+        <image name="icon-white-disconnect" width="32" height="32"/>
     </resources>
 </document>

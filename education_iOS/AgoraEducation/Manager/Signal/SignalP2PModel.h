@@ -25,7 +25,9 @@ typedef NS_ENUM(NSInteger, SignalP2PType) {
     SignalP2PTypeReject = 107,
     SignalP2PTypeCancel = 108,
     SignalP2PTypeMuteChat = 109,
-    SignalP2PTypeUnMuteChat = 110
+    SignalP2PTypeUnMuteChat = 110,
+    SignalP2PTypeMuteBoard = 200,
+    SignalP2PTypeUnMuteBoard = 201
 };
 
 NS_ASSUME_NONNULL_BEGIN

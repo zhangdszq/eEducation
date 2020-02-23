@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pause;
 - (void)combinePause;
 - (void)stop;
+- (void)disableCameraTransform:(BOOL)disableCameraTransform;
 
 - (NSTimeInterval)timeDuration;
 
