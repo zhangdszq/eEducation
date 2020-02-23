@@ -1,43 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".room.fragment.ChatroomFragment">
+    android:background="@color/white">
 
-    <ListView
-        android:id="@+id/lv_msg"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/line"
         android:layout_alignParentTop="true"
-        android:divider="@color/transparent"
-        android:dividerHeight="0dp"
-        android:listSelector="@color/transparent"
         android:paddingStart="@dimen/dp_10"
-        android:paddingEnd="@dimen/dp_10"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
+        android:paddingEnd="@dimen/dp_10" />
 
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"
-        android:layout_above="@id/edt_send_msg"
+        android:layout_above="@id/edit_send_msg"
         android:background="@color/gray_DBE2E5" />
 
-    <EditText
-        android:id="@+id/edt_send_msg"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edit_send_msg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_34"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/dp_10"
-        android:background="@drawable/btn_circle_stroke_1_color_dbe2e5"
-        android:enabled="false"
+        android:background="@drawable/bg_chat_edit"
         android:hint="@string/hint_im_message"
         android:imeOptions="actionSend"
-        android:paddingStart="@dimen/dp_13" />
+        android:paddingStart="@dimen/dp_13"
+        android:paddingEnd="@dimen/dp_13" />
 
     <FrameLayout
         android:id="@+id/layout_empty"
@@ -46,11 +39,11 @@
         android:background="@color/white"
         android:visibility="gone">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/pic_message" />
+            android:src="@drawable/img_message" />
 
     </FrameLayout>
 
