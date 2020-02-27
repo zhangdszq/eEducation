@@ -206,9 +206,9 @@ class AgoraRTCClient {
         this.subscribeLocalStreamEvents();
         if (data.audioOutput && data.audioOutput.deviceId) {
           this.setAudioOutput(data.audioOutput.deviceId).then(() => {
-            resolve();
+            console.log("setAudioOutput success", data.audioOutput)
           }).catch((err: any) => {
-            reject(err);
+            console.warn("setAudioOutput failed", err, JSON.stringify(err))
           })
         }
         resolve();
@@ -320,20 +320,41 @@ export default class AgoraWebClient {
   }
 
   async getDevices () {
-    const client = new AgoraRTCClient();
-    await client.initClient(APP_ID);
-    await client.createLocalStream({
-      streamID: 0,
-      audio: true,
-      video: true,
-      microphoneId: '',
-      cameraId: ''
-    });
-    setTimeout(() => {
-      client.destroyLocalStream();
-    }, 80);
-    return client.getDevices();
+    const client = new AgoraRTCClient()
+    try {
+      const devices = await client.getDevices()
+
+      const cameraList = devices.filter((it: any) => it.kind === 'videoinput')
+      const microphoneList = devices.filter((it: any) => it.kind === 'audioinput')
+
+      if (!cameraList.length) {
+        throw 'cameraList is empty'
+      }
+
+      if (!microphoneList.length) {
+        throw 'microphoneList is empty'
+      }
+
+      const cameraId = cameraList[0].deviceId
+      const microphoneId = microphoneList[0].deviceId
+      await client.initClient(APP_ID)
+      const params = {
+        streamID: 0,
+        audio: true,
+        video: true,
+        screen: false,
+        microphoneId,
+        cameraId,
+      }
+      await client.createLocalStream(params)
+      return devices
+    } catch(err) {
+      throw err
+    } finally {
+      client.destroyLocalStream()
+    }
   }
+
 
   async joinChannel({
     uid, channel, dual, token
@@ -378,6 +399,17 @@ export default class AgoraWebClient {
       await this.unpublishLocalStream();
       console.log("[agora-web] unpublished", this.published);
     }
+
+    if (!data.cameraId || !data.microphoneId) {
+      let devices = await this.getDevices()
+      if (!data.cameraId) {
+        data.cameraId = devices.filter((it: any) => it.kind === 'videoinput')[0].deviceId
+      }
+      if (!data.microphoneId) {
+        data.microphoneId = devices.filter((it: any) => it.kind === 'audioinput')[0].deviceId
+      }
+    }
+
     await this.rtc.createLocalStream(data);
     await this.rtc.publish();
     this.published = true;
