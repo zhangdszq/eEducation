@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+
+Properties properties = new Properties()
+InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
+properties.load(inputStream)
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        applicationId "io.agora.education"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "5.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(properties.getProperty('storeFile'))
+            storePassword properties.getProperty('storePassword')
+            keyAlias properties.getProperty('keyAlias')
+            keyPassword properties.getProperty('keyPassword')
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            applicationIdSuffix ".debug"
+            buildConfigField 'String', 'API_BASE_URL', '"http://115.231.168.26:8080/"'
+            buildConfigField 'String', 'POLICY_URL', '"https://www.agora.io/privacy-policy"'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'API_BASE_URL', '"https://solutions-api.sh.agoralab.co/"'
+            buildConfigField 'String', 'POLICY_URL', '"https://www.agora.io/privacy-policy"'
+        }
+    }
+
+    flavorDimensions "app"
+    productFlavors {
+        normal {
+            dimension "app"
+            applicationId "io.agora.education"
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDir "src/main/java"
+            res.srcDir "src/main/res"
+            jniLibs.srcDir "src/main/jniLibs"
+            manifest.srcFile "src/main/AndroidManifest.xml"
+            assets.srcDir "src/main/assets"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':base')
+    implementation project(':sdk')
+    implementation project(':whiteboard')
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.8.1'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.0-beta11'
+
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+}
