@@ -3,9 +3,10 @@ import AgoraRTC from 'agora-rtc-sdk';
 import { roomStore, RoomStore } from '../stores/room';
 import { isEmpty } from 'lodash';
 
-if (process.env.REACT_APP_AGORA_LOG !== 'true') {
-  AgoraRTC.Logger.setLogLevel(AgoraRTC.Logger.NONE);
-}
+// TODO: upload log file
+// TODO: 建议开启上传日志
+AgoraRTC.Logger.enableLogUpload()
+
 export interface AgoraStreamSpec {
   streamID: number
   video: boolean
