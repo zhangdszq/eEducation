@@ -25,9 +25,9 @@ MaterialsAreaText = "Materials area";
 ChatroomText = "Chatroom";
 StudentText = "Student";
 
-OneToOneText = "One-to-One";
-SmallClassText = "Small Class";
-LargeClassText = "Large Class";
+OneToOneText = "One to One Classroom";
+SmallClassText = "Small Classroom";
+LargeClassText = "Lecture Hall";
 
 UserNameVerifyText = "User name must be within 11 digits or English characters";
 RoomTypeVerifyText = "Please select a room type";
