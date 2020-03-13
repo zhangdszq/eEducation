@@ -18,7 +18,7 @@ const en = {
     'api_login_failured': 'Join Failured, Reason: {reason}',
     'confirm': 'Confirm',
     'cancel': 'Cancel',
-    'quit_room': 'Are U sure to exit the classroom?',
+    'quit_room': 'Are you sure to exit the classroom?',
     'kick': 'kicked',
     'login_failure': 'login failure',
     'whiteboard_lock': 'Whiteboard follow',
@@ -64,7 +64,7 @@ const en = {
     'class_start': 'Class start'
   },
   'home': {
-    'entry-home': 'Enter in Home',
+    'entry-home': 'Join Classroom',
     'teacher': 'teacher',
     'student': 'student',
     'cover_class': 'cover-en',
@@ -73,7 +73,7 @@ const en = {
     'room_type': 'Room Type',
     'room_join': 'Join',
     'short_title': {
-      'title': 'Agora Online Classroom',
+      'title': 'Agora Cloud Class',
       'subtitle': 'Powered by agora.io, a leading online learning engagement platform',
     },
     'name_too_long': 'name too long, should <= 20 characters',
