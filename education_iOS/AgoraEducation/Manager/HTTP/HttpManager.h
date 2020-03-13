@@ -10,18 +10,21 @@
 
 #ifdef DEBUG
 
-#define HTTP_BASE_URL @"http://115.231.168.26:8080/edu"
+#define HTTP_BASE_URL @"http://115.231.168.26:8080"
 
 #else
 
-#define HTTP_BASE_URL @"https://solutions-api.sh.agoralab.co/edu"
+#define HTTP_BASE_URL @"https://solutions-api.sh.agoralab.co"
 
 #endif
 
 // http: get app config
-#define HTTP_GET_CONFIG @""HTTP_BASE_URL"/v1/app/version"
+#define HTTP_GET_CONFIG @""HTTP_BASE_URL"/edu/v1/app/version"
 
 @interface HttpManager : NSObject
+
++ (void)setHttpBaseUrl:(NSString *)url;
++ (NSString *)getHttpBaseUrl;
 
 + (void)get:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary<NSString*, NSString*> *)headers success:(void (^)(id))success failure:(void (^)(NSError *))failure;
 

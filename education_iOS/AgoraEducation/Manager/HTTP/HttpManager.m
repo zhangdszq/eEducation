@@ -12,6 +12,7 @@
 
 @interface HttpManager ()
 
+@property (nonatomic, copy) NSString *baseURL;
 @property (nonatomic,strong) AFHTTPSessionManager *sessionManager;
 
 @end
@@ -27,6 +28,22 @@ static HttpManager *manager = nil;
         }
         return manager;
     }
+}
+
++ (void)setHttpBaseUrl:(NSString *)url {
+    if(url != nil && url.length > 0) {
+        
+        HttpManager.shareManager.baseURL = url;
+        NSString *lastString = [url substringFromIndex:url.length-1];
+        if([lastString isEqualToString:@"/"]) {
+            HttpManager.shareManager.baseURL = [url substringWithRange:NSMakeRange(0, [url length] - 1)];
+        }
+    }
+}
+
+
++ (NSString *)getHttpBaseUrl {
+    return HttpManager.shareManager.baseURL;
 }
 
 - (void)initSessionManager {
