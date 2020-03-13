@@ -1,6 +1,6 @@
 {
   "name": "agora-edu-web",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "private": true,
   "homepage": ".",
   "main": "./src/index.tsx",
@@ -98,7 +98,7 @@
     "rxjs": "^6.5.3",
     "typescript": "^3.6.4",
     "uuid": "^3.3.3",
-    "white-web-sdk": "2.6.0",
+    "white-web-sdk": "2.6.4",
     "@netless/white-audio-plugin": "^1.1.10",
     "@netless/white-video-plugin": "^1.1.17"
   },
