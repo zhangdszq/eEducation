@@ -135,7 +135,7 @@ function HomePage() {
           <div className="setting-container">
             <Icon className="icon-setting" onClick={handleSetting}/>
             <LangSelect
-            value={GlobalStorage.getLanguage().language !== 'zh-CN' ? 1 : 0}
+            value={GlobalStorage.getLanguage().language.match(/^zh/) ? 0 : 1 }
             onChange={(evt: any) => {
               const value = evt.target.value;
               if (value === 0) {
