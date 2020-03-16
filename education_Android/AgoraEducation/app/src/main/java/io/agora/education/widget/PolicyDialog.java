@@ -55,14 +55,13 @@ public class PolicyDialog extends ConfirmDialog implements ConfirmDialog.DialogC
     }
 
     @Override
-    public void clickConfirm() {
-        setNeedShow(false);
-        dismiss();
-    }
-
-    @Override
-    public void clickCancel() {
-        System.exit(0);
+    public void onClick(boolean confirm) {
+        if (confirm) {
+            setNeedShow(false);
+            dismiss();
+        } else {
+            System.exit(0);
+        }
     }
 
 }

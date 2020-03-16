@@ -40,6 +40,10 @@
     return self;
 }
 
+- (void)onWillTerminate {
+    [self releaseResources];
+}
+
 -(void)initSessionModel {
     self.teacherModel = [TeacherModel new];
     self.studentModel = [StudentModel new];

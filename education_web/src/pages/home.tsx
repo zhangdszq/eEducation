@@ -39,6 +39,7 @@ const defaultState: SessionInfo = {
 }
 
 function HomePage() {
+  document.title = t(`home.short_title.title`)
   const classes = useStyles();
 
   const history = useHistory();
