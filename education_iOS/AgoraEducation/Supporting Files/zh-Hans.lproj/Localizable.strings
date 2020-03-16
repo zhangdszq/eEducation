@@ -25,7 +25,7 @@ MaterialsAreaText = "教材区";
 ChatroomText = "聊天室";
 StudentText = "学生";
 
-OneToOneText = "1V1";
+OneToOneText = "一对一";
 SmallClassText = "小班课";
 LargeClassText = "大班课";
 

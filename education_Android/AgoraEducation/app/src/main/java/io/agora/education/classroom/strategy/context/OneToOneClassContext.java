@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import io.agora.base.Callback;
-import io.agora.education.classroom.bean.channel.ChannelInfo;
+import io.agora.education.EduApplication;
 import io.agora.education.classroom.bean.user.Student;
 import io.agora.education.classroom.bean.user.Teacher;
 import io.agora.education.classroom.bean.user.User;
@@ -27,7 +27,7 @@ public class OneToOneClassContext extends ClassContext {
                 channelStrategy.queryOnlineStudentNum(new Callback<Integer>() {
                     @Override
                     public void onSuccess(Integer integer) {
-                        callback.onSuccess(integer < ChannelInfo.CONFIG.one2OneStudentLimit);
+                        callback.onSuccess(integer < EduApplication.instance.config.one2OneStudentLimit);
                     }
 
                     @Override

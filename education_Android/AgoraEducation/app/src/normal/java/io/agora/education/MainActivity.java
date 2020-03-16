@@ -20,20 +20,17 @@ import io.agora.base.Callback;
 import io.agora.base.ToastManager;
 import io.agora.base.network.RetrofitManager;
 import io.agora.education.base.BaseActivity;
+import io.agora.education.base.BaseCallback;
 import io.agora.education.broadcast.DownloadReceiver;
 import io.agora.education.classroom.BaseClassActivity;
 import io.agora.education.classroom.LargeClassActivity;
 import io.agora.education.classroom.OneToOneClassActivity;
 import io.agora.education.classroom.SmallClassActivity;
 import io.agora.education.classroom.annotation.ClassType;
-import io.agora.education.classroom.bean.channel.ChannelInfo;
 import io.agora.education.classroom.bean.user.Student;
 import io.agora.education.classroom.strategy.context.ClassContext;
 import io.agora.education.classroom.strategy.context.ClassContextFactory;
 import io.agora.education.service.CommonService;
-import io.agora.education.service.bean.ResponseBody;
-import io.agora.education.service.bean.response.AppConfig;
-import io.agora.education.service.bean.response.AppVersion;
 import io.agora.education.util.AppUtil;
 import io.agora.education.util.CryptoUtil;
 import io.agora.education.widget.ConfirmDialog;
@@ -76,11 +73,6 @@ public class MainActivity extends BaseActivity {
 
         service = RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, CommonService.class);
         checkVersion();
-        // set default config
-        ChannelInfo.CONFIG = new AppConfig() {{
-            one2OneStudentLimit = 1;
-            smallClassStudentLimit = 16;
-        }};
 
         myUserId = (int) (System.currentTimeMillis() * 1000 % 1000000);
         RtmManager.instance().login(getString(R.string.agora_rtm_token), myUserId, null);
@@ -99,18 +91,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkVersion() {
-        service.appVersion("edu-demo").enqueue(new RetrofitManager.Callback<>(0, new Callback<ResponseBody<AppVersion>>() {
-            @Override
-            public void onSuccess(ResponseBody<AppVersion> res) {
-                AppVersion version = res.data;
-                if (version.forcedUpgrade != 0) {
-                    showAppUpgradeDialog(version.upgradeUrl, version.forcedUpgrade == 2);
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
+        service.appVersion("edu-demo").enqueue(new BaseCallback<>(data -> {
+            if (data != null && data.forcedUpgrade != 0) {
+                showAppUpgradeDialog(data.upgradeUrl, data.forcedUpgrade == 2);
             }
         }));
     }
@@ -118,19 +101,13 @@ public class MainActivity extends BaseActivity {
     private void showAppUpgradeDialog(String url, boolean isForce) {
         this.url = url;
         String content = getString(R.string.app_upgrade);
-        ConfirmDialog.DialogClickListener listener = new ConfirmDialog.DialogClickListener() {
-            @Override
-            public void clickConfirm() {
+        ConfirmDialog.DialogClickListener listener = confirm -> {
+            if (confirm) {
                 if (AppUtil.checkAndRequestAppPermission(MainActivity.this, new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                 }, REQUEST_CODE_DOWNLOAD)) {
                     receiver.downloadApk(MainActivity.this, url);
                 }
-            }
-
-            @Override
-            public void clickCancel() {
-
             }
         };
         ConfirmDialog dialog;
