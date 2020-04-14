@@ -25,6 +25,8 @@
     <a href="https://github.com/AgoraIO-Usecase/eEducation/issues">Report Bug</a>
     ·
     <a href="https://github.com/AgoraIO-Usecase/eEducation/issues">Request Feature</a>
+    ·
+    <a href="https://github.com/AgoraIO-Usecase/eEducation/wiki/eEducation-Home-Page">Wiki</a>
   </p>
 </p>
 
