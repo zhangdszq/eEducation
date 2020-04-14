@@ -75,8 +75,8 @@
     }
   },
   "dependencies": {
-    "@material-ui/core": "^4.5.1",
-    "@material-ui/icons": "^4.5.1",
+    "@material-ui/core": "4.9.1",
+    "@material-ui/icons": "4.9.1",
     "@netless/react-seek-slider": "^1.0.4",
     "agora-electron-sdk": "2.9.1-beta.4",
     "agora-rtc-sdk": "3.0.0",
