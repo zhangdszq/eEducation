@@ -90,6 +90,12 @@ REACT_APP_NETLESS_APP_JOIN_API=https://cloudcapiv4.herewhite.com/room/join?token
 REACT_APP_AGORA_RECORDING_SERVICE_URL=https://api.agora.io/v1/apps/%s/cloud_recording/
 # 存放云录制OSS的CDN地址
 REACT_APP_AGORA_RECORDING_OSS_URL=云录制OSS地址
+# Electron 监听Webpack地址 仅用于electron项目
+ELECTRON_START_URL=http://localhost:3000
+# agora customer id需要从开发者console dashboard后台获取
+REACT_APP_AGORA_CUSTOMER_ID=你的开发者账户关联的customer_id
+# agora customer certificate 需要从开发者console dashboard后台获取
+REACT_APP_AGORA_CUSTOMER_CERTIFICATE=你的开发者账户关联的customer_certificate
 # 下列OSS相关的信息不建议放在前端存储
 REACT_APP_AGORA_OSS_BUCKET_NAME=你的oss名字
 REACT_APP_AGORA_OSS_BUCKET_FOLDER=你的oss存储目录
