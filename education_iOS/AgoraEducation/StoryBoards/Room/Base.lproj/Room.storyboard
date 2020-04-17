@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_5" orientation="landscape" appearance="light"/>
+    <device id="retina4_7" orientation="landscape" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
@@ -13,18 +13,18 @@
             <objects>
                 <viewController storyboardIdentifier="mcRoom" id="TUm-sE-AH2" customClass="MCViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CdO-8M-KYo">
-                        <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZC3-I1-kGQ" customClass="EENavigationView">
-                                <rect key="frame" x="44" y="0.0" width="808" height="30"/>
+                                <rect key="frame" x="0.0" y="0.0" width="667" height="30"/>
                                 <color key="backgroundColor" red="0.96078431372549022" green="0.96862745098039216" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="tDD-0G-Ump"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kdq-uH-xgO" customClass="MCTeacherVideoView">
-                                <rect key="frame" x="44" y="30" width="95" height="70"/>
+                                <rect key="frame" x="0.0" y="30" width="95" height="70"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="n2i-7a-LKs"/>
@@ -32,18 +32,18 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xwj-7G-fZc">
-                                <rect key="frame" x="0.0" y="100" width="896" height="314"/>
+                                <rect key="frame" x="0.0" y="100" width="667" height="275"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="awo-2R-jQ0" customClass="MCStudentVideoListView">
-                                <rect key="frame" x="140" y="30" width="712" height="70"/>
+                                <rect key="frame" x="96" y="30" width="571" height="70"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="uXh-0a-xhb"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vxR-tG-YEp" customClass="EEWhiteboardTool">
-                                <rect key="frame" x="54" y="110" width="46" height="214"/>
+                                <rect key="frame" x="10" y="110" width="46" height="214"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="214" id="BNJ-Wg-8jp"/>
@@ -51,7 +51,7 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NVS-Me-vgb" customClass="EEColorShowView">
-                                <rect key="frame" x="110" y="200" width="220" height="124"/>
+                                <rect key="frame" x="66" y="200" width="220" height="124"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="220" id="AEa-m0-6lK"/>
@@ -59,7 +59,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qP8-rT-5bW">
-                                <rect key="frame" x="630" y="100" width="222" height="314"/>
+                                <rect key="frame" x="445" y="100" width="222" height="275"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZbE-c2-jxD" customClass="MCSegmentedView">
                                         <rect key="frame" x="0.0" y="0.0" width="202" height="40"/>
@@ -69,11 +69,11 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UhH-8E-NlU" customClass="EEMessageView">
-                                        <rect key="frame" x="0.0" y="40" width="222" height="218"/>
+                                        <rect key="frame" x="0.0" y="40" width="222" height="179"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6jm-dZ-OEY" customClass="MCStudentListView">
-                                        <rect key="frame" x="0.0" y="40" width="222" height="274"/>
+                                        <rect key="frame" x="0.0" y="40" width="222" height="235"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                     </view>
                                 </subviews>
@@ -94,7 +94,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MDY-GA-tjB">
-                                <rect key="frame" x="822" y="110" width="30" height="30"/>
+                                <rect key="frame" x="637" y="110" width="30" height="30"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="IXt-2s-LrT"/>
@@ -106,7 +106,7 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rf8-Xu-Hjs" customClass="EEPageControlView">
-                                <rect key="frame" x="376" y="337" width="244" height="46"/>
+                                <rect key="frame" x="191" y="319" width="244" height="46"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="46" id="O4n-Tr-IAl"/>
@@ -114,11 +114,11 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ibz-2e-QTK">
-                                <rect key="frame" x="100" y="100" width="752" height="314"/>
+                                <rect key="frame" x="56" y="100" width="611" height="275"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EHE-um-Y9E" customClass="EEChatTextFiled">
-                                <rect key="frame" x="630" y="358" width="222" height="56"/>
+                                <rect key="frame" x="445" y="319" width="222" height="56"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="222" id="Nrs-ys-7Ux"/>
@@ -126,7 +126,7 @@
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdO-FK-fiD">
-                                <rect key="frame" x="323" y="120" width="250" height="34"/>
+                                <rect key="frame" x="208.5" y="120" width="250" height="34"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="2gZ-e3-gBJ"/>
@@ -202,25 +202,25 @@
             <objects>
                 <viewController storyboardIdentifier="oneToOneRoom" id="4kJ-eb-zFy" customClass="OneToOneViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="0QO-SV-bcF">
-                        <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BeR-4x-kaE" customClass="EENavigationView">
-                                <rect key="frame" x="44" y="0.0" width="808" height="30"/>
+                                <rect key="frame" x="0.0" y="0.0" width="667" height="30"/>
                                 <color key="backgroundColor" red="0.96078431372549022" green="0.96862745098039216" blue="0.97254901960784312" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Ahl-83-Ulx"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xny-i6-BC3">
-                                <rect key="frame" x="236" y="30" width="616" height="384"/>
+                                <rect key="frame" x="172.5" y="30" width="494.5" height="345"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q06-0V-osc">
-                                <rect key="frame" x="630" y="30" width="222" height="363"/>
+                                <rect key="frame" x="445" y="30" width="222" height="345"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5BX-sj-rqt" customClass="EEMessageView">
-                                        <rect key="frame" x="0.0" y="41" width="222" height="268"/>
+                                        <rect key="frame" x="0.0" y="41" width="222" height="250"/>
                                         <color key="backgroundColor" systemColor="systemBrownColor" red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ChatRoom" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oiE-cC-ty9">
@@ -241,7 +241,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q6b-b8-ijW">
-                                        <rect key="frame" x="0.0" y="0.0" width="1" height="307"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="1" height="289"/>
                                         <color key="backgroundColor" red="0.85882352939999995" green="0.8862745098" blue="0.8980392157" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="1" id="QCs-pE-Sls"/>
@@ -267,21 +267,21 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7UW-EO-MKZ" customClass="OTOTeacherView">
-                                <rect key="frame" x="44" y="30" width="192" height="192"/>
+                                <rect key="frame" x="0.0" y="30" width="172.5" height="172.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="7UW-EO-MKZ" secondAttribute="height" multiplier="1:1" id="GLh-I1-NJS"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ie6-9R-0Rb" customClass="OTOStudentView">
-                                <rect key="frame" x="44" y="222" width="192" height="192"/>
+                                <rect key="frame" x="0.0" y="202.5" width="172.5" height="172.5"/>
                                 <color key="backgroundColor" systemColor="tertiaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="ie6-9R-0Rb" secondAttribute="height" multiplier="1:1" id="XX1-S7-ruT"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZYw-LM-zX3" customClass="EEWhiteboardTool">
-                                <rect key="frame" x="246" y="40" width="46" height="214"/>
+                                <rect key="frame" x="182.5" y="40" width="46" height="214"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="c4c-2W-LN8"/>
@@ -289,7 +289,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zlQ-MN-29k" customClass="EEPageControlView">
-                                <rect key="frame" x="376" y="348" width="244" height="46"/>
+                                <rect key="frame" x="191" y="309" width="244" height="46"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="46" id="HSK-MY-0H3"/>
@@ -297,7 +297,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bgs-EZ-Kzx" customClass="EEChatTextFiled">
-                                <rect key="frame" x="630" y="358" width="222" height="56"/>
+                                <rect key="frame" x="445" y="319" width="222" height="56"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="222" id="7Iu-Na-qtc"/>
@@ -305,7 +305,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XxH-jL-deb">
-                                <rect key="frame" x="823" y="35" width="29" height="29"/>
+                                <rect key="frame" x="638" y="35" width="29" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="29" id="7hw-26-Bq3"/>
                                     <constraint firstAttribute="width" constant="29" id="rOt-Jr-YHQ"/>
@@ -316,7 +316,7 @@
                                 </connections>
                             </button>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fga-Xt-gl6" customClass="EEColorShowView">
-                                <rect key="frame" x="298" y="130" width="220" height="124"/>
+                                <rect key="frame" x="234.5" y="130" width="220" height="124"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="220" id="RAo-up-TvK"/>
@@ -324,7 +324,7 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFF-yv-psL">
-                                <rect key="frame" x="236" y="30" width="616" height="384"/>
+                                <rect key="frame" x="172.5" y="30" width="494.5" height="345"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                         </subviews>
@@ -391,11 +391,11 @@
             <objects>
                 <viewController storyboardIdentifier="bcroom" id="9wq-TI-HdZ" customClass="BCViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="sPV-E2-eMd">
-                        <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f9x-Vm-XDS" customClass="EETeacherVideoView">
-                                <rect key="frame" x="629" y="44" width="223" height="125"/>
+                                <rect key="frame" x="444" y="44" width="223" height="125"/>
                                 <color key="backgroundColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="213" id="4F4-IS-Rv2"/>
@@ -407,6 +407,12 @@
                                         <exclude reference="4F4-IS-Rv2"/>
                                         <exclude reference="Edg-Cu-2iD"/>
                                         <exclude reference="JvZ-47-Ihk"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="Edg-Cu-2iD"/>
+                                        <include reference="JvZ-47-Ihk"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact-widthClass=regular">
@@ -422,7 +428,7 @@
                                 </variation>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cHf-i5-uOr" customClass="BCNavigationView">
-                                <rect key="frame" x="44" y="0.0" width="808" height="44"/>
+                                <rect key="frame" x="0.0" y="0.0" width="667" height="44"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="YRr-UI-aBE"/>
@@ -432,6 +438,11 @@
                                     <mask key="constraints">
                                         <exclude reference="YRr-UI-aBE"/>
                                         <exclude reference="aKy-d5-QBu"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="YRr-UI-aBE"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact-widthClass=regular">
@@ -446,11 +457,11 @@
                                 </variation>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fi1-5a-0qF">
-                                <rect key="frame" x="44" y="44" width="584" height="370"/>
+                                <rect key="frame" x="0.0" y="44" width="443" height="331"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sAa-4d-5e0" customClass="BCStudentVideoView">
-                                <rect key="frame" x="114" y="54" width="85" height="120"/>
+                                <rect key="frame" x="70" y="54" width="85" height="120"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="REh-Ds-1QB"/>
@@ -458,11 +469,11 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ec7-A3-q2A">
-                                <rect key="frame" x="44" y="44" width="584" height="370"/>
+                                <rect key="frame" x="0.0" y="44" width="443" height="331"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xUa-Gt-BRi">
-                                <rect key="frame" x="572" y="358" width="46" height="46"/>
+                                <rect key="frame" x="387" y="319" width="46" height="46"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="46" id="Dp4-Rb-vr8"/>
                                     <constraint firstAttribute="width" constant="46" id="Gj7-Ez-tD5"/>
@@ -473,11 +484,11 @@
                                 </connections>
                             </button>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UrG-kJ-ucf" customClass="EEMessageView">
-                                <rect key="frame" x="629" y="169" width="223" height="191"/>
+                                <rect key="frame" x="444" y="169" width="223" height="152"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y97-lA-yO7" customClass="BCSegmentedView">
-                                <rect key="frame" x="629" y="169" width="223" height="0.0"/>
+                                <rect key="frame" x="444" y="169" width="223" height="0.0"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="4N7-0U-kod"/>
@@ -487,6 +498,11 @@
                                     <mask key="constraints">
                                         <exclude reference="4N7-0U-kod"/>
                                         <exclude reference="rHX-s3-qp4"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact-widthClass=compact" hidden="YES">
+                                    <mask key="constraints">
+                                        <include reference="4N7-0U-kod"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact-widthClass=regular" hidden="YES">
@@ -501,14 +517,14 @@
                                 </variation>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dyy-96-CLV" customClass="EEChatTextFiled">
-                                <rect key="frame" x="629" y="360" width="223" height="54"/>
+                                <rect key="frame" x="444" y="321" width="223" height="54"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="54" id="oSu-AC-UKV"/>
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cmR-yN-DIn">
-                                <rect key="frame" x="341" y="64" width="214" height="34"/>
+                                <rect key="frame" x="226.5" y="64" width="214" height="34"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="8gn-7n-91O"/>
@@ -519,7 +535,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vhj-dL-2RV">
-                                <rect key="frame" x="628" y="44" width="1" height="370"/>
+                                <rect key="frame" x="443" y="44" width="1" height="331"/>
                                 <color key="backgroundColor" red="0.85882352939999995" green="0.8862745098" blue="0.8980392157" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="1" id="WiJ-Px-gqZ"/>
@@ -579,6 +595,13 @@
                                 <exclude reference="8ow-09-4qF"/>
                                 <exclude reference="azC-M6-XKY"/>
                                 <exclude reference="y7B-58-WSv"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact-widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="WAJ-dQ-QzN"/>
+                                <include reference="aoL-6p-g6X"/>
+                                <include reference="8ow-09-4qF"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact-widthClass=regular">
