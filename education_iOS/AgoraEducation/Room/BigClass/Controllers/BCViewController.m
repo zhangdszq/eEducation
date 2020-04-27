@@ -569,11 +569,11 @@
     {
         TeacherModel *sourceModel = sourceInfoModel.teacherModel;
         TeacherModel *currentModel = currentInfoModel.teacherModel;
-        if(![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
+        if(currentModel && ![sourceModel.whiteboard_uid isEqualToString:currentModel.whiteboard_uid]) {
             
             [self joinWhiteBoardRoomWithUID:currentModel.whiteboard_uid disableDevice:YES];
             
-        } else if(currentModel.whiteboard_uid.length > 0){
+        } else if(currentModel && currentModel.whiteboard_uid.length > 0){
                    
             [self.educationManager disableCameraTransform:currentModel.lock_board];
         }
