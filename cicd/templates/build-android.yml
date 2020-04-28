@@ -1,6 +1,6 @@
 parameters:
-displayName: ''
-workingDirectory: ''
+  displayName: ''
+  workingDirectory: ''
 
 jobs:
   - job: ${{ parameters.displayName }}_Build
