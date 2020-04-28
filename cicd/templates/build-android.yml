@@ -16,7 +16,7 @@ jobs:
       - bash: python ci.env.py
         env:
           configFile: 'app/src/normal/res/values/string_configs.xml'
-          configMap: '{"YOUR APP ID":"$(appId.demo)","YOUR AUTH":"$(auth.demo)","YOUR HOST":"$(host.debug)"}'
+          configMap: '{"YOUR APP ID":"$(appId.demo)","YOUR AUTH":"$(auth.demo)","YOUR HOST":"$(host.release)"}'
         workingDirectory: ${{ parameters.workingDirectory }}
 
       - bash: |
