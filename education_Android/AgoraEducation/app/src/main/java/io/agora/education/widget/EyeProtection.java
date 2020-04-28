@@ -6,13 +6,13 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import io.agora.education.R;
 import io.agora.base.PreferenceManager;
+import io.agora.education.R;
 import io.agora.education.util.StatusBarUtil;
 
 public class EyeProtection {
 
-    private static final String KEY_SP = EyeProtection.class.getName();
+    private static final String KEY_SP = EyeProtection.class.getSimpleName();
 
     public static class EyeProtectionView extends View {
         public EyeProtectionView(Context context) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 
 import androidx.appcompat.widget.AppCompatTextView;
@@ -38,8 +39,8 @@ public class TimeView extends AppCompatTextView {
         handler = new Handler();
         setGravity(Gravity.CENTER);
         setText(R.string.time_default);
-        setTextSize(12);
         Resources resources = getResources();
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen.sp_12));
         setTextColor(resources.getColor(R.color.gray_333333));
         setCompoundDrawablesRelativeWithIntrinsicBounds(resources.getDrawable(R.drawable.ic_time), null, null, null);
     }
@@ -49,7 +50,7 @@ public class TimeView extends AppCompatTextView {
     }
 
     public void setTime(long time) {
-        this.time = time;
+        this.time = time / 1000;
     }
 
     public boolean isStarted() {

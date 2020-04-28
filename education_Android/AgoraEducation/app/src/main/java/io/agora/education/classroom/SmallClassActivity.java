@@ -1,7 +1,9 @@
 package io.agora.education.classroom;
 
+import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,12 +16,10 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.agora.education.R;
 import io.agora.education.classroom.adapter.ClassVideoAdapter;
-import io.agora.education.classroom.annotation.ClassType;
-import io.agora.education.classroom.bean.user.Student;
-import io.agora.education.classroom.bean.user.User;
+import io.agora.education.classroom.bean.channel.Room;
+import io.agora.education.classroom.bean.channel.User;
 import io.agora.education.classroom.fragment.UserListFragment;
 import io.agora.education.classroom.strategy.context.SmallClassContext;
-import io.agora.rtc.Constants;
 
 public class SmallClassActivity extends BaseClassActivity implements SmallClassContext.SmallClassEventListener, TabLayout.OnTabSelectedListener {
 
@@ -41,7 +41,7 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
     @Override
     protected void initData() {
         super.initData();
-        adapter = new ClassVideoAdapter(getMyUserId());
+        adapter = new ClassVideoAdapter(getLocal().uid);
     }
 
     @Override
@@ -49,6 +49,15 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
         super.initView();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rcv_videos.setLayoutManager(layoutManager);
+        rcv_videos.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                if (parent.getChildAdapterPosition(view) > 0) {
+                    outRect.left = getResources().getDimensionPixelSize(R.dimen.dp_2_5);
+                }
+            }
+        });
         rcv_videos.setAdapter(adapter);
 
         layout_tab.addOnTabSelectedListener(this);
@@ -61,13 +70,8 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
     }
 
     @Override
-    protected Student getLocal() {
-        return new Student(getMyUserId(), getMyUserName(), Constants.CLIENT_ROLE_BROADCASTER);
-    }
-
-    @Override
     protected int getClassType() {
-        return ClassType.SMALL;
+        return Room.Type.SMALL;
     }
 
     @OnClick(R.id.iv_float)
@@ -79,13 +83,13 @@ public class SmallClassActivity extends BaseClassActivity implements SmallClassC
 
     @Override
     public void onUsersMediaChanged(List<User> users) {
-        adapter.setUsers(users);
+        adapter.setDiffNewData(users);
         userListFragment.setUserList(users);
     }
 
     @Override
     public void onGrantWhiteboard(boolean granted) {
-        whiteboardFragment.disableDeviceInputs(granted);
+        whiteboardFragment.disableDeviceInputs(!granted);
     }
 
     @Override

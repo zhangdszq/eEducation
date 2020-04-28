@@ -5,13 +5,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import io.agora.base.Callback;
-import io.agora.base.LogManager;
+import io.agora.log.LogManager;
 import io.agora.rtm.ChannelAttributeOptions;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
@@ -29,7 +30,7 @@ import io.agora.sdk.listener.RtmEventListener;
 
 public final class RtmManager extends SdkManager<RtmClient> implements RtmClientListener, RtmChannelListener {
 
-    private final LogManager log = new LogManager(this.getClass().getName());
+    private final LogManager log = new LogManager(this.getClass().getSimpleName());
 
     private List<RtmEventListener> listeners;
     private RtmChannel rtmChannel;
@@ -65,6 +66,7 @@ public final class RtmManager extends SdkManager<RtmClient> implements RtmClient
 
     @Override
     protected void configSdk() {
+        sdk.setLogFile(new File(LogManager.path, "agorartm.log").getAbsolutePath());
         if (BuildConfig.DEBUG) {
             sdk.setParameters("{\"rtm.log_filter\": 65535}");
         }
@@ -85,7 +87,6 @@ public final class RtmManager extends SdkManager<RtmClient> implements RtmClient
 
             @Override
             public void onFailure(ErrorInfo errorInfo) {
-
             }
         });
     }
@@ -199,7 +200,6 @@ public final class RtmManager extends SdkManager<RtmClient> implements RtmClient
 
             @Override
             public void onFailure(ErrorInfo errorInfo) {
-
             }
         });
     }
@@ -214,7 +214,6 @@ public final class RtmManager extends SdkManager<RtmClient> implements RtmClient
 
                 @Override
                 public void onFailure(ErrorInfo errorInfo) {
-
                 }
             });
         }
