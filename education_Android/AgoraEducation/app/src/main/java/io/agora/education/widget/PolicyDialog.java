@@ -19,7 +19,7 @@ import io.agora.education.R;
 
 public class PolicyDialog extends ConfirmDialog implements ConfirmDialog.DialogClickListener {
 
-    private final String KEY_SP = EyeProtection.class.getName();
+    private final String KEY_SP = EyeProtection.class.getSimpleName();
 
     @Nullable
     @Override

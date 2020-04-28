@@ -1,27 +1,35 @@
 package io.agora.education.classroom.strategy.context;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.agora.base.Callback;
 import io.agora.base.ToastManager;
+import io.agora.base.network.RetrofitManager;
+import io.agora.education.BuildConfig;
+import io.agora.education.EduApplication;
 import io.agora.education.R;
-import io.agora.education.classroom.bean.msg.Cmd;
+import io.agora.education.base.BaseCallback;
+import io.agora.education.classroom.bean.channel.Room;
+import io.agora.education.classroom.bean.channel.User;
 import io.agora.education.classroom.bean.msg.PeerMsg;
-import io.agora.education.classroom.bean.user.Student;
-import io.agora.education.classroom.bean.user.Teacher;
-import io.agora.education.classroom.bean.user.User;
 import io.agora.education.classroom.strategy.ChannelStrategy;
+import io.agora.education.service.RoomService;
+import io.agora.education.service.bean.request.CoVideoReq;
 import io.agora.rtc.Constants;
 import io.agora.sdk.manager.RtcManager;
 
-public class LargeClassContext extends ClassContext {
+import static io.agora.education.classroom.bean.msg.PeerMsg.CoVideoMsg.Type.ACCEPT;
+import static io.agora.education.classroom.bean.msg.PeerMsg.CoVideoMsg.Type.APPLY;
+import static io.agora.education.classroom.bean.msg.PeerMsg.CoVideoMsg.Type.CANCEL;
+import static io.agora.education.classroom.bean.msg.PeerMsg.CoVideoMsg.Type.EXIT;
+import static io.agora.education.classroom.bean.msg.PeerMsg.CoVideoMsg.Type.REJECT;
 
-    private boolean applying;
+public class LargeClassContext extends ClassContext {
 
     LargeClassContext(Context context, ChannelStrategy strategy) {
         super(context, strategy);
@@ -40,168 +48,60 @@ public class LargeClassContext extends ClassContext {
     }
 
     @Override
-    public void onTeacherChanged(Teacher teacher) {
-        super.onTeacherChanged(teacher);
+    public void onRoomChanged(Room room) {
+        super.onRoomChanged(room);
         if (classEventListener instanceof LargeClassEventListener) {
+            runListener(() -> ((LargeClassEventListener) classEventListener).onUserCountChanged(room.onlineUsers));
+        }
+    }
+
+    @Override
+    public void onCoVideoUsersChanged(List<User> users) {
+        super.onCoVideoUsersChanged(users);
+        if (classEventListener instanceof LargeClassEventListener) {
+            LargeClassEventListener listener = (LargeClassEventListener) classEventListener;
             runListener(() -> {
-                LargeClassEventListener listener = (LargeClassEventListener) classEventListener;
-                listener.onLinkUidChanged(teacher.link_uid);
-                listener.onTeacherMediaChanged(teacher);
-            });
-            if (teacher.link_uid == 0) {
-                runListener(() -> ((LargeClassEventListener) classEventListener).onLinkMediaChanged(null));
-            } else {
-                onLinkMediaChanged(channelStrategy.getAllStudents());
-            }
-        }
-    }
-
-    @Override
-    public void onLocalChanged(Student local) {
-        super.onLocalChanged(local);
-        if (local.isGenerate) return;
-        if (applying) {
-            applying = false;
-            // send apply order to the teacher when local attributes updated
-            apply(false);
-        }
-        onLinkMediaChanged(Collections.singletonList(local));
-    }
-
-    @Override
-    public void onStudentsChanged(List<Student> students) {
-        super.onStudentsChanged(students);
-        onLinkMediaChanged(students);
-    }
-
-    private void onLinkMediaChanged(List users) {
-        Teacher teacher = channelStrategy.getTeacher();
-        if (teacher == null) return;
-        for (Object object : users) {
-            if (object instanceof User) {
-                User user = (User) object;
-                if (user.uid == teacher.link_uid) {
-                    if (classEventListener instanceof LargeClassEventListener) {
-                        runListener(() -> ((LargeClassEventListener) classEventListener).onLinkMediaChanged(user));
+                User linkUser = null;
+                for (User user : users) {
+                    if (user.isTeacher()) {
+                        listener.onTeacherMediaChanged(user);
+                    } else {
+                        linkUser = user;
+                        break;
                     }
-                    break;
                 }
-            }
+                listener.onLinkMediaChanged(linkUser);
+            });
         }
     }
 
+    @SuppressLint("SwitchIntDef")
     @Override
     public void onPeerMsgReceived(PeerMsg msg) {
         super.onPeerMsgReceived(msg);
-        Cmd cmd = msg.getCmd();
-        if (cmd == null) return;
-        switch (cmd) {
-            case ACCEPT:
-                accept();
-                break;
-            case REJECT:
-                reject();
-                break;
-            case CANCEL:
-                cancel(true);
-                break;
-        }
-    }
-
-    public void apply(boolean isPrepare) {
-        if (isPrepare) {
-            channelStrategy.clearLocalAttribute(new Callback<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    channelStrategy.updateLocalAttribute(channelStrategy.getLocal(), new Callback<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            applying = true;
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            applying = false;
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-
-                }
-            });
-        } else {
-            Teacher teacher = channelStrategy.getTeacher();
-            if (teacher != null) {
-                teacher.sendMessageTo(Cmd.APPLY);
+        if (msg.cmd == PeerMsg.Cmd.CO_VIDEO) {
+            PeerMsg.CoVideoMsg coVideoMsg = msg.getMsg(PeerMsg.CoVideoMsg.class);
+            switch (coVideoMsg.type) {
+                case REJECT:
+                    ToastManager.showShort(R.string.reject_interactive);
+                    break;
+                case ACCEPT:
+                    ToastManager.showShort(R.string.accept_interactive);
+                    break;
             }
         }
     }
 
-    @Override
-    public void onMemberCountUpdated(int count) {
-        super.onMemberCountUpdated(count);
-        if (classEventListener instanceof LargeClassEventListener) {
-            runListener(() -> ((LargeClassEventListener) classEventListener).onUserCountChanged(count));
-        }
+    public void apply() {
+        RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RoomService.class)
+                .roomCoVideo(EduApplication.getAppId(), channelStrategy.getChannelId(), new CoVideoReq(APPLY))
+                .enqueue(new BaseCallback<>(null));
     }
 
-    public void cancel(boolean isRemote) {
-        channelStrategy.clearLocalAttribute(new Callback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                RtcManager.instance().setClientRole(Constants.CLIENT_ROLE_AUDIENCE);
-                if (isRemote) {
-                    if (classEventListener instanceof LargeClassEventListener) {
-                        runListener(() -> ((LargeClassEventListener) classEventListener).onHandUpCanceled());
-                    }
-                } else {
-                    Teacher teacher = channelStrategy.getTeacher();
-                    if (teacher != null) {
-                        teacher.sendMessageTo(Cmd.CANCEL);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-    }
-
-    private void accept() {
-        Student local = channelStrategy.getLocal();
-        local.audio = 1;
-        local.video = 1;
-        channelStrategy.updateLocalAttribute(local, new Callback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                RtcManager.instance().setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-        ToastManager.showShort(R.string.accept_interactive);
-    }
-
-    private void reject() {
-        channelStrategy.clearLocalAttribute(new Callback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                applying = false;
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-        ToastManager.showShort(R.string.reject_interactive);
+    public void cancel() {
+        RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RoomService.class)
+                .roomCoVideo(EduApplication.getAppId(), channelStrategy.getChannelId(), new CoVideoReq(channelStrategy.getLocal().isCoVideoEnable() ? EXIT : CANCEL))
+                .enqueue(new BaseCallback<>(null));
     }
 
     public interface LargeClassEventListener extends ClassEventListener {
@@ -210,8 +110,6 @@ public class LargeClassContext extends ClassContext {
         void onTeacherMediaChanged(User user);
 
         void onLinkMediaChanged(User user);
-
-        void onLinkUidChanged(int uid);
 
         void onHandUpCanceled();
     }

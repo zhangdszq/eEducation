@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <io.agora.education.classroom.widget.whiteboard.ReplayControlView
+    <io.agora.education.classroom.widget.player.ReplayControlView
         android:id="@+id/replay_control_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
