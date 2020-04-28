@@ -3,11 +3,14 @@ package io.agora.sdk.manager;
 import android.content.Context;
 import android.view.SurfaceView;
 
+import androidx.annotation.NonNull;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.agora.base.LogManager;
+import io.agora.log.LogManager;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
@@ -22,7 +25,7 @@ import io.agora.sdk.listener.RtcEventListener;
 
 public final class RtcManager extends SdkManager<RtcEngine> {
 
-    private final LogManager log = new LogManager(this.getClass().getName());
+    private final LogManager log = new LogManager(this.getClass().getSimpleName());
 
     private List<RtcEventListener> listeners;
 
@@ -49,6 +52,7 @@ public final class RtcManager extends SdkManager<RtcEngine> {
 
     @Override
     protected void configSdk() {
+        sdk.setLogFile(new File(LogManager.path, "agorasdk.log").getAbsolutePath());
         if (BuildConfig.DEBUG) {
             sdk.setParameters("{\"rtc.log_filter\": 65535}");
         }
@@ -65,8 +69,8 @@ public final class RtcManager extends SdkManager<RtcEngine> {
     }
 
     @Override
-    public void joinChannel(Map<String, String> data) {
-        sdk.joinChannel(data.get(TOKEN), data.get(CHANNEL_ID), null, Integer.valueOf(data.get(USER_ID)));
+    public void joinChannel(@NonNull Map<String, String> data) {
+        sdk.joinChannel(data.get(TOKEN), data.get(CHANNEL_ID), data.get(USER_EXTRA), Integer.parseInt(data.get(USER_ID)));
     }
 
     @Override

@@ -48,7 +48,6 @@
         app:layout_constraintTop_toBottomOf="@id/layout_eye_care">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"

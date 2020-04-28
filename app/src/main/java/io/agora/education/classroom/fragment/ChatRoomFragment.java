@@ -1,7 +1,6 @@
 package io.agora.education.classroom.fragment;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -14,13 +13,22 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 
 import butterknife.BindView;
+import io.agora.base.ToastManager;
+import io.agora.base.network.RetrofitManager;
+import io.agora.education.BuildConfig;
+import io.agora.education.EduApplication;
 import io.agora.education.R;
+import io.agora.education.base.BaseCallback;
 import io.agora.education.base.BaseFragment;
 import io.agora.education.classroom.BaseClassActivity;
 import io.agora.education.classroom.ReplayActivity;
 import io.agora.education.classroom.adapter.MessageListAdapter;
 import io.agora.education.classroom.bean.msg.ChannelMsg;
-import io.agora.education.classroom.mediator.MsgMediator;
+import io.agora.education.service.RecordService;
+import io.agora.education.service.RoomService;
+import io.agora.education.service.bean.request.ChatReq;
+
+import static io.agora.education.classroom.bean.msg.ChannelMsg.ChatMsg.Type.TEXT;
 
 public class ChatRoomFragment extends BaseFragment implements OnItemChildClickListener, View.OnKeyListener {
 
@@ -76,11 +84,11 @@ public class ChatRoomFragment extends BaseFragment implements OnItemChildClickLi
         });
     }
 
-    public void addMessage(ChannelMsg channelMsg) {
+    public void addMessage(ChannelMsg.ChatMsg chatMsg) {
         runOnUiThread(() -> {
             if (rcv_msg != null) {
-                adapter.addData(channelMsg);
-                rcv_msg.scrollToPosition(adapter.getItemPosition(channelMsg));
+                adapter.addData(chatMsg);
+                rcv_msg.scrollToPosition(adapter.getItemPosition(chatMsg));
             }
         });
     }
@@ -88,24 +96,27 @@ public class ChatRoomFragment extends BaseFragment implements OnItemChildClickLi
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
         if (view.getId() == R.id.tv_content) {
-            Bundle bundle = getArguments();
-            if (bundle != null && bundle.containsKey(BaseClassActivity.WHITEBOARD_SDK_TOKEN)) {
-                Object object = adapter.getItem(position);
-                if (object instanceof ChannelMsg) {
-                    ChannelMsg msg = (ChannelMsg) object;
-                    if (!TextUtils.isEmpty(msg.link)) {
-                        String[] strings = msg.link.split("/");
-                        String uuid = strings[2];
-                        long startTime = Long.parseLong(strings[3]);
-                        long endTime = Long.parseLong(strings[4]);
-                        Intent intent = new Intent(context, ReplayActivity.class);
-                        intent.putExtra(ReplayActivity.WHITEBOARD_UID, uuid);
-                        intent.putExtra(BaseClassActivity.WHITEBOARD_SDK_TOKEN, bundle.getString(BaseClassActivity.WHITEBOARD_SDK_TOKEN));
-                        intent.putExtra(ReplayActivity.WHITEBOARD_START_TIME, startTime);
-                        intent.putExtra(ReplayActivity.WHITEBOARD_END_TIME, endTime);
-                        intent.putExtra(ReplayActivity.WHITEBOARD_URL, msg.url);
-                        startActivity(intent);
-                    }
+            Object object = adapter.getItem(position);
+            if (object instanceof ChannelMsg.ReplayMsg) {
+                ChannelMsg.ReplayMsg msg = (ChannelMsg.ReplayMsg) object;
+                if (context instanceof BaseClassActivity) {
+                    RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RecordService.class)
+                            .record(EduApplication.getAppId(), ((BaseClassActivity) context).getRoomId(), msg.recordId)
+                            .enqueue(new BaseCallback<>(data -> {
+                                if (data.isFinished()) {
+                                    String url = data.getTeacherRecordUrl();
+                                    if (!TextUtils.isEmpty(url)) {
+                                        Intent intent = new Intent(context, ReplayActivity.class);
+                                        intent.putExtra(ReplayActivity.WHITEBOARD_ROOM_ID, data.roomId);
+                                        intent.putExtra(ReplayActivity.WHITEBOARD_START_TIME, data.startTime);
+                                        intent.putExtra(ReplayActivity.WHITEBOARD_END_TIME, data.endTime);
+                                        intent.putExtra(ReplayActivity.WHITEBOARD_URL, url);
+                                        startActivity(intent);
+                                    }
+                                } else {
+                                    ToastManager.showShort(R.string.wait_record);
+                                }
+                            }));
                 }
             }
         }
@@ -119,10 +130,9 @@ public class ChatRoomFragment extends BaseFragment implements OnItemChildClickLi
         String text = edit_send_msg.getText().toString();
         if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction() && text.trim().length() > 0) {
             if (context instanceof BaseClassActivity) {
-                ChannelMsg msg = new ChannelMsg(((BaseClassActivity) context).getMyUserName(), text);
-                MsgMediator.sendMessage(msg);
-                addMessage(msg);
-                edit_send_msg.setText("");
+                RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RoomService.class)
+                        .roomChat(EduApplication.getAppId(), ((BaseClassActivity) context).getRoomId(), new ChatReq(text, TEXT))
+                        .enqueue(new BaseCallback<>(data -> edit_send_msg.setText("")));
             }
             return true;
         }

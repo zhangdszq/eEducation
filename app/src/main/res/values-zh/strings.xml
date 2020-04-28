@@ -32,4 +32,6 @@
     <string name="authorize_board">老师已授权了你的白板权限</string>
     <string name="revoke_board">老师已回收了你的白板权限</string>
     <string name="request_error">服务器请求失败：%1$d</string>
+    <string name="wait_record">请等待录制完成</string>
+    <string name="follow_tips">老师正在控制白板，请勿书写</string>
 </resources>

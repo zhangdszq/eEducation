@@ -12,8 +12,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.agora.education.R;
-import io.agora.education.classroom.bean.user.Student;
-import io.agora.education.classroom.bean.user.User;
+import io.agora.education.classroom.bean.channel.User;
 
 public class UserListAdapter extends BaseQuickAdapter<User, UserListAdapter.ViewHolder> {
 
@@ -27,14 +26,14 @@ public class UserListAdapter extends BaseQuickAdapter<User, UserListAdapter.View
 
     @Override
     protected void convert(@NonNull ViewHolder viewHolder, User user) {
-        viewHolder.tv_name.setText(user.account);
+        viewHolder.tv_name.setText(user.userName);
         if (user.uid == localUid) {
             viewHolder.iv_btn_grant_board.setVisibility(View.VISIBLE);
             viewHolder.iv_btn_mute_audio.setVisibility(View.VISIBLE);
             viewHolder.iv_btn_mute_video.setVisibility(View.VISIBLE);
-            viewHolder.iv_btn_grant_board.setSelected(((Student) user).grant_board == 1);
-            viewHolder.iv_btn_mute_audio.setSelected(user.audio == 1);
-            viewHolder.iv_btn_mute_video.setSelected(user.video == 1);
+            viewHolder.iv_btn_grant_board.setSelected(user.isBoardGrant());
+            viewHolder.iv_btn_mute_audio.setSelected(user.isAudioEnable());
+            viewHolder.iv_btn_mute_video.setSelected(user.isVideoEnable());
         } else {
             viewHolder.iv_btn_grant_board.setVisibility(View.GONE);
             viewHolder.iv_btn_mute_video.setVisibility(View.GONE);
@@ -42,7 +41,7 @@ public class UserListAdapter extends BaseQuickAdapter<User, UserListAdapter.View
         }
     }
 
-    class ViewHolder extends BaseViewHolder {
+    static class ViewHolder extends BaseViewHolder {
         @BindView(R.id.tv_name)
         TextView tv_name;
         @BindView(R.id.iv_btn_grant_board)
