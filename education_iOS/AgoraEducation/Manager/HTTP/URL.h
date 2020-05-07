@@ -7,7 +7,7 @@
 //
 
 
-#define HTTP_BASE_URL @"https://api.agora.io/"
+#define HTTP_BASE_URL @"https://api.agora.io"
 
 #define HTTP_GET_LANGUAGE @"%@/edu/v1/multi/language"
 
