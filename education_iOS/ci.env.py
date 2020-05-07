@@ -50,7 +50,7 @@ def main():
     
     f = open("./AgoraEducation/Manager/HTTP/URL.h", 'r+')
     content = f.read()
-    agoraHostString = "@\"" + agoraHost + "\""
+    agoraHostString = agoraHost
     
     contentNew = re.sub(r'https://api.agora.io', agoraHostString, content)
 
