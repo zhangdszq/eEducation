@@ -95,7 +95,7 @@
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;
-    headers[@"Authorization"] = [KeyCenter authorization];
+    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
     
     [HttpManager post:url params:params headers:headers success:^(id responseObj) {
         
@@ -131,7 +131,7 @@
 
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;
-    headers[@"Authorization"] = [KeyCenter authorization];
+    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
     
     [HttpManager post:url params:params headers:headers success:^(id responseObj) {
         
@@ -164,7 +164,7 @@
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;
-    headers[@"Authorization"] = [KeyCenter authorization];
+    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
     
     [HttpManager post:url params:nil headers:headers success:^(id responseObj) {
         
@@ -216,7 +216,7 @@
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;
-    headers[@"Authorization"] = [KeyCenter authorization];
+    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
     
     [HttpManager get:url params:nil headers:headers success:^(id responseObj) {
         
@@ -280,7 +280,7 @@
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;
-    headers[@"Authorization"] = [KeyCenter authorization];
+    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
     
     [HttpManager post:url params:params headers:headers success:^(id responseObj) {
         
