@@ -12,7 +12,7 @@ jobs:
       vmImage: 'macos-latest'
 
     variables:
-      - group: AgoraKeys
+      - group: Edu
 
     steps:
       - script: cd ${{ parameters.workingDirectory }} && ls && python ci.env.py $(env)
