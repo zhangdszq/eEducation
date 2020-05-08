@@ -6,12 +6,14 @@ import ChatBoard from '../../components/chat/board';
 import MediaBoard from '../../components/mediaboard';
 import useStream from '../../hooks/use-streams';
 import useChatText from '../../hooks/use-chat-text';
-import { RoomMessage } from '../../utils/agora-rtm-client';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
 import AgoraWebClient from '../../utils/agora-rtc-client';
 import { useRoomState } from '../../containers/root-container';
 import { roomStore } from '../../stores/room';
 import { platform } from '../../utils/platform';
+import { eduApi } from '../../services/edu-api';
+import { globalStore } from '../../stores/global';
+import { t } from '../../i18n';
 
 export default function BigClass() {
   const {
@@ -27,7 +29,7 @@ export default function BigClass() {
 
   const me = roomState.me;
 
-  const memberCount = roomState.rtm.memberCount;
+  const memberCount = roomState.course.memberCount;
 
   const {teacher, currentHost, onPlayerClick} = useStream();
 
@@ -47,32 +49,28 @@ export default function BigClass() {
 
     if (type === 'hands_up') {
       if (roomStore.state.course.teacherId) {
-        rtmLock.current = true;
-        roomStore.rtmClient.sendPeerMessage(roomStore.state.course.teacherId,
-          {cmd: RoomMessage.applyCoVideo})
-          .then((result: any) => {
-            console.log("peerMessage result ", result);
+        eduApi.studentSendApply(roomStore.state.course.roomId)
+          .then((data: any) => {
+            console.log('hands_up fulfilled', data)
           })
-          .catch(console.warn)
-          .finally(() => {
-            rtmLock.current = false;
+          .catch((err: any) => {
+            console.warn(err)
           })
       }
     }
   
     if (type === 'hands_up_end') {
-      if (roomStore.state.course.teacherId) {
-        rtmLock.current = true;
-        roomStore.rtmClient.sendPeerMessage(roomStore.state.course.teacherId,
-          {cmd: RoomMessage.cancelCoVideo})
-          .then((result: any) => {
-            console.log("peerMessage result ", result);
-          })
-          .catch(console.warn)
-          .finally(() => {
-            rtmLock.current = false;
-          })
-      }
+      rtmLock.current = true;
+      eduApi.studentStopCoVideo(roomStore.state.course.roomId)
+        .then((data: any) => {
+          console.log('hands_up_end success', data)
+        })
+        .catch((err: any) => {
+          console.warn(err)
+        })
+        .finally(() => {
+          rtmLock.current = false;
+        })
     }
   }
 
@@ -115,11 +113,15 @@ export default function BigClass() {
         closeLock.current = true;
         rtmLock.current = true;
         Promise.all([
-          rtmClient.sendPeerMessage(`${teacherUid}`,{
-            cmd: RoomMessage.cancelCoVideo
-          }),
+          eduApi.studentStopCoVideo(
+            roomStore.state.course.roomId
+          ),
           quitClient
         ]).then(() => {
+          globalStore.showToast({
+            type: 'close_youself_co_video',
+            message: t('toast.close_youself_co_video')
+          })
           rtmLock.current = false;
         }).catch((err: any) => {
           rtmLock.current = false;
@@ -130,15 +132,23 @@ export default function BigClass() {
         })
       }
 
-      if (teacherUid && teacherUid === me.uid) {
+      if (`${teacherUid}` && `${teacherUid}` === `${me.uid}`) {
         rtmLock.current = true;
         closeLock.current = true;
         Promise.all([
-          rtmClient.sendPeerMessage(`${streamID}`, {
-            cmd: RoomMessage.cancelCoVideo,
-          }),
-          roomStore.updateCourseLinkUid(0)
+          eduApi.teacherCancelStudent(
+            roomStore.state.course.roomId,
+            roomStore.state.applyUser.userId,
+          )
         ]).then(() => {
+          globalStore.showToast({
+            type: 'peer_hands_up',
+            message: t("toast.close_co_video")
+          })
+          roomStore.updateApplyUser({
+            account: '',
+            userId: '',
+          })
           rtmLock.current = false;
         }).catch((err: any) => {
           rtmLock.current = false;
@@ -149,6 +159,8 @@ export default function BigClass() {
       }
     }
   }
+  
+  console.log("currentHost", currentHost)
 
   return (
     <div className="room-container">
@@ -166,11 +178,12 @@ export default function BigClass() {
               id={`${currentHost.streamID}`}
               account={currentHost.account}
               handleClick={onPlayerClick}
-              close={me.role === 'teacher' || +me.uid === currentHost.streamID}
+              close={me.role === 1 || +me.uid === currentHost.streamID}
               handleClose={handleClose}
               video={currentHost.video}
               audio={currentHost.audio}
               local={currentHost.local}
+              autoplay={Boolean(me.coVideo)}
             /> :
             null
           }
@@ -191,6 +204,7 @@ export default function BigClass() {
               audio={Boolean(teacher.audio)}
               video={Boolean(teacher.video)}
               local={Boolean(teacher.local)}
+              autoplay={Boolean(me.coVideo)}
               /> :
             <VideoPlayer
               role="teacher"
@@ -202,7 +216,7 @@ export default function BigClass() {
         </div>
         <ChatBoard
           name={roomName}
-          teacher={role === 'teacher'}
+          teacher={role === 1}
           messages={messages}
           mute={Boolean(roomState.course.muteChat)}
           value={value}

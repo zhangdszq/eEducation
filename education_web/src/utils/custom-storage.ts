@@ -4,6 +4,8 @@ export class CustomStorage {
 
   private storage: Storage;
 
+  languageKey: string = 'demo_language'
+
   constructor() {
     this.storage = window.sessionStorage;
   }
@@ -25,8 +27,12 @@ export class CustomStorage {
     this.storage.removeItem(key);
   }
 
+  setLanguage(lang: string) {
+    this.save(this.languageKey, lang)
+  }
+
   getLanguage() {
-    const language = this.read('language') ? this.read('language') : navigator.language;
+    const language = this.read(this.languageKey) ? this.read(this.languageKey) : navigator.language;
     return {language};
   }
 

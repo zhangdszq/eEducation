@@ -3,10 +3,8 @@ import AgoraRTC from 'agora-rtc-sdk';
 import { roomStore, RoomStore } from '../stores/room';
 import { isEmpty } from 'lodash';
 
-// TODO: upload log file
-// TODO: 建议开启上传日志
-AgoraRTC.Logger.enableLogUpload()
-
+AgoraRTC.Logger.enableLogUpload();
+AgoraRTC.Logger.setLogLevel(AgoraRTC.Logger.DEBUG);
 export interface AgoraStreamSpec {
   streamID: number
   video: boolean
@@ -15,6 +13,7 @@ export interface AgoraStreamSpec {
   screen?: boolean
   microphoneId?: string
   cameraId?: string
+  screenAudio?: boolean
   audioOutput?: {
     volume: number
     deviceId: string
@@ -48,10 +47,8 @@ const clientEvents: string[] = [
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 export const APP_TOKEN = process.env.REACT_APP_AGORA_APP_TOKEN as string;
 export const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG as string === "true";
-// TODO: default screen sharing uid, please do not directly use it.
-export const SHARE_ID = 7;
 
-class AgoraRTCClient {
+export class AgoraRTCClient {
 
   private streamID: any;
   public _init: boolean = false;
@@ -63,6 +60,7 @@ class AgoraRTCClient {
   public _localStream: any = null;
   public _streamEvents: string[];
   public _clientEvents: string[];
+  public _addEventListener: boolean = false;
 
   constructor () {
     this.streamID = null;
@@ -101,22 +99,23 @@ class AgoraRTCClient {
   }
 
   subscribeClientEvents() {
+    if (this._addEventListener) return
+    this._addEventListener = true
     for (let evtName of clientEvents) {
       this._clientEvents.push(evtName);
       this._client.on(evtName, (args: any) => {
-        if (evtName === "peer-leave") {
-          console.log("[agora-web] peer-leave: ", args);
-        }
-        
         this._bus.emit(evtName, args);
       });
     }
   }
 
   unsubscribeClientEvents() {
-    for (let evtName of this._clientEvents) {
-      this._client.off(evtName, () => {});
-      this._clientEvents = this._clientEvents.filter((it: any) => it === evtName);
+    if (this._addEventListener) {
+      for (let evtName of this._clientEvents) {
+        this._client.off(evtName, () => {});
+        this._clientEvents = this._clientEvents.filter((it: any) => it === evtName);
+      }
+      this._addEventListener = false
     }
   }
 
@@ -144,8 +143,10 @@ class AgoraRTCClient {
   }
 
   removeAllListeners() {
+    console.log('[agora-rtc] prepare remove all event listeners')
     this.unsubscribeClientEvents();
     this._bus.removeAllListeners();
+    console.log("[agora-rtc] remove all event listeners");
   }
 
   // subscribe
@@ -247,7 +248,11 @@ class AgoraRTCClient {
 
   setAudioOutput(speakerId: string) {
     return new Promise((resolve, reject) => {
-      this._client.setAudioOutput(speakerId, resolve, reject);
+      if (this._client) {
+        this._client.setAudioOutput(speakerId, resolve, reject);
+        return
+      }
+      resolve()
     })
   }
 
@@ -265,6 +270,7 @@ class AgoraRTCClient {
     this._internalTimer && clearInterval(this._internalTimer);
     this._internalTimer = null;
     this.destroyLocalStream();
+    this.removeAllListeners();
   }
 
   async exit () {
@@ -273,7 +279,7 @@ class AgoraRTCClient {
     } catch (err) {
       throw err;
     } finally {
-      await this.destroy();
+      this.destroy();
     }
   }
 
@@ -358,20 +364,23 @@ export default class AgoraWebClient {
 
 
   async joinChannel({
-    uid, channel, dual, token
+    uid, channel, dual, token, appId
   }: {
     uid: number,
     channel: string,
     dual: boolean,
-    token: string
+    token: string,
+    appId: string
   }) {
-    this.localUid = uid;
+    this.localUid = +uid;
     this.channel = channel;
-    await this.rtc.createClient(APP_ID, true);
+    console.log("channel", channel, "dual", dual, this.localUid, appId)
+    await this.rtc.createClient(appId, true);
     await this.rtc.join(this.localUid, channel, token);
     dual && await this.rtc.enableDualStream();
     this.joined = true;
     roomStore.setRTCJoined(true);
+    console.log("join web agora sdk rtc success")
   }
 
   async leaveChannel() {
@@ -422,30 +431,43 @@ export default class AgoraWebClient {
     this.published = false;
   }
 
-  async startScreenShare (token: string) {
-    this.shareClient = new AgoraRTCClient();
-    await this.shareClient.createLocalStream({
-      video: false,
-      audio: false,
-      screen: true,
-      screenAudio: true,
-      streamID: SHARE_ID,
-      microphoneId: '',
-      cameraId: ''
-    })
-    await this.shareClient.createClient(APP_ID);
-    await this.shareClient.join(SHARE_ID, this.channel, token);
-    await this.shareClient.publish();
-    this.shared = true;
+  async startScreenShare ({
+    uid, channel, token, appId
+  }: {
+    uid: number,
+    channel: string,
+    token: string,
+    appId: string,
+  }) {
+    console.log("startScreenShare ", uid, channel, token, appId)
+    const shareClient = new AgoraRTCClient();
+    try {
+      await shareClient.createLocalStream({
+        video: false,
+        audio: false,
+        screen: true,
+        screenAudio: true,
+        streamID: uid,
+        microphoneId: '',
+        cameraId: ''
+      })
+      await shareClient.createClient(appId);
+      await shareClient.join(uid, channel, token);
+      await shareClient.publish();
+      this.shared = true;
+      this.shareClient = shareClient
+    } catch(err) {
+      throw err
+    }
   }
 
   async stopScreenShare () {
     await this.shareClient.unpublish();
     await this.shareClient.leave();
-    await this.shareClient.destroy();
-    await this.shareClient.destroyClient();
-    roomStore.removeLocalSharedStream();
+    this.shareClient.destroy();
+    this.shareClient.destroyClient();
     this.shared = false;
+    this.shareClient = undefined
   }
 
   async exit () {
@@ -465,8 +487,8 @@ export default class AgoraWebClient {
     }
     if (this.shareClient) {
       try {
-        await this.shareClient.destroy();
-        await this.shareClient.destroyClient();
+        this.shareClient.destroy();
+        this.shareClient.destroyClient();
       } catch(err) {
         errors.push({'shareClient': err});
       }

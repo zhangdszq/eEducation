@@ -5,7 +5,7 @@ const url = `${window.location.protocol}//${window.location.host}/dev/v2/project
 const PREFIX = url.replace('%s', process.env.REACT_APP_AGORA_APP_ID as string);
 
 export type QueryChannelMessage = {
-  rid: string,
+  channelName: string,
   startTime: string,
   endTime: string
 }
@@ -47,15 +47,16 @@ export class RTMRestful {
     return `Basic ${btoa(plainCredentials)}`;
   }
 
-  async fetchChannelMessageCount({rid, startTime, endTime}: QueryChannelMessage) {
-    const response: Response = await AgoraFetch(`${PREFIX}/message/history/count?destination=${rid}&start_time=${startTime}&end_time=${endTime}`, {
+  async fetchChannelMessageCount({channelName, startTime, endTime}: QueryChannelMessage) {
+    const response: Response = await AgoraFetch(`${PREFIX}/message/history/count?destination=${channelName}&start_time=${startTime}&end_time=${endTime}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.basicAuthorization(),
       },
     });
-    const json = await response.json();
+    // const json = await response.json();
+    const json = response;
     const count = get(json, 'count');
     this.totalCount = count;
     this.offset = 0;
@@ -64,7 +65,7 @@ export class RTMRestful {
   }
 
   async fetchChannelMessages({
-    rid, startTime, endTime
+    channelName, startTime, endTime
   }: QueryChannelMessage): Promise<AgoraChannelMessage[]> {
     const responseA: Response = await AgoraFetch(`${PREFIX}/message/history/query`, {
       method: 'POST',
@@ -75,7 +76,7 @@ export class RTMRestful {
       body: JSON.stringify({
           filter: {
             source: "",
-            destination: rid,
+            destination: channelName,
             start_time: startTime,
             end_time: endTime
           },
@@ -84,7 +85,7 @@ export class RTMRestful {
           order: "asc"
         })
     });
-    const jsonA = await responseA.json();
+    const jsonA = responseA;
     const location = get(jsonA, 'location');
     if (isEmpty(location)) {
       throw `location from agora rtm endpoint must be present`
@@ -96,7 +97,8 @@ export class RTMRestful {
         Authorization: this.basicAuthorization(),
       },
     });
-    const jsonB = await respB.json();
+    // const jsonB = await respB.json();
+    const jsonB = respB;
     const messages = get(jsonB, 'messages');
     return messages;
   }

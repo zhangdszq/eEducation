@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Icon from '../components/icon';
-import _, {isFunction} from 'lodash';
+import _ from 'lodash';
 import { useLocation } from 'react-router';
 
 export interface IPlatformContext {

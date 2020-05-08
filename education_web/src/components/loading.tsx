@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     background: '#ffffff',
     opacity: 0.8,
-    zIndex: 10
+    zIndex: 99999
   }
 }));
 

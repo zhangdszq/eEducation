@@ -1,4 +1,7 @@
 import React from 'react';
+import { Tooltip } from '@material-ui/core';
+import {t} from '../../i18n';
+import {roomStore} from '../../stores/room';
 
 export type ScaleControllerProps = {
   zoomScale: number
@@ -106,15 +109,19 @@ export default class ScaleController extends React.Component<ScaleControllerProp
   public render(): React.ReactNode {
       return (
         <div className="zoom-controls">
-          <div className="zoom-icon" onClick={() => this.props.onClick()}>
-          </div>
+          <Tooltip title={t("zoom_control.folder")} placement="top">
+            <div className="zoom-icon" onClick={() => this.props.onClick()}>
+            </div>
+          </Tooltip>
           <div className="zoom-hold"></div>
           <div className="zoom-size">{Math.ceil(this.props.zoomScale * 100)} %</div>
           <div className="zoom-items">
             <div className="item zoom-in" onClick={() => this.moveRuleIndex(-1)}>-</div>
             <div className="item zoom-out" onClick={() => this.moveRuleIndex(+1)}>+</div>
           </div>
-          <div className="lock-board" onClick={() => this.props.onClickBoardLock() }></div>
+          <Tooltip title={!roomStore.state.course.lockBoard ? t("zoom_control.lock_board") : t("zoom_control.unlock_board")} placement="top">
+            <div className="lock-board" onClick={() => this.props.onClickBoardLock() }></div>
+          </Tooltip>
         </div>
       );
   }

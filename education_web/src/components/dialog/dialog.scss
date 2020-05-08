@@ -13,13 +13,15 @@
   line-height: 20px;
 }
   .modal-container {
+    position: relative;
+    z-index: 500000;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    max-width: 240px;
-    max-height: 134px;
+    // max-width: 240px;
+    // max-height: 134px;
     min-width: 240px;
     min-height: 134px;
     background:rgba(255,255,255,1);

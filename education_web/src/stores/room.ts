@@ -3,94 +3,75 @@ import { AgoraElectronClient } from './../utils/agora-electron-client';
 import { ChatMessage, AgoraStream } from '../utils/types';
 import { Subject } from 'rxjs';
 import { Map, Set, List } from 'immutable';
-import AgoraRTMClient, { RoomMessage } from '../utils/agora-rtm-client';
+import AgoraRTMClient, { RoomMessage, CoVideoType } from '../utils/agora-rtm-client';
 import { globalStore } from './global';
 import AgoraWebClient from '../utils/agora-rtc-client';
-import { get, set, isEmpty } from 'lodash';
+import { get, set } from 'lodash';
 import { isElectron } from '../utils/platform';
 import GlobalStorage from '../utils/custom-storage';
 import { t } from '../i18n';
-import { jsonParse } from '../utils/helper';
+import { eduApi, UserAttrsParams } from '../services/edu-api';
 
-function canJoin({ onlineStatus, roomType, channelCount, role }: { onlineStatus: any, role: string, channelCount: number, roomType: number }) {
-  const result = {
-    permitted: true,
-    reason: ''
-  }
-  const channelCountLimit = [2, 17, Infinity];
-
-  let maximum = channelCountLimit[roomType];
-  if (channelCount >= maximum) {
-    result.permitted = false;
-    result.reason = t('toast.teacher_and_student_over_limit');
-    return result;
-  }
-
-  const teacher = get(onlineStatus, 'teacher', false);
-  const studentsTotalCount: number = get(onlineStatus, 'studentsTotalCount', 0);
-
-  if (role === 'teacher') {
-    const isOnline = teacher;
-    if (isOnline) {
-      result.permitted = false;
-      result.reason = t('toast.teacher_exists');
-      return result;
-    }
-  }
-
-  if (role === 'student') {
-    if (studentsTotalCount >= maximum - 1) {
-      result.permitted = false;
-      result.reason = t('toast.student_over_limit');
-      return result;
-    }
-  }
-
-  return result;
+export interface NotifyFlag {
+  broad: boolean
 }
 
-export type LocalAttrs = Partial<AgoraUser & ClassState>;
+export type LocalAttrs = Partial<AgoraUser & ClassState & {rawAccounts: any[]} & {broad: boolean}>;
 
-export type ChannelAttrs = {
-  uid: string
-  account: string
-  role: string
-  video: number
-  audio: number
-  chat: number
-  class_state?: number
-  mute_chat?: number
-  whiteboard_uid: string
-  shared_uid: number 
-  link_uid: number
-  lock_board?: number
-  grant_board: number
-};
 export interface AgoraUser {
   uid: string
   account: string
-  role: string
+  role: number
   video: number
   audio: number
   chat: number
-  boardId: string // whiteboard_uuid
-  sharedId: number // shared_uid
-  linkId: number // link_uid
-  lockBoard: number // lock_board
   grantBoard: number
+  userId: string // 仅用于服务端
+  screenId: string //仅用于屏幕共享
+}
+
+export interface Me extends AgoraUser {
+  rtmToken: string
+  rtcToken: string
+  channelName: string
+  screenToken?: string
+  appID: string
+  coVideo: number
+  uuid: string
 }
 
 export interface ClassState {
   rid: string
   roomName: string
   teacherId: string
-  roomType: number
   boardId: string // whiteboard_uuid
-  sharedId: number // shared_uid
-  linkId: number // link_uid
+  boardToken: string // whiteboard_token
+  // edu roomId
+  // 房间id
+  roomId: string
+
+  // edu roomType
+  // 房间类型
+  roomType: number
+
+  // lock board
+  // 锁定
   lockBoard: number // lock_board
+
+  // start class
+  // 开始上课
   courseState: number
+  // mute all chat
+  // 全员禁言
   muteChat: number
+  // recording 
+  recordId: string
+  recordingTime: number
+  isRecording: boolean
+  screenId: string
+  screenToken: string
+  coVideoUids: string[]
+  memberCount: number
 }
 
 type RtcState = {
@@ -100,7 +81,7 @@ type RtcState = {
   shared: boolean
   localStream: AgoraMediaStream | null
   localSharedStream: AgoraMediaStream | null
-  remoteStreams: Map<number, AgoraMediaStream>
+  remoteStreams: Map<string, AgoraMediaStream>
 }
 
 export type MediaDeviceState = {
@@ -124,17 +105,23 @@ export type SessionInfo = {
 
 export type RtmState = {
   joined: boolean
-  memberCount: number
+}
+
+export type UserParams = {
+  userId: string,
+  account: string,
 }
 
 export type RoomState = {
   rtmLock: boolean
   rtmToken: string
+  recordLock: boolean
   rtcToken: string
-  me: AgoraUser
+  appID: string
+  me: Me
   users: Map<string, AgoraUser>
   course: ClassState
-  applyUid: number
+  applyUser: UserParams
   rtc: RtcState
   rtm: RtmState
   mediaDevice: MediaDeviceState
@@ -162,24 +149,29 @@ export class RoomStore {
     rtmLock: false,
     rtcToken: '',
     rtmToken: '',
+    appID: '',
+    recordLock: false,
     me: {
       account: "",
       uid: "",
-      role: "",
+      roomToken: "",
+      role: 0,
       video: 1,
       audio: 1,
       chat: 1,
-      linkId: 0,
-      sharedId: 0,
-      boardId: '',
-      lockBoard: 0,
       grantBoard: 0,
+      rtmToken: '',
+      rtcToken: '',
+      appID: '',
+      coVideo: '',
     },
     users: Map<string, AgoraUser>(),
-    applyUid: 0,
+    applyUser: {
+      userId: '',
+      account: '',
+    },
     rtm: {
       joined: false,
-      memberCount: 0,
     },
     rtc: {
       published: false,
@@ -188,19 +180,25 @@ export class RoomStore {
       users: Set<number>(),
       localStream: null,
       localSharedStream: null,
-      remoteStreams: Map<number, AgoraMediaStream>(),
+      remoteStreams: Map<string, AgoraMediaStream>(),
     },
     course: {
       teacherId: '',
       boardId: '',
-      sharedId: 0,
-      linkId: 0,
+      boardToken: '',
       courseState: 0,
       muteChat: 0,
+      isRecording: false,
+      recordId: '',
+      recordingTime: 0,
       rid: '',
       roomName: '',
       roomType: 0,
       lockBoard: 0,
+      roomId: '',
+      screenId: '',
+      screenToken: '',
+
     },
     mediaDevice: {
       microphoneId: '',
@@ -215,8 +213,6 @@ export class RoomStore {
     language: navigator.language,
     ...GlobalStorage.read('agora_room')
   });
-
-  private applyLock: number = 0;
 
   public windowId: number = 0;
 
@@ -240,12 +236,7 @@ export class RoomStore {
     this.state = {
       ...this.defaultState,
     }
-    this.applyLock = 0;
     this.subject.next(this.state);
-  }
-
-  get applyUid() {
-    return this.applyLock;
   }
 
   subscribe(updateState: any) {
@@ -271,19 +262,101 @@ export class RoomStore {
   }
 
   isTeacher(peerId: string) {
-    if (!peerId
-      || !this.state.course.teacherId
-      || this.state.course.teacherId !== peerId
+    if (!`${peerId}`
+      || !`${this.state.course.teacherId}`
+      || `${this.state.course.teacherId}` !== `${peerId}`
     ) return false;
     return true;
   }
 
   isStudent(peerId: string) {
-    if (!peerId
-      || this.state.course.teacherId === peerId
+    if (!`${peerId}`
+      || `${this.state.course.teacherId}` === `${peerId}`
     ) return false;
 
     return true;
+  }
+
+  async fetchCurrentRoom() {
+    try {
+      const res = await eduApi.fetchRoomBy(roomStore.state.course.roomId);
+      const {
+        course,
+        me,
+        users: rawUsers,
+        appID,
+        onlineUsers
+      } = res
+
+      let users = rawUsers.reduce((acc: Map<string, AgoraUser>, it: any) => {
+        return acc.set(`${it.uid}`, {
+          role: it.role,
+          account: it.userName,
+          uid: it.uid,
+          video: it.enableVideo,
+          audio: it.enableAudio,
+          chat: it.enableChat,
+          grantBoard: it.grantBoard,
+          userId: it.userId,
+          screenId: it.screenId,
+        });
+      }, Map<string, AgoraUser>());
+
+      await this.rtmClient.login(appID, `${me.uid}`, me.rtmToken)
+      await this.rtmClient.join(course.rid)
+      this.state = {
+        ...this.state,
+        rtm: {
+          ...this.state.rtm,
+          joined: true,
+        },
+        course: {
+          ...this.state.course,
+          rid: course.channelName,
+          roomType: course.roomType,
+          roomId: course.roomId,
+          roomName: course.roomName,
+          courseState: course.courseState,
+          muteChat: course.muteAllChat,
+          recordId: `${course.recordId}`,
+          isRecording: course.isRecording,
+          recordingTime: course.recordingTime,
+          lockBoard: course.lockBoard,
+          boardId: `${course.boardId}`,
+          boardToken: `${course.boardToken}`,
+          teacherId: `${course.teacherId}`,
+          screenId: `${me.screenId}`,
+          screenToken: `${me.screenToken}`,
+          coVideoUids: course.coVideoUids,
+          memberCount: +onlineUsers,
+        },
+        me: {
+          ...this.state.me,
+          uid: me.uid,
+          account: me.userName,
+          rtmToken: me.rtmToken,
+          rtcToken: me.rtcToken,
+          channelName: me.channelName,
+          screenId: me.screenId,
+          screenToken: me.screenToken,
+          appID: me.appID,
+          role: me.role,
+          chat: me.enableChat,
+          video: me.enableVideo,
+          audio: me.enableAudio,
+          userId: me.userId,
+          coVideo: me.coVideo,
+        },
+        users,
+        appID,
+      }
+      this.commit(this.state)
+    } catch(err) {
+      if (this.rtmClient._logged) {
+        await this.rtmClient.logout();
+      }
+      throw err;
+    }
   }
 
   addLocalStream(stream: AgoraStream) {
@@ -331,7 +404,7 @@ export class RoomStore {
     this.commit(this.state);
   }
 
-  addPeerUser(uid: number) {
+  addRTCUser(uid: number) {
     this.state = {
       ...this.state,
       rtc: {
@@ -358,14 +431,14 @@ export class RoomStore {
       ...this.state,
       rtc: {
         ...this.state.rtc,
-        remoteStreams: this.state.rtc.remoteStreams.set(stream.streamID, stream)
+        remoteStreams: this.state.rtc.remoteStreams.set(`${stream.streamID}`, stream)
       }
     }
     this.commit(this.state);
   }
 
   removeRemoteStream(uid: number) {
-    const remoteStream = this.state.rtc.remoteStreams.get(uid);
+    const remoteStream = this.state.rtc.remoteStreams.get(`${uid}`);
     if (platform === 'web') {
       if (remoteStream && remoteStream.stream && remoteStream.stream.isPlaying) {
         remoteStream.stream.isPlaying() && remoteStream.stream.stop();
@@ -376,18 +449,7 @@ export class RoomStore {
       ...this.state,
       rtc: {
         ...this.state.rtc,
-        remoteStreams: this.state.rtc.remoteStreams.delete(uid)
-      }
-    }
-    this.commit(this.state);
-  }
-
-  updateMemberCount(count: number) {
-    this.state = {
-      ...this.state,
-      rtm: {
-        ...this.state.rtm,
-        memberCount: count,
+        remoteStreams: this.state.rtc.remoteStreams.delete(`${uid}`)
       }
     }
     this.commit(this.state);
@@ -412,235 +474,243 @@ export class RoomStore {
     this.commit(this.state);
   }
 
-  async handlePeerMessage(cmd: RoomMessage, peerId: string) {
-    if (!peerId) return console.warn('state is not assigned');
-    const myUid = this.state.me.uid;
-    console.log("Teacher: ", this.isTeacher(myUid), ", peerId: ", this.isStudent(peerId));
+  async sendChannelMessage(args: any) {
+    await eduApi.sendChannelMessage({
+      roomId: this.state.course.roomId,
+      message: args.message,
+      type: 1,
+    })
+  }
+
+  async handlePeerMessage(body: any, peerId: string) {
+    const {cmd, data: {userName, userId, type}} = body
+    if (cmd !== 1) return
+
     // student follow teacher peer message
-    if (!this.isTeacher(myUid) && this.isTeacher(peerId)) {
-
-      const me = this.state.me;
-      switch (cmd) {
-        case RoomMessage.muteChat: {
-          return await this.updateMe({ chat: 0 });
-        }
-        case RoomMessage.muteAudio: {
-          return await this.updateMe({ audio: 0 });
-        }
-        case RoomMessage.muteVideo: {
-          return await this.updateMe({ video: 0 });
-        }
-        case RoomMessage.muteBoard: {
-          globalStore.showToast({
-            type: 'notice',
-            message: t('toast.teacher_cancel_whiteboard'),
-          });
-          return await this.updateMe({ grantBoard: 0 });
-        }
-        case RoomMessage.unmuteAudio: {
-          return await this.updateMe({ audio: 1 });
-        }
-        case RoomMessage.unmuteVideo: {
-          return await this.updateMe({ video: 1 });
-        }
-        case RoomMessage.unmuteChat: {
-          return await this.updateMe({ chat: 1 });
-        }
-        case RoomMessage.unmuteBoard: {
-          globalStore.showToast({
-            type: 'notice',
-            message: t('toast.teacher_accept_whiteboard')
-          });
-          return await this.updateMe({ grantBoard: 1 });
-        }
-        case RoomMessage.acceptCoVideo: {
-          globalStore.showToast({
-            type: 'co-video',
-            message: t("toast.teacher_accept_co_video")
-          });
-          return;
-        }
-        case RoomMessage.rejectCoVideo: {
-          globalStore.showToast({
-            type: 'co-video',
-            message: t("toast.teacher_reject_co_video")
-          });
-          return;
-        }
-        case RoomMessage.cancelCoVideo: {
-          globalStore.showToast({
-            type: 'co-video',
-            message: t("toast.teacher_cancel_co_video")
-          });
-          return;
-        }
-        default:
+    // 当对端是老师的时候
+    // if (!this.isTeacher(myUid) && this.isTeacher(peerId)) {
+    switch (type) {
+      case CoVideoType.teacherSendReject: {
+        globalStore.showToast({
+          type: 'co-video',
+          message: t("toast.teacher_reject_co_video")
+        });
+        return;
       }
-      return;
-    }
-
-    // when i m teacher & received student message
-    if (this.isTeacher(myUid) && this.isStudent(peerId)) {
-      switch (cmd) {
-        case RoomMessage.applyCoVideo: {
-          // WARN: LOCK
-          if (this.state.course.linkId) {
-            return console.warn('already received apply id: ', this.applyLock);
-          }
-          const applyUser = roomStore.state.users.get(`${peerId}`);
-          if (applyUser) {
-            this.applyLock = +peerId;
-            console.log("applyUid: ", this.applyLock);
-            this.state = {
-              ...this.state,
-              applyUid: this.applyLock,
-            }
-            this.commit(this.state);
-            globalStore.showNotice({
-              reason: 'peer_hands_up',
-              text: t('notice.student_interactive_apply', { reason: applyUser.account }),
-            });
-          }
-          return;
+      case CoVideoType.studentSendApply: {
+        if (globalStore.state.notice.reason === 'peer_hands_up'
+          && this.state.applyUser.userId) {
+          // when notice is peer_hands_up, ignore peer message
+          // 当已经收到消息以后屏蔽这条"举手申请"
+          console.warn(`ignore: `, peerId, userId, type, userName)
+          return
         }
-        case RoomMessage.cancelCoVideo: {
-          // WARN: LOCK
-          if (this.state.course.linkId && `${this.state.course.linkId}` === peerId) {
-            roomStore.updateCourseLinkUid(0).then(() => {
-            }).catch(console.warn);
+        const applyUserId = userId
 
-            globalStore.showToast({
-              type: 'co-video',
-              message: t('toast.student_cancel_co_video')
-            });
-          }
-          return;
+        if (applyUserId && peerId) {
+          this.updateApplyUser({
+            account: `${userName}`,
+            userId: `${applyUserId}`,
+          });
+          globalStore.showNotice({
+            reason: 'peer_hands_up',
+            text: t('notice.student_interactive_apply', { reason: `${userName}` })
+          });
+          globalStore.showToast({
+            type: 'peer_hands_up', 
+            message: t('toast.student_send_co_video_apply', { reason: `${userName}` })
+          });
+          return
         }
-        default:
       }
-      return;
+      case CoVideoType.teacherSendAccept: {
+        globalStore.showToast({
+          type: 'peer_hands_up',
+          message: t('toast.teacher_accept_co_video', { reason: `${userName}` }),
+        });
+        return;
+      }
+      case CoVideoType.teacherSendStop: {
+        globalStore.showToast({
+          type: 'peer_hands_up',
+          message: t('toast.stop_co_video', { reason: `${userName}` }),
+        });
+        return;
+      }
     }
   }
 
   async mute(uid: string, type: string) {
     const me = this.state.me;
-    if (me.uid === `${uid}`) {
+    if (`${me.uid}` === `${uid}`) {
       if (type === 'audio') {
-        await this.updateMe({
-          audio: 0
+        await this.updateLocalMe({
+          audio: 0,
+          broad: true
         });
       }
       if (type === 'video') {
-        await this.updateMe({
-          video: 0
+        await this.updateLocalMe({
+          video: 0,
+          broad: true
         });
       }
       if (type === 'chat') {
-        await this.updateMe({
-          chat: 0
+        await this.updateLocalMe({
+          chat: 0,
+          broad: true
         });
       }
       // if (type === 'grantBoard') {
-      //   await this.updateMe({
-      //     grant_board: 0
+      //   await this.updateLocal({
+      //     grantBoard: 0
       //   });
       // }
     }
-    else if (me.role === 'teacher') {
+    else if (me.role === 1) {
       if (type === 'audio') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.muteAudio });
+        await this.updateUserBy(`${uid}`, {audio: 0});
       }
       if (type === 'video') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.muteVideo });
+        await this.updateUserBy(`${uid}`, {video: 0});
       }
       if (type === 'chat') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.muteChat });
+        await this.updateUserBy(`${uid}`, {chat: 0});
       }
       if (type === 'grantBoard') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.muteBoard });
+        await this.updateUserBy(`${uid}`, {grantBoard: 0});
       }
     }
   }
 
   async unmute(uid: string, type: string) {
     const me = this.state.me;
-    if (me.uid === `${uid}`) {
+    if (`${me.uid}` === `${uid}`) {
       if (type === 'audio') {
-        await this.updateMe({
-          audio: 1
+        await this.updateLocalMe({
+          audio: 1,
+          broad: true
         });
       }
       if (type === 'video') {
-        await this.updateMe({
-          video: 1
+        await this.updateLocalMe({
+          video: 1,
+          broad: true
         });
       }
       if (type === 'chat') {
-        await this.updateMe({
-          chat: 1
+        await this.updateLocalMe({
+          chat: 1,
+          broad: true
         });
       }
       // if (type === 'grantBoard') {
-      //   await this.updateMe({
-      //     grant_board: 1
+      //   await this.updateLocal({
+      //     grantBoard: 1
       //   });
       // }
     }
-    else if (me.role === 'teacher') {
+    else if (me.role === 1) {
       if (type === 'audio') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.unmuteAudio });
+        await this.updateUserBy(`${uid}`, {audio: 1});
       }
       if (type === 'video') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.unmuteVideo });
+        await this.updateUserBy(`${uid}`, {video: 1});
       }
       if (type === 'chat') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.unmuteChat });
+        await this.updateUserBy(`${uid}`, {chat: 1});
       }
       if (type === 'grantBoard') {
-        await this.rtmClient.sendPeerMessage(`${uid}`, { cmd: RoomMessage.unmuteBoard });
+        await this.updateUserBy(`${uid}`, {grantBoard: 1});
       }
     }
   }
 
-  async loginAndJoin(payload: any, pass: boolean = false) {
-    const { roomType, role, uid, rid, rtmToken } = payload;
-    console.log("payload: ", payload);
-    let result = { permitted: true, reason: '' };
-    await this.rtmClient.login(uid, rtmToken);
+  async LoginToRoom(payload: any, pass: boolean = false) {
+    const {userName, roomName, role, type, uuid} = payload
     try {
-      const channelMemberCount = await this.rtmClient.getChannelMemberCount([rid]);
-      const channelCount = channelMemberCount[rid];
-      let accounts = await this.rtmClient.getChannelAttributeBy(rid);
-      const onlineStatus = await this.rtmClient.queryOnlineStatusBy(accounts);
-      console.log("onlineStatus", onlineStatus);
-      const argsJoin = {
-        channelCount,
-        onlineStatus,
+      const res = await eduApi.Login({
+        userName,
+        roomName,
         role,
-        accounts,
-        roomType
-      };
-      result = pass === false ? canJoin(argsJoin) : { permitted: true, reason: '' };
-      if (result.permitted) {
-        let res = await this.rtmClient.join(rid);
-        const grantBoard = role === 'teacher' ? 1 : 0;
-        await this.updateMe({ ...payload, grantBoard });
-        this.state = {
-          ...this.state,
-          rtm: {
-            ...this.state.rtm,
-            joined: true
-          },
-        }
-        console.log("loginAndJoin>>>>: accounts", accounts);
-        this.commit(this.state);
-        return;
+        type,
+        roomUuid: roomName,
+        userUuid: uuid
+      })
+
+      const {
+        course,
+        me,
+        users: rawUsers,
+        appID,
+        onlineUsers
+      } = res
+
+      let users = rawUsers.reduce((acc: Map<string, AgoraUser>, it: any) => {
+        return acc.set(`${it.uid}`, {
+          role: it.role,
+          account: it.userName,
+          uid: it.uid,
+          video: it.enableVideo,
+          audio: it.enableAudio,
+          chat: it.enableChat,
+          grantBoard: it.grantBoard,
+          userId: it.userId,
+          // coVideo: 1,
+          screenId: it.screenId,
+        });
+      }, Map<string, AgoraUser>());
+
+      await this.rtmClient.login(appID, `${me.uid}`, me.rtmToken)
+      await this.rtmClient.join(course.rid)
+      this.state = {
+        ...this.state,
+        rtm: {
+          ...this.state.rtm,
+          joined: true,
+        },
+        course: {
+          ...this.state.course,
+          rid: course.channelName,
+          roomType: course.roomType,
+          roomId: course.roomId,
+          roomName: course.roomName,
+          courseState: course.courseState,
+          muteChat: course.muteAllChat,
+          recordId: `${course.recordId}`,
+          isRecording: course.isRecording,
+          recordingTime: course.recordingTime,
+          lockBoard: course.lockBoard,
+          boardId: `${course.boardId}`,
+          boardToken: `${course.boardToken}`,
+          teacherId: `${course.teacherId}`,
+          screenId: `${me.screenId}`,
+          screenToken: `${me.screenToken}`,
+          coVideoUids: course.coVideoUids,
+          memberCount: +onlineUsers,
+        },
+        me: {
+          ...this.state.me,
+          uid: me.uid,
+          account: me.userName,
+          rtmToken: me.rtmToken,
+          rtcToken: me.rtcToken,
+          channelName: me.channelName,
+          screenId: me.screenId,
+          screenToken: me.screenToken,
+          appID: me.appID,
+          role: me.role,
+          chat: me.enableChat,
+          video: me.enableVideo,
+          audio: me.enableAudio,
+          userId: me.userId,
+          coVideo: me.coVideo,
+        },
+        users,
+        appID,
       }
-      throw {
-        type: 'not_permitted',
-        reason: result.reason
-      }
-    } catch (err) {
+      this.commit(this.state)
+    } catch(err) {
       if (this.rtmClient._logged) {
         await this.rtmClient.logout();
       }
@@ -659,25 +729,6 @@ export class RoomStore {
     this.commit(this.state);
   }
 
-  async updateCourseLinkUid(linkId: number) {
-    const me = this.state.me;
-    console.log("me: link_uid", me, linkId);
-    let res = await this.updateMe({
-      linkId,
-    })
-    this.applyLock = linkId;
-    console.log("current apply lock: ", this.applyLock);
-    return res;
-  }
-
-  async updateWhiteboardUid(boardId: string) {
-    let res = await this.updateMe({
-      boardId
-    });
-    console.log("[update whiteboard uuid] res", boardId);
-    return res;
-  }
-
   updateChannelMessage(msg: ChatMessage) {
     this.state = {
       ...this.state,
@@ -687,9 +738,9 @@ export class RoomStore {
     this.commit(this.state);
   }
 
-  private compositeMe(params: Partial<AgoraUser>): AgoraUser {
+  private compositeMe(params: Partial<Me>): Me {
     console.log("compositeMe: ", params);
-    const newMe: AgoraUser = { ...this.state.me };
+    const newMe: Me = { ...this.state.me };
     for (const prop in params) {
       if (newMe.hasOwnProperty(prop) && params.hasOwnProperty(prop)) {
         set(newMe, prop, get(params, prop, ''));
@@ -709,203 +760,215 @@ export class RoomStore {
     return newCourse;
   }
 
-  private exactChannelAttrsBy(me: AgoraUser, course: ClassState): ChannelAttrs {
-    console.log("origin: ", me, course);
-    const newChannelAttrs: ChannelAttrs = {
-      uid: me.uid,
-      account: `${me.account}`,
-      role: `${me.role}`,
-      video: +me.video,
-      audio: +me.audio,
-      chat: +me.chat,
-      whiteboard_uid: me.boardId,
-      shared_uid: me.sharedId,
-      link_uid: +me.linkId,
-      lock_board: +me.lockBoard,
-      grant_board: +me.grantBoard,
-    }
-
-    if (!course.boardId && me.boardId) {
-      newChannelAttrs.whiteboard_uid = me.boardId;
-    }
-
-    if (me.role === 'teacher') {
-      newChannelAttrs.lock_board = course.lockBoard;
-      newChannelAttrs.class_state = course.courseState;
-      newChannelAttrs.mute_chat = course.muteChat;
-    }
-
-    return newChannelAttrs;
+  async fetchCourse() {
+    let course = await eduApi.getCourseState(this.state.course.roomId)
+    return await this.updateCourse({...course, broad: false})
   }
 
-  async updateMe(params: LocalAttrs) {
-    const newMe = this.compositeMe(params);
-    const newCourse = this.compositeCourse(params);
-    const {
-      role,
-      uid,
-    } = newMe;
+  async fetchRoomState() {
+    let {usersMap, room, me} = await eduApi.getRoomState(this.state.course.roomId)
+    return await this.updateRoomState({usersMap, room, me, broad: false})
+  }
 
-    const channelKey: string = role === 'teacher' ? 'teacher' : `${uid}`;
+  async updateRoomState(params: {usersMap: Map<string, AgoraUser>, room: Partial<ClassState>, me: Partial<Me>} & NotifyFlag) {
+    const {usersMap, room, me} = params
 
-    if (role === 'teacher') {
-      newCourse.teacherId = uid;
+    const teacherId = room.teacherId as string
+
+    let coVideoUids = this.state.course.coVideoUids
+
+    if (usersMap.count()) {
+      const ids: any[] = []
+      const usersJson = usersMap.toJSON()
+      for (let key of Object.keys(usersJson)) {
+        ids.push(`${key}`)
+      }
+      coVideoUids = ids.filter((id: string) => `${id}` !== `${teacherId}`)
     }
 
-    const channelAttrs = this.exactChannelAttrsBy(newMe, newCourse);
+    const newMe = me
+
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        ...room,
+        coVideoUids,
+      },
+      me: {
+        ...this.state.me,
+        ...newMe
+      },
+      users: usersMap,
+    }
+    this.commit(this.state)
+  }
+
+  async updateLocalMe(params: Partial<Me & NotifyFlag>) {
+    const {broad, ...meParams} = params
+    const newMe = this.compositeMe(meParams)
+
+    const newMeAttrs = {
+      uid: newMe.uid,
+      account: newMe.account,
+      role: newMe.role,
+      video: newMe.video,
+      audio: newMe.audio,
+      chat: newMe.chat,
+      grantBoard: newMe.grantBoard,
+      coVideo: newMe.coVideo,
+      userId: newMe.userId,
+      screenId: newMe.screenId,
+    }
+
+    const userAttrsParams: UserAttrsParams = {
+      userId: newMeAttrs.userId as string,
+      enableChat: newMeAttrs.chat as number,
+      enableAudio: newMeAttrs.audio as number,
+      enableVideo: newMeAttrs.video as number,
+      grantBoard: newMeAttrs.grantBoard as number,
+      // coVideo: newMeAttrs.coVideo as number
+    }
+
+    if (broad) {
+      await this.updateRoomUser({user: userAttrsParams})
+    }
+
+    this.state = {
+      ...this.state,
+      me: {
+        ...this.state.me,
+        ...newMeAttrs,
+      },
+      users: this.state.users.set(`${this.state.me.uid}`, newMeAttrs)
+    }
+    this.commit(this.state)
+  }
+
+  async updateRoomUser({user}: {user: UserAttrsParams}) {
+    return await eduApi.updateRoomUser(user)
+  }
+
+  updateApplyUser(user: any) {
+    this.state = {
+      ...this.state,
+      applyUser: user
+    }
+    this.commit(this.state)
+  }
+
+  async updateUserBy(uid: string, params: Partial<AgoraUser & NotifyFlag>) {
+    const {broad = true, ...userParams} = params
+    const prevUser = this.state.users.get(`${uid}`)
+    
+    const newUserAttrs: Partial<AgoraUser> = {
+      ...prevUser,
+    }
+
+    const userKeys = Object.keys(userParams)
+
+    for (let key of userKeys) {
+      if (newUserAttrs.hasOwnProperty(key)
+        && userParams.hasOwnProperty(key)) {
+        set(newUserAttrs, key, get(userParams, key))
+      }
+    }
+
+    const userAttrsParams: UserAttrsParams = {
+      userId: newUserAttrs.userId as string,
+      enableChat: newUserAttrs.chat as number,
+      enableAudio: newUserAttrs.audio as number,
+      enableVideo: newUserAttrs.video as number,
+      grantBoard: newUserAttrs.grantBoard as number,
+      // coVideo: newUserAttrs.coVideo as number
+    }
+
+    if (broad) {
+      await this.updateRoomUser({user: userAttrsParams})
+    }
+
+    this.state = {
+      ...this.state,
+      users: this.state.users.set(`${uid}`, newUserAttrs as AgoraUser)
+    }
+    this.commit(this.state)
+  }
+
+  resolveCourseAttrsToOperate(params: Partial<ClassState>): any {
+    const keys = ['lockBoard', 'courseState', 'muteChat']
+    for (let key of keys) {
+      if (params.hasOwnProperty(key)) {
+        let value = -1
+        let stateValue = get(params, key, 0)
+        let stateKey = key;
+        if (key === 'lockBoard') {
+          value = stateValue ? RoomMessage.lockBoard : RoomMessage.unlockBoard
+        } else if (key === 'courseState') {
+          value = stateValue ? RoomMessage.startCourse : RoomMessage.endCourse
+        } else if (key === 'muteChat') {
+          value = stateValue ? RoomMessage.muteAllChat : RoomMessage.unmuteAllChat
+          stateKey = 'muteAllChat'
+        }
+        return {
+          key: stateKey,
+          stateValue,
+          value
+        }
+      }
+    }
+  }
+
+  async updateCourse(params: Partial<ClassState & NotifyFlag>) {
+    const {broad = true, ...courseParams} = params
+
+    const {key, stateValue}: any = this.resolveCourseAttrsToOperate(courseParams)
+
+    if (broad) {
+      await eduApi.updateCourse({
+        room: {
+          [`${key}`]: stateValue
+        }
+      })
+      this.state = {
+        ...this.state,
+        course: {
+          ...this.state.course,
+          ...courseParams
+        }
+      }
+      this.commit(this.state)
+      return
+    }
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        ...courseParams
+      }
+    }
+    this.commit(this.state)
+  }
+
+  async updateLocal(params: LocalAttrs) {
+    const newMe = this.compositeMe(params)
+    const newCourse = this.compositeCourse(params)
+    const users = this.state.users
+
     this.state = {
       ...this.state,
       me: {
         ...newMe,
       },
-      users: this.state.users.set(newMe.uid, {
-        ...newMe
-      }),
+      users,
       course: {
         ...newCourse,
       }
     }
-    this.commit(this.state);
-    let res = await this.rtmClient.updateChannelAttrsByKey(channelKey, channelAttrs);
-    return res;
+    this.commit(this.state)
   }
 
-  private exactChannelAttrsFrom(json: object) {
-    const defaultCourseState = {
-      class_state: 0,
-      link_uid: 0,
-      shared_uid: 0,
-      mute_chat: 0,
-      whiteboard_uid: 0,
-      lock_board: 0,
-      // grant_board: 0,
-    }
-
-    const AgoraUserKeys: string[] = [
-      'uid',
-      'account',
-      'role',
-      'video',
-      'audio',
-      'chat',
-      'whiteboard_uid',
-      'shared_uid',
-      'mute_chat',
-      'link_uid',
-      'class_state',
-      'grant_board',
-      'lock_board'
-    ];
-    const teacherJson = jsonParse(get(json, 'teacher.value'));
-    const course: any = {};
-    if (teacherJson) {
-      for (const prop in teacherJson) {
-        if (defaultCourseState.hasOwnProperty(prop)) {
-          course[prop] = teacherJson[prop];
-        }
-      }
-    }
-
-    const students = [];
-    for (let key of Object.keys(json)) {
-      if (key === 'teacher') continue;
-      const student = jsonParse(get(json, `${key}.value`));
-      if (!isEmpty(student)) {
-        student.uid = key;
-        students.push(Object.freeze(student));
-        // console.log(">>> parse, student: ", student);
-      }
-    }
-
-    const accounts = [];
-    if (!isEmpty(teacherJson)) {
-      const teacher: any = { role: 'teacher' };
-      for (const prop of AgoraUserKeys) {
-        if (teacherJson.hasOwnProperty(prop)) {
-          teacher[prop] = teacherJson[prop]
-        }
-      }
-      accounts.push(teacher);
-    }
-    for (let student of students) {
-      if (!isEmpty(student)) {
-        const tempStudent: any = { role: 'student' };
-        for (const prop of AgoraUserKeys) {
-          if (student.hasOwnProperty(prop)) {
-            tempStudent[prop] = student[prop]
-          }
-        }
-        accounts.push(tempStudent);
-      }
-    }
-    return {
-      teacher: teacherJson,
-      students: students,
-      accounts,
-      course,
-    };
-  }
-
-  updateRoomAttrs(rawData: object) {
-    const {
-      teacher,
-      accounts,
-      course: room
-    } = this.exactChannelAttrsFrom(rawData);
-
-    console.log("origin", rawData);
-    console.log("origin exact", teacher, accounts, room);
-    const users = accounts.reduce((acc: Map<string, AgoraUser>, it: any) => {
-      return acc.set(it.uid, {
-        role: it.role,
-        account: it.account,
-        uid: it.uid,
-        video: it.video,
-        audio: it.audio,
-        chat: it.chat,
-        boardId: it.whiteboard_uid,
-        sharedId: it.shared_uid,
-        linkId: it.link_uid,
-        lockBoard: it.lock_board,
-        grantBoard: it.grant_board
-      });
-    }, Map<string, AgoraUser>());
-
-    const newClassState: Partial<ClassState> = {
-      teacherId: get(teacher, 'uid', 0),
-      linkId: room.link_uid,
-      boardId: room.whiteboard_uid,
-      courseState: room.class_state,
-      muteChat: room.mute_chat,
-      lockBoard: room.lock_board
-    };
-
-    const me = this.state.me;
-    let newMeValue: Partial<AgoraUser> = {};
-
-    if (users.get(me.uid)) {
-      newMeValue = users.get(me.uid) as AgoraUser;
-    } else {
-      newMeValue = me;
-    }
-
-    const newMe = this.compositeMe(newMeValue);
-    users.set(newMe.uid, {...newMe});
-    const newCourse = this.compositeCourse(newClassState);
-
-    this.state = {
-      ...this.state,
-      users,
-      me: {
-        ...this.state.me,
-        ...newMe,
-      },
-      course: {
-        ...this.state.course,
-        ...newCourse
-      }
-    }
-    this.commit(this.state);
+  async exitRoom() {
+    return await eduApi.exitRoom(this.state.course.roomId)
   }
 
   async exitAll() {
@@ -929,19 +992,279 @@ export class RoomStore {
     }
   }
 
-  setScreenShare(shared: boolean) {
-    this.state = {
+  async startWebScreenShare() {
+    const webClient = this.rtcClient as AgoraWebClient
+    try {
+      const {screenToken} = await eduApi.refreshToken();
+      const {screenId, rid} = this.state.course
+      const appId = this.state.appID
+      await webClient.startScreenShare({
+        uid: +screenId,
+        token: screenToken,
+        channel: rid,
+        appId
+      })
+      // add screen client listener
+      // 监听屏幕共享主要的事件
+      webClient.shareClient.on('onTokenPrivilegeWillExpire', (evt: any) => {
+        // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+        const newToken = '';
+        webClient.shareClient.renewToken(newToken);
+      });
+      webClient.shareClient.on('onTokenPrivilegeDidExpire', (evt: any) => {
+        // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
+        const newToken = '';
+        webClient.shareClient.renewToken(newToken);
+      });
+      webClient.shareClient.on('stopScreenSharing', (evt: any) => {
+        console.log('stop screen share', evt);
+        this.stopWebScreenShare().then(() => {
+          globalStore.showToast({
+            message: t('toast.canceled_screen_share'),
+            type: 'notice'
+          });
+        }).catch(console.warn).finally(() => {
+          console.log('[agora-web] stop share');
+        })
+      })
+    } catch(err) {
+      if (webClient.shareClient) {
+        webClient.shareClient.off('onTokenPrivilegeWillExpire', (evt: any) => {})
+        webClient.shareClient.off('onTokenPrivilegeDidExpire', (evt: any) => {})
+        webClient.shareClient.off('stopScreenSharing', (evt: any) => {})
+      }
+      if (err.type === 'error' && err.msg === 'NotAllowedError') {
+        globalStore.showToast({
+          message: t('toast.canceled_screen_share'),
+          type: 'notice'
+        });
+      }
+      if (err.type === 'error' && err.msg === 'PERMISSION_DENIED') {
+        globalStore.showToast({
+          message: t('toast.screen_sharing_failed', {reason: err.msg}),
+          type: 'notice'
+        });
+      }
+      throw err
+    }
+  }
+
+  async stopWebScreenShare() {
+    const webClient = this.rtcClient as AgoraWebClient
+    if (webClient.shared) {
+      await webClient.stopScreenShare()
+      this.removeLocalSharedStream();
+    }
+  }
+
+  // WARN: only work in electron environment
+  // 仅用于electron运行环境
+  async startNativeScreenShare() {
+    const rtcClient = this.rtcClient;
+    globalStore.setNativeWindowInfo({
+      visible: true,
+      items: (rtcClient as AgoraElectronClient).getScreenShareWindows()
+    })
+  }
+
+  async startScreenShare() {
+    if (platform === 'electron') {
+      await this.startNativeScreenShare()
+    }
+
+    if (platform === 'web') {
+      await this.startWebScreenShare()
+    }
+  }
+
+  async stopNativeScreenShare() {
+    const nativeClient = this.rtcClient as AgoraElectronClient;
+    await nativeClient.stopScreenShare();
+  }
+
+  async stopScreenShare() {
+    if (platform === 'web') {
+      await this.stopWebScreenShare()
+    }
+
+    if (platform === 'electron') {
+      await this.stopNativeScreenShare()
+    }
+  }
+
+  lockRecording() {
+    if (!this.state) return
+    this.state={
       ...this.state,
-      rtc: {
-        ...this.state.rtc,
-        shared,
+      recordLock: true
+    }
+    this.commit(this.state)
+  }
+
+  unlockRecording() {
+    if (!this.state) return
+    this.state={
+      ...this.state,
+      recordLock: false
+    }
+    this.commit(this.state)
+  }
+  async startRecording () {
+    this.lockRecording()
+    try {
+      const {data: recordId} = await eduApi.startRecording()
+      this.state = {
+        ...this.state,
+        course: {
+          ...this.state.course,
+          recordId,
+          isRecording: true
+        }
+      }
+      this.commit(this.state)
+    } catch(err) {
+      throw err;
+    } finally {
+      this.unlockRecording()
+    }
+  }
+
+  async stopRecording () {
+    this.lockRecording()
+    try {
+      await eduApi.stopRecording(this.state.course.recordId)
+      const roomId = this.state.course.roomId
+      const {data: roomInfo} = await eduApi.getRoomInfoBy(roomId)
+      const recordId = roomInfo.room.recordId
+      this.state = {
+        ...this.state,
+        course: {
+          ...this.state.course,
+          recordId: recordId,
+          isRecording: false
+        }
+      }
+      this.commit(this.state)
+    } catch(err) {
+      throw err
+    } finally {
+      this.unlockRecording()
+    }
+  }
+
+  updateCoVideoUsers(rawUsers: any) {
+    const coVideoUids: any[] = []
+    let users = rawUsers.reduce((acc: Map<string, AgoraUser>, it: any) => {
+      if (+it.role === 2) {
+        coVideoUids.push(+it.uid)
+      }
+      
+      return acc.set(`${it.uid}`, {
+        role: it.role,
+        account: it.userName,
+        uid: it.uid,
+        video: it.enableVideo,
+        audio: it.enableAudio,
+        chat: it.enableChat,
+        grantBoard: it.grantBoard,
+        userId: it.userId,
+        screenId: it.screenId,
+      });
+    }, Map<string, AgoraUser>());
+
+    let meState = this.state.me
+
+    let newMe = users.find((user: AgoraUser) => +this.state.me.uid === +user.uid)
+
+    if (newMe) {
+      meState = this.compositeMe({...newMe, coVideo: 1})
+    } else {
+      meState = {
+        ...meState,
+        coVideo: 0
       }
     }
-    this.commit(this.state);
+
+    let courseState: any = {
+      screenId: this.state.course.screenId,
+      teacherId: this.state.course.teacherId,
+    }
+
+    let newCourse = users.find((user: AgoraUser) => +user.role === 1)
+
+    if (newCourse) {
+      courseState.screenId = newCourse.screenId
+      courseState.teacherId = newCourse.uid
+    }
+
+    let applyUser = this.state.applyUser;
+    if (applyUser && applyUser.userId) {
+      const foundUser = users.find((user: AgoraUser) => user.userId === applyUser.userId)
+      if (!foundUser) {
+        applyUser = {
+          userId: '',
+          account: ''
+        }
+      }
+    }
+
+    this.state = {
+      ...this.state,
+      users: users,
+      me: {
+        ...this.state.me,
+        ...meState
+      },
+      course: {
+        ...this.state.course,
+        ...courseState,
+        coVideoUids,
+      },
+      applyUser
+    }
+    this.commit(this.state)
+  }
+
+  updateRoomInfo(data: any) {
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        lockBoard: data.lockBoard,
+        muteChat: data.muteAllChat,
+        courseState: data.courseState,
+      }
+    }
+    this.commit(this.state)
+  }
+
+  updateRoomMember(memberCount: number) {
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        memberCount
+      }
+    }
+    this.commit(this.state)
+  }
+
+  updateScreenShare(payload: any) {
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        screenId: payload.screenId,
+      }
+    }
+
+    this.commit(this.state)
   }
 }
 
 export const roomStore = new RoomStore();
 
+// TODO: Please remove it before release in production
+// 备注：请在正式发布时删除操作的window属性
 //@ts-ignore
 window.roomStore = roomStore;

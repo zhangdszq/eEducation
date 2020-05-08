@@ -10,7 +10,7 @@ function DeviceTest() {
   const history = useHistory();
 
   const handleClick = (evt: any) => {
-    history.goBack();
+    history.push('/')
   }
 
   useEffect(() => {
