@@ -8,8 +8,6 @@ import {ErrorState} from './state';
 
 const useStyles = makeStyles(styles);
 
-console.log("styles", styles);
-
 const ErrorPage: React.FC<ErrorState> = ({
   reason,
   errors,

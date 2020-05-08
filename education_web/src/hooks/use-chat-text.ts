@@ -21,13 +21,11 @@ export default function useChatText () {
 
   const sendMessage = async (content: string) => {
     if (rtmClient &&  me.uid) {
-      if (me.role !== 'teacher' && (!me.chat || Boolean(roomState.course.muteChat))) return console.warn("chat already muted");
-      if (me.role === 'teacher' && !me.chat) return console.warn("chat already muted");
-      await rtmClient.sendChannelMessage(JSON.stringify({
-        // cmd: Chat,
-        account: me.account,
-        content
-      }));
+      if (me.role !== 1 && (!me.chat || Boolean(roomState.course.muteChat))) return console.warn("chat already muted");
+      if (me.role === 1 && !me.chat) return console.warn("chat already muted");
+      await roomStore.sendChannelMessage({
+        message: content,
+      });
       const message = {
         account: me.account,
         id: me.uid,
@@ -55,7 +53,7 @@ export default function useChatText () {
         users.push(user);
       }
     }
-    return users.filter((user: AgoraUser) => user.role === 'student');
+    return users.filter((user: AgoraUser) => +user.role === 2);
   }, [roomState.me.uid, roomState.rtc.users, roomState.users, roomState.rtc.localStream]);
 
   return {

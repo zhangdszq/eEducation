@@ -22,27 +22,31 @@
   * ali-oss (can be replaced with your own cloud oss sdk)
   * agora cloud recording (we recommend to integrate in server side)
 
+### Backend Service  
+  * agora education backend
+
 ### Frontend Tech Utilities
   * typescript ^3.6.4
   * react & react hooks & rxjs
-  * electron 5.0.8 & electron-builder
+  * electron 7.1.2 & electron-builder
   * material-ui
+  * Agora eEducation Backend api
 
 
 ### Development Environment
   * mac or windows
   * nodejs LTS
-  * electron 5.0.8
+  * electron 7.1.2
 
 ### For Windows Electron Developer
-  * npm install electron@5.0.8 arch=ia32 manually  
+  * npm install electron@7.1.2 arch=ia32 manually  
   ```  
-  npm install electron@5.0.8 --arch=ia32 --save-dev
+  npm install electron@7.1.2 --arch=ia32 --save-dev
   ```  
   * find the `agora_electron` from package.json, replace it with below code snippet  
   ```
     "agora_electron": {
-      "electron_version": "5.0.8",
+      "electron_version": "7.1.2",
       "prebuilt": true,
       "platform": "win32"
     },
@@ -59,31 +63,39 @@ WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE
 # obtain agora appid 和 netless sdktoken
   rename .env.example to .env.local
 ```bash
-# agora APPID obtain from dashboard.agora.io
-REACT_APP_AGORA_APP_ID=Agora APPID
-# true is indicate the agora sdk will enable log
+# Agora AppId
+REACT_APP_AGORA_APP_ID=agora appId
 REACT_APP_AGORA_LOG=true
-# obtain netless whiteboard sdk from herewhite official website
-REACT_APP_NETLESS_APP_TOKEN=SDKTOKEN
-# whiteboard api create room entry and join room end-points
-REACT_APP_NETLESS_APP_API_ENTRY=https://cloudcapiv4.herewhite.com/room?token=
-REACT_APP_NETLESS_APP_JOIN_API=https://cloudcapiv4.herewhite.com/room/join?token=
-# agora recording service end-point
-REACT_APP_AGORA_RECORDING_SERVICE_URL=https://api.agora.io/v1/apps/%s/cloud_recording/
-# oss for cloud recording storage
-REACT_APP_AGORA_RECORDING_OSS_URL=Your cloud recording oss cdn url
-# only use to electron development environment
 ELECTRON_START_URL=http://localhost:3000
-# obtain agora customer id from console dashboard
-REACT_APP_AGORA_CUSTOMER_ID=Your own agora developer customer_id
-# obtain agora customer certificate from console dashboard
-REACT_APP_AGORA_CUSTOMER_CERTIFICATE=Your own agora developer customer_certificate
-# oss parameters for whiteboard courseware
-REACT_APP_AGORA_OSS_BUCKET_NAME=your_oss_bucket_name
-REACT_APP_AGORA_OSS_BUCKET_FOLDER=your_oss_folder
-REACT_APP_AGORA_OSS_BUCKET_REGION=your_oss_region
-REACT_APP_AGORA_OSS_BUCKET_KEY=your_oss_bucket_ak
-REACT_APP_AGORA_OSS_BUCKET_SECRET=your_oss_bucket_sk
+
+# (OPTIONAL)
+# agora customer id obtain from developer console dashboard
+REACT_APP_AGORA_CUSTOMER_ID=customer_id
+# agora customer certificate obtain from developer console dashboard
+REACT_APP_AGORA_CUSTOMER_CERTIFICATE=customer_certificate
+# agora rtm endpoint obtain from developer documentation center
+REACT_APP_AGORA_RTM_ENDPOINT=your_server_rtm_endpoint_api
+# agora education endpoint prefix
+REACT_APP_AGORA_EDU_ENDPOINT_PREFIX=agora_edu_api_prefix
+
+# your whiteboard server endpoint
+REACT_APP_YOUR_BACKEND_WHITEBOARD_API=your_server_whiteboard_api
+
+# agora restful api token
+REACT_APP_AGORA_RESTFULL_TOKEN=agora_restful_api_token
+
+# your oss bucket name
+REACT_APP_YOUR_OWN_OSS_BUCKET_NAME=your_oss_bucket_name
+# your oss bucket folder
+REACT_APP_YOUR_OWN_OSS_BUCKET_FOLDER=your_oss_bucket_folder
+# your oss bucket region
+REACT_APP_YOUR_OWN_OSS_BUCKET_REGION=your_bucket_region
+# your oss bucket access key
+REACT_APP_YOUR_OWN_OSS_BUCKET_KEY=your_bucket_ak
+# your oss bucket access secret key
+REACT_APP_YOUR_OWN_OSS_BUCKET_SECRET=your_bucket_sk
+# your oss bucket endpoint
+REACT_APP_YOUR_OWN_OSS_CDN_ACCELERATE=your_cdn_accelerate_endpoint
 ```
 
 # Build Web 
@@ -107,11 +119,11 @@ REACT_APP_AGORA_OSS_BUCKET_SECRET=your_oss_bucket_sk
   npm run pack:mac  
 
 #### Package Electron for Win32  
-  * npm i electron@5.0.8 --arch=ia32  
+  * npm i electron@7.1.2 --arch=ia32  
   * find and replace `agora_electron`:  
   ```
     "agora_electron": {
-      "electron_version": "5.0.8",
+      "electron_version": "7.1.2",
       "prebuilt": true,
       "platform": "win32"
     },

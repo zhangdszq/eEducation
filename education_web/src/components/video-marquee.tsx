@@ -13,7 +13,6 @@ const showScrollbar = () => {
     if (clientWidth && videoMarqueeMark) {
       const videoMarqueeWidth = videoMarqueeMark.clientWidth;
       const width: number = clientWidth * marqueeLength;
-      // console.log("[video-marquee] videoMarqueeWidth: ", videoMarqueeWidth, ", width: ", width);
       if (videoMarqueeWidth <= width) {
         return true;
       }
@@ -79,6 +78,7 @@ function VideoMarquee() {
             video={Boolean(teacher.video)}
             local={Boolean(teacher.local)}
             handleClick={onPlayerClick}
+            autoplay={true}
           />
           :
           <VideoPlayer role="teacher" account={'teacher'} video audio streamID={0} />
@@ -105,6 +105,7 @@ function VideoMarquee() {
               audio={student.audio}
               local={student.local}
               handleClick={onPlayerClick}
+              autoplay={true}
             />
           ))}
         </div>

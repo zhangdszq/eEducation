@@ -1,216 +1,59 @@
 import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react';
-import './replay.scss';
+import '../replay.scss';
 import Slider from '@material-ui/core/Slider';
-import { Subject } from 'rxjs';
 import { Player, PlayerPhase } from 'white-web-sdk';
-import { useParams, useLocation, Redirect } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import moment from 'moment';
-import { Progress } from '../components/progress/progress';
-import { globalStore } from '../stores/global';
-import { WhiteboardAPI, RTMRestful } from '../utils/api';
-import { whiteboard } from '../stores/whiteboard';
+import { Progress } from '../../components/progress/progress';
+import { globalStore } from '../../stores/global';
+import { replayStore, useObserver, IPlayerState } from './model';
+import { WhiteboardAPI } from '../../utils/api';
+import { whiteboard } from '../../stores/whiteboard';
 import "video.js/dist/video-js.css";
-import { getOSSUrl } from '../utils/helper';
-import { t } from '../i18n';
-import { RTMReplayer, RtmPlayerState } from '../components/whiteboard/agora/rtm-player';
-import { errorStore } from './error-page/state';
+import { RTMReplayer, RtmPlayerState } from '../../components/whiteboard/agora/rtm-player';
+import { useInterval } from 'react-use';
+import { isElectron } from '../../utils/platform';
+import { t } from '../../i18n';
 
-export interface IPlayerState {
-  beginTimestamp: number
-  duration: number
-  roomToken: string
-  mediaURL: string
-  isPlaying: boolean
-  progress: number
-  player: any
+const delay = 5000
 
-  currentTime: number
-  phase: PlayerPhase
-  isFirstScreenReady: boolean
-  isPlayerSeeking: boolean
-  seenMessagesLength: number
-  isChatOpen: boolean
-  isVisible: boolean
-  replayFail: boolean
-}
-
-export const defaultState: IPlayerState = {
-  beginTimestamp: 0,
-  duration: 0,
-  roomToken: '',
-  mediaURL: '',
-  isPlaying: false,
-  progress: 0,
-  player: null,
-
-  currentTime: 0,
-  phase: PlayerPhase.Pause,
-  isFirstScreenReady: false,
-  isPlayerSeeking: false,
-  seenMessagesLength: 0,
-  isChatOpen: false,
-  isVisible: false,
-  replayFail: false,
-}
-
-class ReplayStore {
-  public subject: Subject<IPlayerState> | null;
-  public state: IPlayerState | null;
-
-  constructor() {
-    this.subject = null;
-    this.state = null;
-  }
-
-  initialize() {
-    this.subject = new Subject<IPlayerState>();
-    this.state = defaultState;
-    this.subject.next(this.state);
-  }
-
-  subscribe(setState: any) {
-    this.initialize();
-    this.subject && this.subject.subscribe(setState);
-  }
-
-  unsubscribe() {
-    this.subject && this.subject.unsubscribe();
-    this.state = null;
-    this.subject = null;
-  }
-
-  commit(state: IPlayerState) {
-    this.subject && this.subject.next(state);
-  }
-
-  setPlayer(player: Player) {
-    if (!this.state) return;
-    this.state = {
-      ...this.state,
-      player
-    }
-    this.commit(this.state);
-  }
-
-  setCurrentTime(scheduleTime: number) {
-    if (!this.state) return;
-    this.state = {
-      ...this.state,
-      currentTime: scheduleTime
-    }
-    this.commit(this.state);
-  }
-
-  updatePlayerStatus(isPlaying: boolean) {
-    if (!this.state) return;
-
-    this.state = {
-      ...this.state,
-      isPlaying,
-    }
-    if (!this.state.isPlaying && this.state.player) {
-      this.state.player.seekToScheduleTime(0);
-    }
-    this.commit(this.state);
-  }
-
-  updateProgress(progress: number) {
-    if (!this.state) return
-    this.state = {
-      ...this.state,
-      progress
-    }
-    this.commit(this.state);
-  }
-
-  setReplayFail(val: boolean) {
-    if (!this.state) return
-    this.state = {
-      ...this.state,
-      replayFail: val
-    }
-    this.commit(this.state);
-  }
-
-  updatePhase(phase: PlayerPhase) {
-    if (!this.state) return
-    let isPlaying = this.state.isPlaying;
-
-    if (phase === PlayerPhase.Playing) {
-      isPlaying = true;
-    }
-
-    if (phase === PlayerPhase.Ended || phase === PlayerPhase.Pause) {
-      isPlaying = false;
-    }
-
-    this.state = {
-      ...this.state,
-      phase,
-      isPlaying,
-    }
-    
-    this.commit(this.state);
-  }
-
-  loadFirstFrame() {
-    if (!this.state) return
-    this.state = {
-      ...this.state,
-      isFirstScreenReady: true,
-    }
-    this.commit(this.state);
-  }
-
-  
-  async joinRoom(_uuid: string) {
-    return await WhiteboardAPI.joinRoom(_uuid);
-  }
-}
-
-const store = new ReplayStore();
 
 const ReplayContext = React.createContext({} as IPlayerState);
 
 const useReplayContext = () => React.useContext(ReplayContext);
 
 const ReplayContainer: React.FC<{}> = () => {
-  const [state, setState] = React.useState<IPlayerState>(defaultState);
+  const replayState = useObserver<IPlayerState>(replayStore)
 
-  const {uuid, startTime, endTime, mediaUrl} = useParams();
+  const {recordId} = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const rid: string = searchParams.get('rid') as string;
+  const roomId: string = searchParams.get('roomId') as string;
+  const userToken: string = searchParams.get('token') as string;
   const senderId: string = searchParams.get('senderId') as string;
+  const channelName: string = searchParams.get('channelName') as string;
 
-  React.useEffect(() => {
-    store.subscribe((state: any) => {
-      setState(state);
-    });
-    return () => {
-      store.unsubscribe();
-    }
-  }, []);
+  useInterval(() => {
+    replayStore.getCourseRecordBy(recordId as string, roomId as string, userToken)
+  }, delay)
 
-  if (!uuid || !rid || !startTime || !endTime || !mediaUrl) {
-    errorStore.state = {
-      reason: t('error.components.paramsEmpty', {reason: 'uuid, rid, startTime, endTime, mediaUrl'})
-    }
-    return <Redirect to="/404"></Redirect>
-  }
+  const value = replayState;
 
-  const value = state;
+  const result = value.courseRecordData;
 
   return (
     <ReplayContext.Provider value={value}>
-      <NetlessAgoraReplay
-        rid={rid}
-        senderId={senderId}
-        whiteboardUUID={uuid}
-        startTime={+startTime}
-        endTime={+endTime}
-        mediaUrl={mediaUrl}
-      />
+      {result?.status !== 2 ?
+        <Progress title={t(`replay.${result?.statusText ? result?.statusText : 'loading'}`)} /> : 
+        <NetlessAgoraReplay
+          roomId={roomId}
+          senderId={senderId}
+          channelName={channelName}
+          whiteboardUUID={result?.boardId as string}
+          startTime={result?.startTime as number}
+          endTime={result?.endTime as number}
+          mediaUrl={result?.url as string} />
+      }
     </ReplayContext.Provider>
   )
 }
@@ -219,30 +62,32 @@ export default ReplayContainer;
 
 export type NetlessAgoraReplayProps = {
   whiteboardUUID: string
-  rid: string
-  senderId: string
   startTime: number
   endTime: number
   mediaUrl: string
+  senderId: string
+  channelName: string
+  roomId: string
 }
 
 export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
   whiteboardUUID: uuid,
-  rid,
-  senderId,
   startTime,
   endTime,
-  mediaUrl
+  mediaUrl,
+  senderId,
+  channelName,
+  roomId
 }) => {
   const state = useReplayContext();
 
   const player = useMemo(() => {
-    if (!store.state || !store.state.player) return null;
-    return store.state.player as Player;
-  }, [store.state]);
+    if (!replayStore.state || !replayStore.state.player) return null;
+    return replayStore.state.player as Player;
+  }, [replayStore.state]);
 
   const handlePlayerClick = () => {
-    if (!store.state || !player) return;
+    if (!replayStore.state || !player) return;
 
     if (player.phase === PlayerPhase.Playing) {
       player.pause();
@@ -261,8 +106,8 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
   }
 
   const handleChange = (event: any, newValue: any) => {
-    store.setCurrentTime(newValue);
-    store.updateProgress(newValue);
+    replayStore.setCurrentTime(newValue);
+    replayStore.updateProgress(newValue);
   }
 
   const onWindowResize = () => {
@@ -314,14 +159,14 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
   useEffect(() => {
     window.addEventListener('resize', onWindowResize);
     window.addEventListener('keydown', handleSpaceKey);
-    if (uuid && startTime && endTime) {
-        store.joinRoom(uuid).then(({roomToken}) => {
+    if (roomId && startTime && endTime) {
+        replayStore.joinRoom(roomId).then(({roomToken, uuid}) => {
           WhiteboardAPI.replayRoom(whiteboard.client,
           {
             beginTimestamp: +startTime,
             duration: duration,
             room: uuid,
-            mediaURL: getOSSUrl(mediaUrl as string),
+            mediaURL: mediaUrl,
             roomToken: roomToken,
           }, {
             onCatchErrorWhenRender: error => {
@@ -339,10 +184,10 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
               });
             },
             onPhaseChanged: phase => {
-              store.updatePhase(phase);
+              replayStore.updateWhiteboardPhase(phase);
             },
             onLoadFirstFrame: () => {
-              store.loadFirstFrame();
+              // replayStore.loadFirstFrame();
             },
             onSliceChanged: () => {
             },
@@ -354,15 +199,15 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
                 message: t('toast.replay_failed'),
                 type: 'notice'
               });
-              store.setReplayFail(true);
+              replayStore.setReplayFail(true);
             },
             onScheduleTimeChanged: (scheduleTime) => {
               if (lock.current) return;
-              store.setCurrentTime(scheduleTime);
+              replayStore.setCurrentTime(scheduleTime);
             }
           }).then((player: Player | undefined) => {
             if (player) {
-              store.setPlayer(player);
+              replayStore.setPlayer(player);
               player.bindHtmlElement(document.getElementById("whiteboard") as HTMLDivElement);
             }
           })
@@ -399,7 +244,7 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
   }, [player, state]);
 
   return (
-    <div className="replay">
+    <div className={`replay`}>
       <div className={`player-container`} >
         <PlayerCover />
         <div className="player">
@@ -414,15 +259,15 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
                 className='custom-video-progress'
                 value={state.currentTime}
                 onMouseDown={() => {
-                  if (store.state && store.state.player) {
-                    const player = store.state.player as Player;
+                  if (replayStore.state && replayStore.state.player) {
+                    const player = replayStore.state.player as Player;
                     player.pause();
                     lock.current = true;
                   }
                 }}
                 onMouseUp={() => {
-                  if (store.state && store.state.player) {
-                    const player = store.state.player as Player;
+                  if (replayStore.state && replayStore.state.player) {
+                    const player = replayStore.state.player as Player;
                     player.seekToScheduleTime(state.currentTime);
                     player.play();
                     lock.current = false;
@@ -447,9 +292,9 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
           <video id="white-sdk-video-js" className="video-js video-layout" style={{width: "100%", height: "100%", objectFit: "cover"}}></video>
         </div>
         <div className="chat-holder chat-board chat-messages-container">
-          {/* <RTMReplayer
+          <RTMReplayer
             senderId={senderId}
-            rid={rid}
+            channelName={channelName}
             startTime={startTime}
             endTime={endTime}
             currentSeekTime={state.currentTime}
@@ -458,7 +303,7 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
                 player?.stop();
               }
             }}
-          ></RTMReplayer> */}
+          ></RTMReplayer>
         </div>
       </div>
     </div>

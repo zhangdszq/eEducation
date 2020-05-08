@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "experimentalDecorators": true,
     "module": "commonjs",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker",
     ],
     "noImplicitAny": true,
     "noImplicitThis": true,

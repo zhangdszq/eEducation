@@ -9,13 +9,16 @@ import Loading from '../components/loading';
 import Toast from '../components/toast';
 import '../icons.scss';
 import { PlatformContainer } from '../containers/platform-container';
-import ReplayContainer from './replay';
+import ReplayContainer from './replay/replay';
+import AgoraReplayContainer from './replay/agora-replay';
 import { RootProvider } from '../containers/root-container';
 import SmallClass from './classroom/small-class';
 import OneToOne from './classroom/one-to-one';
 import BigClass from './classroom/big-class';
 import { PageNotFound } from './404';
-// import ErrorPage from './error-page/error-page';
+import RoomDialog from '../components/dialog';
+import { ReplayPageWrapper } from './replay';
+import { ConfigPage } from './config';
 
 export default function () {
   return (
@@ -25,9 +28,7 @@ export default function () {
         <RootProvider>
           <Loading />
           <Toast />
-          <Route exact path="/">
-            <Home />
-          </Route>
+          <RoomDialog />
           <Route exact path="/device_test">
             <DeviceTest />
           </Route>
@@ -46,8 +47,21 @@ export default function () {
               <BigClass />
             </RoomPage>
           </Route>
-          <Route exact path="/replay/:uuid/:startTime/:endTime/:mediaUrl">
-            <ReplayContainer />
+          <Route path="/replay/record/:recordId">
+            <ReplayPageWrapper>
+              <ReplayContainer />
+            </ReplayPageWrapper>
+          </Route>
+          <Route path="/replay/agora_record/:recordId">
+            <ReplayPageWrapper>
+              <AgoraReplayContainer />
+            </ReplayPageWrapper>
+          </Route>
+          <Route path="/config">
+            <ConfigPage />
+          </Route>
+          <Route exact path="/">
+            <Home />
           </Route>
           {/* <Route path="/error">
             <ErrorPage />

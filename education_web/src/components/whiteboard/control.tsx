@@ -4,13 +4,15 @@ import { roomStore } from '../../stores/room';
 import { whiteboard } from '../../stores/whiteboard';
 import moment from 'moment';
 import { globalStore } from '../../stores/global';
-import { getOSSUrl } from '../../utils/helper';
 import { t } from '../../i18n';
+import { Tooltip } from '@material-ui/core';
+import { useRoomState } from '../../containers/root-container';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void
   active: boolean
   text?: string
+  loading?: boolean
 }
 
 const ControlItem = (props: ControlItemProps) => {
@@ -19,13 +21,14 @@ const ControlItem = (props: ControlItemProps) => {
   }
   return (
     props.text ?
-      <div className={`control-btn control-${props.name}`} onClick={onClick}>
+      <div className={`control-btn control-${props.name} ${props.loading ? 'icon-loading' : ''}`} onClick={onClick}>
         <div className={`btn-icon ${props.name} ${props.active ? 'active' : ''}`}
           data-name={props.name} />
         <div className="control-text">{props.text}</div>
       </div>
       :
       <Icon
+        loading={props.loading}
         data={props.name}
         onClick={onClick}
         className={`items ${props.name} ${props.active ? 'active' : ''}`}
@@ -44,7 +47,7 @@ interface ControlProps {
   current: string
   currentPage: number
   totalPage: number
-  role: string
+  role: number
   notice?: NoticeProps
   onClick: (evt: any, type: string) => void
 }
@@ -59,6 +62,8 @@ export default function Control({
   role,
   notice,
 }: ControlProps) {
+
+  const roomState = useRoomState();
   const lock = useRef<boolean>(false);
 
   const canStop = () => {
@@ -84,33 +89,15 @@ export default function Control({
       const me = roomState.me;
       if (lock.current || !me.uid) return;
   
-      if (whiteboard.state.recording) {
+      if (roomState.course.isRecording) {
         if (!canStop()) return;
-        let mediaUrl = await whiteboard.stopRecording();
+        await roomStore.stopRecording();
         globalStore.showToast({
           type: 'recording',
           message: t('toast.stop_recording'),
         });
-        if (whiteboard.state.endTime 
-          && whiteboard.state.startTime) {
-          const {endTime, startTime, roomUUID} = whiteboard.clearRecording();
-          await roomStore.rtmClient.sendChannelMessage(JSON.stringify({
-            account: me.account,
-            url: getOSSUrl(mediaUrl),
-            link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`
-          }));
-          const message = {
-            account: me.account,
-            id: me.uid,
-            link: `/replay/${roomUUID}/${startTime}/${endTime}/${mediaUrl}`,
-            text: '',
-            ts: +Date.now()
-          }
-          roomStore.updateChannelMessage(message);
-          return;
-        }
       } else {
-        await whiteboard.startRecording();
+        await roomStore.startRecording();
         globalStore.showToast({
           type: 'recording',
           message: t('toast.start_recording'),
@@ -129,48 +116,85 @@ export default function Control({
   return (
     <div className="controls-container">
       <div className="interactive">
-        {notice ? 
+      {notice && roomState.users.count() <= 1 ?
           <ControlItem name={notice.reason}
             onClick={onClick}
             active={notice.reason === current} />
         : null}
       </div>
       <div className="controls">
-        {!sharing && role === 'teacher' ?
+        {!sharing && role === 1 ?
           <>
-            <ControlItem name={`first_page`}
-              active={'first_page' === current}
-              onClick={onClick} />
-            <ControlItem name={`prev_page`}
-              active={'prev_page' === current}
-              onClick={onClick} />
+            <Tooltip title={t(`control_items.first_page`)} placement="top">
+              <span>
+                <ControlItem name={`first_page`}
+                  active={'first_page' === current}
+                  onClick={onClick} />
+              </span>
+            </Tooltip>
+            <Tooltip title={t(`control_items.prev_page`)} placement="top">
+              <span>
+                <ControlItem name={`prev_page`}
+                  active={'prev_page' === current}
+                  onClick={onClick} />
+              </span>
+            </Tooltip>
             <div className="current_page">
               <span>{currentPage}/{totalPage}</span>
             </div>
-            <ControlItem name={`next_page`}
-              active={'next_page' === current}
-              onClick={onClick} />
-            <ControlItem name={`last_page`}
-              active={'last_page' === current}
-              onClick={onClick} />
+            <Tooltip title={t(`control_items.next_page`)} placement="top">
+              <span>
+                <ControlItem name={`next_page`}
+                  active={'next_page' === current}
+                  onClick={onClick} />
+              </span>
+            </Tooltip>
+            <Tooltip title={t(`control_items.last_page`)} placement="top">
+              <span>
+                <ControlItem name={`last_page`}
+                  active={'last_page' === current}
+                  onClick={onClick} />
+              </span>
+            </Tooltip>
             <div className="menu-split" style={{ marginLeft: '7px', marginRight: '7px' }}></div>
           </> : null
         }
-        {role === 'teacher' ?
+        {+role === 1 ?
           <>
-            <ControlItem
-              name={whiteboard.state.recording ? 'stop_recording' : 'recording'}
-              onClick={onRecordButtonClick}
-              active={false}
-            />
-            <ControlItem
-              name={sharing ? 'quit_screen_sharing' : 'screen_sharing'}
-              onClick={onClick}
-              active={false}
-              text={sharing ? 'stop sharing' : ''}
-            />
+            <Tooltip title={t(roomStore.state.course.isRecording ? 'control_items.stop_recording' : 'control_items.recording')} placement="top">
+              <span>
+                <ControlItem
+                  loading={Boolean(roomStore.state.recordLock)}
+                  name={Boolean(roomStore.state.recordLock) ? 'icon-loading ' : (roomStore.state.course.isRecording ? 'stop_recording' : 'recording')}
+                  onClick={onRecordButtonClick}
+                  active={false}
+                />
+              </span>
+            </Tooltip>
+            <Tooltip title={t(sharing ? 'control_items.quit_screen_sharing' : 'control_items.screen_sharing')} placement="top">
+              <span>
+                <ControlItem
+                  name={sharing ? 'quit_screen_sharing' : 'screen_sharing'}
+                  onClick={(evt: any) => {
+                    if (sharing) {
+                      roomStore.stopScreenShare()
+                      .then(() => {
+                        console.log("stop screen share")
+                      }).catch(console.warn)
+                    } else {
+                      roomStore.startScreenShare()
+                      .then(() => {
+                        console.log("start screen share")
+                      }).catch(console.warn)
+                    }
+                  }}
+                  active={false}
+                  text={sharing ? 'stop sharing' : ''}
+                />
+              </span>
+            </Tooltip>
           </> : null }
-        {role === 'student' ?
+        {+role === 2 ?
           <>
             <ControlItem
               name={isHost ? 'hands_up_end' : 'hands_up'}

@@ -1,115 +1,28 @@
 import { RoomMessage } from './agora-rtm-client';
-import * as _ from 'lodash';
 import OSS from 'ali-oss';
+import {get} from 'lodash';
 
 export interface OSSConfig {
   accessKeyId: string,
   accessKeySecret: string,
-  region: string,
+  // region: string,
+  endpoint: string,
   bucket: string,
   folder: string,
 }
 
 export const ossConfig: OSSConfig = {
-  "accessKeyId": process.env.REACT_APP_AGORA_OSS_BUCKET_KEY as string,
-  "accessKeySecret": process.env.REACT_APP_AGORA_OSS_BUCKET_SECRET as string,
-  "bucket": process.env.REACT_APP_AGORA_OSS_BUCKET_NAME as string,
-  "region": process.env.REACT_APP_AGORA_OSS_BUCKET_REGION as string,
-  "folder": process.env.REACT_APP_AGORA_OSS_BUCKET_FOLDER as string
+  "accessKeyId": get(process.env, 'REACT_APP_YOUR_OWN_OSS_BUCKET_KEY', 'empty-placeholder'),
+  "accessKeySecret": get(process.env, 'REACT_APP_YOUR_OWN_OSS_BUCKET_SECRET', 'empty-placeholder'),
+  "bucket": get(process.env, 'REACT_APP_YOUR_OWN_OSS_BUCKET_NAME', 'empty-placeholder'),
+  // "region": process.env.REACT_APP_YOUR_OWN_OSS_BUCKET_REGION as string,
+  "endpoint": get(process.env, 'REACT_APP_YOUR_OWN_OSS_CDN_ACCELERATE', 'empty-placeholder'),
+  "folder": get(process.env, 'REACT_APP_YOUR_OWN_OSS_BUCKET_FOLDER', 'empty-placeholder'),
 }
+
+// console.log("your oss config ", ossConfig)
 
 export const ossClient = new OSS(ossConfig);
-
-const OSS_PREFIX = process.env.REACT_APP_AGORA_RECORDING_OSS_URL as string;
-
-export function getOSSUrl (mediaUrl: string): string {
-  const res = `${OSS_PREFIX}/${mediaUrl}`;
-  console.log("resolve: ", res, OSS_PREFIX);
-  return res;
-}
-
-export const handleRegion = (region: string): number => {
-  switch (region) {
-    case "CN_Hangzhou":
-      return 0;
-    case "oss-cn-hangzhou":
-      return 0;
-    case "CN_Shanghai":
-      return 1;
-    case "oss-cn-shanghai":
-      return 1;
-    case "CN_Qingdao":
-      return 2;
-    case "oss-cn-qingdao":
-      return 2;
-    case "CN_Beijin":
-      return 3;
-    case "oss-cn-beijing":
-      return 3;
-    case "CN_Zhangjiakou":
-      return 4;
-    case "oss-cn-zhangjiakou":
-      return 4;
-    case "CN_Huhehaote":
-      return 5;
-    case "oss-cn-huhehaote":
-      return 5;
-    case "CN_Shenzhen":
-      return 6;
-    case "oss-cn-shenzhen":
-      return 6;
-    case "CN_Hongkong":
-      return 7;
-    case "oss-cn-hongkong":
-      return 7;
-    case "US_West_1":
-      return 8;
-    case "oss-us-west-1":
-      return 8;
-    case "US_East_1":
-      return 9;
-    case "oss-us-east-1":
-      return 9;
-    case "AP_Southeast_1":
-      return 10;
-    case "oss-ap-southeast-1":
-      return 10;
-    case "AP_Southeast_2":
-      return 11;
-    case "oss-ap-southeast-2":
-      return 11;
-    case "AP_Southeast_3":
-      return 12;
-    case "oss-ap-southeast-3":
-      return 12;
-    case "AP_Southeast_5":
-      return 13;
-    case "oss-ap-southeast-5":
-      return 13;
-    case "AP_Northeast_1":
-      return 14;
-    case "oss-ap-northeast-1":
-      return 14;
-    case "AP_South_1":
-      return 15;
-    case "oss-ap-south-1":
-      return 15;
-    case "EU_Central_1":
-      return 16;
-    case "oss-eu-central-1":
-      return 16;
-    case "EU_West_1":
-      return 17;
-    case "oss-eu-west-1":
-      return 17;
-    case "EU_East_1":
-      return 18;
-    case "oss-me-east-1":
-      return 18;
-    default:
-      return 0;
-  }
-}
 
 export function resolveMessage(peerId: string, { cmd, text }: { cmd: number, text?: string }) {
   let type = '';

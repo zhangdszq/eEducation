@@ -5,6 +5,28 @@
   align-items: center;
 }
 
+@-webkit-keyframes rotate{
+  0%{
+    -webkit-transform:rotate(0deg);
+    transform:rotate(0deg);
+  }
+  100%{
+    -webkit-transform:rotate(360deg);
+    transform:rotate(360deg);
+  }
+}
+
+@keyframes rotate{
+  0%{
+    -webkit-transform:rotate(0deg);
+    transform:rotate(0deg);
+  }
+  100%{
+    -webkit-transform:rotate(360deg);
+    transform:rotate(360deg);
+  }
+}
+
 .network-bad {
   cursor: pointer;
   display: flex;
@@ -178,7 +200,9 @@
 }
 
 .icon-setting,
-.icon-exit {
+.icon-exit,
+.icon-upload,
+.icon-loading {
   display: flex;
   max-width: 28px;
   max-height: 28px;
@@ -194,6 +218,28 @@
   background-size: contain;
   content: ' ';
   background-image: url('./assets/icon-setting@2x.png');
+}
+
+.icon-upload::after {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: ' ';
+  background-image: url('./assets/icon-upload-log@2x.png');
+}
+
+.icon-loading::after {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: ' ';
+  animation: rotate 1.3s infinite linear;
+  -webkit-animation: rotate 1.3s infinite linear;
+  background-image: url('./assets/icon-loading.png');
 }
 
 .icon-exit::after {
@@ -271,6 +317,16 @@
   background-size: contain;
   content: ' ';
   background-image: url('./assets/icon-max@2x.png');
+}
+
+.icon-delete::after {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: ' ';
+  background-image: url('./assets/icon-delete@2x.png');
 }
 
 .icon-close::after {
