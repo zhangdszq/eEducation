@@ -57,14 +57,14 @@
 ### electron 打包程序慢的解决方案
   * mac
   ```
-  export ELECTRON_CUSTOM_DIR=7.1.2
+  export ELECTRON_CUSTOM_DIR=7.1.14
   export ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
   export ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ 
 
   ```
   * windows
   ```
-  set ELECTRON_CUSTOM_DIR=7.1.2
+  set ELECTRON_CUSTOM_DIR=7.1.14
   set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
   set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
   ```
@@ -79,9 +79,9 @@
       "platform": "win32"
     },
   ```
-  (windows上推荐手动安装electron 7.1.2)
+  (windows上推荐手动安装electron 7.1.14)
   ```
-  npm install electron@7.1.2 --arch=ia32 --save-dev
+  npm install electron@7.1.14 --arch=ia32 --save-dev
   ```
 
 ### 环境搭建
@@ -152,7 +152,7 @@ REACT_APP_YOUR_OWN_OSS_CDN_ACCELERATE=your_cdn_accelerate_endpoint
   npm run pack:mac  
   等待成功运行结束时会产生一个release目录，默认会打包出一个dmg文件，正常打开更新到Application目录即可完成安装，然后可以执行程序。  
 
-#### electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本5.0.8的electron和agora-electron-sdk "platform": "win32"版）
+#### electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本7.1.4的electron和agora-electron-sdk "platform": "win32"版）
   npm run pack:win  
   
   等待成功运行结束时会产生一个release目录，默认会打包出一个安装程序，请使用windows管理员身份打开，即可完成安装，然后可以执行程序。  
