@@ -28,7 +28,7 @@
 ### Frontend Tech Utilities
   * typescript ^3.6.4
   * react & react hooks & rxjs
-  * electron 7.1.2 & electron-builder
+  * electron 7.1.14 & electron-builder
   * material-ui
   * Agora eEducation Backend api
 
@@ -36,12 +36,12 @@
 ### Development Environment
   * mac or windows
   * nodejs LTS
-  * electron 7.1.2
+  * electron 7.1.14
 
 ### For Windows Electron Developer
-  * npm install electron@7.1.2 arch=ia32 manually  
+  * npm install electron@7.1.14 arch=ia32 manually  
   ```  
-  npm install electron@7.1.2 --arch=ia32 --save-dev
+  npm install electron@7.1.14 --arch=ia32 --save-dev
   ```  
   * find the `agora_electron` from package.json, replace it with below code snippet  
   ```
@@ -119,7 +119,7 @@ REACT_APP_YOUR_OWN_OSS_CDN_ACCELERATE=your_cdn_accelerate_endpoint
   npm run pack:mac  
 
 #### Package Electron for Win32  
-  * npm i electron@7.1.2 --arch=ia32  
+  * npm i electron@7.1.14 --arch=ia32  
   * find and replace `agora_electron`:  
   ```
     "agora_electron": {
