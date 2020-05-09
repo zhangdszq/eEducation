@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField 'String', 'API_BASE_URL', '"https://solutions-api.sh.agoralab.co/"'
+        buildConfigField 'String', 'API_BASE_URL', '"https://api.agora.io"'
         buildConfigField 'String', 'POLICY_URL', '"https://www.agora.io/privacy-policy"'
     }
 

@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import io.agora.base.network.RetrofitManager;
+import io.agora.education.BuildConfig;
 import io.agora.education.EduApplication;
 import io.agora.education.R;
 import io.agora.education.base.BaseActivity;
@@ -66,7 +67,7 @@ public class ReplayActivity extends BaseActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         if (!isInit) {
-            RetrofitManager.instance().getService(EduApplication.getApiHost(), RoomService.class)
+            RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RoomService.class)
                     .roomBoard(EduApplication.getAppId(), roomId)
                     .enqueue(new BaseCallback<>(data -> {
                         replayBoardFragment.initReplayWithRoomToken(data.boardId, data.boardToken);
