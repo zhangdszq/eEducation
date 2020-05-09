@@ -76,10 +76,10 @@ REACT_APP_AGORA_CUSTOMER_CERTIFICATE=customer_certificate
 # agora rtm endpoint obtain from developer documentation center
 REACT_APP_AGORA_RTM_ENDPOINT=your_server_rtm_endpoint_api
 # agora education endpoint prefix
-REACT_APP_AGORA_EDU_ENDPOINT_PREFIX=agora_edu_api_prefix
+REACT_APP_AGORA_EDU_ENDPOINT_PREFIX=https://api.agora.io/edu
 
 # your whiteboard server endpoint
-REACT_APP_YOUR_BACKEND_WHITEBOARD_API=your_server_whiteboard_api
+REACT_APP_YOUR_BACKEND_WHITEBOARD_API=https://api.agora.io/edu/v1/apps/%app_id%/room/%room_id%/board
 
 # agora restful api token
 REACT_APP_AGORA_RESTFULL_TOKEN=agora_restful_api_token
