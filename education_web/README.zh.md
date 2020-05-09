@@ -109,10 +109,10 @@ REACT_APP_AGORA_CUSTOMER_CERTIFICATE=customer_certificate
 # 声网开发者rtm restful api接口仅供demo展示（请在自己的服务端接入）
 REACT_APP_AGORA_RTM_ENDPOINT=your_server_rtm_endpoint_api
 # 声网教育场景化后端api前缀
-REACT_APP_AGORA_EDU_ENDPOINT_PREFIX=agora_edu_api_prefix
+REACT_APP_AGORA_EDU_ENDPOINT_PREFIX=https://api.agora.io/edu
 
 # 你自己的全路径白板后端api服务
-REACT_APP_YOUR_BACKEND_WHITEBOARD_API=your_server_whiteboard_api
+REACT_APP_YOUR_BACKEND_WHITEBOARD_API=https://api.agora.io/edu/v1/apps/%app_id%/room/%room_id%/board
 
 # 声网restful api token
 REACT_APP_AGORA_RESTFULL_TOKEN=agora_restful_api_token
