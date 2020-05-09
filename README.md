@@ -1,106 +1,105 @@
-<!-- PROJECT SHIELDS -->
-[![Build Status][build-shield]][build-url]
-[![MIT License][license-shield]][license-url]
+> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97)*
+
+## Table of contents
+- [About the project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#about-the-project)
+  - [Applicable scenarios](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#applicable-scenarios)
+  - [Functions](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#functions)
+  - [Compatibility](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#compatibility)
+  - [Restrictions](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#restrictions)
+- [Get started](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-started)
+  - [Prerequisites](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#prerequisites)
+    - [Get an Agora App ID](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-an-agora-app-id)
+    - [Pass the basic HTTP authentication](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#pass-the-basic-http-authentication)
+    - [Get a Netless  `sdkToken` and register with Agora Cloud Service](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-a-netless--sdktoken-and-register-with-agora-cloud-service)
+  - [Run the sample project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#run-the-sample-project)
+  - [Use Agora Edu Cloud Service](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#use-agora-edu-cloud-service)
+- [FAQ](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#faq)
+- [Recommended versions of the Agora RTC SDK](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#recommended-versions-of-the-agora-rtc-sdk)
+
+## About the project
+
+Agora e-Education is a sample project provided by Agora for developers in the education industry, which demonstrates how to use **Agora Edu Cloud Service**, **Agora RTC SDK**, **Agora RTM SDK**, **Agora Cloud Recording**, and the third-party Netless whiteboard SDK to quickly implement basic online interactive tutoring scenarios.
+
+### Applicable scenarios
+
+Agora e-Education supports the following scenarios:
+
+- One-to-one Classroom: An online teacher gives an exclusive lesson to only one student, and both can interact in real time.
+- Small Classroom: A teacher gives an online lesson to multiple students, and both the teacher and students can interact with each other in real time. The number of students in a small classroom should not exceed 16.
+- Lecture Hall: Thousands of students watch an online lecture together. Students can "raise their hands" to interact with the teacher, and their responses are viewed by all the other students at the same time.
+
+### Functions
+
+| Function                    | Web (Teacher) | Web (Student)                                           | iOS and Android (Student)                                   | Note                                                         |
+| :--------------------------------------- | :------------ | :----------------------------------------------------------- | :---------------------------------------------------------- | :----------------------------------------------------------- |
+| Real-time audio and video communication                   | ✔             | ✔                                                | ✔                                                           | /                                                            |
+| Real-time messaging                     | ✔             | ✔                                                            | ✔                                                           | /             |
+| Interactive Whiteboard                             | ✔             | ✔ One-to-one Classroom<p> ✔ Small Classroom<p>✘ Lecture Hall | ✔One-to-one Classroom<p>✔ Small Classroom<p>✘ Lecture Hall | <li>In a one-to-one classroom, both the teacher and students can draw on the whiteboard by default.<li>In a small classroom, students cannot draw on the whiteboard by default, but the teacher can give a student the permission of drawing on the whiteboard.<li>In a lecture hall, students can never draw on the whiteboard. |
+| Whiteboard follow               | ✔             | ✔                                                            | ✔                                                           | The teacher can enable "whiteboard follow". When the teacher is moving the whiteboard or turning pages, the whiteboard area that students see will be consistent with the teacher's whiteboard area.|
+| Uploading files (PPT, Word, PDF, audio files or video files) | ✔             | ✘                                                            | ✘                                                           | Only teachers can upload files to the classroom. |
+| Students raising hands                           | ✔             | ✔                                                            | ✔                                                           | In a lecture hall, students do not send their audio and video by default, but they can "raise their hands" to apply for interacting with the teacher. The teacher can approve or decline the application. |
+| Screen sharing                    | ✔             | ✔                                                            | ✔                                                           | The teacher can share the screen.                           |
+| Recording and replay                                 | ✔             | ✔                                                            | ✔                                                           | The teacher can start recording and record the class **for at least 15 seconds**. After the recording finishes, a link for replaying the class will be displayed in the message box. |
+
+### Compatibility
+
+ Agora e-Education supports the following platforms and versions: 
+
+- iOS 10 or later. We do not test Agora e-Education on iOS 9 updates.
+- Android 4.4 and later.
+- Web Chrome 72 and later. We do not test Agora e-Education on browsers.
+
+### Restrictions
+See [Restrictions](https://github.com/AgoraIO-Usecase/eEducation/wiki/Restrictions).
+
+## Get started
+
+### Prerequisites 
+
+Make sure you make the following preparations before compiling and running the sample project.
+
+#### Get an Agora App ID
+Follow these steps to get an Agora App ID:
+  1. Create an account in [Agora Console](https://sso.agora.io/v2/signup).
+  2. Log in to Agora Console and create a project. Select **"App ID + App Certificate + Token"** as your authentication mechanism when creating the project. Make sure that you enable the [App Certificate](https://docs.agora.io/en/Agora%20Platform/token?platform=All%20Platforms#appcertificate) of this project.
+  3. Get the App ID of this project in **Project Management** page.
+
+#### Pass the basic HTTP authentication
+
+Before using the Agora RESTful APIs, you need to generate the `Authorization` parameter with the Customer ID and Customer Certificate provided by Agora and pass the `Authorization` parameter in the HTTP request header for authentication. For details, see the [steps of basic HTTP authentication](https://docs.agora.io/en/faq/restful_authentication).
+
+#### Get a Netless  `sdkToken` and register with Agora Cloud Service
+Follow these steps to get a Netless whiteboard  `sdkToken`:
+1. Create an account in [Netless Console](https://console.herewhite.com/en/register/).
+2. Log in to Netless Console and get the `sdkToken` in the **Key management** page.
+
+You need to register the sdkToken of the whiteboard to the Agora cloud server. At present, this step needs to be operated by contacting us.
 
 
+### Run the sample project
 
+See the following documents to compile and run the sample project:
 
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <a href=".">
-    <img src="logo.png" alt="Logo" width="80" height="80">
-  </a>
+- [Run the Android project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Android-Project)
+- [Run the iOS project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-iOS-Project)
+- [Run Web and Electron project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Web-&-Electron-Project)
 
-  <h3 align="center">Agora e-Education</h3>
+### Use Agora Edu Cloud Service
 
-  <p align="center">
-    Complete e-Education solutions for both web and native platform.
-    <br />
-    <a href="#about-the-project"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="#demos">View Demo</a>
-    ·
-    <a href="https://github.com/AgoraIO-Usecase/eEducation/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/AgoraIO-Usecase/eEducation/issues">Request Feature</a>
-    ·
-    <a href="https://github.com/AgoraIO-Usecase/eEducation/wiki/eEducation-Home-Page">Wiki</a>
-  </p>
-</p>
+Agora provides Agora Edu Cloud Service for developers who are not good at back end development. You can call the RESTful APIs of Agora Edu Cloud Service to quickly implement managing the states of classrooms and the permissions of users on the back end. For details, see [Agora Edu Cloud Service](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-Edu-Cloud-Service).
 
+## FAQ
 
+See [Trouble Shooting](https://github.com/AgoraIO-Usecase/eEducation/wiki/Trouble-Shooting).
 
-<!-- TABLE OF CONTENTS -->
-## Table of Contents
-* [Demos](#demos)
-* [About the Project](#about-the-project)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-* [Contributing](#contributing)
-* [License](#license)
-* [Contact](#contact)
-* [Acknowledgements](#acknowledgements)
+## Recommended versions of the Agora RTC SDK
 
-## Demos
-  * [Android](./education_Android/AgoraEducation/README.md)
-  * [iOS](./education_iOS/README.md)
-  * [Web & Electron](./education_web/README.md)
+Agora provides high-stability versions of the Agora RTC Native SDK for companies in the education industry. The educational special versions are developed based on the Agora RTC SDK v2.9.0.
 
-## About The Project
+- [Android](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_android?platform=Android)
+- [iOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_ios?platform=iOS)
+- [macOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_macos?platform=macOS)
+- [Windows](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_windows?platform=Windows)
+- [Electron](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_electron?platform=Electron)
 
-e-Education Sample App built with Agora Electron SDK.
-
-- Device Test before class
-- Basic video&audio realtime communication
-- Basic class control like mute/unmute video/audio/chat
-- Whiteboard for realtime visual collaboration
-- Screen Sharing
-- Text chat rooms
-- Recording & Replaying
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-### Prerequisites
-
-To build and run the sample application, get an App ID:
-1. Create a developer account at [agora.io](https://dashboard.agora.io/signin/). Once you finish the signup process, you will be redirected to the Dashboard.
-2. Navigate in the Dashboard tree on the left to **Projects** > **Project List**.
-3. Save the **App ID** from the Dashboard for later use.
-4. Generate a temp **Access Token** (valid for 24 hours) from dashboard page with given channel name, save for later use.
-
-### Project Structure
-- education_Android
-  Android client based on a list of Agora RTM/Media SDK, for more [details](./education_Android/AgoraEducation)
-- education_iOS
-  iOS client based on a list of Agora RTM/Media SDK, for more [details](./education_iOS)
-- education_web
-  Web & Electron client based on a list of Agora RTM/Media SDK [details](./education_web)
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-[build-shield]: https://img.shields.io/travis/AgoraIO-Usecase/eEducation/master.svg?style=flat-square
-[build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
-[license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
-[license-url]: https://choosealicense.com/licenses/mit
-[product-screenshot]: ./screenshot.png
+For the Agora RTC Web SDK, download the [latest version](https://docs.agora.io/en/Agora%20Platform/downloads) on Agora Developer Portal.
