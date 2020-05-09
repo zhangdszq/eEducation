@@ -73,7 +73,6 @@ public class MainActivity extends BaseActivity {
 
         String appId = getString(R.string.agora_app_id);
         EduApplication.setAppId(appId);
-        EduApplication.setApiHost(getString(R.string.netless_board_host));
         RtcManager.instance().init(getApplicationContext(), appId);
         RtmManager.instance().init(getApplicationContext(), appId);
 

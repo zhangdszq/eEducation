@@ -2,5 +2,4 @@
 <resources>
     <string name="agora_app_id" translatable="false"><#YOUR APP ID#></string>
     <string name="agora_auth" translatable="false"><#YOUR AUTH#></string>
-    <string name="netless_board_host" translatable="false"><#YOUR HOST#></string>
 </resources>

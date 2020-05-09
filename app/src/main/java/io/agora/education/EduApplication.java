@@ -41,19 +41,6 @@ public class EduApplication extends Application {
     }
 
     @Nullable
-    public static String getApiHost() {
-        if (instance.config == null) return null;
-        return instance.config.apiHost;
-    }
-
-    public static void setApiHost(String apiHost) {
-        if (instance.config == null) {
-            instance.config = new AppConfigRes();
-        }
-        instance.config.apiHost = apiHost;
-    }
-
-    @Nullable
     public static Map<String, Map<Integer, String>> getMultiLanguage() {
         if (instance.config == null) return null;
         return instance.config.multiLanguage;
