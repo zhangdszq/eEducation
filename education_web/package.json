@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "agora-electron-sdk": "2.9.0-rc.104"
+    "agora-electron-sdk": "^2.9.0-rc.104-build.509"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
@@ -142,7 +142,7 @@
     "customize-cra": "^0.8.0",
     "devtron": "^1.4.0",
     "dexie": "^2.0.4",
-    "electron": "7.1.14",
+    "electron": "^7.1.14",
     "electron-builder": "22.5.1",
     "eruda": "^2.2.1",
     "immutable": "^4.0.0-rc.12",
