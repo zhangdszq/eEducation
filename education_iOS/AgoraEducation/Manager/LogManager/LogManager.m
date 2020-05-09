@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, ZipStateType) {
         return;
     }
     
-    NSString *url = [NSString stringWithFormat:HTTP_LOG_PARAMS, HTTP_BASE_URL, EduConfigModel.shareInstance.appId];
+    NSString *url = [NSString stringWithFormat:HTTP_LOG_PARAMS, HTTP_BASE_URL];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"appCode"] = @"edu-saas";
@@ -93,6 +93,7 @@ typedef NS_ENUM(NSInteger, ZipStateType) {
         roomId = @"0";
     }
     params[@"roomId"] = roomId;
+    params[@"appId"] = EduConfigModel.shareInstance.appId;
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = EduConfigModel.shareInstance.userToken;

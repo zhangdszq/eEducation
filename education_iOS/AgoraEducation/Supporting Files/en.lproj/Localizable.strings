@@ -67,4 +67,5 @@ LogNotFoundText = "no log files found";
 LogClearErrorText = "failed to clear log files";
 LogZipErrorText = "log file compression failed";
 UploadOSSErrorText = "upload OSS failed";
+UploadLogText = "upload log";
 UploadLogSuccessText = "upload log successed";
