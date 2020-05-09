@@ -1,67 +1,72 @@
-# Agora Education iOS Demo
+> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/wiki/iOS-%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97)*
 
-*其他语言版本： [简体中文](README.zh.md)*
+This page introduces how to run the iOS sample project.
 
-## Running the App
-#### Download project
+## Prerequisites 
+
+- Make sure you have made the preparations mentioned in the  [Agora e-Education Guide](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide).
+- Prepare the development environment:
+  - Xcode 10.0 or later
+  - CocoaPods
+
+- Real iOS devices, such as iPhone or iPad.
+
+## Run the sample project
+
+Follow these steps to run the sample project:
+
+1.Clone the repository to your local machine.
+
 ```
-git clone https://github.com/AgoraIO-Usecase/eEducation.git
+git clone https://github.com/AgoraIO-Usecase/eEducation
 ```
 
-#### Run  project
+2.Enter the directory of the Android project.
+
 ```
-cd education_iOS
+cd eEducation/education_iOS
+```
+
+3.Install dependencies.
+
+```
 pod install
+```
+
+4.Open the iOS project 
+
+```
 open AgoraEducation.xcworkspace
 ```
 
-#### Config parameter
-First, update KeyCenter.m file  "agoraAppid" value
+5.Configure parameters
+
+Pass the following parameters in `KeyCenter.m`:
+
+- The Agora App ID that you get.
+- The `Authorization` parameter that you have generated for basic HTTP authentication.
+
+For details, see the [prerequisites](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#prerequisites) in Agora E-education Guide.
 
 ```
 + (NSString *)agoraAppid {
-    return <#Your Agora App Id#>;
+     return <#Your Agora App Id#>;
+}
+
++ (NSString *)authorization {
+     return <#Your Authorization#>;
 }
 
 ```
-Second, update KeyCenter.m file "agoraRTCToken" value
 
-```
-+ (NSString *)agoraRTCToken {
-    return <#Your Agora RTC Token#>;
-}
+6. Run the project with `command + r`.
 
-```
-Next, update KeyCenter.m file "agoraRTMToken" value
+## Connect us
 
-```
-+ (NSString *)agoraRTMToken {
-    return <#Your Agora RTM Token#>;
-}
+- You can read the full set of documentations and API reference at [Agora Developer Portal](https://docs.agora.io/en/).
+- You can ask for technical support by submitting tickets in [Agora Console](https://dashboard.agora.io/). 
+- You can submit an [issue](https://github.com/AgoraIO-Usecase/eEducation/issues) if you find any bug in the sample project. 
 
-```
-Last, update KeyCenter.m file "whiteBoardToken" value
-
-```
-+ (NSString *)whiteBoardToken {
-    return <#Your White Token#>;
-}
-
-```
-> agoraRTCToken & agoraRTMToken to nil if you have not enabled app certificate before you deploy your own token server, you can easily generate a temp RTC token for dev use at https://dashboard.agora.io note the token generated are allowed to join corresponding room ONLY.
-
-## Developer Environment Requirements
-•	Xcode 10.0+
-•	Physical iOS device (iPhone or iPad)
-
-
-## Connect Us
-- You can find full API document at [Document Center](https://docs.agora.io/en/)
-- You can file bugs about this demo at [issue](https://github.com/AgoraIO/RTM/issues)
-- You can get Agora Appid at [Agora console](https://console.agora.io/)
-- You can get herewhite Token at [herewhite console](https://console.herewhite.com/)
-
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
