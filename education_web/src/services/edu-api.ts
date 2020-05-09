@@ -141,7 +141,7 @@ export class AgoraEduApi {
     const appCode = 'edu-demo'
     const _roomId = roomId ? roomId : 0;
     let data = await AgoraFetchJson({
-      url: `/v1/apps/${this.appID}/log/params?appCode=${appCode}&osType=${3}&terminalType=${3}&appVersion=${BUILD_VERSION}&roomId=${_roomId}&fileExt=${fileExt}`,
+      url: `/v1/log/params?appCode=${appCode}&osType=${3}&terminalType=${3}&appVersion=${BUILD_VERSION}&roomId=${_roomId}&fileExt=${fileExt}&appId=${this.appID}`,
       method: 'GET',
     })
 
