@@ -160,8 +160,6 @@ export default function BigClass() {
     }
   }
   
-  console.log("currentHost", currentHost)
-
   return (
     <div className="room-container">
       <div className="live-container">
