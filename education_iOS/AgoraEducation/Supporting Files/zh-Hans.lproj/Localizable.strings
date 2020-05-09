@@ -65,4 +65,5 @@ LogNotFoundText = "没有找到日志文件";
 LogClearErrorText = "清除日志文件失败";
 LogZipErrorText = "日志文件压缩失败";
 UploadOSSErrorText = "上传OSS失败";
+UploadLogText = "日志上报";
 UploadLogSuccessText = "日志上报成功";
