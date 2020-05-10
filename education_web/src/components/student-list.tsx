@@ -44,7 +44,7 @@ interface UserProps {
 
 interface StudentListProps {
   list: AgoraUser[]
-  role: string
+  role: number
 }
 
 export default function StudentList ({
@@ -60,7 +60,7 @@ export default function StudentList ({
 
   const handleClick = (evt: any, id: string, type: string) => {
     if (!roomStore.state || !me) return;
-    const targetUser = roomStore.state.users.get(id);
+    const targetUser = roomStore.state.users.get(`${id}`);
     if (!targetUser) return;
     if (!lock.current) {
       const val = Boolean(get(targetUser, type));

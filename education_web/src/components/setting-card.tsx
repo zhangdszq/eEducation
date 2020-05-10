@@ -35,7 +35,7 @@ export default function (props: SettingProps) {
     setCamera,
     setMicrophone,
     setSpeaker,
-    volume,
+    // volume,
     speakerVolume,
     setSpeakerVolume,
     save,

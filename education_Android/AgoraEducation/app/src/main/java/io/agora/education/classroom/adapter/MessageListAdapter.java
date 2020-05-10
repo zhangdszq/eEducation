@@ -2,7 +2,6 @@ package io.agora.education.classroom.adapter;
 
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import butterknife.ButterKnife;
 import io.agora.education.R;
 import io.agora.education.classroom.bean.msg.ChannelMsg;
 
-public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg> {
+public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg.ChatMsg> {
 
     public MessageListAdapter() {
         addItemProvider(new MeItemProvider());
@@ -30,7 +29,7 @@ public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg> {
     }
 
     @Override
-    protected int getItemType(@NonNull List<? extends ChannelMsg> list, int i) {
+    protected int getItemType(@NonNull List<? extends ChannelMsg.ChatMsg> list, int i) {
         if (list.get(i).isMe) {
             return 0;
         } else {
@@ -49,22 +48,21 @@ public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg> {
             ButterKnife.bind(this, itemView);
         }
 
-        void convert(ChannelMsg channelMsg) {
+        void convert(ChannelMsg.ChatMsg msg) {
             Resources resources = getContext().getResources();
-            tv_name.setText(channelMsg.account);
-            if (TextUtils.isEmpty(channelMsg.link)) {
-                tv_content.setText(channelMsg.content);
-                tv_content.setTextColor(resources.getColor(R.color.gray_666666));
-                tv_content.getPaint().setFlags(0);
-            } else {
-                tv_content.setText(R.string.replay_recording);
+            tv_name.setText(msg.userName);
+            tv_content.setText(msg.message);
+            if (msg instanceof ChannelMsg.ReplayMsg) {
                 tv_content.setTextColor(resources.getColor(R.color.blue_1F3DE8));
                 tv_content.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+            } else {
+                tv_content.setTextColor(resources.getColor(R.color.gray_666666));
+                tv_content.getPaint().setFlags(0);
             }
         }
     }
 
-    private class MeItemProvider extends BaseItemProvider<ChannelMsg> {
+    private class MeItemProvider extends BaseItemProvider<ChannelMsg.ChatMsg> {
         @Override
         public int getItemViewType() {
             return 0;
@@ -83,14 +81,14 @@ public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg> {
         }
 
         @Override
-        public void convert(@NonNull BaseViewHolder baseViewHolder, ChannelMsg channelMsg) {
+        public void convert(@NonNull BaseViewHolder baseViewHolder, ChannelMsg.ChatMsg msg) {
             if (baseViewHolder instanceof ViewHolder) {
-                ((ViewHolder) baseViewHolder).convert(channelMsg);
+                ((ViewHolder) baseViewHolder).convert(msg);
             }
         }
     }
 
-    private class OtherItemProvider extends BaseItemProvider<ChannelMsg> {
+    private class OtherItemProvider extends BaseItemProvider<ChannelMsg.ChatMsg> {
         @Override
         public int getItemViewType() {
             return 1;
@@ -109,9 +107,9 @@ public class MessageListAdapter extends BaseProviderMultiAdapter<ChannelMsg> {
         }
 
         @Override
-        public void convert(@NonNull BaseViewHolder baseViewHolder, ChannelMsg channelMsg) {
+        public void convert(@NonNull BaseViewHolder baseViewHolder, ChannelMsg.ChatMsg msg) {
             if (baseViewHolder instanceof ViewHolder) {
-                ((ViewHolder) baseViewHolder).convert(channelMsg);
+                ((ViewHolder) baseViewHolder).convert(msg);
             }
         }
     }

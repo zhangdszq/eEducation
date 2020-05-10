@@ -11,7 +11,7 @@
 
 @interface MCStudentListView ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) UITableView *studentTableView;
-@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentArray;
+@property (nonatomic, strong) NSArray<UserModel*> *studentArray;
 
 @end
 
@@ -26,7 +26,6 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.backgroundColor = [UIColor yellowColor];
     UITableView *studentTableView = [[UITableView alloc] initWithFrame:CGRectZero style:(UITableViewStylePlain)];
     studentTableView.delegate = self;
     studentTableView.dataSource =self;
@@ -41,12 +40,11 @@
     self.studentTableView.frame = self.bounds;
 }
 
-- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)array {
+- (void)updateStudentArray:(NSArray<UserModel*> *)array {
     
     self.studentArray = [NSArray arrayWithArray:array];
     [self.studentTableView reloadData];
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.studentArray.count;
@@ -61,11 +59,9 @@
         [cell.muteVideoButton addTarget:self action:@selector(muteVideo:) forControlEvents:(UIControlEventTouchUpInside)];
     }
 
-    RolesStudentInfoModel *infoModel = self.studentArray[indexPath.row];
-    StudentModel *stuModel = infoModel.studentModel;
-    stuModel.uid = infoModel.attrKey;
-    cell.userId = self.userId;
-    cell.studentModel = stuModel;
+    UserModel *infoModel = self.studentArray[indexPath.row];
+    cell.uid = self.uid;
+    cell.studentModel = infoModel;
     return cell;
 }
 
@@ -84,15 +80,16 @@
 
 - (void)muteVideo:(UIButton *)sender {
     if (self.delegate && [self.delegate respondsToSelector:@selector(muteVideoStream:)]) {
-           [self.delegate muteVideoStream:sender.selected];
-       }
+        [self.delegate muteVideoStream:sender.selected];
+    }
     sender.selected = !sender.selected;
     NSString *imageName = sender.selected ? @"roomCameraOn":@"roomCameraOff";
     [sender setImage:[UIImage imageNamed:imageName] forState:(UIControlStateNormal)];
 }
 
-- (void)setUserId:(NSString *)userId {
-    _userId = userId;
+
+- (void)setUid:(NSInteger)uid {
+    _uid = uid;
     [self.studentTableView reloadData];
 }
 @end

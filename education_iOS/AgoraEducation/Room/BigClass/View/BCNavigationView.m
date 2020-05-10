@@ -7,10 +7,14 @@
 //
 
 #import "BCNavigationView.h"
-
+#import "LogManager.h"
+#import "UIView+Toast.h"
+#import "AlertViewUtil.h"
 
 @interface BCNavigationView ()
 @property (weak, nonatomic) IBOutlet UIButton *closeButton;
+@property (weak, nonatomic) IBOutlet UIButton *uploadLogBtn;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingView;
 @end
 
 @implementation BCNavigationView
@@ -28,6 +32,8 @@
         NSLayoutConstraint *viewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.navigationView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
         [self addConstraints:@[viewTopConstraint, viewLeftConstraint, viewRightConstraint, viewBottomConstraint]];
         
+        self.loadingView.hidden = YES;
+        
     }
     return self;
 }
@@ -43,6 +49,36 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(closeRoom)]) {
         [self.delegate closeRoom];
     }
+}
+
+- (IBAction)onUploadLog:(id)sender {
+    self.uploadLogBtn.hidden = YES;
+    self.loadingView.hidden = NO;
+    [self.loadingView startAnimating];
+    
+    WEAK(self);
+    [LogManager uploadLogWithCompleteSuccessBlock:^(NSString * _Nonnull uploadSerialNumber) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakself.uploadLogBtn.hidden = NO;
+            weakself.loadingView.hidden = YES;
+            [weakself.loadingView stopAnimating];
+
+            UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+            UINavigationController *nvc = (UINavigationController*)window.rootViewController;
+            if (nvc != nil) {
+                 [AlertViewUtil showAlertWithController:nvc.visibleViewController title:NSLocalizedString(@"UploadLogSuccessText", nil) message:uploadSerialNumber cancelText:nil sureText:NSLocalizedString(@"OKText", nil) cancelHandler:nil sureHandler:nil];
+            }
+        });
+        
+    } completeFailBlock:^(NSString * _Nonnull errMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakself.uploadLogBtn.hidden = NO;
+            weakself.loadingView.hidden = YES;
+            [weakself.loadingView stopAnimating];
+            [UIApplication.sharedApplication.keyWindow makeToast:errMessage];
+        });
+    }];
 }
 
 @end

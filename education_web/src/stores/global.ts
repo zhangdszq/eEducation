@@ -9,6 +9,7 @@ export const roomTypes = [
 
 export type GlobalState = {
   loading: boolean
+  lock: boolean
   toast: {
     type: string
     message: string
@@ -63,6 +64,7 @@ export class Root {
       visible: false,
       items: []
     },
+    lock: false,
     active: 'chatroom',
     language: navigator.language,
     newMessageCount: 0,
@@ -213,13 +215,17 @@ export class Root {
     this.commit(this.state);
   }
 
+  getLanguage(): string {
+    return GlobalStorage.read('demo_language')
+  }
+
   setLanguage(language: string) {
     this.state = {
       ...this.state,
       language,
     }
     this.commit(this.state);
-    GlobalStorage.save('language', this.state.language);
+    GlobalStorage.save('demo_language', this.state.language);
     window.location.reload();
   }
 
@@ -245,6 +251,22 @@ export class Root {
       newMessageCount: len
     }
     this.commit(this.state);
+  }
+
+  lock() {
+    this.state = {
+      ...this.state,
+      lock: true
+    }
+    this.commit(this.state)
+  }
+
+  unlock() {
+    this.state = {
+      ...this.state,
+      lock: false
+    }
+    this.commit(this.state)
   }
 }
 

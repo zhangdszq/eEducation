@@ -1,135 +1,167 @@
-# 声网教育场景demo  
+> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Web-&-Electron-Project)*
 
-*English Version: [English](README.md)*  
+## 概览
 
-### 在线预览
-  [web demo](https://solutions.agora.io/education/web/)
+|支持场景|代码入口|功能描述|
+| ---- | ----- | ----- |
+|1 对 1 互动教学 | [one-to-one.tsx](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/src/pages/classroom/one-to-one.tsx) | 1 个老师和 1 个学生默认以主播角色进入教室 |
+|1 对 N 在线小班课| [small-class.tsx](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/src/pages/classroom/small-class.tsx) | 1个老师和最多 16 个学生默认以主播角色进入教室 |
+|互动直播大班课| [big-class.tsx](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/src/pages/classroom/big-class.tsx) | 1个老师默认以主播角色进入教室，学生默认以观众角色进入教室，学生人数无限制 |
 
-### 简介
-  Agora Edu是基于声网的音视频sdk和实时消息sdk，以及Netless的白板sdk构成  
-  主要功能如下:
+### 在线体验
 
-  |功能概述|代码入口|功能描述|  
-  | ---- | ----- | ----- |
-  |老师1v1教学授课 | [one-to-one.tsx](./src/pages/classroom/one-to-one.tsx) | 1个老师和1个学生默认连麦进入教室 |
-  |小班课场景：老师1v16学生教学授课| [small-class.tsx](./src/pages/classroom/small-class.tsx) | 1个老师和至多16个学生默认连麦进入教室 |
-  |大班课场景：老师1v多学生，默认以观众身份进入频道，举手向老师发起连麦，老师接受连麦并且统一以后，连麦互动。| [big-class.tsx](./src/pages/classroom/big-class.tsx) | 1个老师默认连麦进入教室，学生进入无限制人数 |
+[web demo](https://solutions.agora.io/education/web/)
 
-### 使用的SDK
-  * agora-rtc-sdk（web版声网sdk）
-  * agora-rtm-sdk（web版声网实时消息sdk）
-  * agora-electron-sdk（声网官方electron-sdk）
-  * white-web-sdk（netless官方白板sdk）
-  * ali-oss（可替换成你自己的oss client）
-  * 声网云录制 （不推荐直接在客户端集成）
+### 使用的 SDK
 
-### 所用技术
-  * typescript ^3.6.4
-  * react & react hooks & rxjs
-  * electron 5.0.8 & electron-builder
-  * material-ui
+- agora-rtc-sdk（声网 RTC Web SDK）
+- agora-rtm-sdk（声网实时消息 Web SDK）
+- agora-electron-sdk（声网官方 electron sdk）
+- white-web-sdk（Netless 官方白板 sdk）
+- ali-oss（可替换成你自己的 oss client）
+- 声网云录制 （建议在服务端集成）
 
+### 使用的技术
+- typescript ^3.6.4
+- react & react hooks & rxjs
+- electron 7.1.14 & electron-builder
+- material-ui
+- Agora Edu 云服务
 
-### 开发环境
-  * mac or windows
-  * nodejs LTS
-  * electron 5.0.8
+## 准备工作
 
-### electron & node-sass 下载慢的解决方案
-  * mac
+- 请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97)中的前提条件。
+- 配置阿里云 OSS，详见[阿里云OSS配置指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/%E9%98%BF%E9%87%8C%E4%BA%91OSS%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)。
+- 重命名 `.env.example` 为 `.env.local`，并配置以下参数：
+   - **（必填）声网 App ID**
+   ```bash
+   # 声网的 App ID
+   REACT_APP_AGORA_APP_ID=agora appId
+   # 开启声网前端日志
+   REACT_APP_AGORA_LOG=true
+   ELECTRON_START_URL=http://localhost:3000
+   ```
+   - **（必填）声网 HTTP basic 认证 Authorization 字段**
+   ```
+   # 声网 HTTP basic 认证 Authorization 字段
+   REACT_APP_AGORA_RESTFULL_TOKEN=agora_restful_api_token
+   ```
+   - **（选填）适用于白板课件服务，如不需要可以直接按照下列配置**
+   ```bash
+   # 你自己的 OSS bucket name
+   REACT_APP_YOUR_OWN_OSS_BUCKET_NAME=your_oss_bucket_name
+   # 你自己的 OSS bucket folder
+   REACT_APP_YOUR_OWN_OSS_BUCKET_FOLDER=your_oss_bucket_folder
+   # 你自己的 OSS bucket region
+   REACT_APP_YOUR_OWN_OSS_BUCKET_REGION=your_bucket_region
+   # 你自己的 OSS bucket access key
+   REACT_APP_YOUR_OWN_OSS_BUCKET_KEY=your_bucket_ak
+   # 你自己的 OSS bucket access secret key
+   REACT_APP_YOUR_OWN_OSS_BUCKET_SECRET=your_bucket_sk
+   # 你自己的 OSS bucket access endpoint
+   REACT_APP_YOUR_OWN_OSS_CDN_ACCELERATE=your_cdn_accelerate_endpoint
+   ```
+   - **（选填）用于 RTM 前端回放展示能力，不推荐生产上直接使用。如不需要可以直接按照下列配置**
+   ```
+   # 声网开发者 Customer ID
+   REACT_APP_AGORA_CUSTOMER_ID=customer_id
+   # 声网开发者 Customer Certificate
+   REACT_APP_AGORA_CUSTOMER_CERTIFICATE=customer_certificate
+   # 声网开发者 rtm restful api 接口，仅供demo展示（请在自己的服务端接入）
+   REACT_APP_AGORA_RTM_ENDPOINT=your_server_rtm_endpoint_api
+   ```
+
+- 中国区客户推荐使用以下方式安装 npm 依赖包和 electron & node-sass 加速
+  > 我们建议使用 npm 而非 yarn 或 cnpm
   ```
+  # 仅适用于中国区客户
+  # macOS
   export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
-  export ELECTRON_CUSTOM_DIR="5.0.8"
+  export ELECTRON_CUSTOM_DIR="7.1.14"
   export SASS_BINARY_SITE="https://npm.taobao.org/mirrors/node-sass/"
 
-  ```
-  * windows
-  ```
+  # Windows
   set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
-  set ELECTRON_CUSTOM_DIR=5.0.8
+  set ELECTRON_CUSTOM_DIR=7.1.14
   set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
+
+  npm install --registry=https://registry.npm.taobao.org
   ```
 
-### electron环境注意事项
-  * mac 不需要修改package.json
-  * windows 需要找到package.json里的`agora_electron` 按照如下结构替换
-  ```
-    "agora_electron": {
-      "electron_version": "5.0.8",
-      "prebuilt": true,
-      "platform": "win32"
-    },
-  ```
-  (windows上推荐手动安装electron 5.0.8)
-  ```
-  npm install electron@5.0.8 --arch=ia32 --save-dev
-  ```
+- 安装 Node.js LTS
 
-### 环境搭建
+## 运行和发布 Web demo
 
-# 注意 
-#### 如果你的appid项目里启用了证书服务，请在代码里搜索以下注释寻找使用到token的地方，在这里加入获取token的业务逻辑。
-```
-WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
-```
+1. 安装 npm
 
-# 搭建之前先获取 agora appid和netless sdktoken
-  按照.env.example
-  修改为.env.local
-```bash
-# 声网的APPID 通过声网开发者管理界面获取
-REACT_APP_AGORA_APP_ID=Agora APPID
-# true表示开启声网前端日志
-REACT_APP_AGORA_LOG=true
-# 白板的sdktoken 可以通过后台获取
-REACT_APP_NETLESS_APP_TOKEN=SDKTOKEN
-# 白板的api 详情请参考白板官方文档的集成指南
-REACT_APP_NETLESS_APP_API_ENTRY=https://cloudcapiv4.herewhite.com/room?token=
-REACT_APP_NETLESS_APP_JOIN_API=https://cloudcapiv4.herewhite.com/room/join?token=
-# 声网的云录制服务地址 （不推荐在前端或客户端直接集成）
-REACT_APP_AGORA_RECORDING_SERVICE_URL=https://api.agora.io/v1/apps/%s/cloud_recording/
-# 存放云录制OSS的CDN地址
-REACT_APP_AGORA_RECORDING_OSS_URL=云录制OSS地址
-# Electron 监听Webpack地址 仅用于electron项目
-ELECTRON_START_URL=http://localhost:3000
-# agora customer id需要从开发者console dashboard后台获取
-REACT_APP_AGORA_CUSTOMER_ID=你的开发者账户关联的customer_id
-# agora customer certificate 需要从开发者console dashboard后台获取
-REACT_APP_AGORA_CUSTOMER_CERTIFICATE=你的开发者账户关联的customer_certificate
-# 下列OSS相关的信息不建议放在前端存储
-REACT_APP_AGORA_OSS_BUCKET_NAME=你的oss名字
-REACT_APP_AGORA_OSS_BUCKET_FOLDER=你的oss存储目录
-REACT_APP_AGORA_OSS_BUCKET_REGION=你的oss存储节点地区
-REACT_APP_AGORA_OSS_BUCKET_KEY=你的oss存储key或者存储id
-REACT_APP_AGORA_OSS_BUCKET_SECRET=你的oss的存储秘钥
-```
+   ```
+   npm install
+   ```
 
-# Web发布和开发操作  
+2. 本地运行 Web demo
 
-#### 本地开发运行方式  
-  `npm run dev`  
+   ```
+   npm run dev
+   ```
+3. 发布 Web demo。发布前需要修改 `package.json` 中的 "homepage": "你的域名/地址"。例如，`https://solutions.agora.io/education/web` 需修改为 `"homepage": "https://solutions.agora.io/education/web"` 
 
-#### 本地编译方式  
-  `npm run build`  
+   ```
+   npm run build
+   ```
 
-### 部署的时候需要修改package.json，然后执行npm run build  
-  "homepage": "你的域名/路径"  
+## 运行和发布 Electron demo
 
-# Electron版发布和开发操作  
+### macOS
+1. 安装 npm
 
-#### 本地运行  
-  `npm run electron`  
-  `此时会启动两个进程，一个进程使用cra的webpack编译构建render进程，electron主进程会等待webpack构建成功以后开始执行。`  
+   ```
+   npm install
+   ```
+2. 本地运行 Electron demo
 
-#### electron mac打包方式
-  npm run pack:mac  
-  等待成功运行结束时会产生一个release目录，默认会打包出一个dmg文件，正常打开更新到Application目录即可完成安装，然后可以执行程序。  
+   ```
+   npm run electron  
+   ```
 
-#### electron win32程序打包方式（执行之前请务必确保已经正确安装--arch=ia32版本5.0.8的electron和agora-electron-sdk "platform": "win32"版）
-  npm run pack:win  
-  
-  等待成功运行结束时会产生一个release目录，默认会打包出一个安装程序，请使用windows管理员身份打开，即可完成安装，然后可以执行程序。  
+2. 发布 Electron demo
 
-#### FAQ  
-  * [问题反馈](https://github.com/AgoraIO-Usecase/eEducation/issues/new)  
-  * 关于electron启动时发现localhost:3000端口被占用问题解决方案，可以在package.json里找到ELECTRON_START_URL=http://localhost:3000 修改成你本地可以使用的端口号  
+   ```
+   npm run pack:mac
+   ```
+
+成功运行结束后会生成一个 release 目录，里面包含一个 dmg 安装文件，正常打开移动到 Application 目录即可完成安装，然后可以执行程序。 
+
+### Windows
+1. 安装 electron 7.1.14: 先找到 `package.json` 里的 `agora_electron` 按照如下结构替换
+   ```
+   "agora_electron": {
+     "electron_version": "7.1.2",
+     "prebuilt": true,
+     "platform": "win32"
+   },
+   ```
+   再手动安装 electron 7.1.14
+   ```
+   npm install electron@7.1.14 --arch=ia32 --save-dev
+   ```
+2. 安装 npm
+   ```
+   npm install
+   ```
+
+3. 本地运行 Electron demo
+
+   ```
+   npm run electron  
+   ```
+
+4. 发布 Electron demo
+
+   ```
+   npm run pack:win
+   ```
+
+成功运行结束后会生成一个 release 目录，里面包含一个 exe 安装程序，请使用 Windows 管理员身份打开，即可完成安装，然后可以执行程序。
+
+## 常见问题 
+- 如果你在运行 Electron 时发现 localhost:3000 端口被占用，可以在 `package.json` 里找到 `ELECTRON_START_URL=http://localhost:3000` 修改成你本地可以使用的端口号。 

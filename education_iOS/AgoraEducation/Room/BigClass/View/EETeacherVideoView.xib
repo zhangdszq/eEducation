@@ -24,6 +24,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PaR-XL-gQl">
                     <rect key="frame" x="0.0" y="0.0" width="370" height="160"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-teacher" translatesAutoresizingMaskIntoConstraints="NO" id="f5H-88-1yl">
                     <rect key="frame" x="0.0" y="0.0" width="370" height="160"/>

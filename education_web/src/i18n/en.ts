@@ -2,8 +2,51 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
 
 const en = {
+  "electron": {
+    "start_screen_share_failed": "native screen sharing failed"
+  },
+  "icon": {
+    "setting": "Setting",
+    "upload-log": "Upload Log",
+    "exit-room": "Exit Room",
+    "lang-select": "Switch Language",
+  },
+  'doc_center': 'Course Document Center',
+  'upload_picture': 'Upload Picture',
+  'convert_webpage': 'Dynamic PPT',
+  'convert_to_picture': 'Static PPT',
+  'upload_audio_video': 'Upload Audio/Video',
   'return': {
     'home': 'Back To Home',
+  },
+  'control_items': {
+    "first_page": "First Page",
+    "prev_page": "Prev Page",
+    "next_page": "Next Page",
+    "last_page": "Last Page",
+    "stop_recording": "Stop Cloud Recording",
+    "recording": "Start Cloud Recording",
+    "quit_screen_sharing": "Stop Screen Sharing",
+    "screen_sharing": "Start Screen Sharing",
+    "delete_current": "Remove Current",
+    "delete_all": "Remove All",
+  },
+  'zoom_control': {
+    'folder': 'Document Center',
+    'lock_board': 'Set Whiteboard Follow',
+    'unlock_board': 'Reset Whiteboard Follow'
+  },
+  'tool': {
+    'selector': 'mouse selector',
+    'pencil': 'penceil',
+    'rectangle': 'rectangle',
+    'ellipse': 'ellipse',
+    'eraser': 'eraser',
+    'text': 'text',
+    'color_picker': 'color picker',
+    'add': 'add new page',
+    'upload': 'upload ',
+    'hand_tool': 'hand selector'
   },
   'error': {
     'not_found': 'Page Not Found',
@@ -13,8 +56,13 @@ const en = {
   },
   'whiteboard': {
     'loading': 'Loading...',
+    'global_state_limit': 'globalState size limit size probably overflow',
+    'locked_board': 'The teacher is moving the whiteboard. Please do not draw on it.',
+    'unlocked_board': 'The whiteboard already unlocked',
   },
   'toast': {
+    'upload_log_failure': 'Upload Log Failure，ErrorName: {reason}，see more details in devtool',
+    'show_log_id': `Report your log ID: {reason}`,
     'api_login_failured': 'Join Failured, Reason: {reason}',
     'confirm': 'Confirm',
     'cancel': 'Cancel',
@@ -41,6 +89,13 @@ const en = {
     'teacher_reject_co_video': 'Teacher already rejected co-video',
     'teacher_cancel_co_video': 'Teacher already canceled co-video',
     'student_cancel_co_video': 'Student canceled co-video',
+    'student_peer_leave': '"{reason}" Left',
+    'student_send_co_video_apply': '"{reason}" send the co-video request',
+    'stop_co_video': 'Stop "{reason}" co-video',
+    'reject_co_video': 'Reject co-video',
+    'close_co_video': 'Close co-video',
+    'close_youself_co_video': 'Stop co-video',
+    'accept_co_video': 'Accept co-video',
   },
   'notice': {
     'student_interactive_apply': `"{reason}" wants to interact with you`
@@ -84,8 +139,8 @@ const en = {
     'missing_your_name': 'missing your name',
     'missing_password': 'missing password',
     'missing_role': 'missing role',
-    'account': 'nickname',
-    'password': 'password',
+    'account': 'Name',
+    'password': 'Password',
   },
   'room': {
     'chat_room': 'Chat Room',
@@ -99,7 +154,13 @@ const en = {
   },
   'replay': {
     'loading': 'loading...',
+    'recording': 'In Recording',
+    'finished': 'Finished',
+    'finished_recording_to_be_download': 'Server prepare downloading',
+    'finished_download_to_be_convert': 'Server prepare converting',
+    'finished_convert_to_be_upload': 'Server prepare saving',
   },
+  'course_recording': 'course recording',
   'build_version': `build version: ${build_version}`,
 }
 

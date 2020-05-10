@@ -32,9 +32,9 @@ abstract class NetlessManager<T> {
 
     abstract void onFail(SDKError error);
 
-    public void roomJoin(String uuid, String token, @NonNull Callback<RoomJoin> callback) {
+    public void roomJoin(String uuid, String sdkToken, @NonNull Callback<RoomJoin> callback) {
         RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, NetlessService.class)
-                .roomJoin(uuid, token).enqueue(new RetrofitManager.Callback<>(200, new Callback<ResponseBody>() {
+                .roomJoin(uuid, sdkToken).enqueue(new RetrofitManager.Callback<>(200, new Callback<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody res) {
                 callback.onSuccess(res.msg);

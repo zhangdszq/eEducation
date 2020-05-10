@@ -9,3 +9,7 @@ build
 *.log
 src/assets/.DS_Store
 !src/assets/
+*.json
+node_modules
+app/log
+app/*.log

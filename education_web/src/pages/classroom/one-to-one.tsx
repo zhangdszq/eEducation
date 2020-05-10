@@ -32,6 +32,7 @@ export default function OneToOne() {
               video={teacher.video}
               audio={teacher.audio}
               local={teacher.local}
+              autoplay={true}
               /> :
             <VideoPlayer
               role="teacher"
@@ -53,6 +54,7 @@ export default function OneToOne() {
               video={students[0].video}
               audio={students[0].audio}
               local={students[0].local}
+              autoplay={true}
             /> :
             <VideoPlayer
               role="student"

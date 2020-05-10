@@ -1,49 +1,72 @@
-# Agora Education iOS Demo
+> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-iOS-Project)*
 
-*Read this in other languages: [English](README.md)*
+本文指导你运行 iOS 示例项目。
 
-## 项目简介
-#### 小班课是基于教育场景的一个demo示例，大家可以通过工程下载到本地进行工程编译和体验，里面包含老师和学生通话，白板功能。
-## 运行体验方法
-#### 工程依赖
+## 前提条件
+
+- 准备工作：请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-e-Education-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)中的准备工作。
+- 开发环境：
+  - Xcode 10.0 及以上
+  - Cocoapods
+- iOS 真机（iPhone 或 iPad）
+
+## 运行示例项目
+
+参考以下步骤编译和运行示例项目：
+
+1.将代码克隆到本地
+
 ```
-  pod 'AFNetworking', '~> 3.2.1'
-  pod 'MJExtension', '~> 3.0.16'
-  pod 'Whiteboard'
-  pod 'AgoraRtcEngine_iOS', '<=2.9.0'
-  pod 'AgoraRtm_iOS', '~> 1.2.2'
+git clone https://github.com/AgoraIO-Usecase/eEducation
 ```
-#### 系统要求
-	•	最低支持iOS版本：iOS 10.0+
-	•	支持CPU架构：arm64e,arm64,armv7s,armv7(x86_64模拟器)
-#### 下载工程
+
+2.进入项目目录
+
 ```
-git clone https://github.com/AgoraIO-Usecase/eEducation.git
+cd eEducation/education_iOS
 ```
-#### 运行工程
+
+3.安装项目依赖库
+
 ```
-cd education_iOS
 pod install
+```
+
+4.打开项目
+
+```
 open AgoraEducation.xcworkspace
 ```
-#### 注意配置agoraAppid、agoraRTCToken、agoraRTMToken和whiteBoardToken:
+
+5.配置相关参数
+
+在 `KeyCenter.m` 文件中配置以下参数：
+- 你获取到的声网 App ID。
+- 你生成的 `Authorization` 字段，用于 HTTP 基本认证。
+
+详见 Agora e-Education 项目指南中的[前提条件](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)。
+
 ```
-请在KeyCenter.m 里面配置对应的内容
-运行工程之前需要填入agoraAppid,获取agoraAppid的方式请登录[声网](https://console.agora.io/)获取。
-运行工程之前需要填入agoraRTCToken,获取agoraRTCToken的方式请登录[声网](https://console.agora.io/)获取。
-运行工程之前需要填入agoraRTMToken,获取agoraRTMToken的方式请参考[声网](https://docs.agora.io/cn/Real-time-Messaging/rtm_token)。
-运行工程之前需要写入whiteBoardToken, 获取whiteBoardToken的方式请登录[Herewhite](https://console.herewhite.com/) 获取
++ (NSString *)agoraAppid {
+     return <#Your Agora App Id#>;
+}
+
++ (NSString *)authorization {
+     return <#Your Authorization#>;
+}
+
 ```
-> 如果没有打开鉴权Token, 这里的agoraRTCToken和agoraRTMToken值给nil就好。生成Token需要参照官方文档部署Token服务器，开发阶段若想先不部署服务器, 可以在https://dashbaord.agora.io生成临时RTC Token. 请注意生成Token时指定的频道名, 该Token只允许加入对应的频道。
 
+6.通过 `command + r` 运行项目
 
-## 参考文档
-[声网API参考](https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/oc/docs/headers/Agora-Objective-C-API-Overview.html)        
-[白板的API参考](https://developer.netless.link/docs/ios/overview/ios-introduction)              
-[RTM文档参考](https://docs.agora.io/cn/Real-time-Messaging/RTM_product?platform=All%20Platforms)
+## 联系我们
 
-<!-- LICENSE -->
-## License
+- 如需阅读完整的文档和 API 注释，你可以访问[声网开发者中心](https://docs.agora.io/cn/)。
+- 如果在集成中遇到问题，你可以到[声网开发者社区](https://dev.agora.io/cn/)提问。
+- 如果有售前咨询问题，你可以拨打 400 632 6626，或加入官方Q群 12742516 提问。
+- 如果需要售后技术支持，你可以在 [Agora 控制台](https://dashboard.agora.io/)提交工单。
+- 如果发现了示例代码的 bug，欢迎提交 [issue](https://github.com/AgoraIO/Rtm/issues)。
 
-Distributed under the MIT License. See `LICENSE` for more information.
+## 代码许可
 
+The MIT License (MIT).

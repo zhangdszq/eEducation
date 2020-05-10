@@ -7,7 +7,8 @@ import { AgoraStream } from '../utils/types';
 import { globalStore } from '../stores/global';
 import { roomStore } from '../stores/room';
 import { useGlobalState } from '../containers/root-container';
-
+import { eduApi } from '../services/edu-api';
+import { t } from '../i18n';
 
 export const WindowItem: React.FC<any> = ({
   ownerName,
@@ -111,16 +112,32 @@ export default function NativeSharedWindowContainer() {
         }
         try {
           if (platform === 'electron') {
+            globalStore.showLoading();
             const rtcClient = roomStore.rtcClient;
             const nativeClient = rtcClient as AgoraElectronClient;
-            // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
-            const screenShareToken = '';
-            let electronStream = await nativeClient.startScreenShare(windowId, screenShareToken);
+            // screen share token
+            let {screenToken} = await eduApi.refreshToken();
+            let electronStream = await nativeClient.startScreenShare(
+              windowId,
+              +roomStore.state.course.screenId,
+              roomStore.state.course.rid,
+              screenToken,
+              roomStore.state.appID,
+            );
             roomStore.addLocalSharedStream(new AgoraStream(electronStream, electronStream.uid, true));
           }
         } catch(err) {
+          const rtcClient = roomStore.rtcClient;
+          const nativeClient = rtcClient as AgoraElectronClient;
+          nativeClient.releaseScreenShare()
+          globalStore.showToast({
+            type: 'nativeScreenShare',
+            message: t("electron.start_screen_share_failed")
+          })
+          console.warn(JSON.stringify(err))
           throw err;
         } finally {
+          globalStore.stopLoading();
           globalStore.setNativeWindowInfo({visible: false, items: []});
         }
       }}

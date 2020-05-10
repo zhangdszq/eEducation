@@ -2,6 +2,7 @@ import { APP_ID } from './agora-rtc-client';
 import EventEmitter from 'events';
 import { btoa } from './helper';
 import { RoomStore } from '../stores/room';
+import { globalStore } from '../stores/global';
 // @ts-ignore
 export const AgoraRtcEngine = window.rtcEngine;
 
@@ -12,10 +13,26 @@ if (AgoraRtcEngine) {
   AgoraRtcEngine.enableAudio();
   AgoraRtcEngine.enableWebSdkInteroperability(true);
   AgoraRtcEngine.setVideoProfile(43, false);
+  //@ts-ignore
+  window.ipc && window.ipc.once("initialize", (events: any, args: any) => {
+    const logPath = args[0]
+    const videoSourceLogPath = args[2];
+    const videoSourceAddonLogPath = args[3];
+    //@ts-ignore
+    window.videoSourceLogPath = videoSourceLogPath;
+    //@ts-ignore
+    window.videoSourceAddonLogPath = videoSourceAddonLogPath;
+    AgoraRtcEngine.setLogFile(logPath)
+  })
 }
 
-// TODO: default screen sharing uid, please do not directly use it.
-const SHARE_ID = 7;
+//@ts-ignore
+window.ipc && window.ipc.on("export-log", (events: any, args: any) => {
+  //@ts-ignore
+  window.doGzip();
+  //@ts-ignore
+  console.log('doGzip', window.doGzip);
+})
 
 export interface Stream {
   uid: number
@@ -34,7 +51,7 @@ export class AgoraElectronStream {
   private domID: string;
   constructor(
     public uid: number = uid,
-    public readonly type: StreamType = StreamType.remote,
+    public type: StreamType = StreamType.remote,
   ) {
     this.domID = '';
     this.stream = {
@@ -99,7 +116,7 @@ export class AgoraElectronClient {
       res !== 0 && console.warn(`[creaetStream] set setAudioPlaybackVolume: ${speakerVolume}`);
     }
 
-    return new AgoraElectronStream(streamID, streamID !== SHARE_ID ? StreamType.local : StreamType.localVideoSource);
+    return new AgoraElectronStream(streamID, +streamID !== +this.roomStore.state.course.screenId ? StreamType.local : StreamType.localVideoSource);
   }
 
   private readonly events: string[] = [
@@ -151,11 +168,12 @@ export class AgoraElectronClient {
       })
     }
     rtcEngine.on('joinedchannel', (channel: string, uid: number) => {
-      const stream = new AgoraElectronStream(uid, uid !== SHARE_ID ? StreamType.local : StreamType.localVideoSource);
+      const stream = new AgoraElectronStream(uid, +uid !== +this.roomStore.state.course.screenId ? StreamType.local : StreamType.localVideoSource);
       this.bus.emit('joinedchannel', {stream});
     })
     rtcEngine.on('userjoined', (uid: number) => {
-      const stream = new AgoraElectronStream(uid, uid !== SHARE_ID ? StreamType.remote : StreamType.remoteVideoSource);
+      const stream = new AgoraElectronStream(uid, StreamType.remote);
+      console.log("userjoined", uid)
       this.bus.emit('userjoined', {stream});
     })
     rtcEngine.on('removestream', (uid: number) => {
@@ -182,11 +200,11 @@ export class AgoraElectronClient {
       if (local) {
         rtcEngine.setupLocalVideoSource(dom)
         rtcEngine.setupViewContentMode('videosource', 1);
-        rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+        rtcEngine.setupViewContentMode(uid, 1);
       } else {
         rtcEngine.subscribe(uid, dom)
         rtcEngine.setupViewContentMode('videosource', 1);
-        rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+        rtcEngine.setupViewContentMode(uid, 1);
       }
     } else {
       if (local) {
@@ -238,8 +256,16 @@ export class AgoraElectronClient {
       }));
   }
 
-  async startScreenShare(windowId: number, token: string, rect = {x: 0, y: 0, width: 0, height: 0}, param = {width: 0, height: 0, bitrate: 500, frameRate: 15}): Promise<AgoraElectronStream> {
-    console.log("[native] start screen share");
+  async startScreenShare(
+    windowId: number,
+    uid: number,
+    channel: string,
+    token: string,
+    appId: string,
+    rect = {x: 0, y: 0, width: 0, height: 0},
+    param = {width: 0, height: 0, bitrate: 500, frameRate: 15}
+  ): Promise<AgoraElectronStream> {
+    console.log("[native] start screen share", token, uid, appId);
     const shareClient = this.rtcEngine;
     return new Promise((resolve, reject) => {
       shareClient.videoSourceInitialize(APP_ID);
@@ -247,9 +273,23 @@ export class AgoraElectronClient {
       shareClient.videoSourceEnableWebSdkInteroperability(true);
       // shareClient.setVideoRenderDimension(3, SHARE_ID, 1280, 960);
       shareClient.videoSourceSetVideoProfile(50, false);
+      //@ts-ignore
+      if (window.videoSourceLogPath) {
+        //@ts-ignore
+        shareClient.videoSourceSetLogFile(window.videoSourceLogPath)
+        //@ts-ignore
+        console.log(`[native] videoSourceSetLogFile, videoSourceLogPath: `, window.videoSourceLogPath)
+      }
+      //@ts-ignore
+      // if (window.videoSourceAddonLogPath) {
+      //   //@ts-ignore
+      //   shareClient.videoSourceSetAddonLogFile(window.videoSourceAddonLogPath)
+      //   //@ts-ignore
+      //   console.log(`[native] videoSourceSetAddonLogFile, videoSourceAddonLogPath: `, window.videoSourceAddonLogPath)
+      // }
       // to adjust render dimension to optimize performance
-      console.log("[electron-debug] SHARE_ID", SHARE_ID, " TOKEN: ", token);
-      shareClient.videoSourceJoin(token, this.rid, '', SHARE_ID);
+      console.log("[electron-debug] SHARE_ID", uid, " TOKEN: ", token, " CHANNEL", channel);
+      shareClient.videoSourceJoin(token, channel, '', uid);
       if (!shareClient.subscribeVideoSource) {
         shareClient.once('videoSourceJoinedSuccess', (uid: number) => {
           shareClient.subscribeVideoSource = false;
@@ -277,15 +317,42 @@ export class AgoraElectronClient {
   }
 
   async stopScreenShare() {
-    if (this.shared) {
-      this.rtcEngine.once('videoSourceLeaveChannel', (evt: any) => {
+    globalStore.showLoading();
+    let stopPromise = new Promise((resolve, reject) => {
+      const onSuccess = () => {
         this.roomStore.removeLocalSharedStream();
         this.rtcEngine.off('videoSourceLeaveChannel', (evt: any) => {});
-      });
-      this.rtcEngine.videoSourceLeave();
+        globalStore.stopLoading();
+      }
+
+      const onFailure = () => {
+        this.roomStore.removeLocalSharedStream();
+        this.rtcEngine.off('videoSourceLeaveChannel', (evt: any) => {});
+        globalStore.stopLoading();
+      }
+
+      // this.rtcEngine.once('videoSourceLeaveChannel', (evt: any) => {
+      //   onSuccess();
+      // });
+      // this.rtcEngine.videoSourceLeave();
       this.rtcEngine.videoSourceRelease();
       this.shared = false;
-    }
+      resolve(onSuccess());
+      // setTimeout(() => {
+      //   reject(onFailure())
+      // }, 5000)
+    })
+
+    return await stopPromise;
+  }
+
+  releaseScreenShare() {
+    this.roomStore.removeLocalSharedStream();
+    this.rtcEngine.videoSourceLeave()
+    this.rtcEngine.videoSourceRelease();
+    this.rtcEngine.removeAllListeners();
+    this.shared = false;
+    this.rtcEngine.subscribeVideoSource = false;
   }
 
   exit () {

@@ -30,11 +30,11 @@
     [self addSubview:bottomLineView];
     bottomLineView.frame = CGRectMake(0, 39, self.bounds.size.width, 1);
 
-    self.layer.backgroundColor = [UIColor whiteColor].CGColor;
-    self.layer.shadowColor = [UIColor colorWithHexString:@"000000" alpha:0.15].CGColor;
-    self.layer.shadowOffset = CGSizeMake(0,2);
-    self.layer.shadowOpacity = 2;
-    self.layer.shadowRadius = 4;
+//    self.layer.backgroundColor = [UIColor whiteColor].CGColor;
+//    self.layer.shadowColor = [UIColor colorWithHexString:@"000000" alpha:0.15].CGColor;
+//    self.layer.shadowOffset = CGSizeMake(0,2);
+//    self.layer.shadowOpacity = 2;
+//    self.layer.shadowRadius = 4;
     for (NSInteger i = 0; i < self.items.count; i++) {
         UIButton *itemButton = [[UIButton alloc] init];
         [itemButton setTitle:self.items[i] forState:(UIControlStateNormal)];

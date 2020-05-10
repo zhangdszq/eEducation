@@ -13,7 +13,7 @@ interface SnackbarsProps {
 }
 
 export default function ConsecutiveSnackbars({
-  duration = 1500
+  duration = 2500
 }: SnackbarsProps) {
 
   const globalState = useGlobalState();

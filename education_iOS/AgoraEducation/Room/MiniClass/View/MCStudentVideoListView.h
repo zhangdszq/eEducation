@@ -7,16 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RolesInfoModel.h"
+#import "RoomAllModel.h"
 #import "MCStudentVideoCell.h"
 
-typedef void(^ StudentVideoList)(MCStudentVideoCell * _Nonnull cell, NSString * _Nullable currentUid);
+typedef void(^ StudentVideoList)(MCStudentVideoCell * _Nonnull cell, NSInteger currentUid);
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCStudentVideoListView : UIView
-@property (nonatomic, copy) StudentVideoList studentVideoList;
-- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)array;
+@property (nonatomic, strong) StudentVideoList studentVideoList;
+- (void)updateStudentArray:(NSArray<UserModel*> *)array;
 @end
 
 NS_ASSUME_NONNULL_END

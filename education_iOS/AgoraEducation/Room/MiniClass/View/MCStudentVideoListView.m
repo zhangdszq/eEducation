@@ -8,11 +8,12 @@
 
 #import "MCStudentVideoListView.h"
 #import "MCStudentVideoCell.h"
+#import "NSArray+Copy.h"
 
 @interface MCStudentVideoListView ()<UICollectionViewDataSource,UICollectionViewDelegate>
 @property (nonatomic, strong) UICollectionView *videoListView;
 @property (nonatomic, strong) NSLayoutConstraint *collectionViewLeftCon;
-@property (nonatomic, strong) NSArray<RolesStudentInfoModel*> *studentArray;
+@property (nonatomic, strong) NSArray<UserModel*> *studentArray;
 @end
 
 @implementation MCStudentVideoListView
@@ -59,10 +60,10 @@
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     MCStudentVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoCell" forIndexPath:indexPath];
     
-    StudentModel *currentModel = self.studentArray[indexPath.row].studentModel;
+    UserModel *currentModel = self.studentArray[indexPath.row];
     cell.userModel = currentModel;
     if (self.studentVideoList) {
-        self.studentVideoList(cell, [currentModel uid]);
+        self.studentVideoList(cell, currentModel.uid);
     }
 
     return cell;
@@ -74,33 +75,34 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if(IsPad){
+       return CGSizeMake(146, 108);
+    }
     return CGSizeMake(95, 70);
 }
 
-- (void)updateStudentArray:(NSArray<RolesStudentInfoModel*> *)studentArray {
+- (void)updateStudentArray:(NSArray<UserModel*> *)studentArray {
     
     if(studentArray.count == 0 || self.studentArray.count != studentArray.count) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            self.studentArray = [NSArray arrayWithArray:studentArray];
-            [self.videoListView reloadData];
-        });
+        self.studentArray = [studentArray deepCopy];
+        [self.videoListView reloadData];
     } else {
-
         NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
 
         NSInteger count = studentArray.count;
         for(NSInteger i = 0; i < count; i++) {
-            RolesStudentInfoModel *sourceModel = [self.studentArray objectAtIndex:i];
-            RolesStudentInfoModel *currentModel = [studentArray objectAtIndex:i];
-            if(![sourceModel.attrKey isEqualToString:currentModel.attrKey] || ![sourceModel.studentModel isEqual:currentModel.studentModel]) {
-
+            UserModel *sourceModel = [self.studentArray objectAtIndex:i];
+            UserModel *currentModel = [studentArray objectAtIndex:i];
+            if(![sourceModel yy_modelIsEqual:currentModel]) {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
                 [indexPaths addObject:indexPath];
             }
         }
 
-        self.studentArray = [NSArray arrayWithArray:studentArray];
-        [self.videoListView reloadItemsAtIndexPaths:indexPaths];
+        self.studentArray = [studentArray deepCopy];
+        if(indexPaths.count > 0){
+            [self.videoListView reloadItemsAtIndexPaths:indexPaths];
+        }
     }
 }
 
@@ -117,5 +119,9 @@
         [_videoListView registerClass:[MCStudentVideoCell class] forCellWithReuseIdentifier:@"VideoCell"];
     }
     return _videoListView;
+}
+
+- (void)dealloc {
+    
 }
 @end

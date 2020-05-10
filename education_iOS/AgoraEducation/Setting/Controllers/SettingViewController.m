@@ -9,9 +9,11 @@
 #import "SettingViewController.h"
 #import "SettingViewCell.h"
 #import "EyeCareModeUtil.h"
+#import "SettingUploadViewCell.h"
 
 @interface SettingViewController ()<UITableViewDelegate,UITableViewDataSource,SettingCellDelegate>
 @property (nonatomic, weak) UITableView *settingTableView;
+@property (nonatomic, weak) SettingUploadViewCell *uploadViewCell;
 @end
 
 @implementation SettingViewController
@@ -30,11 +32,24 @@
     [self.view addSubview:settingTableView];
     self.settingTableView = settingTableView;
     settingTableView.tableFooterView = [[UIView alloc] init];
-
+    
+    CGRect rectStatus = [[UIApplication sharedApplication] statusBarFrame];
+    CGRect rectNav = self.navigationController.navigationBar.frame;
+    
+    UILabel *footView = [[UILabel alloc] initWithFrame:CGRectMake(0, kScreenHeight - rectStatus.size.height - rectNav.size.height - 50, kScreenWidth, 20)];
+    footView.textAlignment = NSTextAlignmentCenter;
+    
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    footView.text = [NSString stringWithFormat:@"v%@",app_Version];
+    
+    footView.font = [UIFont systemFontOfSize:16];
+    [settingTableView addSubview:footView];
+    
     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 35, 35)];
     [backButton setBackgroundImage:[UIImage imageNamed:@"page-prev"] forState:(UIControlStateNormal)];
     [backButton addTarget:self action:@selector(backBarButton:) forControlEvents:(UIControlEventTouchUpInside)];
-
+    
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     self.navigationItem.leftBarButtonItem =item;
 }
@@ -44,17 +59,34 @@
 }
 
 - (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    SettingViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingCell"];
-    if (!cell) {
-        cell = [[SettingViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"SettingCell"];
+    
+    if(indexPath.row == 0){
+        SettingViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingCell"];
+        if (!cell) {
+            cell = [[SettingViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"SettingCell"];
+        }
+        cell.delegate = self;
+        [cell switchOn:[[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]];
+        return cell;
+    } else {
+        SettingUploadViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingUploadCell"];
+        if (!cell) {
+            cell = [[SettingUploadViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"SettingUploadCell"];
+        }
+        self.uploadViewCell = cell;
+        return cell;
     }
-    cell.delegate = self;
-    [cell switchOn:[[EyeCareModeUtil sharedUtil] queryEyeCareModeStatus]];
-    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if(indexPath.row == 1){
+        [self.uploadViewCell uploadLog];
+    }
 }
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return 2;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -8,30 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-#ifdef DEBUG
-
-#define HTTP_BASE_URL @"http://115.231.168.26:8080"
-
-#else
-
-#define HTTP_BASE_URL @"https://solutions-api.sh.agoralab.co"
-
-#endif
-
-// http: get app config
-#define HTTP_GET_CONFIG @""HTTP_BASE_URL"/edu/v1/app/version"
-
 @interface HttpManager : NSObject
-
-+ (void)setHttpBaseUrl:(NSString *)url;
-+ (NSString *)getHttpBaseUrl;
-
+// common
 + (void)get:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary<NSString*, NSString*> *)headers success:(void (^)(id))success failure:(void (^)(NSError *))failure;
-
 + (void)post:(NSString *)url params:(NSDictionary *)params headers:(NSDictionary<NSString*, NSString*> *)headers success:(void (^)(id responseObj))success failure:(void (^)(NSError *error))failure;
 
-+ (void)POSTWhiteBoardRoomWithUuid:(NSString *)uuid token:(void (^)(NSString *token))token failure:(void (^)(NSString *msg))failure;
-
+// service
 + (void)getAppConfigWithSuccess:(void (^)(id responseObj))success failure:(void (^)(NSError *error))failure;
-
++ (void)getReplayInfoWithUserToken:(NSString *)userToken appId:(NSString *)appId roomId:(NSString *)roomId recordId:(NSString *)recordId success:(void (^)(id responseObj))success failure:(void (^)(NSError *error))failure;
++ (void)getWhiteInfoWithUserToken:(NSString *)userToken appid:(NSString *)appid roomId:(NSString *)roomId completeSuccessBlock:(void (^ _Nullable) (id responseObj))successBlock completeFailBlock:(void (^ _Nullable) (NSError *error))failBlock;
 @end

@@ -2,9 +2,10 @@ package io.agora.education.classroom.strategy.context;
 
 import android.content.Context;
 
-import io.agora.education.classroom.annotation.ClassType;
-import io.agora.education.classroom.bean.user.Student;
-import io.agora.education.classroom.strategy.RtmChannelStrategy;
+import io.agora.education.classroom.bean.channel.Room;
+import io.agora.education.classroom.bean.channel.User;
+import io.agora.education.classroom.strategy.ChannelStrategy;
+import io.agora.education.classroom.strategy.HttpChannelStrategy;
 
 public class ClassContextFactory {
 
@@ -14,14 +15,14 @@ public class ClassContextFactory {
         this.context = context;
     }
 
-    public ClassContext getClassContext(@ClassType int classType, String channelId, Student local) {
-        RtmChannelStrategy strategy = new RtmChannelStrategy(channelId, local);
+    public ClassContext getClassContext(@Room.Type int classType, String channelId, User local) {
+        ChannelStrategy strategy = new HttpChannelStrategy(channelId, local);
         switch (classType) {
-            case ClassType.ONE2ONE:
+            case Room.Type.ONE2ONE:
                 return new OneToOneClassContext(context, strategy);
-            case ClassType.SMALL:
+            case Room.Type.SMALL:
                 return new SmallClassContext(context, strategy);
-            case ClassType.LARGE:
+            case Room.Type.LARGE:
             default:
                 return new LargeClassContext(context, strategy);
         }

@@ -1,3 +1,10 @@
+.replay-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 .replay {
   display: flex;
   flex: 1;
@@ -51,6 +58,7 @@
       justify-content: center;
       background-color: rgba(0, 0, 0, 0.4);
       -webkit-tap-highlight-color: transparent;
+      z-index: 99;
       .play-btn {
         background-image: url('../assets/icon-play-big@2x.png');
         background-size: 64px;
@@ -60,7 +68,7 @@
         height: 64px;
         cursor: pointer;
         position: relative;
-        z-index: 2;
+        z-index: 999;
       }
     }
 
@@ -84,7 +92,7 @@
       }
       .video-menu {
         position: relative;
-        z-index: 1;
+        z-index: 999;
         background: rgba(0,0,0,0.5);
         // opacity: 0.5;
         height: 65px;
@@ -98,7 +106,7 @@
           align-items: center;
           justify-content: center;
           position: relative;
-          z-index: 2;
+          z-index: 999;
           .btn {
             cursor: pointer;
             height: 24px;
@@ -153,6 +161,7 @@
       background-repeat: no-repeat;
     }
 
+    overflow: hidden;
     border-left: 2px solid #DBE2E5;
     display: flex;
     flex-direction: column;

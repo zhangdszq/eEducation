@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from "rxjs"
+import { BehaviorSubject } from "rxjs"
 
 export interface ErrorState {
   reason: string | null,
@@ -14,7 +14,7 @@ export class ErrorStore {
   private subject: BehaviorSubject<ErrorState> = new BehaviorSubject<ErrorState>(this.defaultState);
 
   constructor() {
-    console.log("defaultValue", this.subject.getValue());
+    // console.log("defaultValue", this.subject.getValue());
   }
 
   set state(newState: Partial<ErrorState>) {

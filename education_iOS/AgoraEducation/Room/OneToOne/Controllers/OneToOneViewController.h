@@ -8,13 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "OneToOneEducationManager.h"
-#import "VCParamsModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OneToOneViewController : UIViewController
 
-@property (nonatomic, strong) VCParamsModel *paramsModel;
 @property (nonatomic, strong) OneToOneEducationManager *educationManager;
 
 @end
