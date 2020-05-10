@@ -15,7 +15,7 @@ import io.agora.education.R;
 import io.agora.education.base.BaseFragment;
 import io.agora.education.classroom.BaseClassActivity;
 import io.agora.education.classroom.adapter.UserListAdapter;
-import io.agora.education.classroom.bean.user.User;
+import io.agora.education.classroom.bean.channel.User;
 
 public class UserListFragment extends BaseFragment implements OnItemChildClickListener {
 
@@ -32,7 +32,7 @@ public class UserListFragment extends BaseFragment implements OnItemChildClickLi
     @Override
     protected void initData() {
         if (context instanceof BaseClassActivity) {
-            adapter = new UserListAdapter(((BaseClassActivity) context).getMyUserId());
+            adapter = new UserListAdapter(((BaseClassActivity) context).getLocal().uid);
             adapter.setOnItemChildClickListener(this);
         }
     }
@@ -54,10 +54,10 @@ public class UserListFragment extends BaseFragment implements OnItemChildClickLi
             boolean isSelected = view.isSelected();
             switch (view.getId()) {
                 case R.id.iv_btn_mute_audio:
-                    ((BaseClassActivity) context).classContext.muteLocalAudio(isSelected);
+                    ((BaseClassActivity) context).muteLocalAudio(isSelected);
                     break;
                 case R.id.iv_btn_mute_video:
-                    ((BaseClassActivity) context).classContext.muteLocalVideo(isSelected);
+                    ((BaseClassActivity) context).muteLocalVideo(isSelected);
                     break;
             }
         }

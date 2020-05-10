@@ -2,11 +2,12 @@
 //  KeyCenter.m
 //  AgoraEducation
 //
-//  Created by SRS on 2019/12/25.
-//  Copyright © 2019 Agora. All rights reserved.
+//  Created by SRS on 2020/3/26.
+//  Copyright © 2020 yangmoumou. All rights reserved.
 //
 
 #import "KeyCenter.h"
+#import "URL.h"
 
 @implementation KeyCenter
 
@@ -14,18 +15,12 @@
     return <#Your Agora App Id#>;
 }
 
-// assign token to nil if you have not enabled app certificate
-+ (NSString *)agoraRTCToken {
-    return <#Your Agora RTC Token#>;
++ (NSString *)authorization {
+     return <#Your Authorization#>;
 }
 
-// assign token to nil if you have not enabled app certificate
-+ (NSString *)agoraRTMToken {
-    return <#Your Agora RTM Token#>;
-}
-
-+ (NSString *)whiteBoardToken {
-    return <#Your White Token#>;
++ (NSString *)boardInfoApiURL {
+    return HTTP_WHITE_ROOM_INFO;
 }
 
 @end

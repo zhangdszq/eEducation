@@ -30,26 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)scheduleTimeChanged:(NSTimeInterval)time;
 
 /**
- Entering the buffer state, any time WhitePlayer or NativePlayer enters the buffer, it will callback.
- */
-- (void)combinePlayerStartBuffering;
-
-/**
- When the buffer state is finished, the WhitePlayer and NativePlayer have completed buffering, and then they will call back.
- */
-- (void)combinePlayerEndBuffering;
-
-/**
- NativePlayer end of play
- */
-- (void)nativePlayerDidFinish;
-
-/**
- VideoPlayer unable to play, need to re-create CombinePlayer for playback
- */
-- (void)combineVideoPlayerError:(NSError * _Nullable)error;
-
-/**
 The RoomState property in the room will trigger this callback when it changes.
 */
 - (void)fireRoomStateChanged:(WhiteRoomState *_Nullable)modifyState;

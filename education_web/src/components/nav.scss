@@ -1,3 +1,24 @@
+.menu-nav {
+  z-index: 10000;
+  justify-content: flex-end !important;
+  background-color: #F5F7F8 !important; 
+  position: relative;
+}
+
+.menu-nav-right {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-items: center;
+  -webkit-app-region: no-drag;
+  .menu-group {
+    margin-left: 10px;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-evenly;
+    min-width: 74px;
+  }
+}
 
 .nav-container {
   padding: 0 10px;
@@ -57,12 +78,12 @@
     align-items: center;
     .btn-group {
       display: flex;
-      min-width: 72px;
+      min-width: 110px;
       justify-content: space-between;
     }
     .electron-btn-group {
       display: flex;
-      max-width: 72px;
+      min-width: 70px;
       justify-content: space-between;
     }
     .menu-group {

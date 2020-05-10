@@ -1,29 +1,36 @@
-const FETCH_TIMEOUT = 5000
+import { globalStore } from "../stores/global";
+import { getIntlError } from '../services/intl-error-helper';
 
-const delay = 100;
+const FETCH_TIMEOUT = 10000
 
-export async function AgoraFetch (input: RequestInfo, init?: RequestInit, retryCount: number = 3): Promise<any> {
+// const delay = 100;
+
+export async function Fetch (input: RequestInfo, init?: RequestInit, retryCount: number = 0): Promise<any> {
   return new Promise((resolve, reject) => {
-    const onSuccess = (response: Response) => {
-      resolve(response);
+    const onResponse = (response: Response) => {
+      if (!response.ok) {
+        reject(new Error(response.statusText))
+      }
+      return response.json().then(resolve).catch(reject)
     }
 
     const onError = (error: any) => {
-      retryCount--;
-      if (retryCount) {
-        setTimeout(fetchRequest, delay);
-      } else {
+      // retryCount--;
+      // if (retryCount) {
+      //   setTimeout(fetchRequest, delay);
+      // } else {
         reject(error);
-      }
+      // }
     }
 
     const rescueError = (error: any) => {
+      console.warn(error)
       throw error;
     }
 
     function fetchRequest() {
       return fetch(input, init)
-        .then(onSuccess)
+        .then(onResponse)
         .catch(onError)
         .catch(rescueError)
     }
@@ -35,4 +42,22 @@ export async function AgoraFetch (input: RequestInfo, init?: RequestInit, retryC
       setTimeout(reject, FETCH_TIMEOUT, err)
     }
   })
+}
+
+export async function AgoraFetch(input: RequestInfo, init?: RequestInit, retryCount: number = 0) {
+  try {
+    return await Fetch(input, init, retryCount);
+  } catch(err) {
+    if (err && err.message === 'request timeout') {
+      const code = 408
+      const error = getIntlError(`${code}`)
+      const isErrorCode = `${error}` === `${code}`
+      globalStore.showToast({
+        type: 'eduApiError',
+        message: isErrorCode ? `request timeout` : error
+      })
+      return {code, msg: null, response: null}
+    }
+    throw err
+  }
 }

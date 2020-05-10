@@ -2,13 +2,28 @@ const {
   override,
   addBabelPlugins,
   addWebpackExternals,
-  useBabelRc
+  useBabelRc,
+  addWebpackModuleRule,
 } = require('customize-cra');
+
+const {devDependencies} = require('./package.json');
 
 const isElectron = process.env.BROWSER === 'none';
 // TODO: You can customize your env
 // TODO: 这里你可以定制自己的env
 const isProd = process.env.ENV === 'production';
+
+const webWorkerConfig = () => config => {
+  config.optimization = {
+    ...config.optimization,
+    noEmitOnErrors: false,
+  }
+  config.output = {
+    ...config.output,
+    globalObject: 'this'
+  }
+  return config;
+}
 
 const sourceMap = () => config => {
   // TODO: Please use 'source-map' in production environment
@@ -17,11 +32,22 @@ const sourceMap = () => config => {
   return config;
 }
 
+const setElectronDeps = isProd ? {
+  ...devDependencies,
+  "agora-electron-sdk": "commonjs2 agora-electron-sdk"
+} : {
+  "agora-electron-sdk": "commonjs2 agora-electron-sdk"
+}
+
+
 module.exports = override(
   sourceMap(),
-  isElectron && addWebpackExternals({
-    "agora-electron-sdk": "commonjs2 agora-electron-sdk"
+  webWorkerConfig(),
+  addWebpackModuleRule({
+    test: /\.worker\.js$/,
+    use: { loader: 'worker-loader' },
   }),
+  isElectron && addWebpackExternals(setElectronDeps),
   addBabelPlugins(
     '@babel/plugin-proposal-optional-chaining'
   ),

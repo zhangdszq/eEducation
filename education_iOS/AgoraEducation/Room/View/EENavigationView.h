@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EENavigationView : UIView
 @property (nonatomic, weak) id <RoomProtocol> delegate;
+- (void)initTimerCount:(NSInteger)timeCount;
 - (void)startTimer;
 - (void)stopTimer;
 - (void)updateClassName:(NSString *)name;

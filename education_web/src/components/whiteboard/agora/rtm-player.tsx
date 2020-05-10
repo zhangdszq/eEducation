@@ -19,7 +19,7 @@ export enum RtmPlayerState {
 };
 
 export type RtmReplayProps = {
-  rid: string,
+  channelName: string,
   startTime: number,
   endTime: number,
   currentSeekTime: number,
@@ -38,8 +38,8 @@ const RtmPlayer = ({currentSeekTime, senderId, ...props}: RtmReplayProps) => {
   }, [state]);
 
   const {value, loading} = useAsync<AgoraChannelMessage[] | undefined>(async (): Promise<AgoraChannelMessage[] | undefined> => {
-    if (!props.rid || !props.startTime || !props.endTime) {
-      throw new Error(`startTime & endTime & rid shouldn't be empty`);
+    if (!props.channelName || !props.startTime || !props.endTime) {
+      throw new Error(`startTime & endTime & channelName shouldn't be empty`);
     }
 
     if (props.startTime > props.endTime) {
@@ -48,7 +48,7 @@ const RtmPlayer = ({currentSeekTime, senderId, ...props}: RtmReplayProps) => {
 
     const rtmRecord = new RTMRestful(process.env.REACT_APP_AGORA_CUSTOMER_ID as string, process.env.REACT_APP_AGORA_CUSTOMER_CERTIFICATE as string);
     const params = {
-      rid: props.rid,
+      channelName: props.channelName,
       startTime: moment(+props.startTime).utc().format('YYYY-MM-DDTHH:mm:ss'),
       endTime: moment(+props.endTime).utc().format('YYYY-MM-DDTHH:mm:ss'),
     }

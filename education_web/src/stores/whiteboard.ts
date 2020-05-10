@@ -1,20 +1,15 @@
-import { APP_ID } from './../utils/agora-rtm-client';
 import { EventEmitter } from 'events';
 import { videoPlugin } from '@netless/white-video-plugin';
 import { audioPlugin } from '@netless/white-audio-plugin';
 import { Room, WhiteWebSdk, DeviceType, SceneState, createPlugins, RoomPhase } from 'white-web-sdk';
 import { Subject } from 'rxjs';
-import { WhiteboardAPI, RecordOperator } from '../utils/api';
-import {Map} from 'immutable';
 import GlobalStorage from '../utils/custom-storage';
 import { isEmpty, get } from 'lodash';
 import { roomStore } from './room';
-import { handleRegion } from '../utils/helper';
 import { globalStore } from './global';
 import { t } from '../i18n';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
-const RECORDING_UID = 1;
 
 interface SceneFile {
   name: string
@@ -26,9 +21,6 @@ export interface CustomScene {
   rootPath: string
   file: SceneFile
   type: string
-  current: boolean
-  currentPage: number
-  totalPage: number
 }
 
 export interface SceneResource {
@@ -41,9 +33,9 @@ const pathName = (path: string): string => {
   const reg = /\/([^\/]*)\//g;
   reg.exec(path);
   if (RegExp.$1 === "aria") {
-      return "";
+    return "";
   } else {
-      return RegExp.$1;
+    return RegExp.$1;
   }
 }
 
@@ -55,23 +47,27 @@ plugins.setPluginContext("audio", {identity: 'guest'});
 export type WhiteboardState = {
   loading: boolean
   joined: boolean
-  scenes: Map<string, CustomScene>
+  scenes: CustomScene[]
   currentScenePath: string
   currentHeight: number
   currentWidth: number
   dirs: SceneResource[]
-  activeDir: number
   zoomRadio: number
   scale: number
   room: Room | null
   recording: boolean
   startTime: number
   endTime: number
+
+  totalPage: number
+  currentPage: number
+  type: string
 }
 
 type JoinParams = {
   rid: string
-  uid?: string
+  uuid: string
+  roomToken: string
   location?: string
   userPayload: {
     userId: string,
@@ -84,12 +80,11 @@ class Whiteboard extends EventEmitter {
   public subject: Subject<WhiteboardState> | null;
   public defaultState: WhiteboardState = {
     joined: false,
-    scenes: Map<string, CustomScene>(),
+    scenes: [],
     currentScenePath: '',
     currentHeight: 0,
     currentWidth: 0,
     dirs: [],
-    activeDir: 0,
     zoomRadio: 0,
     scale: 0,
     recording: false,
@@ -97,7 +92,11 @@ class Whiteboard extends EventEmitter {
     endTime: 0,
     room: null,
     loading: true,
+    // isWritable: false,
     ...GlobalStorage.read('mediaDirs'),
+    totalPage: 0,
+    currentPage: 0,
+    type: 'static'
   }
 
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
@@ -147,8 +146,15 @@ class Whiteboard extends EventEmitter {
     this.commit(this.state);
   }
 
-  updateRoomState(file?: SceneFile) {
+  getNameByScenePath(scenePath: string) {
+    const sceneMap = get(this.state.room, `state.globalState.sceneMap`, {})
+    console.log("sceneMap", sceneMap)
+    return get(sceneMap, scenePath, 'default name')
+  }
+
+  updateRoomState() {
     if (!this.state.room) return;
+    console.log("current room state", this.state.room.state);
     const roomState = this.state.room.state;
 
     const path = roomState.sceneState.scenePath;
@@ -172,34 +178,33 @@ class Whiteboard extends EventEmitter {
       }
     }
 
-    const _dirPath = pathName(path);
-    const dirPath = _dirPath === "" ? "/init" : `/${_dirPath}`;
+    const entrieScenes = this.state.room ? this.state.room.entireScenes() : {};
 
-    const scenes = this.state.scenes.update(dirPath, (value: CustomScene) => {
-      const sceneFile: SceneFile = {
-        name: 'whiteboard',
-        type: 'whiteboard'
-      }
-      if (file && dirPath !== "/init") {
-        sceneFile.name = file.name;
-        sceneFile.type = file.type;
-      }
+    const paths = Object.keys(entrieScenes);
 
-      const result = {
-        ...value,
+    let scenes: CustomScene[] = [];
+    for (let dirPath of paths) {
+      const sceneInfo = {
         path: dirPath,
-        type: type ? type : 'static',
-        currentPage,
-        totalPage,
+        file: {
+          name: this.getNameByScenePath(dirPath),
+          type: 'whiteboard'
+        },
+        type: 'static',
+        rootPath: '',
       }
-      if (!value || isEmpty(value.file)) {
-        result.file = sceneFile;
+      if (entrieScenes[dirPath]) {
+        sceneInfo.rootPath = ['/', '/init'].indexOf(dirPath) !== -1 ? '/init' : `${dirPath}/${entrieScenes[dirPath][0].name}`
+        sceneInfo.type = entrieScenes[dirPath][0].ppt ? 'dynamic' : 'static'
+        if (sceneInfo.type === 'dynamic') {
+          sceneInfo.file.type = 'ppt';
+        }
       }
-      if (!value || isEmpty(value.rootPath)) {
-        result.rootPath = roomState.sceneState.scenePath
-      }
-      return result;
-    });
+      scenes.push(sceneInfo);
+    }
+
+    const _dirPath = pathName(path);
+    const currentScenePath = _dirPath === "" ? "/" : `/${_dirPath}`;
 
     const _dirs: SceneResource[] = [];
     scenes.forEach((it: CustomScene) => {
@@ -210,14 +215,14 @@ class Whiteboard extends EventEmitter {
       });
     });
 
-    const currentDirIndex = _dirs.findIndex((it: SceneResource) => it.path === dirPath);
-
     this.state = {
       ...this.state,
       scenes: scenes,
-      currentScenePath: dirPath,
+      currentScenePath: currentScenePath,
       dirs: _dirs,
-      activeDir: currentDirIndex !== -1 ? currentDirIndex : 0
+      totalPage,
+      currentPage,
+      type,
     }
     this.commit(this.state);
   }
@@ -227,29 +232,22 @@ class Whiteboard extends EventEmitter {
     this.state = {
       ...this.state,
       currentScenePath: dirPath,
-      activeDir: currentDirIndex !== -1 ? currentDirIndex : 0
     }
     this.commit(this.state);
   }
 
   updateSceneState(sceneState: SceneState) {
     const path = sceneState.scenePath;
+    const ppt = sceneState.scenes[0].ppt;
+    const type = isEmpty(ppt) ? 'static' : 'dynamic';
     const currentPage = sceneState.index;
     const totalPage = sceneState.scenes.length;
-    const _dirPath = pathName(path);
-    const dirPath = _dirPath === "" ? "/init" : `/${_dirPath}`;
-
-    const scenes = this.state.scenes.update(dirPath, (value) => {
-      return {
-        ...value,
-        currentPage,
-        totalPage,
-      }
-    });
 
     this.state = {
       ...this.state,
-      scenes,
+      currentPage,
+      totalPage,
+      type,
     }
 
     this.commit(this.state);
@@ -264,29 +262,6 @@ class Whiteboard extends EventEmitter {
     this.commit(this.state);
   }
 
-  async connect(rid: string, uuid?: string) {
-    let retrying;
-    let time = 0;
-    let reason;
-    do {
-      try {
-        let res;
-        if (uuid) {
-          res = await WhiteboardAPI.joinRoom(uuid);
-        } else {
-          res = await WhiteboardAPI.createRoom({rid, limit: 100, mode: 'historied'});
-        }
-        retrying = false;
-        return res;
-      } catch(err) {
-        retrying = true;
-        time++;
-        reason = err;
-      }
-    } while(retrying && time < 3);
-    throw reason;
-  }
-
   updateLoading(value: boolean) {
     this.state = {
       ...this.state,
@@ -295,9 +270,8 @@ class Whiteboard extends EventEmitter {
     this.commit(this.state);
   }
 
-  async join({rid, uid, location, userPayload}: JoinParams) {
+  async join({rid, uuid, roomToken, location, userPayload}: JoinParams) {
     await this.leave();
-    const {uuid, roomToken} = await this.connect(rid, uid);
     const identity = userPayload.identity === 'host' ? 'host' : 'guest';
 
     plugins.setPluginContext("video", {identity});
@@ -305,18 +279,21 @@ class Whiteboard extends EventEmitter {
 
     const disableDeviceInputs: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
     const disableOperations: boolean = location!.match(/big-class/) && identity !== 'host' ? true : false;
-    // const isWritable: boolean = location!.match(/big-class/) && identity !== 'host' ? false : true;
+    const isWritable: boolean = location!.match(/big-class/) && identity !== 'host' ? false : true;
 
-    console.log(`[White] disableDeviceInputs, ${disableDeviceInputs}, disableOperations, ${disableOperations}, location: ${location}`);
+    console.log(`[White] isWritable, ${isWritable}, disableDeviceInputs, ${disableDeviceInputs}, disableOperations, ${disableOperations}, location: ${location}`);
 
-    const room = await this.client.joinRoom({
+    const roomParams = {
       uuid,
       roomToken,
       disableBezier: true,
       disableDeviceInputs,
       disableOperations,
-      // isWritable,
-    }, {
+      isWritable,
+      // rejectWhenReadonlyErrorLevel: RoomErrorLevel.Ignore,
+    }
+
+    const room = await this.client.joinRoom(roomParams, {
       onPhaseChanged: (phase: RoomPhase) => {
         if (phase === RoomPhase.Connected) {
           this.updateLoading(false);
@@ -326,10 +303,11 @@ class Whiteboard extends EventEmitter {
         console.log("[White] onPhaseChanged phase : ", phase);
       },
       onRoomStateChanged: state => {
+        console.log("onRoomStateChanged", state)
         if (state.zoomScale) {
           whiteboard.updateScale(state.zoomScale);
         }
-        if (state.sceneState) {
+        if (state.sceneState || state.globalState) {
           whiteboard.updateRoomState();
         }
       },
@@ -341,11 +319,9 @@ class Whiteboard extends EventEmitter {
       onPPTLoadProgress: (uuid: string, progress: number) => {},
     });
 
-    await roomStore.updateWhiteboardUid(room.uuid);
-
     this.state = {
       ...this.state,
-      room: room
+      room,
     }
     this.commit(this.state);
   }
@@ -382,103 +358,28 @@ class Whiteboard extends EventEmitter {
 
   private operator: any = null;
 
-  async startRecording (token?: string) {
-    if (!this.state) return;
-    this.operator = new RecordOperator(
-      {
-        agoraAppId: APP_ID,
-        customerId: process.env.REACT_APP_AGORA_CUSTOMER_ID as string,
-        customerCertificate: process.env.REACT_APP_AGORA_CUSTOMER_CERTIFICATE as string,
-        channelName: roomStore.state.course.rid,
-        // WARN: here is cloud recording mode
-        mode: 'mix',
-        token,
-        uid: `${RECORDING_UID}`,
-      },
-      {
-        audioProfile: 1,
-        transcodingConfig: {
-            width: 240,
-            height: 180,
-            bitrate: 120,
-            fps: 15,
-            // "mixedVideoLayout": 1,
-            // "maxResolutionUid": "1",
-        },
-      },
-      {
-          vendor: 2,
-          region: handleRegion(process.env.REACT_APP_AGORA_OSS_BUCKET_REGION as string),
-          bucket: process.env.REACT_APP_AGORA_OSS_BUCKET_NAME as string,
-          accessKey: process.env.REACT_APP_AGORA_OSS_BUCKET_KEY as string,
-          secretKey: process.env.REACT_APP_AGORA_OSS_BUCKET_SECRET as string,
-      },
-    );
-    await this.operator.acquire();
-    await this.operator.start();
-    this.state = {
-      ...this.state,
-      recording: true,
-      startTime: +Date.now(),
-    };
-    this.commit(this.state);
-  }
-
-  async stopRecording () {
-    if (!this.state) return;
-    await this.operator.query();
-    const res = await this.operator.stop();
-    const mediaUrl = get(res, 'serverResponse.fileList');
-    this.state = {
-      ...this.state,
-      recording: false,
-      endTime: +Date.now(),
-    };
-    this.commit(this.state);
-    return mediaUrl;
-  }
-
-  clearRecording () {
-
-    if (!this.state.room) {
-      console.warn("whiteboard is released", this.state.room);
-      throw 'whiteboard is released';
-    }
-
-    const endTime = this.state.endTime;
-    const startTime = this.state.startTime;
-    const roomUUID = this.state.room.uuid;
-    this.state = {
-      ...this.state,
-      endTime: 0,
-      startTime: 0,
-      recording: false,
-    }
-    this.commit(this.state);
-
-    return {endTime, startTime, roomUUID};
-  }
-
   async lock() {
-    const lockBoardStatus = Boolean(roomStore.state.me.lockBoard);
-    const lockBoard = lockBoardStatus ? 0 : 1;
+    const lockBoardStatus = Boolean(roomStore.state.course.lockBoard)
+    const lockBoard = lockBoardStatus ? 0 : 1
+    await roomStore.updateCourse({
+      lockBoard
+    })
     if (lockBoard) {
       globalStore.showToast({
         type: 'notice-board',
         message: t('toast.whiteboard_lock')
-      });
+      })
     } else {
       globalStore.showToast({
         type: 'notice-board',
         message: t('toast.whiteboard_unlock')
-      });
+      })
     }
-    await roomStore.updateMe({
-      lockBoard
-    });
   }
 }
 
 export const whiteboard = new Whiteboard();
+// TODO: Please remove it before release in production
+// 备注：请在正式发布时删除操作的window属性
 //@ts-ignore
 window.netlessStore = whiteboard;

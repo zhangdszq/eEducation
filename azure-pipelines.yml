@@ -1,4 +1,8 @@
 jobs:
+  - template: cicd/templates/build-android.yml
+    parameters:
+      displayName: 'EducationAndroid'
+      workingDirectory: 'education_Android/AgoraEducation'
   - template: cicd/templates/build-ios.yml
     parameters:
       devDisplayName: 'AgoraEducationDEV'

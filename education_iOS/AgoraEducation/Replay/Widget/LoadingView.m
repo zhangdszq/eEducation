@@ -54,11 +54,19 @@
 }
 
 -(void)showLoading {
+    if(!self.hidden) {
+        return;
+    }
+    
     self.hidden = NO;
     [self startAnimation];
 }
 
 -(void)hiddenLoading {
+    if(self.hidden) {
+        return;
+    }
+    
     self.hidden = YES;
     [self stopAnimation];
 }

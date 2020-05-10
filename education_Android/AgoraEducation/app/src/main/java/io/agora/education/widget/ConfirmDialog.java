@@ -1,13 +1,13 @@
 package io.agora.education.widget;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +34,7 @@ public class ConfirmDialog extends DialogFragment {
     private String cancelText;
     private String confirmText;
     private boolean isSingle;
+    @Nullable
     protected DialogClickListener listener;
 
     public static ConfirmDialog normal(String content, DialogClickListener listener) {
@@ -66,18 +67,16 @@ public class ConfirmDialog extends DialogFragment {
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        listener.onClick(false);
+        if (listener != null)
+            listener.onClick(false);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Context context = getContext();
-        if (context == null) {
-            return super.onCreateDialog(savedInstanceState);
-        } else {
-            return new Dialog(context, getTheme());
-        }
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
     }
 
     @Nullable
@@ -99,10 +98,12 @@ public class ConfirmDialog extends DialogFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_dialog_cancel:
-                listener.onClick(false);
+                if (listener != null)
+                    listener.onClick(false);
                 break;
             case R.id.tv_dialog_confirm:
-                listener.onClick(true);
+                if (listener != null)
+                    listener.onClick(true);
                 break;
         }
         if (isCancelable()) {

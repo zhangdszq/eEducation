@@ -2,7 +2,6 @@ import { MultipartUploadResult } from 'ali-oss';
 import uuidv4 from 'uuid/v4';
 import {Room, PptConverter, PptKind, Ppt} from 'white-web-sdk';
 import MD5 from 'js-md5';
-import { whiteboard } from '../stores/whiteboard';
 import { resolveFileInfo } from './helper';
 
 export type imageSize = {
@@ -85,11 +84,6 @@ export class UploadManager {
         const scenePath = MD5(`/${uuid}/${documentFile.id}`);
         this.room.putScenes(`/${scenePath}`, res.scenes);
         this.room.setScenePath(`/${scenePath}/${res.scenes[0].name}`);
-        console.log("current room state", this.room.state);
-        whiteboard.updateRoomState({
-          name: rawFile.name,
-          type: fileType
-        });
     } else {
       console.log("convert no static ppt");
         res = await pptConverter.convert({
@@ -110,10 +104,6 @@ export class UploadManager {
         const scenePath = MD5(`/${uuid}/${documentFile.id}`);
         this.room.putScenes(`/${scenePath}`, res.scenes);
         this.room.setScenePath(`/${scenePath}/${res.scenes[0].name}`);
-        whiteboard.updateRoomState({
-          name: rawFile.name,
-          type: fileType
-        });
     }
     if (onProgress) {
         onProgress(PPTProgressPhase.Converting, 1);
@@ -204,14 +194,18 @@ export class UploadManager {
         });
       }
       await Promise.all(tasks.map(task => this.handleUploadTask(task, onProgress)));
-      this.room.setMemberState({
-        currentApplianceName: "selector",
-      });
+      if (this.room.isWritable) {
+        this.room.setMemberState({
+          currentApplianceName: "selector",
+        });
+      }
     }
   }
   private async handleUploadTask(task: TaskType, onProgress?: PPTProgressListener): Promise<void> {
     const fileUrl: string = await this.addFile(`${task.uuid}${task.imageFile.file.name}`, task.imageFile.file, onProgress);
-    this.room.completeImageUpload(task.uuid, fileUrl);
+    if (this.room.isWritable) {
+      this.room.completeImageUpload(task.uuid, fileUrl);
+    }
   }
 
   private getFile = (name: string): string => {

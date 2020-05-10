@@ -3,6 +3,8 @@ package io.agora.base.network;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -17,20 +19,24 @@ public class RetrofitManager {
     private static RetrofitManager instance;
 
     private OkHttpClient client;
+    private Map<String, String> headers = new HashMap<>();
 
     private RetrofitManager() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS);
-        builder.readTimeout(30, TimeUnit.SECONDS);
-        builder.addInterceptor(chain -> {
-            Request original = chain.request();
-            Request request = original.newBuilder()
-                    .header("Content-Type", "application/json;charset=UTF-8")
-                    .method(original.method(), original.body())
-                    .build();
-            return chain.proceed(request);
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+        clientBuilder.addInterceptor(chain -> {
+            Request request = chain.request();
+            Request.Builder requestBuilder = request.newBuilder()
+                    .method(request.method(), request.body());
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    requestBuilder.addHeader(entry.getKey(), entry.getValue());
+                }
+            }
+            return chain.proceed(requestBuilder.build());
         });
-        client = builder.build();
+        client = clientBuilder.build();
     }
 
     public static RetrofitManager instance() {
@@ -42,6 +48,10 @@ public class RetrofitManager {
             }
         }
         return instance;
+    }
+
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
     }
 
     public <T> T getService(String baseUrl, Class<T> tClass) {

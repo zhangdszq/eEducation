@@ -35,7 +35,7 @@ const UploadNoticeContext = React.createContext({} as NoticeContext);
 
 export const useUploadNotice = () => React.useContext(UploadNoticeContext);
 
-const duration = 1500;
+const duration = 2500;
 
 export const UploadNoticeContainer: React.FC<{}> = () => {
 

@@ -18,12 +18,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.agora.education.R;
-import io.agora.education.classroom.annotation.ClassType;
-import io.agora.education.classroom.bean.user.Student;
-import io.agora.education.classroom.bean.user.User;
+import io.agora.education.classroom.bean.channel.Room;
+import io.agora.education.classroom.bean.channel.User;
 import io.agora.education.classroom.strategy.context.LargeClassContext;
 import io.agora.education.classroom.widget.RtcVideoView;
-import io.agora.rtc.Constants;
 
 public class LargeClassActivity extends BaseClassActivity implements LargeClassContext.LargeClassEventListener, TabLayout.OnTabSelectedListener {
 
@@ -44,7 +42,7 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
 
     private RtcVideoView video_teacher;
     private RtcVideoView video_student;
-    private int linkUid;
+    private User linkUser;
 
     @Override
     protected int getLayoutResId() {
@@ -72,13 +70,13 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
             video_student = new RtcVideoView(this);
             video_student.init(R.layout.layout_video_small_class, true);
             video_student.setOnClickAudioListener(v -> {
-                if (linkUid == getMyUserId()) {
-                    classContext.muteLocalAudio(!video_student.isAudioMuted());
+                if (isMineLink()) {
+                    muteLocalAudio(!video_student.isAudioMuted());
                 }
             });
             video_student.setOnClickVideoListener(v -> {
-                if (linkUid == getMyUserId()) {
-                    classContext.muteLocalVideo(!video_student.isVideoMuted());
+                if (isMineLink()) {
+                    muteLocalVideo(!video_student.isVideoMuted());
                 }
             });
         }
@@ -90,23 +88,19 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
 
         // disable operation in large class
         whiteboardFragment.disableDeviceInputs(true);
+        whiteboardFragment.setWritable(false);
 
         if (surface_share_video != null) {
             removeFromParent(surface_share_video);
             layout_share_video.addView(surface_share_video, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
-        resetHandState(linkUid);
-    }
-
-    @Override
-    protected Student getLocal() {
-        return new Student(getMyUserId(), getMyUserName(), Constants.CLIENT_ROLE_AUDIENCE);
+        resetHandState();
     }
 
     @Override
     protected int getClassType() {
-        return ClassType.LARGE;
+        return Room.Type.LARGE;
     }
 
     @Override
@@ -121,10 +115,9 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
     public void onClick(View view) {
         boolean isSelected = view.isSelected();
         if (isSelected) {
-            ((LargeClassContext) classContext).cancel(false);
+            ((LargeClassContext) classContext).cancel();
         } else {
-            // update local attributes
-            ((LargeClassContext) classContext).apply(true);
+            ((LargeClassContext) classContext).apply();
         }
     }
 
@@ -135,36 +128,36 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
 
     @Override
     public void onTeacherMediaChanged(User user) {
-        video_teacher.setName(user.account);
+        video_teacher.setName(user.userName);
         video_teacher.showRemote(user.uid);
-        video_teacher.muteVideo(user.video == 0);
-        video_teacher.muteAudio(user.audio == 0);
+        video_teacher.muteVideo(!user.isVideoEnable());
+        video_teacher.muteAudio(!user.isAudioEnable());
     }
 
     @Override
     public void onLinkMediaChanged(User user) {
+        linkUser = user;
+        resetHandState();
         if (user == null) {
             video_student.setVisibility(View.GONE);
             video_student.setSurfaceView(null);
         } else {
-            video_student.setName(user.account);
-            if (getMyUserId() == user.uid) {
+            video_student.setName(user.userName);
+            if (user.uid == getLocal().uid) {
                 video_student.showLocal();
             } else {
                 video_student.showRemote(user.uid);
             }
             // make sure the student video always on the top
             video_student.getSurfaceView().setZOrderMediaOverlay(true);
-            video_student.muteVideo(user.video == 0);
-            video_student.muteAudio(user.audio == 0);
+            video_student.muteVideo(!user.isVideoEnable());
+            video_student.muteAudio(!user.isAudioEnable());
             video_student.setVisibility(View.VISIBLE);
         }
     }
 
-    @Override
-    public void onLinkUidChanged(int uid) {
-        linkUid = uid;
-        resetHandState(linkUid);
+    private boolean isMineLink() {
+        return linkUser != null && linkUser.uid == getLocal().uid;
     }
 
     @Override
@@ -172,12 +165,12 @@ public class LargeClassActivity extends BaseClassActivity implements LargeClassC
         layout_hand_up.setSelected(false);
     }
 
-    private void resetHandState(int linkUid) {
-        if (linkUid == getMyUserId()) {
+    private void resetHandState() {
+        if (isMineLink()) {
             layout_hand_up.setEnabled(true);
             layout_hand_up.setSelected(true);
         } else {
-            layout_hand_up.setEnabled(linkUid == 0);
+            layout_hand_up.setEnabled(linkUser == null);
             layout_hand_up.setSelected(false);
         }
     }

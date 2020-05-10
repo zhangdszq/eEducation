@@ -49,6 +49,6 @@
             [self.delegate lastPage];
         }
     }
-    NSLog(@"sender-------- %@",sender.restorationIdentifier);
+    AgoraLogInfo(@"sender-------- %@",sender.restorationIdentifier);
 }
 @end

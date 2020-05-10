@@ -24,7 +24,7 @@ export default function Whiteboard ({
     room.bindHtmlElement(domRef.current);
     whiteboard.updateRoomState();
     window.addEventListener("resize", (evt: any) => {
-      if (whiteboard.state.room !== null) {
+      if (whiteboard.state.room !== null && whiteboard.state.room.isWritable) {
         whiteboard.state.room.moveCamera({centerX: 0, centerY: 0});
         whiteboard.state.room.refreshViewSize();           
       }
