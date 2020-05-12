@@ -1,4 +1,4 @@
-> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Web-&-Electron-Project)*
+> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/README.md)*
 
 ## 概览
 
