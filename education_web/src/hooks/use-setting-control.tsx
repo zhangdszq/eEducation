@@ -192,7 +192,7 @@ export default function useSettingControl () {
       const nativeClient = rtcClient as AgoraElectronClient;
       nativeClient.rtcEngine.setClientRole(1);
       const res = nativeClient.rtcEngine.enableAudioVolumeIndication(1000, 3, true);
-      console.log("enableAudioVolumeIndication(1000, 3, false), ", res)
+      console.log("enableAudioVolumeIndication(1000, 3, true), ", res)
       nativeClient.rtcEngine.on('groupAudioVolumeIndication', onVolumeChange);
       console.log('startplayback on result', nativeClient.rtcEngine.startAudioRecordingDeviceTest(300));
       return () => {
