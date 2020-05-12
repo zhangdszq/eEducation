@@ -1,4 +1,4 @@
-> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/wiki/Web-&-Electron-%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97)*
+> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/README.zh.md)*
 
 ## Overview
 
