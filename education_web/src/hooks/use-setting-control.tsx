@@ -185,17 +185,18 @@ export default function useSettingControl () {
     if (!stream) return;
     if (platform === 'electron') {
       console.log("[electron-client] add volume event listener");
-      const onVolumeChange = (uid: number, volume: number, speaker: any, totalVolume: number)=> {
+      const onVolumeChange = (speakers: any[], speakerNumber: number, totalVolume: number)=> {
         setVolume(Number((totalVolume / 255).toFixed(3)))
       }
       const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
       const nativeClient = rtcClient as AgoraElectronClient;
       nativeClient.rtcEngine.setClientRole(1);
-      nativeClient.rtcEngine.enableAudioVolumeIndication(1000, 3, false);
-      nativeClient.rtcEngine.on('audiovolumeindication', onVolumeChange);
+      const res = nativeClient.rtcEngine.enableAudioVolumeIndication(1000, 3, true);
+      console.log("enableAudioVolumeIndication(1000, 3, false), ", res)
+      nativeClient.rtcEngine.on('groupAudioVolumeIndication', onVolumeChange);
       console.log('startplayback on result', nativeClient.rtcEngine.startAudioRecordingDeviceTest(300));
       return () => {
-        nativeClient.rtcEngine.off("audiovolumeindication", onVolumeChange);
+        nativeClient.rtcEngine.off("groupAudioVolumeIndication", onVolumeChange);
         console.log('startplayback off result', nativeClient.rtcEngine.stopAudioPlaybackDeviceTest());
       }
     }
