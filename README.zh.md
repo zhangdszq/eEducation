@@ -1,20 +1,20 @@
-> *Read this article in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Project-Guide)*
+> *Read this article in another language: [English](README.md)*
 
 ## 目录
-- [项目概述](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E6%A6%82%E8%BF%B0)
-  - [支持场景](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E6%94%AF%E6%8C%81%E5%9C%BA%E6%99%AF)
-  - [功能列表](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%8A%9F%E8%83%BD%E5%88%97%E8%A1%A8)
-  - [平台兼容](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%B9%B3%E5%8F%B0%E5%85%BC%E5%AE%B9)
-  - [限制条件](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6)
-- [快速开始](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
-  - [前提条件](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)
-    - [获取声网 App ID](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E8%8E%B7%E5%8F%96%E5%A3%B0%E7%BD%91-app-id)
-    - [进行 HTTP 基本认证](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E8%BF%9B%E8%A1%8C-http-%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%81)
-    - [获取第三方白板 sdkToken 并注册到Agora云服务](https%3A%2F%2Fgithub.com%2FAgoraIO-Usecase%2FeEducation%2Fwiki%2FAgora-e-Education-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97%23%E8%8E%B7%E5%8F%96%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BD%E6%9D%BF%20sdkToken%20%E5%B9%B6%E6%B3%A8%E5%86%8C%E5%88%B0Agora%E4%BA%91%E6%9C%8D%E5%8A%A1)
-  - [运行示例项目](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE)
-  - [接入 Agora Edu 云服务](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E6%8E%A5%E5%85%A5-agora-edu-%E4%BA%91%E6%9C%8D%E5%8A%A1)
-- [常见问题](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
-- [推荐 SDK 版本](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E6%8E%A8%E8%8D%90-sdk-%E7%89%88%E6%9C%AC)
+- [项目概述](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%BF%B0)
+  - [支持场景](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E6%94%AF%E6%8C%81%E5%9C%BA%E6%99%AF)
+  - [功能列表](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%8A%9F%E8%83%BD%E5%88%97%E8%A1%A8)
+  - [平台兼容](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%B9%B3%E5%8F%B0%E5%85%BC%E5%AE%B9)
+  - [限制条件](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6)
+- [快速开始](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+  - [前提条件](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)
+    - [获取声网 App ID](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E8%8E%B7%E5%8F%96%E5%A3%B0%E7%BD%91-app-id)
+    - [进行 HTTP 基本认证](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E8%BF%9B%E8%A1%8C-http-%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%81)
+    - [获取第三方白板 sdkToken 并注册到Agora云服务](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#获取第三方白板-sdkToken-并注册到Agora云服务)
+  - [运行示例项目](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE)
+  - [接入 Agora Edu 云服务](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E6%8E%A5%E5%85%A5-agora-edu-%E4%BA%91%E6%9C%8D%E5%8A%A1)
+- [常见问题](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
+- [推荐 SDK 版本](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E6%8E%A8%E8%8D%90-SDK-%E7%89%88%E6%9C%AC)
 
 ## 项目概述
 
@@ -79,9 +79,9 @@ Agora e-Education 示例项目支持以下平台和版本：
 
 参考以下文档在对应的平台编译及运行示例项目：
 
-- [Android 运行指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Android-%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97)
-- [iOS 运行指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/iOS-%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97)
-- [Web & Electron 运行指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Web-&-Electron-%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97)
+- [Android 运行指南](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_Android/AgoraEducation/README.zh.md)
+- [iOS 运行指南](https://github.com/AgoraIO-Usecase/eEducation/tree/master/education_iOS/README.zh.md)
+- [Web & Electron 运行指南](https://github.com/AgoraIO-Usecase/eEducation/tree/master/education_web/README.zh.md)
 
 ### 接入 Agora Edu 云服务
 

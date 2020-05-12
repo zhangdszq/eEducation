@@ -1,4 +1,4 @@
-> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/README.zh.md)*
+> *其他语言版本：[简体中文](README.zh.md)*
 
 ## Overview
 
@@ -29,9 +29,9 @@
 
 ## Preparations
 
-- Make sure you have made the preparations mentioned in the [Agora e-Education Guide](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide).
+- Make sure you have made the preparations mentioned in the [Agora e-Education Guide](https://github.com/AgoraIO-Usecase/eEducation).
 - Set up your Alibaba Cloud OSS Guide. For details, see [Alibaba Cloud OSS Guide
-](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide).
+](https://github.com/AgoraIO-Usecase/eEducation/wiki/Alibaba-Cloud-OSS-Guide).
 - Rename `.env.example` to `.env.local` and configure the following parameters:
   - **(Required) Agora App ID** 
   ```bash

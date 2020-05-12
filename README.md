@@ -1,20 +1,20 @@
-> *其他语言版本：[简体中文](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97)*
+> *其他语言版本：[简体中文](README.zh.md)*
 
 ## Table of contents
-- [About the project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#about-the-project)
-  - [Applicable scenarios](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#applicable-scenarios)
-  - [Functions](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#functions)
-  - [Compatibility](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#compatibility)
-  - [Restrictions](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#restrictions)
-- [Get started](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-started)
-  - [Prerequisites](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#prerequisites)
-    - [Get an Agora App ID](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-an-agora-app-id)
-    - [Pass the basic HTTP authentication](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#pass-the-basic-http-authentication)
-    - [Get a Netless  `sdkToken` and register with Agora Cloud Service](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#get-a-netless--sdktoken-and-register-with-agora-cloud-service)
-  - [Run the sample project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#run-the-sample-project)
-  - [Use Agora Edu Cloud Service](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#use-agora-edu-cloud-service)
-- [FAQ](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#faq)
-- [Recommended versions of the Agora RTC SDK](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-Guide#recommended-versions-of-the-agora-rtc-sdk)
+- [About the project](https://github.com/AgoraIO-Usecase/eEducation#about-the-project)
+  - [Applicable scenarios](https://github.com/AgoraIO-Usecase/eEducation#applicable-scenarios)
+  - [Functions](https://github.com/AgoraIO-Usecase/eEducation#functions)
+  - [Compatibility](https://github.com/AgoraIO-Usecase/eEducation#compatibility)
+  - [Restrictions](https://github.com/AgoraIO-Usecase/eEducation#restrictions)
+- [Get started](https://github.com/AgoraIO-Usecase/eEducation#get-started)
+  - [Prerequisites](https://github.com/AgoraIO-Usecase/eEducation#prerequisites)
+    - [Get an Agora App ID](https://github.com/AgoraIO-Usecase/eEducation#get-an-agora-app-id)
+    - [Pass the basic HTTP authentication](https://github.com/AgoraIO-Usecase/eEducation#pass-the-basic-http-authentication)
+    - [Get a Netless  `sdkToken` and register with Agora Cloud Service](https://github.com/AgoraIO-Usecase/eEducation#get-a-netless--sdktoken-and-register-with-agora-cloud-service)
+  - [Run the sample project](https://github.com/AgoraIO-Usecase/eEducation#run-the-sample-project)
+  - [Use Agora Edu Cloud Service](https://github.com/AgoraIO-Usecase/eEducation#use-agora-edu-cloud-service)
+- [FAQ](https://github.com/AgoraIO-Usecase/eEducation#faq)
+- [Recommended versions of the Agora RTC SDK](https://github.com/AgoraIO-Usecase/eEducation#recommended-versions-of-the-agora-rtc-sdk)
 
 ## About the project
 
@@ -73,8 +73,9 @@ Follow these steps to get a Netless whiteboard  `sdkToken`:
 1. Create an account in [Netless Console](https://console.herewhite.com/en/register/).
 2. Log in to Netless Console and get the `sdkToken` in the **Key management** page.
 
-You need to register the sdkToken of the whiteboard to the Agora cloud server. At present, this step needs to be operated by contacting us.
-
+You need to register the sdkToken of the whiteboard to the Agora cloud server.
+1. Open[Agora Console](https://console.agora.io/)
+2. Edit**Project Management**, select the function module and click "update the token" to register.
 
 ### Run the sample project
 
@@ -96,8 +97,7 @@ See [Trouble Shooting](https://github.com/AgoraIO-Usecase/eEducation/wiki/Troubl
 
 Agora provides high-stability versions of the Agora RTC Native SDK for companies in the education industry. The educational special versions are developed based on the Agora RTC SDK v2.9.0.
 
-- [Android](
-)
+- [Android](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_android?platform=Android)
 - [iOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_ios?platform=iOS)
 - [macOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_macos?platform=macOS)
 - [Windows](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_windows?platform=Windows)

@@ -1,10 +1,10 @@
-> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-iOS-Project)*
+> *Read this in another language: [English](README.md)*
 
 本文指导你运行 iOS 示例项目。
 
 ## 前提条件
 
-- 准备工作：请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-e-Education-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)中的准备工作。
+- 准备工作：请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md)中的准备工作。
 - 开发环境：
   - Xcode 10.0 及以上
   - Cocoapods
@@ -44,7 +44,7 @@ open AgoraEducation.xcworkspace
 - 你获取到的声网 App ID。
 - 你生成的 `Authorization` 字段，用于 HTTP 基本认证。
 
-详见 Agora e-Education 项目指南中的[前提条件](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)。
+详见 Agora e-Education 项目指南中的[前提条件](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)。
 
 ```
 + (NSString *)agoraAppid {
