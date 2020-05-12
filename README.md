@@ -80,9 +80,9 @@ You need to register the sdkToken of the whiteboard to the Agora cloud server. A
 
 See the following documents to compile and run the sample project:
 
-- [Run the Android project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Android-Project)
-- [Run the iOS project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-iOS-Project)
-- [Run Web and Electron project](https://github.com/AgoraIO-Usecase/eEducation/wiki/Run-the-Web-&-Electron-Project)
+- [Run the Android project](https://github.com/AgoraIO-Usecase/eEducation/tree/master/education_Android/AgoraEducation)
+- [Run the iOS project](https://github.com/AgoraIO-Usecase/eEducation/tree/master/education_iOS)
+- [Run Web and Electron project](https://github.com/AgoraIO-Usecase/eEducation/tree/master/education_web)
 
 ### Use Agora Edu Cloud Service
 
@@ -96,7 +96,8 @@ See [Trouble Shooting](https://github.com/AgoraIO-Usecase/eEducation/wiki/Troubl
 
 Agora provides high-stability versions of the Agora RTC Native SDK for companies in the education industry. The educational special versions are developed based on the Agora RTC SDK v2.9.0.
 
-- [Android](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_android?platform=Android)
+- [Android](
+)
 - [iOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_ios?platform=iOS)
 - [macOS](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_macos?platform=macOS)
 - [Windows](https://docs-preview.agoralab.co/cn/Interactive%20Broadcast/edu_release_note_windows?platform=Windows)
