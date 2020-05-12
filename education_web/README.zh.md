@@ -1,4 +1,4 @@
-> *Read this in another language: [English](https://github.com/AgoraIO-Usecase/eEducation/blob/master/education_web/README.md)*
+> *Read this in another language: [English](README.md)*
 
 ## 概览
 
@@ -30,7 +30,7 @@
 
 ## 准备工作
 
-- 请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/Agora-eEducation-%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97)中的前提条件。
+- 请确保你已经完成 [Agora e-Education 项目指南](https://github.com/AgoraIO-Usecase/eEducation/blob/master/README.zh.md)中的前提条件。
 - 配置阿里云 OSS，详见[阿里云OSS配置指南](https://github.com/AgoraIO-Usecase/eEducation/wiki/%E9%98%BF%E9%87%8C%E4%BA%91OSS%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)。
 - 重命名 `.env.example` 为 `.env.local`，并配置以下参数：
    - **（必填）声网 App ID**
