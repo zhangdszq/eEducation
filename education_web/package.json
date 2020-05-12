@@ -142,7 +142,7 @@
     "customize-cra": "^0.8.0",
     "devtron": "^1.4.0",
     "dexie": "^2.0.4",
-    "electron": "^7.1.14",
+    "electron": "7.1.14",
     "electron-builder": "22.5.1",
     "eruda": "^2.2.1",
     "immutable": "^4.0.0-rc.12",
