@@ -73,7 +73,9 @@ Agora e-Education 示例项目支持以下平台和版本：
 1. 在 [Netless 控制台](https://console.herewhite.com/en/register/)创建一个账号。
 2. 登录 Netless 控制台，前往**密钥管理**页面，获取 `sdkToken`。
 
-你需要将白板的 `sdkToken` 注册到Agora云服务器中，目前该步骤需要联系我们操作。
+你需要将白板的 `sdkToken` 注册到Agora云服务器中。
+1. 打开[Agora控制台](https://Console.Agora.io/)
+2. 编辑**项目管理**，移动功能模块，找到白板token，点击“更新token”进行注册。
 
 ### 运行示例项目
 
