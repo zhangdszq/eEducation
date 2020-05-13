@@ -21,7 +21,7 @@
 - agora cloud recording (we recommend to integrate agora cloud recording on server side)
 
 ### Frontend tech utilities
-- typescript ^3.6.4
+- typescript 3.8.3
 - react & react hooks & rxjs
 - electron 7.1.14 & electron-builder
 - material-ui

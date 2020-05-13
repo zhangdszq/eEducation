@@ -22,7 +22,7 @@
 - 声网云录制 （建议在服务端集成）
 
 ### 使用的技术
-- typescript ^3.6.4
+- typescript 3.8.3
 - react & react hooks & rxjs
 - electron 7.1.14 & electron-builder
 - material-ui
