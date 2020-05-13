@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "agora-electron-sdk": "^2.9.0-rc.104-build.509"
+    "agora-electron-sdk": "education290"
   },
   "scripts": {
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
