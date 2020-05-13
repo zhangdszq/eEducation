@@ -161,7 +161,7 @@
     "react-use": "^13.24.0",
     "rxjs": "^6.5.3",
     "source-map-support": "^0.5.16",
-    "typescript": "^3.6.4",
+    "typescript": "3.8.3",
     "ua-parser-js": "^0.7.21",
     "uuid": "^3.3.3",
     "video.js": "^7.7.5",
