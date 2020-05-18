@@ -31,7 +31,8 @@
 
 - Make sure you have made the preparations mentioned in the [Agora e-Education Guide](https://github.com/AgoraIO-Usecase/eEducation).
 - Set up your Alibaba Cloud OSS Guide. For details, see [Alibaba Cloud OSS Guide
-](https://github.com/AgoraIO-Usecase/eEducation/wiki/Alibaba-Cloud-OSS-Guide).
+](https://github.com/AgoraIO-Usecase/eEducation/wiki/Alibaba-Cloud-OSS-Guide).  
+- Getting start [here](https://github.com/AgoraIO-Usecase/eEducation#prerequisites) to obtain appId & sdkToken & restful token
 - Rename `.env.example` to `.env.local` and configure the following parameters:
   - **(Required) Agora App ID** 
   ```bash
