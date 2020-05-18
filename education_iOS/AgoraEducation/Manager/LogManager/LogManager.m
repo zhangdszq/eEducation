@@ -129,7 +129,7 @@ typedef NS_ENUM(NSInteger, ZipStateType) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDirectoryExist = [fileManager fileExistsAtPath:directoryPath];
     if(!isDirectoryExist) {
-        return ZipStateTypeOnNotFound;
+        [fileManager createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
     NSDirectoryEnumerator *direnum = [fileManager enumeratorAtPath:directoryPath];
