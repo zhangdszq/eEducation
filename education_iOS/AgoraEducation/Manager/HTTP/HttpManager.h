@@ -17,4 +17,6 @@
 + (void)getAppConfigWithSuccess:(void (^)(id responseObj))success failure:(void (^)(NSError *error))failure;
 + (void)getReplayInfoWithUserToken:(NSString *)userToken appId:(NSString *)appId roomId:(NSString *)roomId recordId:(NSString *)recordId success:(void (^)(id responseObj))success failure:(void (^)(NSError *error))failure;
 + (void)getWhiteInfoWithUserToken:(NSString *)userToken appid:(NSString *)appid roomId:(NSString *)roomId completeSuccessBlock:(void (^ _Nullable) (id responseObj))successBlock completeFailBlock:(void (^ _Nullable) (NSError *error))failBlock;
+
++ (NSString *)authorization;
 @end
