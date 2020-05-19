@@ -32,6 +32,7 @@ import io.agora.education.service.CommonService;
 import io.agora.education.service.RoomService;
 import io.agora.education.service.bean.request.RoomEntryReq;
 import io.agora.education.util.AppUtil;
+import io.agora.education.util.CryptoUtil;
 import io.agora.education.util.UUIDUtil;
 import io.agora.education.widget.ConfirmDialog;
 import io.agora.education.widget.PolicyDialog;
@@ -76,7 +77,7 @@ public class MainActivity extends BaseActivity {
         RtcManager.instance().init(getApplicationContext(), appId);
         RtmManager.instance().init(getApplicationContext(), appId);
 
-        RetrofitManager.instance().addHeader("Authorization", getString(R.string.agora_auth));
+        RetrofitManager.instance().addHeader("Authorization", CryptoUtil.getAuth(getString(R.string.agora_auth)));
         commonService = RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, CommonService.class);
         roomService = RetrofitManager.instance().getService(BuildConfig.API_BASE_URL, RoomService.class);
         checkVersion();
@@ -100,7 +101,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkVersion() {
-        commonService.appVersion(BuildConfig.CODE).enqueue(new BaseCallback<>(data -> {
+        commonService.appVersion().enqueue(new BaseCallback<>(data -> {
             if (data != null && data.forcedUpgrade != 0) {
                 showAppUpgradeDialog(data.upgradeUrl, data.forcedUpgrade == 2);
             }

@@ -30,4 +30,12 @@ public class CryptoUtil {
         return "";
     }
 
+    public static String getAuth(String auth) {
+        String prefix = "Basic ";
+        if (auth.startsWith(prefix)) {
+            return auth;
+        }
+        return new StringBuilder(auth).insert(0, prefix).toString();
+    }
+
 }
