@@ -112,7 +112,7 @@ static HttpManager *manager = nil;
     NSString *url = [NSString stringWithFormat:HTTP_GET_LANGUAGE, HTTP_BASE_URL];
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
-    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
+    headers[@"Authorization"] = [HttpManager authorization];
     
     [HttpManager get:url params:nil headers:headers success:^(id responseObj) {
         
@@ -131,7 +131,7 @@ static HttpManager *manager = nil;
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = userToken;
-    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
+    headers[@"Authorization"] = [HttpManager authorization];
 
     NSString *url = [NSString stringWithFormat:HTTP_GET_REPLAY_INFO, HTTP_BASE_URL, appId, roomId, recordId];
     [HttpManager get:url params:nil headers:headers success:^(id responseObj) {
@@ -153,7 +153,7 @@ static HttpManager *manager = nil;
     
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
     headers[@"token"] = userToken;
-    headers[@"Authorization"] = [NSString stringWithFormat:@"Basic %@", [KeyCenter authorization]];
+    headers[@"Authorization"] = [HttpManager authorization];
 
     [HttpManager get:url params:nil headers:headers success:^(id responseObj) {
         
@@ -165,5 +165,11 @@ static HttpManager *manager = nil;
             failBlock(error);
         }
     }];
+}
++ (NSString *)authorization {
+    NSString *auth = [KeyCenter authorization];
+    auth = [auth stringByReplacingOccurrencesOfString:@"Basic " withString:@""];
+    auth = [NSString stringWithFormat:@"Basic %@", auth];
+    return auth;
 }
 @end
