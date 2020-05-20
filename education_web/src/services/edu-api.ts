@@ -31,7 +31,7 @@ const AgoraFetchJson = async ({url, method, data, token, full_url}:{url?: string
     method,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${AUTHORIZATION!.replace(/basic\s+|basic/i, 'Basic ')}`
+      'Authorization': `Basic ${AUTHORIZATION!.replace(/basic\s+|basic/i, '')}`
     }
   }
 
