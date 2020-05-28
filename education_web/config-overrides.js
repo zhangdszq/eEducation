@@ -4,6 +4,7 @@ const {
   addWebpackExternals,
   useBabelRc,
   addWebpackModuleRule,
+  disableEsLint
 } = require('customize-cra');
 
 const {devDependencies} = require('./package.json');
@@ -41,6 +42,7 @@ const setElectronDeps = isProd ? {
 
 
 module.exports = override(
+  disableEsLint(),
   sourceMap(),
   webWorkerConfig(),
   addWebpackModuleRule({
