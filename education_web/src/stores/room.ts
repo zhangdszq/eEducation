@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { Map, Set, List } from 'immutable';
 import AgoraRTMClient, { RoomMessage, CoVideoType } from '../utils/agora-rtm-client';
 import { globalStore } from './global';
-import AgoraWebClient from '../utils/agora-rtc-client';
+import {AgoraWebClient} from '../utils/agora-web-client';
 import { get, set } from 'lodash';
 import { isElectron } from '../utils/platform';
 import GlobalStorage from '../utils/custom-storage';

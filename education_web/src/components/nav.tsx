@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { ClassState } from '../utils/types';
 import { NetworkQualityEvaluation } from '../utils/helper';
 import { usePlatform } from '../containers/platform-container';
-import AgoraWebClient from '../utils/agora-rtc-client';
+import {AgoraWebClient} from '../utils/agora-web-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import { isElectron, platform } from '../utils/platform';
 import { useRoomState } from '../containers/root-container';

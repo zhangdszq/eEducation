@@ -7,7 +7,7 @@ import MediaBoard from '../../components/mediaboard';
 import useStream from '../../hooks/use-streams';
 import useChatText from '../../hooks/use-chat-text';
 import { AgoraElectronClient } from '../../utils/agora-electron-client';
-import AgoraWebClient from '../../utils/agora-rtc-client';
+import {AgoraWebClient} from '../../utils/agora-web-client';
 import { useRoomState } from '../../containers/root-container';
 import { roomStore } from '../../stores/room';
 import { platform } from '../../utils/platform';

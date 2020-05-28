@@ -3,7 +3,7 @@ import {useHistory} from 'react-router-dom';
 import SettingCard from '../components/setting-card';
 import { isElectron } from '../utils/platform';
 import { roomStore } from '../stores/room';
-import AgoraWebClient from '../utils/agora-rtc-client';
+import {AgoraWebClient} from '../utils/agora-web-client';
 import {platform} from '../utils/platform';
 
 function DeviceTest() {
