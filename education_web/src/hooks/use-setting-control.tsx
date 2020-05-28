@@ -1,7 +1,7 @@
 import { usePlatform } from '../containers/platform-container';
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import VoiceVolume from '../components/volume/voice';
-import AgoraWebClient from '../utils/agora-rtc-client';
+import {AgoraWebClient} from '../utils/agora-web-client';
 import { AgoraElectronClient } from '../utils/agora-electron-client';
 import VideoPlayer from '../components/video-player';
 import { useRoomState } from '../containers/root-container';

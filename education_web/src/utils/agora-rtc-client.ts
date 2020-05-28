@@ -1,7 +1,11 @@
 import EventEmitter from 'events';
 import AgoraRTC from 'agora-rtc-sdk';
-import { roomStore, RoomStore } from '../stores/room';
-import { isEmpty } from 'lodash';
+
+export type DeviceInfo = {
+  cameraCanUse: boolean
+  microphoneCanUse: boolean
+  devices: Device[]
+}
 
 AgoraRTC.Logger.enableLogUpload();
 AgoraRTC.Logger.setLogLevel(AgoraRTC.Logger.DEBUG);
@@ -21,12 +25,12 @@ export interface AgoraStreamSpec {
 }
 
 const streamEvents: string[] = [
-  "accessAllowed", 
-  "accessDenied",
-  "stopScreenSharing",
-  "videoTrackEnded",
-  "audioTrackEnded",
-  "player-status-changed"
+  'accessAllowed', 
+  'accessDenied',
+  'stopScreenSharing',
+  'videoTrackEnded',
+  'audioTrackEnded',
+  'player-status-changed'
 ];
 
 const clientEvents: string[] = [
@@ -43,10 +47,6 @@ const clientEvents: string[] = [
   'onTokenPrivilegeWillExpire',
   'onTokenPrivilegeDidExpire',
 ]
-
-export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
-export const APP_TOKEN = process.env.REACT_APP_AGORA_APP_TOKEN as string;
-export const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG as string === "true";
 
 export class AgoraRTCClient {
 
@@ -146,7 +146,7 @@ export class AgoraRTCClient {
     console.log('[agora-rtc] prepare remove all event listeners')
     this.unsubscribeClientEvents();
     this._bus.removeAllListeners();
-    console.log("[agora-rtc] remove all event listeners");
+    console.log('[agora-rtc] remove all event listeners');
   }
 
   // subscribe
@@ -208,9 +208,9 @@ export class AgoraRTCClient {
         this.subscribeLocalStreamEvents();
         if (data.audioOutput && data.audioOutput.deviceId) {
           this.setAudioOutput(data.audioOutput.deviceId).then(() => {
-            console.log("setAudioOutput success", data.audioOutput)
+            console.log('setAudioOutput success', data.audioOutput)
           }).catch((err: any) => {
-            console.warn("setAudioOutput failed", err, JSON.stringify(err))
+            console.warn('setAudioOutput failed', err, JSON.stringify(err))
           })
         }
         resolve();
@@ -283,251 +283,54 @@ export class AgoraRTCClient {
     }
   }
 
-  getDevices (): Promise<Device[]> {
+  getDevices (): Promise<DeviceInfo> {
     return new Promise((resolve, reject) => {
       AgoraRTC.getDevices((devices: any) => {
         const _devices: any[] = [];
         devices.forEach((item: any) => {
           _devices.push({deviceId: item.deviceId, kind: item.kind, label: item.label});
         })
-        resolve(_devices);
+        resolve({
+          cameraCanUse: devices.filter((it: any) => it.kind === 'videoinput').length > 0 ? true : false,
+          microphoneCanUse: devices.filter((it: any) => it.kind === 'audioinput').length > 0 ? true : false,
+          devices: _devices,
+        });
       }, (err: any) => {
         reject(err);
       });
     })
   }
-}
 
-export default class AgoraWebClient {
+  async forceGetDevices (): Promise<DeviceInfo> {
+    const tempAudioStream = AgoraRTC.createStream({ audio: true, video: false })
+    const tempVideoStream = AgoraRTC.createStream({ audio: false, video: true })
 
-  public readonly rtc: AgoraRTCClient;
-  public shareClient: AgoraRTCClient | any;
-  public localUid: number;
-  public channel: string;
-  public readonly bus: EventEmitter;
-  public shared: boolean;
-  public joined: boolean;
-  public published: boolean;
-  public tmpStream: any;
+    const audioPermissionOK = new Promise(resolve => {
+      tempAudioStream.init(() => resolve(null), (err: any) => resolve(err))
+    })
+    const videoPermissionOK = new Promise(resolve => {
+      tempVideoStream.init(() => resolve(null), (err: any) => resolve(err))
+    })
 
-  private roomStore: RoomStore;
-
-  constructor(deps: {roomStore: RoomStore}) {
-    this.localUid = 0;
-    this.channel = '';
-    this.rtc = new AgoraRTCClient();
-    this.bus = new EventEmitter();
-    this.shared = false;
-    this.shareClient = null;
-    this.tmpStream = null;
-    this.joined = false;
-    this.published = false;
-    
-    this.roomStore = deps.roomStore;
-  }
-
-  async getDevices () {
-    const client = new AgoraRTCClient()
     try {
-      const devices = await client.getDevices()
+      let [microphone, camera] = await Promise.all([audioPermissionOK, videoPermissionOK])
+      let result = await this.getDevices()
 
-      const cameraList = devices.filter((it: any) => it.kind === 'videoinput')
-      const microphoneList = devices.filter((it: any) => it.kind === 'audioinput')
-
-      if (!cameraList.length) {
-        throw 'cameraList is empty'
+      if (microphone !== null) {
+        result.microphoneCanUse = false
+        console.warn("create audio temp stream failed!", microphone)
       }
-
-      if (!microphoneList.length) {
-        throw 'microphoneList is empty'
+      if (camera !== null) {
+        result.cameraCanUse = false
+        console.warn("create video temp stream failed!", camera)
       }
-
-      const cameraId = cameraList[0].deviceId
-      const microphoneId = microphoneList[0].deviceId
-      await client.initClient(APP_ID)
-      const params = {
-        streamID: 0,
-        audio: true,
-        video: true,
-        screen: false,
-        microphoneId,
-        cameraId,
-      }
-      await client.createLocalStream(params)
-      return devices
-    } catch(err) {
-      throw err
-    } finally {
-      client.destroyLocalStream()
-    }
-  }
-
-
-  async joinChannel({
-    uid, channel, dual, token, appId
-  }: {
-    uid: number,
-    channel: string,
-    dual: boolean,
-    token: string,
-    appId: string
-  }) {
-    this.localUid = +uid;
-    this.channel = channel;
-    console.log("channel", channel, "dual", dual, this.localUid, appId)
-    await this.rtc.createClient(appId, true);
-    await this.rtc.join(this.localUid, channel, token);
-    dual && await this.rtc.enableDualStream();
-    this.joined = true;
-    roomStore.setRTCJoined(true);
-    console.log("join web agora sdk rtc success")
-  }
-
-  async leaveChannel() {
-    this.localUid = 0;
-    this.channel = '';
-    try {
-      await this.unpublishLocalStream();
-      await this.rtc.leave();
-      this.joined = false;
-      roomStore.setRTCJoined(false);
+      
+      return result
     } catch (err) {
-      throw err;
-    } finally {
-      this.rtc.destroy();
-      this.rtc.destroyClient();
-    }
-  }
-
-  async enableDualStream() {
-    return this.rtc.enableDualStream();
-  }
-
-  async publishLocalStream(data: AgoraStreamSpec) {
-    console.log(" publish local stream ", this.published);
-    if (this.published) {
-      await this.unpublishLocalStream();
-      console.log("[agora-web] unpublished", this.published);
-    }
-
-    if (!data.cameraId || !data.microphoneId) {
-      let devices = await this.getDevices()
-      if (!data.cameraId) {
-        data.cameraId = devices.filter((it: any) => it.kind === 'videoinput')[0].deviceId
-      }
-      if (!data.microphoneId) {
-        data.microphoneId = devices.filter((it: any) => it.kind === 'audioinput')[0].deviceId
-      }
-    }
-
-    await this.rtc.createLocalStream(data);
-    await this.rtc.publish();
-    this.published = true;
-  }
-
-  async unpublishLocalStream() {
-    console.log("[agora-web] invoke unpublishStream");
-    await this.rtc.unpublish();
-    this.published = false;
-  }
-
-  async startScreenShare ({
-    uid, channel, token, appId
-  }: {
-    uid: number,
-    channel: string,
-    token: string,
-    appId: string,
-  }) {
-    console.log("startScreenShare ", uid, channel, token, appId)
-    const shareClient = new AgoraRTCClient();
-    try {
-      await shareClient.createLocalStream({
-        video: false,
-        audio: false,
-        screen: true,
-        screenAudio: true,
-        streamID: uid,
-        microphoneId: '',
-        cameraId: ''
-      })
-      await shareClient.createClient(appId);
-      await shareClient.join(uid, channel, token);
-      await shareClient.publish();
-      this.shared = true;
-      this.shareClient = shareClient
-    } catch(err) {
       throw err
+    } finally {
+      tempAudioStream.close()
+      tempVideoStream.close()
     }
-  }
-
-  async stopScreenShare () {
-    await this.shareClient.unpublish();
-    await this.shareClient.leave();
-    this.shareClient.destroy();
-    this.shareClient.destroyClient();
-    this.shared = false;
-    this.shareClient = undefined
-  }
-
-  async exit () {
-    const errors: any[] = [];
-    try {
-      await this.leaveChannel();
-    } catch(err) {
-      errors.push({'rtcClient': err});
-    }
-    if (this.shared === true) {
-      try {
-        await this.shareClient.unpublish();
-        await this.shareClient.leave();
-      } catch (err) {
-        errors.push({'shareClient': err});
-      }
-    }
-    if (this.shareClient) {
-      try {
-        this.shareClient.destroy();
-        this.shareClient.destroyClient();
-      } catch(err) {
-        errors.push({'shareClient': err});
-      }
-    }
-    if (!isEmpty(errors)) {
-      throw errors;
-    }
-  }
-
-  async createPreviewStream({cameraId, microphoneId, speakerId}: any) {
-    const tmpStream = AgoraRTC.createStream({
-      video: true,
-      audio: true,
-      screen: false,
-      cameraId,
-      microphoneId,
-      speakerId
-    });
-
-    if (this.tmpStream) {
-      this.tmpStream.isPlaying() && this.tmpStream.stop();
-      this.tmpStream.close();
-    }
-
-    return new Promise((resolve, reject) => {
-      tmpStream.init(() => {
-        this.tmpStream = tmpStream;
-        resolve(tmpStream);
-      }, (err: any) => {
-        reject(err);
-      })
-    });
-  }
-
-  subscribe(stream: any) {
-    this.rtc.subscribe(stream);
-  }
-
-  setRemoteVideoStreamType(stream: any, type: number) {
-    this.rtc.setRemoteVideoStreamType(stream, type);
   }
 }

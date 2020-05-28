@@ -1,4 +1,4 @@
-import { APP_ID } from './agora-rtc-client';
+import { APP_ID } from './config';
 import EventEmitter from 'events';
 import { btoa } from './helper';
 import { RoomStore } from '../stores/room';
