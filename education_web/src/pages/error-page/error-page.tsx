@@ -1,9 +1,9 @@
 import React from 'react';
-import GridContainer from '../../components/grid/grid-container';
+import GridContainer from '@/components/grid/grid-container';
 import { makeStyles } from "@material-ui/core/styles";
 import styles from './index.scss';
-import GridItem from '../../components/grid/grid-item';
-import { useErrorState } from '../../containers/root-container';
+import GridItem from '@/components/grid/grid-item';
+import { useErrorState } from '@/containers/root-container';
 import {ErrorState} from './state';
 
 const useStyles = makeStyles(styles);

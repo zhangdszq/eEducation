@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatPanel from './panel';
-import { ChatMessage } from '../../utils/types';
+import { ChatMessage } from '@/utils/types';
 import { List } from 'immutable';
 
 interface ChatBoard {

@@ -3,12 +3,12 @@ import { Subject } from 'rxjs';
 import { Player, PlayerPhase } from 'white-web-sdk';
 import { useParams, useLocation, Redirect } from 'react-router';
 import moment from 'moment';
-import { Progress } from '../../components/progress/progress';
-import { globalStore } from '../../stores/global';
-import { WhiteboardAPI, RTMRestful } from '../../utils/api';
-import { whiteboard } from '../../stores/whiteboard';
-import { RtmPlayerState } from '../../components/whiteboard/agora/rtm-player';
-import { eduApi } from '../../services/edu-api';
+import { Progress } from '@/components/progress/progress';
+import { globalStore } from '@/stores/global';
+import { WhiteboardAPI, RTMRestful } from '@/utils/api';
+import { whiteboard } from '@/stores/whiteboard';
+import { RtmPlayerState } from '@/components/whiteboard/agora/rtm-player';
+import { eduApi } from '@/services/edu-api';
 
 interface IObserver<T> {
   subscribe: (setState: (state: T) => void) => void
