@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip } from '@material-ui/core';
-import {t} from '../../i18n';
-import {roomStore} from '../../stores/room';
+import {t} from '@/i18n';
+import {roomStore} from '@/stores/room';
 
 export type ScaleControllerProps = {
   zoomScale: number

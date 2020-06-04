@@ -1,10 +1,10 @@
 import React, {useRef, useState, useEffect} from 'react';
-import { SceneResource, whiteboard } from '../../../stores/whiteboard';
-import { t } from '../../../i18n';
+import { SceneResource, whiteboard } from '@/stores/whiteboard';
+import { t } from '@/i18n';
 import { Input, Tooltip } from '@material-ui/core';
 import { useDebounce } from 'react-use';
-import { globalStore } from '../../../stores/global';
-import Icon from '../../icon'; 
+import { globalStore } from '@/stores/global';
+import Icon from '@/components/icon'; 
 import {omit} from 'lodash';
 
 type ResourceMenuProps = {

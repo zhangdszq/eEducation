@@ -3,14 +3,14 @@ import Button from '../custom-button';
 import {Dialog, DialogContent, DialogContentText} from '@material-ui/core';
 
 import './dialog.scss';
-import { useGlobalState } from '../../containers/root-container';
-import { roomStore } from '../../stores/room';
-import { globalStore } from '../../stores/global';
+import { useGlobalState } from '@/containers/root-container';
+import { roomStore } from '@/stores/room';
+import { globalStore } from '@/stores/global';
 import { useHistory } from 'react-router-dom';
-// import { RoomMessage } from '../../utils/agora-rtm-client';
-import { t } from '../../i18n';
-import { isElectron } from '../../utils/platform';
-import { eduApi } from '../../services/edu-api';
+// import { RoomMessage } from '@/utils/agora-rtm-client';
+import { t } from '@/i18n';
+import { isElectron } from '@/utils/platform';
+import { eduApi } from '@/services/edu-api';
 
 interface RoomProps {
   onConfirm: (type: string) => void

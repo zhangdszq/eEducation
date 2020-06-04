@@ -1,9 +1,9 @@
 import {useEffect, useState, useRef, useCallback, Fragment, useMemo} from 'react';
 import {useAsync} from 'react-use';
-import { RTMRestful, AgoraChannelMessage } from '../../../utils/api/rtm-restful';
+import { RTMRestful, AgoraChannelMessage } from '@/utils/api/rtm-restful';
 import moment from 'moment';
 import React from 'react';
-import { Message } from '../../chat/message';
+import { Message } from '@/components/chat/message';
 
 export interface RtmReplayResult {
   loading: boolean

@@ -1,5 +1,5 @@
-import { platform } from './../utils/platform';
-import { AgoraElectronClient } from './../utils/agora-electron-client';
+import { platform } from '@/utils/platform';
+import { AgoraElectronClient } from '@/utils/agora-electron-client';
 import { ChatMessage, AgoraStream } from '../utils/types';
 import { Subject } from 'rxjs';
 import { Map, Set, List } from 'immutable';
