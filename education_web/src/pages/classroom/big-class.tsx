@@ -1,19 +1,19 @@
 import React, {useRef, useEffect} from 'react';
-import VideoPlayer from '../../components/video-player';
+import VideoPlayer from '@/components/video-player';
 
 import './big-class.scss';
-import ChatBoard from '../../components/chat/board';
-import MediaBoard from '../../components/mediaboard';
-import useStream from '../../hooks/use-streams';
-import useChatText from '../../hooks/use-chat-text';
-import { AgoraElectronClient } from '../../utils/agora-electron-client';
-import {AgoraWebClient} from '../../utils/agora-web-client';
-import { useRoomState } from '../../containers/root-container';
-import { roomStore } from '../../stores/room';
-import { platform } from '../../utils/platform';
-import { eduApi } from '../../services/edu-api';
-import { globalStore } from '../../stores/global';
-import { t } from '../../i18n';
+import ChatBoard from '@/components/chat/board';
+import MediaBoard from '@/components/mediaboard';
+import useStream from '@/hooks/use-streams';
+import useChatText from '@/hooks/use-chat-text';
+import { AgoraElectronClient } from '@/utils/agora-electron-client';
+import {AgoraWebClient} from '@/utils/agora-web-client';
+import { useRoomState } from '@/containers/root-container';
+import { roomStore } from '@/stores/room';
+import { platform } from '@/utils/platform';
+import { eduApi } from '@/services/edu-api';
+import { globalStore } from '@/stores/global';
+import { t } from '@/i18n';
 
 export default function BigClass() {
   const {

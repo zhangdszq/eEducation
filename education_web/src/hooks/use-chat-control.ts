@@ -1,4 +1,4 @@
-import { roomStore } from './../stores/room';
+import { roomStore } from '@/stores/room';
 import {useEffect, useRef, useMemo} from 'react';
 
 export default function useChatControl () {

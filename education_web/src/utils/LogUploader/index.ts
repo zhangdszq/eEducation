@@ -1,6 +1,6 @@
-import { isElectron } from './../platform';
-import { roomStore } from './../../stores/room';
-import { eduApi } from '../../services/edu-api';
+import { isElectron } from '@/utils/platform';
+import { roomStore } from '@/stores/room';
+import { eduApi } from '@/services/edu-api';
 import Dexie from 'dexie';
 // eslint-disable-next-line
 import LogWorker from 'worker-loader!./log.worker';

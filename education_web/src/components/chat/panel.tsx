@@ -4,10 +4,10 @@ import { Input } from '@material-ui/core';
 import Button from '../custom-button';
 import './panel.scss';
 import { List } from 'immutable';
-import { ChatMessage } from '../../utils/types';
-import { useRoomState } from '../../containers/root-container';
-import useChatControl from '../../hooks/use-chat-control';
-import { t } from '../../i18n';
+import { ChatMessage } from '@/utils/types';
+import { useRoomState } from '@/containers/root-container';
+import useChatControl from '@/hooks/use-chat-control';
+import { t } from '@/i18n';
 
 interface ChatPanelProps {
   messages: List<ChatMessage>

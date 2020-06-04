@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 import uuidv4 from 'uuid/v4';
-import { PPTProgressListener, UploadManager } from "../../../utils/upload-manager";
+import { PPTProgressListener, UploadManager } from "@/utils/upload-manager";
 import { PptKind, Room } from "white-web-sdk";
-import { ossConfig, ossClient, resolveFileInfo } from '../../../utils/helper';
-import { whiteboard } from '../../../stores/whiteboard';
-import {t} from '../../../i18n';
+import { ossConfig, ossClient, resolveFileInfo } from '@/utils/helper';
+import { whiteboard } from '@/stores/whiteboard';
+import {t} from '@/i18n';
 
 export type UploadBtnProps = {
   room: Room,

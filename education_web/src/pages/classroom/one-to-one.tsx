@@ -1,9 +1,9 @@
 import React from 'react';
-import VideoPlayer from '../../components/video-player';
-import MediaBoard from '../../components/mediaboard';
-import ChatBoard from '../../components/chat/board';
-import useStream from '../../hooks/use-streams';
-import useChatText from '../../hooks/use-chat-text';
+import VideoPlayer from '@/components/video-player';
+import MediaBoard from '@/components/mediaboard';
+import ChatBoard from '@/components/chat/board';
+import useStream from '@/hooks/use-streams';
+import useChatText from '@/hooks/use-chat-text';
 
 export default function OneToOne() {
   const {

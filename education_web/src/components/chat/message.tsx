@@ -1,10 +1,10 @@
 import React from 'react';
 import './index.scss';
 import { Link } from 'react-router-dom';
-import { useRoomState } from '../../containers/root-container';
-import { t } from '../../i18n';
-import { eduApi } from '../../services/edu-api';
-import { roomStore } from '../../stores/room';
+import { useRoomState } from '@/containers/root-container';
+import { t } from '@/i18n';
+import { eduApi } from '@/services/edu-api';
+import { roomStore } from '@/stores/room';
 interface MessageProps {
   nickname: string
   content: string

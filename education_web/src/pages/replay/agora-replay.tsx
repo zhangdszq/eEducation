@@ -2,17 +2,17 @@ import React, {useEffect, useMemo, useCallback, useRef} from 'react';
 import {replayStore, useObserver, IPlayerState} from './model';
 import { useParams, useLocation } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { Progress } from '../../components/progress/progress';
+import { Progress } from '@/components/progress/progress';
 import Slider from '@material-ui/core/Slider';
-import { WhiteboardAPI } from '../../utils/api';
-import { whiteboard } from '../../stores/whiteboard';
-import { RTMReplayer, RtmPlayerState } from '../../components/whiteboard/agora/rtm-player';
+import { WhiteboardAPI } from '@/utils/api';
+import { whiteboard } from '@/stores/whiteboard';
+import { RTMReplayer, RtmPlayerState } from '@/components/whiteboard/agora/rtm-player';
 import moment from 'moment';
-import {AgoraPlayer, TimelineScheduler} from '../../utils/agora-web-player/agora-player';
-import { t } from '../../i18n';
-import { globalStore } from '../../stores/global';
+import {AgoraPlayer, TimelineScheduler} from '@/utils/agora-web-player/agora-player';
+import { t } from '@/i18n';
+import { globalStore } from '@/stores/global';
 import { PlayerPhase } from 'white-web-sdk';
-// import {isElectron} from '../../utils/platform';
+// import {isElectron} from '@/utils/platform';
 
 const ReplayContext = React.createContext({} as IPlayerState);
 

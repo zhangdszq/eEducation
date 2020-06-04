@@ -4,16 +4,16 @@ import Slider from '@material-ui/core/Slider';
 import { Player, PlayerPhase } from 'white-web-sdk';
 import { useParams, useLocation } from 'react-router';
 import moment from 'moment';
-import { Progress } from '../../components/progress/progress';
-import { globalStore } from '../../stores/global';
+import { Progress } from '@/components/progress/progress';
+import { globalStore } from '@/stores/global';
 import { replayStore, useObserver, IPlayerState } from './model';
-import { WhiteboardAPI } from '../../utils/api';
-import { whiteboard } from '../../stores/whiteboard';
+import { WhiteboardAPI } from '@/utils/api';
+import { whiteboard } from '@/stores/whiteboard';
 import "video.js/dist/video-js.css";
-import { RTMReplayer, RtmPlayerState } from '../../components/whiteboard/agora/rtm-player';
+import { RTMReplayer, RtmPlayerState } from '@/components/whiteboard/agora/rtm-player';
 import { useInterval } from 'react-use';
-import { isElectron } from '../../utils/platform';
-import { t } from '../../i18n';
+import { isElectron } from '@/utils/platform';
+import { t } from '@/i18n';
 
 const delay = 5000
 

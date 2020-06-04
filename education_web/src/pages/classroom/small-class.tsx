@@ -1,7 +1,7 @@
 import React from 'react';
-import VideoMarquee from '../../components/video-marquee';
-import MediaBoard from '../../components/mediaboard';
-import Roomboard from '../../components/roomboard';
+import VideoMarquee from '@/components/video-marquee';
+import MediaBoard from '@/components/mediaboard';
+import Roomboard from '@/components/roomboard';
 import './small-class.scss';
 
 export default function SmallClass() {
