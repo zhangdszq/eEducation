@@ -1,20 +1,20 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import Nav from '../../components/nav';
-import RoomDialog from '../../components/dialog';
-import { AgoraStream } from '../../utils/types';
+import Nav from '@/components/nav';
+import RoomDialog from '@/components/dialog';
+import { AgoraStream } from '@/utils/types';
 import './room.scss';
-import NativeSharedWindow from '../../components/native-shared-window';
-import { roomStore } from '../../stores/room';
-import { useRoomState } from '../../containers/root-container';
-import { globalStore } from '../../stores/global';
-import { platform } from '../../utils/platform';
-import { AgoraWebClient } from '../../utils/agora-web-client';
-import { AgoraStreamSpec } from '../../utils/agora-rtc-client';
-import { AgoraElectronClient, StreamType } from '../../utils/agora-electron-client';
-import { t } from '../../i18n';
-import { eduApi } from '../../services/edu-api';
-import { genUUID } from '../../utils/api';
+import NativeSharedWindow from '@/components/native-shared-window';
+import { roomStore } from '@/stores/room';
+import { useRoomState } from '@/containers/root-container';
+import { globalStore } from '@/stores/global';
+import { platform } from '@/utils/platform';
+import { AgoraWebClient } from '@/utils/agora-web-client';
+import { AgoraStreamSpec } from '@/utils/agora-rtc-client';
+import { AgoraElectronClient, StreamType } from '@/utils/agora-electron-client';
+import { t } from '@/i18n';
+import { eduApi } from '@/services/edu-api';
+import { genUUID } from '@/utils/api';
 // import { useInterval } from 'react-use';
 
 export const roomTypes = [

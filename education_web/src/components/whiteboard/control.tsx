@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import Icon from '../icon';
-import { roomStore } from '../../stores/room';
-import { whiteboard } from '../../stores/whiteboard';
+import { roomStore } from '@/stores/room';
+import { whiteboard } from '@/stores/whiteboard';
 import moment from 'moment';
-import { globalStore } from '../../stores/global';
-import { t } from '../../i18n';
+import { globalStore } from '@/stores/global';
+import { t } from '@/i18n';
 import { Tooltip } from '@material-ui/core';
-import { useRoomState } from '../../containers/root-container';
+import { useRoomState } from '@/containers/root-container';
 interface ControlItemProps {
   name: string
   onClick: (evt: any, name: string) => void

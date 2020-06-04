@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import '../classroom/room.scss';
-import { isElectron } from '../../utils/platform';
-import '../../components/nav.scss';
+import { isElectron } from '@/utils/platform';
+import '@/components/nav.scss';
 import { Tooltip } from '@material-ui/core';
-import { t } from '../../i18n';
-import { globalStore } from '../../stores/global';
-import Log from '../../utils/LogUploader';
-import { usePlatform } from '../../containers/platform-container';
-import Icon from '../../components/icon';
+import { t } from '@/i18n';
+import { globalStore } from '@/stores/global';
+import Log from '@/utils/LogUploader';
+import { usePlatform } from '@/containers/platform-container';
+import Icon from '@/components/icon';
 
 const MenuNav = () => {
 

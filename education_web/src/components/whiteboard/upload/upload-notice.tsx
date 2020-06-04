@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 
 import './upload-notice.scss';
-import { useGlobalState } from '../../../containers/root-container';
+import { useGlobalState } from '@/containers/root-container';
 
 type UploadNoticeProps = {
   title: string

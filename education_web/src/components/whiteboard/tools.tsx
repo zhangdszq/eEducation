@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../icon';
 import { Tooltip } from '@material-ui/core';
-import {t} from '../../i18n';
+import {t} from '@/i18n';
 
 const ToolItem = (props: any) => {
   const onClick = (evt: any) => {
