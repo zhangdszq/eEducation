@@ -83,7 +83,7 @@
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
     "electron:client": "cross-env electron ./app/",
     "electron:web": "cross-env BROWSER=none react-app-rewired start",
-    "electron:copy:web": "cross-env ENV=production REACT_APP_RUNTIME_PLATFORM=electron react-app-rewired build",
+    "electron:copy:web": "cross-env REACT_APP_RUNTIME_PLATFORM=electron react-app-rewired build",
     "electron:copy:electron": "cpx ./app/**/*.js ./build",
     "electron:build": "npm run electron:copy:web && npm run electron:copy:electron",
     "dev": "cross-env TSC_COMPILE_ON_ERROR=false REACT_APP_RUNTIME_PLATFORM=web react-app-rewired start",
