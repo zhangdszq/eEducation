@@ -80,10 +80,12 @@
   export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
   export ELECTRON_CUSTOM_DIR="7.1.14"
   export SASS_BINARY_SITE="https://npm.taobao.org/mirrors/node-sass/"
+  export ELECTRON_BUILDER_BINARIES_MIRROR="https://npm.taobao.org/mirrors/electron-builder-binaries/"
 
   # Windows
   set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
   set ELECTRON_CUSTOM_DIR=7.1.14
+  set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
   set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
 
   npm install --registry=https://registry.npm.taobao.org
