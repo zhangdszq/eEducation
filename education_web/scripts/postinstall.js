@@ -8,12 +8,26 @@ const fs = require('fs')
 const packageJsonPath = path.join(__dirname, '../package.json')
 const packageJson = require(packageJsonPath)
 
-const getInstallCommand = (platform) => 
+const getInstallCommand = (platform) => {
+  let arch = 'x64'
+  if (platform === 'win32') {
+    arch = 'ia32'
+  }
+
+  const installMacSdk = `
+    npm install electron@7.1.14 --save-dev --platform=${platform} -d
   `
-    npm install electron@7.1.14 --save-dev --platform=${platform} -d;
+
+  const installWin32Sdk = `
+    npm install electron@7.1.14 --save-dev --platform=${platform} --arch=${arch} -d
+  `
+  const str = `
+    ${platform === 'win32' ? installWin32Sdk : installMacSdk}
     npm install agora-electron-sdk@education290 --save -d
   `.replace(/()\s+/, '');
 
+  return str;
+}
 async function run() {
 
   const builder = {
