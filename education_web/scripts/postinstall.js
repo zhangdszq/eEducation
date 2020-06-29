@@ -128,10 +128,10 @@ async function run() {
 
       if (packageJson.agora_electron.platform === 'win32') {
         child_process.execSync(`
-          set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/;
-          set ELECTRON_CUSTOM_DIR=7.1.14;
-          set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/;
-          set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/;
+          set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+          set ELECTRON_CUSTOM_DIR=7.1.14
+          set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
+          set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
         `.replace(/( )\s+/g,''))
       }
     }
