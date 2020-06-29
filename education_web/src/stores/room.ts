@@ -277,6 +277,22 @@ export class RoomStore {
     return true;
   }
 
+  updateRecordState(params: RecordStateParams) {
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        roomId: params.roomId,
+        recordId: params.recordId,
+        recordingTime: params.recordingTime,
+        isRecording: !!params.isRecording,
+      },
+    }
+
+    console.log(">>>: updateRecordState ", params)
+    this.commit(this.state)
+  }
+
   async fetchCurrentRoom() {
     try {
       const res = await eduApi.fetchRoomBy(roomStore.state.course.roomId);
@@ -1112,7 +1128,12 @@ export class RoomStore {
   async startRecording () {
     this.lockRecording()
     try {
-      const {data: recordId} = await eduApi.startRecording()
+      const maxIdleTime = 30
+      const {data: recordId} = await eduApi.startRecording({
+        recordingConfig: {
+          maxIdleTime
+        },
+      })
       this.state = {
         ...this.state,
         course: {
