@@ -76,10 +76,6 @@
       "output": "release"
     }
   },
-  "dependencies": {
-    "adm-zip": "^0.4.14",
-    "agora-electron-sdk": "education290"
-  },
   "scripts": {
     "postinstall": "node ./scripts/postinstall.js",
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
@@ -145,8 +141,6 @@
     "customize-cra": "^0.8.0",
     "devtron": "^1.4.0",
     "dexie": "^2.0.4",
-    "electron": "7.1.14",
-    "electron-builder": "22.5.1",
     "eruda": "^2.2.1",
     "eslint-plugin-react": "^7.20.0",
     "hard-source-webpack-plugin": "^0.13.1",

@@ -37,24 +37,15 @@ async function run() {
   }
 
   const askProjectType = [{
-    type: 'checkbox',
-    message: 'Type',
+    type: 'confirm',
+    message: 'Use Electron? (y/N)',
     name: 'type',
-    choices: [
-      {
-        name: 'electron',
-      },
-      {
-        name: 'web',
-        checked: true,
-      }
-    ]
   }]
 
   let {type} = await inquirer.prompt(askProjectType)
 
   builder.type = type
-  if (builder.type.includes('electron')) {
+  if (builder.type === true) {
     const electronPlatform = [{
       type: 'rawlist',
       name: 'platform',
@@ -98,7 +89,7 @@ async function run() {
   const askTaoBaoCdn = [{
     type: 'rawlist',
     name: 'useTaoBaoCdn',
-    message: 'Use China TaoBao cdn',
+    message: 'Use China TaoBao CDN',
     choices: [
       'Yes',
       'No',
@@ -113,15 +104,28 @@ async function run() {
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
-  if (builder.type.includes('electron')) {
+  child_process.execSync(`cd ${cwd}`);
+
+  if (process.platform === 'darwin') {
+    child_process.execSync(`
+      export SASS_BINARY_SITE="https://npm.taobao.org/mirrors/node-sass/";
+    `)
+  }
+
+  if (process.platform === 'win32') {
+    child_process.execSync(`
+      set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
+    `)
+  }
+
+
+  if (builder.type === true) {
     const installSteps = getInstallCommand(packageJson.agora_electron.platform)
-    child_process.execSync(`cd ${cwd}`);
     if (builder.useTaoBaoCdn) {
       if (packageJson.agora_electron.platform === 'darwin') {
         child_process.execSync(`
           export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/";
           export ELECTRON_CUSTOM_DIR="7.1.14";
-          export SASS_BINARY_SITE="https://npm.taobao.org/mirrors/node-sass/";
           export ELECTRON_BUILDER_BINARIES_MIRROR="https://npm.taobao.org/mirrors/electron-builder-binaries/";
         `.replace(/( )\s+/g,''))
       }
@@ -130,7 +134,6 @@ async function run() {
         child_process.execSync(`
           set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
           set ELECTRON_CUSTOM_DIR=7.1.14
-          set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
           set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
         `.replace(/( )\s+/g,''))
       }
