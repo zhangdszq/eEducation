@@ -1,6 +1,5 @@
 import { APP_ID } from './config';
 import EventEmitter from 'events';
-import { btoa } from './helper';
 import { RoomStore } from '../stores/room';
 import { globalStore } from '../stores/global';
 // @ts-ignore
@@ -193,33 +192,6 @@ export class AgoraElectronClient {
     return res;
   }
 
-  play(uid: number, dom: Element, videosource?: boolean) {
-    const rtcEngine = this.rtcEngine;
-    const local = this.isLocal(uid);
-    if (videosource) {
-      if (local) {
-        rtcEngine.setupLocalVideoSource(dom)
-        rtcEngine.setupViewContentMode('videosource', 1);
-        rtcEngine.setupViewContentMode(uid, 1);
-      } else {
-        rtcEngine.subscribe(uid, dom)
-        rtcEngine.setupViewContentMode('videosource', 1);
-        rtcEngine.setupViewContentMode(uid, 1);
-      }
-    } else {
-      if (local) {
-        this.rtcEngine.setupLocalVideo(dom);
-      } else {
-        this.rtcEngine.subscribe(uid, dom)
-        this.rtcEngine.setupViewContentMode(uid, 1);
-      }
-    }
-  }
-
-  stop(uid: number, dom: Element) {
-    this.rtcEngine.destroyRenderView(uid, dom, (err: any) => {console.warn(err.message)});
-  }
-
   leave() {
     if (!this.joined) return;
     const result = this.rtcEngine.leaveChannel();
@@ -247,12 +219,13 @@ export class AgoraElectronClient {
   }
 
   getScreenShareWindows() {
-    return this.rtcEngine.getScreenWindowsInfo()
+    const items = this.rtcEngine.getScreenWindowsInfo()
+    return items
       .map((item: any) => ({
         ownerName: item.ownerName,
         name: item.name,
         windowId: item.windowId,
-        image: btoa(item.image)
+        image: item.image,
       }));
   }
 

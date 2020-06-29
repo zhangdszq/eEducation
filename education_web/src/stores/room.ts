@@ -10,6 +10,7 @@ import { get, set } from 'lodash';
 import { isElectron } from '../utils/platform';
 import GlobalStorage from '../utils/custom-storage';
 import { t } from '../i18n';
+import { CustomBtoa } from '@/utils/helper';
 import { eduApi, UserAttrsParams } from '../services/edu-api';
 
 export interface NotifyFlag {
@@ -1077,9 +1078,35 @@ export class RoomStore {
   // 仅用于electron运行环境
   async startNativeScreenShare() {
     const rtcClient = this.rtcClient;
+
+    const items = (rtcClient as AgoraElectronClient).getScreenShareWindows()
+
+    const noImageItems = items.filter((it: any) => !it.image)
+
+    if (noImageItems.length) {
+      globalStore.showToast({
+        type: 'screenSharePermission',
+        message: t('screen_share_permission'),
+      })
+      //@ts-ignore
+      if (window.os_platform === 'darwin') {
+        //@ts-ignore
+        if (window.openPrivacyForCaptureScreen) {
+          //@ts-ignore
+          window.openPrivacyForCaptureScreen()
+        }
+      }
+      return 
+    }
+
+    const windowItems = items.map((item: any) => ({
+      ...item,
+      image: CustomBtoa(item.image)
+    }))
+
     globalStore.setNativeWindowInfo({
       visible: true,
-      items: (rtcClient as AgoraElectronClient).getScreenShareWindows()
+      items: windowItems
     })
   }
 

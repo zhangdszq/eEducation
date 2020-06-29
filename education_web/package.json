@@ -7,7 +7,8 @@
   "agora_electron": {
     "platform": "darwin",
     "electron_version": "7.1.2",
-    "prebuilt": true
+    "prebuilt": true,
+    "arch": "x64"
   },
   "dmg": {
     "compression": "store",
@@ -80,6 +81,7 @@
     "agora-electron-sdk": "education290"
   },
   "scripts": {
+    "postinstall": "node ./scripts/postinstall.js",
     "electron": "cross-env REACT_APP_RUNTIME_PLATFORM=electron ELECTRON_START_URL=http://localhost:3000 concurrently \"npm run electron:web\" \"wait-on http://localhost:3000 && npm run electron:client\"",
     "electron:client": "cross-env electron ./app/",
     "electron:web": "cross-env BROWSER=none react-app-rewired start",
@@ -120,7 +122,7 @@
     "@types/axios": "^0.14.0",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.145",
-    "@types/node": "^12.12.22",
+    "@types/node": "^12.12.47",
     "@types/raf": "^3.4.0",
     "@types/react": "^16.9.9",
     "@types/react-color": "^3.0.1",

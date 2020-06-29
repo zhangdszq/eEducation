@@ -2,16 +2,26 @@ const {ipcRenderer: ipc} = require('electron');
 
 const AgoraRtcEngine = require('agora-electron-sdk').default;
 
+const child_process = require('child_process')
+
 const {promisify} = require('util')
 
 const path = require('path');
 const fs = require('fs');
+
+const platform = process.platform
 
 const rtcEngine = new AgoraRtcEngine();
 
 window.rtcEngine = rtcEngine;
 window.ipc = ipc;
 window.path = path;
+
+window.child_process = child_process
+
+window.os_platform = platform
+
+window.openPrivacyForCaptureScreen = () => window.child_process.execSync(`open "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"`)
 
 const AdmZip = require('adm-zip');
 

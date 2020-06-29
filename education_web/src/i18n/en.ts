@@ -2,6 +2,7 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
 
 const en = {
+  "screen_share_permission": "Need Electron Screen Capture Permission",
   "electron": {
     "start_screen_share_failed": "native screen sharing failed"
   },

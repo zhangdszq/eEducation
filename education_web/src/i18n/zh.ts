@@ -2,6 +2,7 @@ const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION as string;
 const build_version = BUILD_VERSION ? BUILD_VERSION : '0.0.1';
 
 const zhCN: any = {
+  "screen_share_permission": "缺少屏幕共享权限",
   "electron": {
     "start_screen_share_failed": "native screen sharing failed"
   },

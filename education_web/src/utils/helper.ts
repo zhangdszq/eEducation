@@ -151,7 +151,7 @@ export function NetworkQualityEvaluation(evt: { downlinkNetworkQuality: number, 
   return level[val] ? level[val] : defaultQuality;
 }
 
-export function btoa(input: any) {
+export function CustomBtoa(input: any) {
   let keyStr =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   let output = "";
