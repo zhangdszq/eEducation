@@ -82,23 +82,18 @@ async function run() {
     packageJson.devDependencies = {
       ...packageJson.devDependencies,
       electron: undefined,
-      'electron-builder': undefined
     }
   }
 
   const askTaoBaoCdn = [{
-    type: 'rawlist',
+    type: 'confirm',
     name: 'useTaoBaoCdn',
     message: 'Use China TaoBao CDN',
-    choices: [
-      'Yes',
-      'No',
-    ]
   }]
 
   let {useTaoBaoCdn} = await inquirer.prompt(askTaoBaoCdn)
 
-  if (useTaoBaoCdn === 'Yes') {
+  if (useTaoBaoCdn === true) {
     builder.useTaoBaoCdn = true
   }
 
@@ -134,7 +129,7 @@ async function run() {
         child_process.execSync(`
           set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
           set ELECTRON_CUSTOM_DIR=7.1.14
-          set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/
+          set ELECTRON_BUILDER_BINARIES_MIRROR=https://npm.taobao.org/mirrors/electron-builder-binaries/
         `.replace(/( )\s+/g,''))
       }
     }

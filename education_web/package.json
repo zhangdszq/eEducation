@@ -36,6 +36,7 @@
     "files": [
       "build/**/*"
     ],
+    "artifactName": "${productName}-${version}.${ext}",
     "mac": {
       "target": [
         "dmg",
@@ -89,8 +90,8 @@
     "test": "react-app-rewired test --env=jsdom",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "eject": "react-scripts eject",
-    "pack:mac": "npm run electron:build && electron-builder --mac",
-    "pack:win": "npm run electron:build && electron-builder --win"
+    "pack:mac": "node ./scripts/pack.js mac",
+    "pack:win": "node ./scripts/pack.js win32"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -172,6 +173,7 @@
     "webpack-bundle-analyzer": "^3.8.0",
     "white-web-sdk": "2.7.5",
     "worker-loader": "^2.0.0",
-    "zlib": "^1.0.5"
+    "zlib": "^1.0.5",
+    "electron-builder": "22.5.1"
   }
 }
