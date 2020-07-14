@@ -1,5 +1,7 @@
 > *其他语言版本：[简体中文](README.zh.md)*
 
+# !!Important!! every time you change the config in .env.local, please ensure you delete node_modules/.cache, we will not delete the cache in order to speed up build time
+
 ## Overview
 
 |Scenario|Code entry|Description|
