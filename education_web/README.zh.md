@@ -1,5 +1,7 @@
 > *Read this in another language: [English](README.md)*
 
+# !!重要!!如果你修改了.env.local，你可能需要删除一下node_modules/.cache以确保配置得到更新
+
 ## 概览
 
 |支持场景|代码入口|功能描述|
