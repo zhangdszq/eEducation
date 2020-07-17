@@ -1,5 +1,38 @@
 /// <reference types="react-scripts" />
 
+declare interface RecordState {
+  roomId: string
+  recordId: string
+  isRecording: number
+  recordingTime: number
+}
+
+type RecordStateParams = RecordState
+
+declare interface RecordingConfigParams {
+  maxIdleTime: number, // seconds
+  streamTypes: number,
+  channelType: number,
+  transcodingConfig: any,
+  subscribeVideoUids: Array<string>,
+  subscribeAUdioUids: Array<string>,
+  subscribeUidGroup: number,
+}
+
+declare interface StorageConfigParams {
+  vendor: number
+  region: number
+  accessKey: string
+  bucket: string
+  secretKey: string
+  fileNamePrefix: Array<string>
+}
+
+declare interface RecordingConfig {
+  recordingConfig: Partial<RecordingConfigParams>
+  storageConfig?: Partial<StorageConfigParams>
+}
+
 declare module 'react-gtm-module'
 declare module 'eruda'
 

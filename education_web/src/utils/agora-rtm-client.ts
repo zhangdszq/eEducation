@@ -35,6 +35,7 @@ export enum ChatCmdType {
   coVideoUsersChanged = 4,
   replay = 5,
   screenShare = 6,
+  recordStateChanged = 7
 }
 
 export enum CoVideoType {

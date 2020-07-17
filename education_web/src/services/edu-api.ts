@@ -311,11 +311,11 @@ export class AgoraEduApi {
 
   // start recording
   // 开始录制
-  async startRecording() {
+  async startRecording(config: RecordingConfig) {
     let data = await AgoraFetchJson({
       url: `/v1/apps/${this.appID}/room/${this.roomId}/record/start`,
       method: 'POST',
-      data: {},
+      data: config,
       token: this.userToken,
     });
     this.recordId = data.recordId

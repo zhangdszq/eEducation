@@ -466,6 +466,21 @@ export class RoomStore {
     this.commit(this.state);
   }
 
+  updateRecordState(params: RecordStateParams) {
+    this.state = {
+      ...this.state,
+      course: {
+        ...this.state.course,
+        roomId: params.roomId,
+        recordId: params.recordId,
+        recordingTime: params.recordingTime,
+        isRecording: !!params.isRecording,
+      },
+    }
+
+    this.commit(this.state)
+  }
+
   updateDevice(state: MediaDeviceState) {
     this.state = {
       ...this.state,
@@ -1109,10 +1124,16 @@ export class RoomStore {
     }
     this.commit(this.state)
   }
+  
   async startRecording () {
     this.lockRecording()
     try {
-      const {data: recordId} = await eduApi.startRecording()
+      const maxIdleTime = 30
+      const {data: recordId} = await eduApi.startRecording({
+        recordingConfig: {
+          maxIdleTime
+        }
+      })
       this.state = {
         ...this.state,
         course: {

@@ -207,6 +207,14 @@ export const RootProvider: React.FC<any> = ({children}) => {
           userId: data.userId
         })
       }
+      if (cmd === ChatCmdType.recordStateChanged) {
+        roomStore.updateRecordState({
+          roomId: data.roomId,
+          recordId: data.recordId,
+          isRecording: data.isRecording,
+          recordingTime: data.recordingTime
+        })
+      }
     });
     return () => {
       rtmClient.removeAllListeners();
