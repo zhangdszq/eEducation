@@ -135,22 +135,8 @@ export const TimelineReplay: React.FC<any> = ({
           duration: duration,
           room: whiteboardUUID,
           roomToken,
-        },  {
-          onCatchErrorWhenRender: error => {
-            error && console.warn(error);
-            globalStore.showToast({
-              message: t('toast.replay_failed'),
-              type: 'notice'
-            });
-          },
-          onCatchErrorWhenAppendFrame: error => {
-            error && console.warn(error);
-            globalStore.showToast({
-              message: t('toast.replay_failed'),
-              type: 'notice'
-            });
-          },
-          onPhaseChanged: phase => {
+        }, {
+          onPhaseChanged: (phase: PlayerPhase) => {
             console.log("[agore-replay phase] whiteboard ", phase)
 
             let whiteboardPlayStatus = 'ready';
@@ -169,7 +155,7 @@ export const TimelineReplay: React.FC<any> = ({
             console.log("[agore-replay phase] whiteboard phase transmit 2", phase, whiteboardPlayStatus)
             replayStore.updatePlayState(whiteboardPlayStatus)
           },
-          onStoppedWithError: (error) => {
+          onStoppedWithError: (error: any) => {
             error && console.warn(error);
             globalStore.showToast({
               message: t('toast.replay_failed'),

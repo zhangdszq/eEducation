@@ -10,6 +10,8 @@ import { globalStore } from './global';
 import { t } from '../i18n';
 
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
+const netlessAppId = process.env.REACT_APP_NETLESS_APP_ID as string;
+console.log('netlessAppId', netlessAppId)
 
 interface SceneFile {
   name: string
@@ -102,6 +104,7 @@ class Whiteboard extends EventEmitter {
   public readonly client: WhiteWebSdk = new WhiteWebSdk({
     deviceType: DeviceType.Surface,
     // handToolKey: " ",
+    appIdentifier: netlessAppId,
     plugins,
     loggerOptions: {
       disableReportLog: ENABLE_LOG ? false : true,

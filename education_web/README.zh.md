@@ -51,6 +51,8 @@
    ```
    - **（选填）适用于白板课件服务，如不需要可以直接按照下列配置**
    ```bash
+   # netless appId
+   REACT_APP_NETLESS_APP_ID=netless_appid
    # 你自己的 OSS bucket name
    REACT_APP_YOUR_OWN_OSS_BUCKET_NAME=your_oss_bucket_name
    # 你自己的 OSS bucket folder

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import uuidv4 from 'uuid/v4';
 import { PPTProgressListener, UploadManager } from "@/utils/upload-manager";
-import { PptKind, Room } from "white-web-sdk";
+import { PPTKind, Room } from "white-web-sdk";
 import { ossConfig, ossClient, resolveFileInfo } from '@/utils/helper';
 import { whiteboard } from '@/stores/whiteboard';
 import {t} from '@/i18n';
@@ -38,7 +38,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         await uploadManager.convertFile(
           file,
           pptConverter,
-          PptKind.Dynamic,
+          PPTKind.Dynamic,
           ossConfig.folder,
           uuid,
           onProgress,
@@ -65,7 +65,7 @@ export const UploadBtn: React.FC<UploadBtnProps> = ({
         await uploadManager.convertFile(
           file,
           pptConverter,
-          PptKind.Static,
+          PPTKind.Static,
           ossConfig.folder,
           uuid,
           onProgress);

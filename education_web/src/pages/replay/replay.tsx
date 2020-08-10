@@ -169,31 +169,16 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
             mediaURL: mediaUrl,
             roomToken: roomToken,
           }, {
-            onCatchErrorWhenRender: error => {
-              error && console.warn(error);
-              globalStore.showToast({
-                message: t('toast.replay_failed'),
-                type: 'notice'
-              });
-            },
-            onCatchErrorWhenAppendFrame: error => {
-              error && console.warn(error);
-              globalStore.showToast({
-                message: t('toast.replay_failed'),
-                type: 'notice'
-              });
-            },
-            onPhaseChanged: phase => {
+            onPhaseChanged: (phase: PlayerPhase) => {
               replayStore.updateWhiteboardPhase(phase);
             },
             onLoadFirstFrame: () => {
-              // replayStore.loadFirstFrame();
             },
             onSliceChanged: () => {
             },
-            onPlayerStateChanged: (error) => {
+            onPlayerStateChanged: (error: any) => {
             },
-            onStoppedWithError: (error) => {
+            onStoppedWithError: (error: any) => {
               error && console.warn(error);
               globalStore.showToast({
                 message: t('toast.replay_failed'),
@@ -201,7 +186,7 @@ export const NetlessAgoraReplay: React.FC<NetlessAgoraReplayProps> = ({
               });
               replayStore.setReplayFail(true);
             },
-            onScheduleTimeChanged: (scheduleTime) => {
+            onProgressTimeChanged: (scheduleTime: any) => {
               if (lock.current) return;
               replayStore.setCurrentTime(scheduleTime);
             }

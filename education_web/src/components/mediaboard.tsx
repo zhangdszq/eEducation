@@ -19,7 +19,7 @@ import { roomStore } from '../stores/room';
 import { whiteboard } from '../stores/whiteboard';
 import { globalStore } from '../stores/global';
 import { platform } from '../utils/platform';
-import "white-web-sdk/style/index.css";
+// import "white-web-sdk/style/index.css";
 import { ViewMode } from 'white-web-sdk';
 import { t } from '../i18n';
 import { Collapse, Paper} from '@material-ui/core';
@@ -263,7 +263,7 @@ const items = [
       if (name === 'hand_tool') {
         room.handToolActive = true;
         updateSelector('hand');
-        room.setMemberState({currentApplianceName: 'selector'});
+        room.setMemberState({currentApplianceName: 'selector' as any});
       } else {
         if (name === 'add' && addNewPage) {
           addNewPage();
@@ -271,7 +271,7 @@ const items = [
       }
       return;
     }
-    room.setMemberState({currentApplianceName: name});
+    room.setMemberState({currentApplianceName: name as any});
   }
 
   const onColorChanged = (color: any) => {

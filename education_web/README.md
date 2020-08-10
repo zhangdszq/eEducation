@@ -50,6 +50,8 @@
   ```
   - **(Optional) OSS configurations for whiteboard courseware. Ignore these if you do not need this.**
   ```bash
+  # netless appId
+  REACT_APP_NETLESS_APP_ID=netless_appid
   # your oss bucket name
   REACT_APP_YOUR_OWN_OSS_BUCKET_NAME=your_oss_bucket_name
   # your oss bucket folder

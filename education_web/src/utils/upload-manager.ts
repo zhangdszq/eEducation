@@ -1,6 +1,6 @@
 import { MultipartUploadResult } from 'ali-oss';
 import uuidv4 from 'uuid/v4';
-import {Room, PptConverter, PptKind, Ppt} from 'white-web-sdk';
+import {Room, LegacyPPTConverter, PPTKind, PPT} from 'white-web-sdk';
 import MD5 from 'js-md5';
 import { resolveFileInfo } from './helper';
 
@@ -55,8 +55,8 @@ export class UploadManager {
   
   public async convertFile(
     rawFile: File,
-    pptConverter: PptConverter,
-    kind: PptKind,
+    pptConverter: LegacyPPTConverter,
+    kind: PPTKind,
     folder: string,
     uuid: string,
     onProgress?: PPTProgressListener,
@@ -64,8 +64,8 @@ export class UploadManager {
     const {fileType} = resolveFileInfo(rawFile);
     const path = `/${folder}/${uuid}${fileType}`;
     const pptURL = await this.addFile(path, rawFile, onProgress);
-    let res: Ppt;
-    if (kind === PptKind.Static) {
+    let res: PPT;
+    if (kind === PPTKind.Static) {
         res = await pptConverter.convert({
           url: pptURL,
           kind: kind,
@@ -191,12 +191,13 @@ export class UploadManager {
           centerY: y,
           width: imageFile.width,
           height: imageFile.height,
+          locked: false,
         });
       }
       await Promise.all(tasks.map(task => this.handleUploadTask(task, onProgress)));
       if (this.room.isWritable) {
         this.room.setMemberState({
-          currentApplianceName: "selector",
+          currentApplianceName: "selector" as any,
         });
       }
     }

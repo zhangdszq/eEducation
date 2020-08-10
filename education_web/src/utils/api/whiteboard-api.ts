@@ -1,7 +1,7 @@
 import { WhiteWebSdk, ReplayRoomParams, PlayerCallbacks } from 'white-web-sdk';
 
 export const WhiteboardAPI = {
-  async replayRoom(client: WhiteWebSdk, args: ReplayRoomParams, callback: PlayerCallbacks) {
+  async replayRoom(client: WhiteWebSdk, args: ReplayRoomParams, callback: any) {
     let retrying;
     do {
       try {
