@@ -109,7 +109,15 @@ module.exports = override(
     path.resolve("node_modules")
   ]),
   addWebpackPlugin(
-    new HardSourceWebpackPlugin()
+    new HardSourceWebpackPlugin({
+      root: process.cwd(),
+      directories: [],
+      environmentHash: {
+        root: process.cwd(),
+        directories: [],
+        files: ['package-lock.json', 'yarn.lock', '.env', '.env.local', 'env.local'],
+      }
+    })
   ),
   addBundleVisualizer({
     // "analyzerMode": "static",
